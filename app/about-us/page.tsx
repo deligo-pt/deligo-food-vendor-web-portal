@@ -22,7 +22,7 @@ export default function AboutUsPage() {
           transition={{ duration: 0.7 }}
           className="text-5xl sm:text-6xl font-extrabold bg-gradient-to-r from-green-400 via-teal-400 to-blue-500 bg-clip-text text-transparent"
         >
-          About <span className="text-white">DeliGo</span>
+          About <span className="text-white">DeliGo Group</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -30,9 +30,7 @@ export default function AboutUsPage() {
           transition={{ delay: 0.3 }}
           className="max-w-3xl mx-auto mt-6 text-gray-300 text-lg leading-relaxed"
         >
-          DeliGo is a next-generation quick-commerce platform that brings
-          groceries, meals, rides, and daily essentials to your doorstep —
-          faster, smarter, and more reliable than ever.
+          Smart. Sustainable. Built for Portugal.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -51,20 +49,19 @@ export default function AboutUsPage() {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-4xl font-bold mb-4 text-green-400">
-              Our Story
+              About DeliGo Group
             </h2>
             <p className="text-gray-300 leading-relaxed">
-              Born with a mission to simplify everyday life,{" "}
-              <span className="text-white font-semibold">DeliGo</span> aims to
-              connect people with what they need — food, groceries, rides, or
-              essentials — in just a few taps. Inspired by the speed and
-              efficiency of next-gen delivery systems, we’re building a
-              platform that makes city life easier and smarter.
+              We’re <span className="text-white font-semibold">DeliGo</span> — a
+              Portuguese tech company reimagining how people move, eat, and
+              live. From <span className="text-white font-semibold">DeliGo Ride</span>, our ride-sharing platform, to{" "}
+              <span className="text-white font-semibold">DeliGo Delivery</span>,
+              our food and grocery network — we connect people, drivers, and
+              local businesses through technology that makes everyday life
+              effortless.
             </p>
             <p className="text-gray-400 mt-4">
-              From a small idea to a fast-growing ecosystem, DeliGo is designed
-              for convenience, trust, and accessibility. We believe every order
-              — big or small — deserves to arrive fast, fresh, and safe.
+              Our mission is simple: move smarter, live better.
             </p>
           </motion.div>
 
@@ -72,7 +69,7 @@ export default function AboutUsPage() {
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            src="/images/delivery-illustration.svg"
+            src="/deligoDelivery.jpeg"
             alt="Delivery Illustration"
             className="rounded-3xl shadow-2xl"
           />
@@ -88,40 +85,51 @@ export default function AboutUsPage() {
             transition={{ duration: 0.6 }}
             className="text-4xl font-bold mb-10 text-teal-400"
           >
-            What Makes DeliGo Different
+            DeliGo Ride — The Smarter Way to Move
           </motion.h2>
+
+          <p className="max-w-3xl mx-auto text-gray-300 text-lg leading-relaxed mb-10">
+            Need to get somewhere fast? DeliGo Ride gets you there. We connect
+            passengers with licensed TVDE drivers through a clean, easy-to-use
+            app — offering safe, comfortable, and affordable rides across
+            Portugal.
+            <br />
+            <br />
+            We care about the planet too. Our growing fleet includes electric
+            and hybrid cars, helping make cities greener and cleaner.
+          </p>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
             {[
               {
                 icon: <Truck className="w-10 h-10 text-green-400" />,
-                title: "Ultra-Fast Delivery",
-                desc: "We ensure your orders reach you within minutes — not hours. Speed and precision define every delivery.",
+                title: "Fast pickup & transparent pricing",
+                desc: "Get to your destination quickly and affordably.",
               },
               {
-                icon: <ShoppingBag className="w-10 h-10 text-blue-400" />,
-                title: "All-in-One Platform",
-                desc: "From food and grocery to ride sharing — everything you need, all in one simple, intuitive app.",
+                icon: <HeartHandshake className="w-10 h-10 text-blue-400" />,
+                title: "Certified professional drivers",
+                desc: "Trained and verified drivers ensure safe rides.",
               },
               {
-                icon: <Bike className="w-10 h-10 text-yellow-400" />,
-                title: "Empowered Riders",
-                desc: "Our riders are the heart of DeliGo — equipped, trained, and valued for every delivery they make.",
+                icon: <Clock className="w-10 h-10 text-yellow-400" />,
+                title: "Real-time ride tracking",
+                desc: "Track your driver and trip from pickup to drop-off.",
               },
               {
-                icon: <Store className="w-10 h-10 text-pink-400" />,
-                title: "Local Business Support",
-                desc: "We partner with small and local businesses, helping them reach customers faster and grow digitally.",
+                icon: <ShoppingBag className="w-10 h-10 text-pink-400" />,
+                title: "Multiple payment methods",
+                desc: "Pay easily via Card or MB Way — no hassle.",
               },
               {
-                icon: <HeartHandshake className="w-10 h-10 text-purple-400" />,
-                title: "Customer First Approach",
-                desc: "Our mission is simple — make life easier for our users through fast, friendly, and reliable service.",
+                icon: <Bike className="w-10 h-10 text-purple-400" />,
+                title: "Eco-friendly fleet",
+                desc: "Electric and hybrid vehicles for a cleaner planet.",
               },
               {
-                icon: <Clock className="w-10 h-10 text-orange-400" />,
-                title: "24/7 Availability",
-                desc: "Day or night, rain or shine — DeliGo is always ready to serve your needs without delay.",
+                icon: <Store className="w-10 h-10 text-orange-400" />,
+                title: "Reliable service",
+                desc: "Wherever you’re headed — we’ll get you there safely and on time.",
               },
             ].map((item, i) => (
               <motion.div
@@ -146,7 +154,7 @@ export default function AboutUsPage() {
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            src="/images/future-delivery.svg"
+            src="/deligoabout.jpeg"
             alt="Future of Delivery"
             className="rounded-3xl shadow-2xl order-2 md:order-1"
           />
@@ -157,19 +165,24 @@ export default function AboutUsPage() {
             className="order-1 md:order-2"
           >
             <h2 className="text-4xl font-bold mb-4 text-green-400">
-              Our Vision for the Future
+              DeliGo Delivery — Eat, Shop, and Get It Fast
             </h2>
             <p className="text-gray-300 leading-relaxed">
-              We’re building a future where technology connects people, products,
-              and places effortlessly. DeliGo will soon introduce features like
-              smart order tracking, vendor insights, and AI-powered route
-              optimization to make commerce faster than ever.
+              Craving your favorite meal or need groceries now? DeliGo Delivery
+              brings it all to your door — food, groceries, and everyday
+              essentials.
             </p>
             <p className="text-gray-400 mt-4">
-              As we expand, our focus remains the same — building trust through
-              reliability, innovation, and speed. Because DeliGo isn’t just about
-              delivery — it’s about redefining convenience.
+              We partner with local restaurants, supermarkets, and stores to
+              give customers what they need, when they need it.
             </p>
+            <ul className="text-gray-300 mt-4 space-y-2">
+              <li>⚡ Super-fast deliveries</li>
+              <li>📦 Live order tracking</li>
+              <li>❤️ Support for local businesses</li>
+              <li>💰 Easy payments & cashback</li>
+              <li>🚴 Reliable delivery partners you can trust</li>
+            </ul>
           </motion.div>
         </div>
       </section>
@@ -182,16 +195,50 @@ export default function AboutUsPage() {
           transition={{ duration: 0.6 }}
           className="text-4xl font-bold text-green-400 mb-6"
         >
-          Expanding Beyond Boundaries
+          DeliGo Electronic Accessories — Powering Everyday Life
         </motion.h2>
         <p className="max-w-3xl mx-auto text-gray-300 text-lg mb-8">
-          DeliGo’s mission goes beyond borders — we aim to redefine urban
-          convenience across multiple countries, connecting riders, vendors,
-          and users in a seamless global network.
+          Smart. Stylish. Reliable. DeliGo Electronic Accessories brings
+          innovation and design to your everyday tech. We create high-quality
+          accessories that combine smart technology with sleek, durable design —
+          built for modern lifestyles.
+        </p>
+        <p className="max-w-3xl mx-auto text-gray-400 text-lg mb-8">
+          Our mission: make technology easier, faster, and smarter for everyone.
+        </p>
+        <ul className="max-w-3xl mx-auto text-gray-300 text-lg space-y-2 mb-8 text-left sm:text-center">
+          <li>🔋 Smart Chargers & Power Banks — Fast, safe, and long-lasting.</li>
+          <li>🔌 Cables & Adapters — Premium build, high-speed performance.</li>
+          <li>🎧 Earphones & Headphones — Clear sound and comfort.</li>
+          <li>⌚ Smartwatches & Wearables — Stay connected and active.</li>
+          <li>💻 Laptop & Desktop Accessories — Boost productivity anywhere.</li>
+        </ul>
+        <p className="max-w-3xl mx-auto text-gray-300 text-lg mb-8">
+          We’re not just delivering — we’re connecting communities and powering
+          progress.
+        </p>
+      </section>
+
+      {/* OUR PROMISE */}
+      <section className="py-20 text-center px-6 bg-black/90">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl font-bold text-green-400 mb-6"
+        >
+          Our Vision & Promise
+        </motion.h2>
+        <p className="max-w-3xl mx-auto text-gray-300 text-lg mb-4">
+          To make every city smarter, cleaner, and more connected — powered by
+          technology that works for people and the planet.
+        </p>
+        <p className="max-w-3xl mx-auto text-gray-300 text-lg mb-8">
+          We’re building a future where mobility and delivery feel effortless — 
+          a future that’s eco-friendly, inclusive, and proudly Portuguese.
         </p>
         <Globe className="w-20 h-20 mx-auto text-green-400 animate-spin-slow" />
       </section>
-
     </div>
   );
 }

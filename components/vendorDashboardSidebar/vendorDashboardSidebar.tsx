@@ -1,0 +1,391 @@
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Home,
+  ShoppingBag,
+  Layers,
+  DollarSign,
+  BarChart2,
+  Star,
+  Box,
+  Gift,
+  Users,
+  Plug,
+  FileText,
+  Settings,
+  MessageCircle,
+  AlertCircle,
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  Menu,
+  X,
+} from "lucide-react";
+
+const PRIMARY = "#DC3173";
+
+export default function Sidebar() {
+  const [open, setOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const pathname = usePathname();
+
+  const toggleExpand = (id: string) => {
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // prevent scroll when mobile menu open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "auto";
+  }, [mobileOpen]);
+
+  // Menu items with routes
+  const MENU = [
+    {
+      id: "dashboard",
+      title: "Dashboard",
+      icon: <Home size={18} />,
+      items: [
+        { name: "Overview", path: "/vendor/overview" },
+        { name: "Live Activity", path: "/vendor/live-activity" },
+      ],
+    },
+    {
+      id: "orders",
+      title: "Orders",
+      icon: <ShoppingBag size={18} />,
+      items: [
+        { name: "New Orders", path: "/vendor/new-orders" },
+        { name: "Preparing", path: "/vendor/preparing" },
+        { name: "Ready for Pickup", path: "/vendor/ready-for-pickup" },
+        { name: "Ongoing Deliveries", path: "/vendor/ongoing-deliveries" },
+        { name: "Completed", path: "/vendor/completed" },
+        { name: "Cancelled", path: "/vendor/cancelled" },
+      ],
+    },
+    {
+      id: "menu",
+      title: "Menu & Items",
+      icon: <Layers size={18} />,
+      items: [
+        { name: "All Items", path: "/vendor/all-items" },
+        { name: "Categories", path: "/vendor/categories" },
+        { name: "Add New Item", path: "/vendor/add-item" },
+        { name: "Stock Management", path: "/vendor/stock" },
+        { name: "Add-ons", path: "/vendor/addons" },
+      ],
+    },
+    {
+      id: "payments",
+      title: "Payments & Earnings",
+      icon: <DollarSign size={18} />,
+      items: [
+        { name: "Payouts", path: "/vendor/payouts" },
+        { name: "Earnings Summary", path: "/vendor/earnings" },
+        { name: "Payment Settings", path: "/vendor/payment-settings" },
+        { name: "Transaction History", path: "/vendor/transactions" },
+      ],
+    },
+    {
+      id: "analytics",
+      title: "Analytics & Insights",
+      icon: <BarChart2 size={18} />,
+      items: [
+        { name: "Sales Analytics", path: "/vendor/sales-analytics" },
+        { name: "Customer Insights", path: "/vendor/customer-insights" },
+        { name: "Order Trends", path: "/vendor/order-trends" },
+        { name: "Top Performing Items", path: "/vendor/top-items" },
+      ],
+    },
+    {
+      id: "reviews",
+      title: "Reviews & Ratings",
+      icon: <Star size={18} />,
+      items: [
+        { name: "Customer Reviews", path: "/vendor/reviews" },
+        { name: "Rating Summary", path: "/vendor/rating-summary" },
+      ],
+    },
+    {
+      id: "inventory",
+      title: "Inventory",
+      icon: <Box size={18} />,
+      items: [
+        { name: "Ingredients", path: "/vendor/ingredients" },
+        { name: "Stock Alerts", path: "/vendor/stock-alerts" },
+        { name: "Suppliers", path: "/vendor/suppliers" },
+      ],
+    },
+    {
+      id: "offers",
+      title: "Offers & Coupons",
+      icon: <Gift size={18} />,
+      items: [
+        { name: "Active Offers", path: "/vendor/offers" },
+        { name: "Create New Offer", path: "/vendor/create-offer" },
+        { name: "Coupon Analytics", path: "/vendor/coupon-analytics" },
+      ],
+    },
+    {
+      id: "staff",
+      title: "Staff Management",
+      icon: <Users size={18} />,
+      items: [
+        { name: "All Staff", path: "/vendor/all-staff" },
+        { name: "Roles & Permissions", path: "/vendor/roles" },
+        { name: "Add New Staff", path: "/vendor/add-staff" },
+      ],
+    },
+    {
+      id: "integrations",
+      title: "Integrations",
+      icon: <Plug size={18} />,
+      items: [
+        { name: "POS Integration", path: "/vendor/pos" },
+        { name: "Delivery Partner", path: "/vendor/delivery-partner" },
+        { name: "Marketing Tools", path: "/vendor/marketing" },
+        { name: "API Access", path: "/vendor/api-access" },
+      ],
+    },
+    {
+      id: "reports",
+      title: "Reports",
+      icon: <FileText size={18} />,
+      items: [
+        { name: "Sales Report", path: "/vendor/sales-report" },
+        { name: "Tax Report", path: "/vendor/tax-report" },
+        { name: "Custom Report", path: "/vendor/custom-report" },
+      ],
+    },
+    {
+      id: "settings",
+      title: "Settings",
+      icon: <Settings size={18} />,
+      items: [
+        { name: "Business Info", path: "/vendor/business-info" },
+        { name: "Notifications", path: "/vendor/notifications" },
+        { name: "Payment Settings", path: "/vendor/payment-settings" },
+        { name: "Theme & Branding", path: "/vendor/theme" },
+      ],
+    },
+    {
+      id: "support",
+      title: "Support Center",
+      icon: <MessageCircle size={18} />,
+      items: [
+        { name: "Chat with Support", path: "/vendor/chat-support" },
+        { name: "Help Articles", path: "/vendor/help" },
+        { name: "Report an Issue", path: "/vendor/report" },
+      ],
+    },
+    {
+      id: "sos",
+      title: "SOS / Emergency",
+      icon: <AlertCircle size={18} />,
+      items: [
+        { name: "Contact Support", path: "/vendor/contact-support" },
+        { name: "Safety Guidelines", path: "/vendor/safety" },
+      ],
+    },
+  ];
+
+  return (
+    <>
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white shadow-md fixed top-0 left-0 w-full z-50">
+        <div className="flex items-center gap-2">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-white font-bold shadow-md"
+            style={{ background: PRIMARY }}
+          >
+            D
+          </motion.div>
+          <h1 className="text-lg font-semibold text-gray-800">DeliGo</h1>
+        </div>
+        <button onClick={() => setMobileOpen(true)}>
+          <Menu size={24} className="text-gray-700" />
+        </button>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <motion.aside
+        animate={{ width: open ? 280 : 80 }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        className="hidden md:flex h-screen bg-gradient-to-b from-pink-50 via-white to-pink-100 shadow-xl flex-col border-r border-pink-200 overflow-hidden fixed"
+      >
+        <div className="flex items-center justify-between px-4 py-4 border-b border-pink-200">
+          <div className="flex items-center gap-2">
+            <motion.div
+              animate={{ rotate: open ? 0 : 360 }}
+              transition={{ duration: 0.5 }}
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-white font-bold shadow-lg"
+              style={{ background: PRIMARY }}
+            >
+              D
+            </motion.div>
+            {open && (
+              <motion.h1
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-lg font-extrabold text-gray-800"
+              >
+                DeliGo Vendor
+              </motion.h1>
+            )}
+          </div>
+          <button
+            onClick={() => setOpen(!open)}
+            className="p-2 rounded-lg hover:bg-pink-100 transition-colors"
+          >
+            {open ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 py-3 px-2 overflow-y-auto no-scrollbar">
+          {MENU.map((menu) => (
+            <div key={menu.id} className="mb-1">
+              <button
+                onClick={() => toggleExpand(menu.id)}
+                className="flex items-center w-full justify-between p-2 rounded-lg hover:bg-pink-100 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-pink-600">{menu.icon}</div>
+                  {open && (
+                    <span className="font-medium text-gray-700">{menu.title}</span>
+                  )}
+                </div>
+                {menu.items && open && (
+                  <motion.div animate={{ rotate: expanded[menu.id] ? 180 : 0 }}>
+                    <ChevronDown size={16} />
+                  </motion.div>
+                )}
+              </button>
+
+              {/* Submenu */}
+              <AnimatePresence>
+                {expanded[menu.id] && open && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="pl-9 mt-1 flex flex-col gap-1"
+                  >
+                    {menu.items.map((sub) => (
+                      <Link
+                        key={sub.name}
+                        href={sub.path}
+                        className={`text-sm px-2 py-1 rounded-md transition-all duration-300 ${
+                          pathname === sub.path
+                            ? "bg-gradient-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold shadow-sm"
+                            : "text-gray-600 hover:text-pink-600 hover:bg-pink-50"
+                        }`}
+                      >
+                        <motion.span
+                          animate={{
+                            x: pathname === sub.path ? 6 : 0,
+                          }}
+                        >
+                          {sub.name}
+                        </motion.span>
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </nav>
+
+        {open && (
+          <div className="border-t border-pink-200 py-3 px-3 text-center text-xs text-gray-500">
+            © 2025 <span style={{ color: PRIMARY }}>Vendor</span> Dashboard
+          </div>
+        )}
+      </motion.aside>
+
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 md:hidden flex"
+          >
+            <motion.div
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="bg-white w-72 h-full p-4 shadow-xl overflow-y-auto no-scrollbar"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold" style={{ color: PRIMARY }}>
+                  DeliGo Menu
+                </h2>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="text-gray-600"
+                >
+                  <X size={22} />
+                </button>
+              </div>
+
+              {MENU.map((menu) => (
+                <div key={menu.id} className="mb-2">
+                  <button
+                    onClick={() => toggleExpand(menu.id)}
+                    className="flex items-center justify-between w-full py-2 text-gray-800 font-medium"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="text-pink-600">{menu.icon}</div>
+                      <span>{menu.title}</span>
+                    </div>
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform ${
+                        expanded[menu.id] ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {expanded[menu.id] && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="pl-8 mt-1 flex flex-col gap-1"
+                      >
+                        {menu.items.map((sub) => (
+                          <Link
+                            key={sub.name}
+                            href={sub.path}
+                            onClick={() => setMobileOpen(false)}
+                            className={`text-sm py-1 transition-all ${
+                              pathname === sub.path
+                                ? "text-pink-700 font-semibold"
+                                : "text-gray-600 hover:text-pink-600"
+                            }`}
+                          >
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
