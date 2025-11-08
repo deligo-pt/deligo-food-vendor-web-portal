@@ -1,15 +1,14 @@
 "use client";
 
-import React from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { CreditCard, User, FileText, Globe, Save } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { Input } from "@/src/components/ui/input";
 
 type FormValues = {
   bankName: string;

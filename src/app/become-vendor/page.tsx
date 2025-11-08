@@ -1,15 +1,18 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import React, { useState } from "react";
-import Stepper from "@/components/Stepper/Stepper";
+import StepperFlow from "@/src/components/Stepper/Stepper";
+import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Input } from "@/src/components/ui/input";
+import { Button } from "@/src/components/ui/button";
+
 
 type FormValues = {
   email: string;
@@ -46,7 +49,7 @@ export default function BecomeVendorPage() {
             Follow these simple steps to become a verified vendor
           </p>
         </div>
-        <Stepper/>
+        <StepperFlow/>
       </motion.div>
 
       {/* 🧾 Form Section */}

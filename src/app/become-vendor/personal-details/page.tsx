@@ -1,13 +1,14 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { User, Mail, Phone, } from "lucide-react";
 import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Input } from "@/src/components/ui/input";
+import { Button } from "@/src/components/ui/button";
 
 type PersonalForm = {
   firstName: string;

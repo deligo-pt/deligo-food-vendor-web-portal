@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ShoppingBag, DollarSign, Truck, Users } from "lucide-react";
 
-export default function OverviewPage() {
+export default function DashboardPage() {
   const stats = [
     { id: 1, name: "Total Orders", value: "1,240", icon: ShoppingBag },
     { id: 2, name: "Total Revenue", value: "$18,450", icon: DollarSign },
