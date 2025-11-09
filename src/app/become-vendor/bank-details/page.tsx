@@ -1,14 +1,30 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { CreditCard, User, FileText, Globe, Save } from "lucide-react";
+import { CreditCard, FileText, Globe, Save, User } from "lucide-react";
+import { useForm } from "react-hook-form";
 
-import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Label } from "@radix-ui/react-dropdown-menu";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
+import { TResponse } from "@/src/types";
+import { getCookie } from "@/src/utils/cookies";
+import { updateData } from "@/src/utils/requests";
+import { bankDetailsValidation } from "@/src/validations/become-vendor/bank-details.validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type FormValues = {
   bankName: string;
@@ -18,12 +34,10 @@ type FormValues = {
 };
 
 export default function BankDetailsPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-  } = useForm<FormValues>({
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const form = useForm<FormValues>({
+    resolver: zodResolver(bankDetailsValidation),
     defaultValues: {
       bankName: "",
       accountHolderName: "",
@@ -31,12 +45,28 @@ export default function BankDetailsPage() {
       swiftCode: "",
     },
   });
- const router = useRouter();
+  const router = useRouter();
 
   const onSubmit = async (data: FormValues) => {
-    console.log("bank details ->", data);
-    await new Promise((r) => setTimeout(r, 700));
-    router.push("/become-vendor/document-image-details");
+    try {
+      const result = (await updateData(
+        "/vendors/" + id,
+        {
+          bankDetails: data,
+        },
+        {
+          headers: { authorization: getCookie("accessToken") },
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      )) as unknown as TResponse<any>;
+
+      if (result.success) {
+        router.push("/become-vendor/document-image-details?id=" + id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    // await new Promise((r) => setTimeout(r, 700));
   };
 
   return (
@@ -58,83 +88,134 @@ export default function BankDetailsPage() {
               </CardTitle>
             </div>
             <p className="mt-3 text-sm text-white/90 max-w-xl leading-relaxed">
-              Add your bank details so we can pay you. Your data is encrypted and stored securely.
+              Add your bank details so we can pay you. Your data is encrypted
+              and stored securely.
             </p>
           </CardHeader>
 
           <CardContent className="p-6 sm:p-8 bg-white">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="col-span-1">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <CreditCard className="w-4 h-4 text-[#DC3173]" /> Bank Name
-                  </Label>
-                  <Input
-                    placeholder="e.g. Santander Bank"
-                    {...register("bankName", { required: "Bank name is required" })}
-                    aria-invalid={!!errors.bankName}
-                    className={cn("mt-2 w-full", errors.bankName && "border-red-500")}
-                  />
-                  {errors.bankName && <p className="mt-1 text-xs text-red-600">{errors.bankName.message}</p>}
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="bankName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="relative">
+                            <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                              <CreditCard className="w-4 h-4 text-[#DC3173]" />{" "}
+                              Bank Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g. Santander Bank"
+                                className="mt-2 w-full"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="accountHolderName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="relative">
+                            <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                              <User className="w-4 h-4 text-[#DC3173]" />{" "}
+                              Account Holder
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Full name as on account"
+                                className="mt-2 w-full"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="iban"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="relative">
+                            <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                              <FileText className="w-4 h-4 text-[#DC3173]" />{" "}
+                              IBAN
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g. GB29NWBK60161331926819"
+                                className="mt-2 w-full uppercase"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="swiftCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="relative">
+                            <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                              <Globe className="w-4 h-4 text-[#DC3173]" /> SWIFT
+                              / BIC
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g. NWBKGB2L"
+                                className="mt-2 w-full uppercase"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
 
-                <div className="col-span-1">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <User className="w-4 h-4 text-[#DC3173]" /> Account Holder
-                  </Label>
-                  <Input
-                    placeholder="Full name as on account"
-                    {...register("accountHolderName", { required: "Account holder name is required" })}
-                    aria-invalid={!!errors.accountHolderName}
-                    className={cn("mt-2 w-full", errors.accountHolderName && "border-red-500")}
-                  />
-                  {errors.accountHolderName && <p className="mt-1 text-xs text-red-600">{errors.accountHolderName.message}</p>}
+                <div className="pt-4">
+                  <motion.button
+                    type="submit"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    disabled={form.formState.isSubmitting}
+                    className="w-full sm:w-auto inline-flex items-center gap-3 justify-center px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-60"
+                  >
+                    <Save className="w-5 h-5" />
+                    <span className="font-semibold tracking-wide">
+                      Save & Continue
+                    </span>
+                  </motion.button>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="col-span-1">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <FileText className="w-4 h-4 text-[#DC3173]" /> IBAN
-                  </Label>
-                  <Input
-                    placeholder="e.g. GB29NWBK60161331926819"
-                    {...register("iban", { required: "IBAN is required" })}
-                    aria-invalid={!!errors.iban}
-                    className={cn("mt-2 w-full uppercase", errors.iban && "border-red-500")}
-                    onChange={(e) => setValue("iban", e.target.value.toUpperCase())}
-                  />
-                  {errors.iban && <p className="mt-1 text-xs text-red-600">{errors.iban.message}</p>}
-                </div>
-
-                <div className="col-span-1">
-                  <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <Globe className="w-4 h-4 text-[#DC3173]" /> SWIFT / BIC
-                  </Label>
-                  <Input
-                    placeholder="e.g. NWBKGB2L"
-                    {...register("swiftCode", { required: "SWIFT code is required" })}
-                    aria-invalid={!!errors.swiftCode}
-                    className={cn("mt-2 w-full uppercase", errors.swiftCode && "border-red-500")}
-                    onChange={(e) => setValue("swiftCode", e.target.value.toUpperCase())}
-                  />
-                  {errors.swiftCode && <p className="mt-1 text-xs text-red-600">{errors.swiftCode.message}</p>}
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto inline-flex items-center gap-3 justify-center px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-60"
-                >
-                  <Save className="w-5 h-5" />
-                  <span className="font-semibold tracking-wide">Save & Continue</span>
-                </motion.button>
-              </div>
-            </form>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </div>

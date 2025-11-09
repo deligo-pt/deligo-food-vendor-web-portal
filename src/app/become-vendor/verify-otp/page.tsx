@@ -1,16 +1,27 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { motion } from "framer-motion";
-import { Clock, RefreshCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Input } from "@/src/components/ui/input";
+import { TResponse } from "@/src/types";
+import { setCookie } from "@/src/utils/cookies";
+import { postData } from "@/src/utils/requests";
+import { motion } from "framer-motion";
+import { jwtDecode } from "jwt-decode";
+import { Clock, RefreshCcw } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function VerifyOtpPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
   const [timer, setTimer] = useState(300); // 5 minutes = 300 seconds
   const [otp, setOtp] = useState(["", "", "", ""]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -34,26 +45,61 @@ export default function VerifyOtpPage() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const finalOtp = otp.join("");
     if (finalOtp.length === 4) {
-      console.log("OTP Verified:", finalOtp);
-      router.push("/become-vendor/personal-details");
+      try {
+        const result = (await postData(
+          "/auth/verify-otp",
+          {
+            email,
+            otp: finalOtp,
+          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        )) as unknown as TResponse<any>;
+
+        if (result.success) {
+          const decoded = jwtDecode(result.data.accessToken) as { id: string };
+          setCookie("accessToken", result.data.accessToken, 7);
+          setCookie("refreshToken", result.data.refreshToken, 7);
+          router.push("/become-vendor/personal-details?id=" + decoded.id);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     } else {
       alert("Please enter a valid 4-digit OTP");
     }
   };
 
-  const resendOtp = () => {
-    setTimer(300); // reset to 5 minutes again
-    console.log("OTP resent!");
+  const resendOtp = async () => {
+    setTimer(300);
+    try {
+      const result = (await postData(
+        "/auth/resend-otp",
+        {
+          email,
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      )) as unknown as TResponse<any>;
+
+      if (result.success) {
+        setTimer(300);
+        console.log("OTP resent!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Format time as MM:SS
@@ -87,38 +133,37 @@ export default function VerifyOtpPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* OTP Inputs */}
               <div className="flex justify-center gap-4">
-  {otp.map((digit, index) => (
-    <div
-      key={index}
-      className="relative group transition-transform duration-300 hover:scale-105"
-    >
-      <Input
-        type="text"
-        maxLength={1}
-        value={digit}
-        onChange={(e) => handleChange(e.target.value, index)}
-        onKeyDown={(e) => handleKeyDown(e, index)}
-        ref={(el) => {
-          inputRefs.current[index] = el;
-        }}
-        className={`
+                {otp.map((digit, index) => (
+                  <div
+                    key={index}
+                    className="relative group transition-transform duration-300 hover:scale-105"
+                  >
+                    <Input
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleChange(e.target.value, index)}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      ref={(el) => {
+                        inputRefs.current[index] = el;
+                      }}
+                      className={`
           w-14 h-14 text-center text-2xl font-bold rounded-xl
           border border-gray-300 shadow-sm bg-white
           focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173]
           group-hover:border-[#DC3173]/50
           transition-all duration-300
         `}
-      />
+                    />
 
-      {/* Glowing animated ring when focused */}
-      <span
-        className="absolute inset-0 rounded-xl pointer-events-none
+                    {/* Glowing animated ring when focused */}
+                    <span
+                      className="absolute inset-0 rounded-xl pointer-events-none
           group-focus-within:shadow-[0_0_12px_#DC3173aa] transition-all duration-300"
-      ></span>
-    </div>
-  ))}
-</div>
-
+                    ></span>
+                  </div>
+                ))}
+              </div>
 
               {/* Timer & Resend Section */}
               <div className="flex justify-between items-center text-sm text-gray-600">

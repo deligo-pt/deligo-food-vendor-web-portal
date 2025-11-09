@@ -1,13 +1,18 @@
 "use client";
 
+import { Button } from "@/src/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { motion } from "framer-motion";
 import { CheckCircle2, Clock, ShieldCheck } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 export default function RegistrationStatusPage() {
-      const router = useRouter();
+  const router = useRouter();
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-pink-50 to-[#DC3173]/10 px-4 py-12">
       <motion.div
@@ -27,7 +32,8 @@ export default function RegistrationStatusPage() {
               </CardTitle>
             </div>
             <p className="mt-2 text-sm text-white/90 max-w-xl">
-              Congratulations! You’ve successfully submitted your registration details.
+              Congratulations! You’ve successfully submitted your registration
+              details.
             </p>
           </CardHeader>
 
@@ -46,8 +52,12 @@ export default function RegistrationStatusPage() {
                   Review in Progress
                 </h3>
                 <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                  Our admin team is currently reviewing your information.  
-                  You will receive an update within <span className="font-medium text-[#DC3173]">24–48 hours</span> once the verification process is complete.
+                  Our admin team is currently reviewing your information. You
+                  will receive an update within{" "}
+                  <span className="font-medium text-[#DC3173]">
+                    24–48 hours
+                  </span>{" "}
+                  once the verification process is complete.
                 </p>
               </div>
             </motion.div>
@@ -67,8 +77,11 @@ export default function RegistrationStatusPage() {
                 </h3>
                 <p className="text-sm text-gray-600 mt-1 leading-relaxed">
                   Once your details are verified, you will become a{" "}
-                  <span className="font-semibold text-green-600">Verified Partner</span>  
-                  and gain access to the vendor dashboard, store management, and payouts.
+                  <span className="font-semibold text-green-600">
+                    Verified Partner
+                  </span>
+                  and gain access to the vendor dashboard, store management, and
+                  payouts.
                 </p>
               </div>
             </motion.div>
@@ -82,13 +95,13 @@ export default function RegistrationStatusPage() {
               <Button
                 className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
                 onClick={() => router.push("/")}
-                
               >
                 Go to Dashboard
               </Button>
 
               <p className="text-xs text-gray-500 mt-3">
-                You can check your application status anytime in your vendor dashboard.
+                You can check your application status anytime in your vendor
+                dashboard.
               </p>
             </motion.div>
           </CardContent>

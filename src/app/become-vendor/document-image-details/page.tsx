@@ -2,23 +2,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import  { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  UploadCloud,
-  FileText,
-  ImageIcon,
-  File,
   CheckCircle2,
   Eye,
+  File,
+  FileText,
+  ImageIcon,
+  UploadCloud,
 } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
-
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
-
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { getCookie } from "@/src/utils/cookies";
+import { updateData } from "@/src/utils/requests";
+import { useRouter, useSearchParams } from "next/navigation";
 
 /**
  * Upload mock/demo page
@@ -33,14 +38,21 @@ type DocKey =
   | "storePhoto"
   | "menuUpload";
 
-const DOCUMENTS: { key: DocKey; label: string; prefersImagePreview: boolean }[] =
-  [
-    { key: "businessLicenseDoc", label: "Business License", prefersImagePreview: false }, // PDF/name
-    { key: "taxDoc", label: "Tax Document", prefersImagePreview: false }, // PDF/name
-    { key: "idProof", label: "ID Proof", prefersImagePreview: true }, // image preview ok
-    { key: "storePhoto", label: "Store Photo", prefersImagePreview: true },
-    { key: "menuUpload", label: "Menu / Brochure", prefersImagePreview: true },
-  ];
+const DOCUMENTS: {
+  key: DocKey;
+  label: string;
+  prefersImagePreview: boolean;
+}[] = [
+  {
+    key: "businessLicenseDoc",
+    label: "Business License",
+    prefersImagePreview: false,
+  }, // PDF/name
+  { key: "taxDoc", label: "Tax Document", prefersImagePreview: false }, // PDF/name
+  { key: "idProof", label: "ID Proof", prefersImagePreview: true }, // image preview ok
+  { key: "storePhoto", label: "Store Photo", prefersImagePreview: true },
+  { key: "menuUpload", label: "Menu / Brochure", prefersImagePreview: true },
+];
 
 type FilePreview = {
   file: File;
@@ -49,6 +61,8 @@ type FilePreview = {
 };
 
 export default function UploadDemoPage() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   // store one preview per doc key
   const [previews, setPreviews] = useState<Record<DocKey, FilePreview | null>>({
     businessLicenseDoc: null,
@@ -63,7 +77,7 @@ export default function UploadDemoPage() {
 
   // modal open state (auto-opened when all files selected)
   const [showModal, setShowModal] = useState(false);
-const router = useRouter();
+  const router = useRouter();
   // whether confetti should be running (true until user clicks Continue)
   const [confettiRunning, setConfettiRunning] = useState(false);
 
@@ -105,7 +119,6 @@ const router = useRouter();
   useEffect(() => {
     const allSelected = DOCUMENTS.every((d) => !!previews[d.key]);
     if (allSelected) {
-      setShowModal(true);
       setConfettiRunning(true);
     }
   }, [previews]);
@@ -189,7 +202,8 @@ const router = useRouter();
       animate();
     } else {
       // stop animation and clear particles
-      if (confettiAnimRef.current) cancelAnimationFrame(confettiAnimRef.current);
+      if (confettiAnimRef.current)
+        cancelAnimationFrame(confettiAnimRef.current);
       confettiAnimRef.current = null;
       confettiParticlesRef.current = [];
       const c = ctx.canvas;
@@ -198,7 +212,8 @@ const router = useRouter();
 
     return () => {
       window.removeEventListener("resize", resize);
-      if (confettiAnimRef.current) cancelAnimationFrame(confettiAnimRef.current);
+      if (confettiAnimRef.current)
+        cancelAnimationFrame(confettiAnimRef.current);
     };
     // intentionally watching confettiRunning only
   }, [confettiRunning]);
@@ -217,8 +232,33 @@ const router = useRouter();
   const handleContinue = () => {
     setConfettiRunning(false);
     setShowModal(false);
-    router.push("/become-vendor/registration-status");
+    router.push("/become-vendor/registration-status?id=" + id);
     // here you would call your backend to finalize registration
+  };
+
+  const completeReg = async () => {
+    try {
+      const uploadPromises = Object.keys(previews)
+        .filter((key) => previews[key as keyof typeof previews]?.isImage)
+        .map((key) => {
+          const fileData = previews[key as keyof typeof previews];
+          const formData = new FormData();
+          formData.append("file", fileData?.file as Blob);
+          formData.append("data", JSON.stringify({ docImageTitle: key }));
+
+          return updateData(`/vendors/${id}/docImage`, formData, {
+            headers: {
+              authorization: getCookie("accessToken"),
+              "Content-Type": "multipart/form-data",
+            },
+          });
+        });
+
+      await Promise.all(uploadPromises);
+      setShowModal(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // small helper to infer file display text
@@ -242,7 +282,8 @@ const router = useRouter();
                   Upload Your Documents
                 </CardTitle>
                 <p className="mt-2 text-sm text-white/90 max-w-2xl leading-relaxed">
-                  Select each required document. Once all 5 are selected, you will see the registration success modal.
+                  Select each required document. Once all 5 are selected, you
+                  will see the registration success modal.
                 </p>
               </div>
             </div>
@@ -260,7 +301,9 @@ const router = useRouter();
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.06 }}
                     className={`flex items-center justify-between p-4 border rounded-xl shadow-sm hover:shadow-md transition-all ${
-                      isSelected ? "border-[#DC3173]/30 bg-[#FFF7FB]" : "bg-white"
+                      isSelected
+                        ? "border-[#DC3173]/30 bg-[#FFF7FB]"
+                        : "bg-white"
                     }`}
                   >
                     <div className="flex items-center gap-4">
@@ -282,7 +325,9 @@ const router = useRouter();
                         </div>
                         <div className="text-xs text-gray-500 mt-1">
                           {preview ? (
-                            d.prefersImagePreview && preview.isImage && preview.url ? (
+                            d.prefersImagePreview &&
+                            preview.isImage &&
+                            preview.url ? (
                               <div className="flex items-center gap-2">
                                 <Image
                                   src={preview.url}
@@ -292,12 +337,16 @@ const router = useRouter();
                                   className="object-cover rounded-md border"
                                   unoptimized
                                 />
-                                <div className="truncate">{preview.file.name}</div>
+                                <div className="truncate">
+                                  {preview.file.name}
+                                </div>
                               </div>
                             ) : (
                               <div className="flex items-center gap-2">
                                 <File className="w-4 h-4 text-gray-500" />
-                                <div className="truncate">{preview.file.name}</div>
+                                <div className="truncate">
+                                  {preview.file.name}
+                                </div>
                               </div>
                             )
                           ) : (
@@ -310,12 +359,17 @@ const router = useRouter();
                     <div className="flex items-center gap-3">
                       {/* hidden native input */}
                       <input
-                        ref={(el) => { inputsRef.current[d.key] = el; }}
+                        ref={(el) => {
+                          inputsRef.current[d.key] = el;
+                        }}
                         type="file"
                         accept="image/*,application/pdf"
                         className="hidden"
                         onChange={(e) =>
-                          handleFileChange(d.key, e.target.files ? e.target.files[0] : null)
+                          handleFileChange(
+                            d.key,
+                            e.target.files ? e.target.files[0] : null
+                          )
                         }
                       />
 
@@ -357,8 +411,18 @@ const router = useRouter();
 
             <div className="pt-6">
               <div className="text-sm text-gray-500">
-                Tip: you can preview images and view filenames for selected PDFs. This is a demo UI — upload handling can be hooked later.
+                Tip: you can preview images and view filenames for selected
+                PDFs. This is a demo UI — upload handling can be hooked later.
               </div>
+            </div>
+            <div className="pt-4">
+              <Button
+                disabled={!DOCUMENTS.every((d) => !!previews[d.key])}
+                onClick={completeReg}
+                className="bg-[#DC3173] hover:bg-[#b72a63] text-white px-6 py-3 rounded-xl shadow-lg"
+              >
+                Complete Registration
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -420,7 +484,6 @@ const router = useRouter();
                       setConfettiRunning(false);
                       setShowModal(false);
                       router.push("/");
-                      
                     }}
                     className="px-4 py-3 rounded-xl border border-gray-200 text-sm"
                   >

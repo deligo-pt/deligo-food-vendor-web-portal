@@ -2,29 +2,78 @@
 
 import { useForm } from "react-hook-form";
 
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { User, Mail, Phone, } from "lucide-react";
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Input } from "@/src/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
 import { Button } from "@/src/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Input } from "@/src/components/ui/input";
+import { TResponse } from "@/src/types";
+import { getCookie } from "@/src/utils/cookies";
+import { updateData } from "@/src/utils/requests";
+import { personalDetailsValidation } from "@/src/validations/become-vendor/personal-details.validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
+import { Mail, Phone, User } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 
 type PersonalForm = {
   firstName: string;
   lastName: string;
   email: string;
+  prefixPhoneNumber: string;
   phoneNumber: string;
-  address: string;
 };
 
 export default function PersonalDetailsPage() {
-  const { register, handleSubmit } = useForm<PersonalForm>();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const form = useForm<PersonalForm>({
+    resolver: zodResolver(personalDetailsValidation),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      prefixPhoneNumber: "",
+      phoneNumber: "",
+    },
+  });
   const router = useRouter();
 
-  const onSubmit = (data: PersonalForm) => {
-    console.log("Personal details:", data);
-    router.push("/become-vendor/business-details");
+  const onSubmit = async (data: PersonalForm) => {
+    try {
+      const result = (await updateData(
+        "/vendors/" + id,
+        {
+          name: { firstName: data.firstName, lastName: data.lastName },
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+        },
+        {
+          headers: { authorization: getCookie("accessToken") },
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      )) as unknown as TResponse<any>;
+
+      if (result.success) {
+        router.push("/become-vendor/business-details?id=" + id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -56,71 +105,163 @@ export default function PersonalDetailsPage() {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              {/* First Name */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  <User className="text-gray-400 w-5 h-5" />
-                </div>
-                <Input
-                  {...register("firstName")}
-                  placeholder="First Name"
-                  className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
-                  required
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-5"
+              >
+                {/* First Name */}
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="relative">
+                        <FormLabel className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                          <User className="text-gray-400 w-5 h-5" />
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="First Name"
+                            className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
+                            {...field}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              {/* Last Name */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  <User className="text-gray-400 w-5 h-5" />
-                </div>
-                <Input
-                  {...register("lastName")}
-                  placeholder="Last Name"
-                  className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
-                  required
+                {/* Last Name */}
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="relative">
+                        <FormLabel className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                          <User className="text-gray-400 w-5 h-5" />
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Last Name"
+                            className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
+                            {...field}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              {/* Email */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  <Mail className="text-gray-400 w-5 h-5" />
-                </div>
-                <Input
-                  {...register("email")}
-                  type="email"
-                  placeholder="Email Address"
-                  className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
-                  required
+                {/* Email */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="relative">
+                        <FormLabel className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                          <Mail className="text-gray-400 w-5 h-5" />
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="Email Address"
+                            className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
+                            {...field}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              {/* Phone */}
-              <div className="relative">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  <Phone className="text-gray-400 w-5 h-5" />
+                {/* Phone */}
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-3 top-0 flex items-center pointer-events-none h-9">
+                    <Phone className="text-gray-400 w-5 h-5" />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="prefixPhoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="absolute left-9 z-10">
+                            <PhoneInput
+                              {...field}
+                              defaultCountry="pt"
+                              countrySelectorStyleProps={{
+                                buttonStyle: {
+                                  border: "none",
+                                  height: "36px",
+                                  backgroundColor: "transparent",
+                                },
+                              }}
+                              inputStyle={{
+                                marginTop: "1px",
+                                border: "none",
+                                height: "34px",
+                                width: "48px",
+                                borderRadius: "0px",
+                                backgroundColor: "#ccc",
+                                zIndex: "-99",
+                                position: "relative",
+                              }}
+                              inputProps={{
+                                placeholder: "Phone Number",
+                                disabled: true,
+                              }}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="tel"
+                            className="pl-32 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl w-full"
+                            {...field}
+                            onChange={(e) => {
+                              const onlyDigits = e.target.value.replace(
+                                /\D/g,
+                                ""
+                              );
+                              field.onChange(onlyDigits);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-                <Input
-                  {...register("phoneNumber")}
-                  type="tel"
-                  placeholder="Phone Number"
-                  className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
-                  required
-                />
-              </div>
 
-              {/* Submit Button */}
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Button
-                  type="submit"
-                  className="w-full font-semibold py-3 rounded-xl bg-gradient-to-r from-[#DC3173] to-[#a72b5c] text-white shadow-lg shadow-pink-200 hover:brightness-110 transition-all duration-300"
+                {/* Submit Button */}
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                 >
-                  Save & Continue
-                </Button>
-              </motion.div>
-            </form>
+                  <Button
+                    type="submit"
+                    className="w-full font-semibold py-3 rounded-xl bg-gradient-to-r from-[#DC3173] to-[#a72b5c] text-white shadow-lg shadow-pink-200 hover:brightness-110 transition-all duration-300"
+                  >
+                    Save & Continue
+                  </Button>
+                </motion.div>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </motion.div>
