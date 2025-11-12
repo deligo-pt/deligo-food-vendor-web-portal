@@ -1,9 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CreditCard, FileText, Globe, Save, User } from "lucide-react";
+import {
+  ArrowLeftCircle,
+  CreditCard,
+  FileText,
+  Globe,
+  Save,
+  User,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -21,10 +29,13 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { TResponse } from "@/src/types";
 import { getCookie } from "@/src/utils/cookies";
-import { updateData } from "@/src/utils/requests";
+import { fetchData, updateData } from "@/src/utils/requests";
 import { bankDetailsValidation } from "@/src/validations/become-vendor/bank-details.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 type FormValues = {
   bankName: string;
@@ -34,8 +45,6 @@ type FormValues = {
 };
 
 export default function BankDetailsPage() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
   const form = useForm<FormValues>({
     resolver: zodResolver(bankDetailsValidation),
     defaultValues: {
@@ -48,37 +57,98 @@ export default function BankDetailsPage() {
   const router = useRouter();
 
   const onSubmit = async (data: FormValues) => {
+    const toastId = toast.loading("Updating...");
     try {
+      const accessToken = getCookie("accessToken");
+      const decoded = jwtDecode(accessToken || "") as { id: string };
       const result = (await updateData(
-        "/vendors/" + id,
+        "/vendors/" + decoded?.id,
         {
           bankDetails: data,
         },
         {
-          headers: { authorization: getCookie("accessToken") },
+          headers: { authorization: accessToken },
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       )) as unknown as TResponse<any>;
 
       if (result.success) {
-        router.push("/become-vendor/document-image-details?id=" + id);
+        toast.success("Bank details updated successfully!", {
+          id: toastId,
+        });
+        router.push("/become-vendor/document-image-details");
+        return;
       }
-    } catch (error) {
+      toast.error(result.message, { id: toastId });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Bank details update failed",
+        { id: toastId }
+      );
       console.log(error);
     }
-    // await new Promise((r) => setTimeout(r, 700));
+    await new Promise((r) => setTimeout(r, 700));
   };
+
+  useEffect(() => {
+    const accessToken = getCookie("accessToken");
+    if (accessToken) {
+      const decoded = jwtDecode(accessToken || "") as {
+        email: string;
+        id: string;
+      };
+      if (decoded?.email) {
+        const fetchUserData = async (id: string, token: string) => {
+          try {
+            const result = (await fetchData(`/vendors/${id}`, {
+              headers: {
+                authorization: token,
+              },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            })) as unknown as TResponse<any>;
+
+            if (result.success) {
+              const data = result.data;
+
+              form.setValue("bankName", data.bankDetails.bankName || "");
+              form.setValue(
+                "accountHolderName",
+                data.bankDetails.accountHolderName || ""
+              );
+              form.setValue("iban", data.bankDetails.iban || "");
+              form.setValue("swiftCode", data.bankDetails.swiftCode || "");
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        };
+
+        fetchUserData(decoded.id, accessToken);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45 }}
-      className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-linear-to-b from-white via-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8"
     >
       <div className="max-w-3xl mx-auto">
         <Card className="rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
-          <CardHeader className="bg-gradient-to-r from-[#DC3173] to-pink-600 text-white p-6">
+          <div className="relative p-0">
+            <Button
+              onClick={() => router.push("/become-vendor/business-location")}
+              variant="link"
+              className="inline-flex items-center px-4 text-sm gap-2 text-[#DC3173] p-0 h-4 absolute -top-2 z-10 cursor-pointer"
+            >
+              <ArrowLeftCircle /> Go Back
+            </Button>
+          </div>
+          <CardHeader className="bg-linear-to-r from-[#DC3173] to-pink-600 text-white p-6">
             <div className="flex items-center gap-4">
               <div className="rounded-xl bg-white/25 p-3 shadow-md">
                 <CreditCard className="w-7 h-7 text-white" />

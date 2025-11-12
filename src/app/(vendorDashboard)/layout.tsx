@@ -1,16 +1,19 @@
+import Sidebar from "@/src/components/vendorDashboardSidebar/vendorDashboardSidebar";
+import Topbar from "@/src/components/vendorTopbar/Topbar";
 import type { Metadata } from "next";
-import Sidebar from "@/components/vendorDashboardSidebar/vendorDashboardSidebar";
-import Topbar from "@/components/vendorTopbar/Topbar";
 
 export const metadata: Metadata = {
   title: "Vendor Dashboard",
   description: "Deligo vendor dashboard",
 };
 
-export default function VendorLayout({ children }: { children: React.ReactNode }) {
+export default function VendorLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
-
       {/* Mobile view: Sidebar on top, Topbar below */}
       <div className="flex flex-col md:hidden w-full">
         <div className="w-full">

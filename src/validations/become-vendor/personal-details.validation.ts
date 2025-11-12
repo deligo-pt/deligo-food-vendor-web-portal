@@ -1,5 +1,6 @@
-// import { isValidPhoneNumber } from "libphonenumber-js";
-import { phone } from "phone";
+import parsePhoneNumberFromString, {
+  isValidPhoneNumber,
+} from "libphonenumber-js";
 import { z } from "zod";
 
 export const personalDetailsValidation = z
@@ -28,8 +29,9 @@ export const personalDetailsValidation = z
   .refine(
     (data) => {
       const full = data.prefixPhoneNumber + data.phoneNumber;
-      const result = phone(full, { country: "" });
-      return result.isValid === true;
+      const result = isValidPhoneNumber(full);
+
+      return result;
     },
     {
       message: "Invalid phone number for the selected country",
@@ -37,8 +39,10 @@ export const personalDetailsValidation = z
     }
   )
   .transform((data) => {
+    const full = data.prefixPhoneNumber + data.phoneNumber;
+    const phone = parsePhoneNumberFromString(full);
     return {
       ...data,
-      phoneNumber: data.prefixPhoneNumber + data.phoneNumber,
+      phoneNumber: `+${phone?.countryCallingCode}${phone?.nationalNumber}`,
     };
   });

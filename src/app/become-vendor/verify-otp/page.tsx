@@ -14,9 +14,9 @@ import { TResponse } from "@/src/types";
 import { setCookie } from "@/src/utils/cookies";
 import { postData } from "@/src/utils/requests";
 import { motion } from "framer-motion";
-import { jwtDecode } from "jwt-decode";
 import { Clock, RefreshCcw } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 export default function VerifyOtpPage() {
   const router = useRouter();
@@ -56,6 +56,7 @@ export default function VerifyOtpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const toastId = toast.loading("Verifying OTP...");
     const finalOtp = otp.join("");
     if (finalOtp.length === 4) {
       try {
@@ -69,12 +70,21 @@ export default function VerifyOtpPage() {
         )) as unknown as TResponse<any>;
 
         if (result.success) {
-          const decoded = jwtDecode(result.data.accessToken) as { id: string };
           setCookie("accessToken", result.data.accessToken, 7);
-          setCookie("refreshToken", result.data.refreshToken, 7);
-          router.push("/become-vendor/personal-details?id=" + decoded.id);
+          setCookie("refreshToken", result.data.refreshToken, 365);
+          toast.success("OTP verified successfully!", { id: toastId });
+          router.push("/become-vendor/personal-details");
+          return;
         }
-      } catch (error) {
+        toast.error(result.message, { id: toastId });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data?.message || "OTP verification failed",
+          {
+            id: toastId,
+          }
+        );
         console.log(error);
       }
     } else {
@@ -83,7 +93,7 @@ export default function VerifyOtpPage() {
   };
 
   const resendOtp = async () => {
-    setTimer(300);
+    const toastId = toast.loading("Resending OTP...");
     try {
       const result = (await postData(
         "/auth/resend-otp",
@@ -96,8 +106,15 @@ export default function VerifyOtpPage() {
       if (result.success) {
         setTimer(300);
         console.log("OTP resent!");
+        toast.success("OTP resent successfully!", { id: toastId });
+        return;
       }
-    } catch (error) {
+      toast.error(result.message, { id: toastId });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "OTP resend failed", {
+        id: toastId,
+      });
       console.log(error);
     }
   };
@@ -112,7 +129,7 @@ export default function VerifyOtpPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 px-4">
+    <div className="flex justify-center items-center min-h-screen bg-linear-to-br from-gray-100 to-gray-200 px-4">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -147,20 +164,11 @@ export default function VerifyOtpPage() {
                       ref={(el) => {
                         inputRefs.current[index] = el;
                       }}
-                      className={`
-          w-14 h-14 text-center text-2xl font-bold rounded-xl
-          border border-gray-300 shadow-sm bg-white
-          focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173]
-          group-hover:border-[#DC3173]/50
-          transition-all duration-300
-        `}
+                      className="w-14 h-14 text-center text-2xl font-bold rounded-xl border border-gray-300 shadow-sm bg-white focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173] group-hover:border-[#DC3173]/50 transition-all duration-300"
                     />
 
                     {/* Glowing animated ring when focused */}
-                    <span
-                      className="absolute inset-0 rounded-xl pointer-events-none
-          group-focus-within:shadow-[0_0_12px_#DC3173aa] transition-all duration-300"
-                    ></span>
+                    <span className="absolute inset-0 rounded-xl pointer-events-none group-focus-within:shadow-[0_0_12px_#DC3173aa] transition-all duration-300"></span>
                   </div>
                 ))}
               </div>

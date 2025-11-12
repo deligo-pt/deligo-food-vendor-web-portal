@@ -1,10 +1,28 @@
 // VendorLoginPage.tsx
 "use client";
 
-import { useForm } from "react-hook-form";
-import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/src/components/ui/input";
+import { TResponse } from "@/src/types";
+import { setCookie } from "@/src/utils/cookies";
+import { postData } from "@/src/utils/requests";
+import { loginValidation } from "@/src/validations/auth/auth.validation";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { jwtDecode } from "jwt-decode";
+import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 type FormData = {
   email: string;
@@ -12,16 +30,60 @@ type FormData = {
 };
 
 export default function VendorLoginPage() {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+  const form = useForm<FormData>({
+    resolver: zodResolver(loginValidation),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-  const onSubmit = (data: FormData) => {
-    console.log("Login data:", data);
-    // TODO: Add actual login API call
+  const onSubmit = async (data: FormData) => {
+    const toastId = toast.loading("Logging in...");
+    try {
+      const result = (await postData(
+        "/auth/login",
+        data
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      )) as unknown as TResponse<any>;
+
+      if (result?.success) {
+        const decoded = jwtDecode(result.data.accessToken) as {
+          role: string;
+          status: string;
+        };
+        if (decoded.role === "VENDOR") {
+          setCookie("accessToken", result.data.accessToken, 7);
+          setCookie("refreshToken", result.data.refreshToken, 365);
+          toast.success("Login successful!", { id: toastId });
+          switch (decoded.status) {
+            case "PENDING":
+            case "SUBMITTED":
+            case "REJECTED":
+              router.push("/become-vendor/registration-status");
+              return;
+            case "APPROVED":
+              router.push("/vendor/dashboard");
+              return;
+          }
+        }
+        toast.error("You are not a vendor", { id: toastId });
+        return;
+      }
+      toast.error(result.message, { id: toastId });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Login failed", {
+        id: toastId,
+      });
+      console.error("Error logging in:", error);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FF7EB3]/20 to-[#DC3173]/20 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#FF7EB3]/20 to-[#DC3173]/20 p-6">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -32,74 +94,98 @@ export default function VendorLoginPage() {
           Vendor Login
         </h1>
         <p className="text-gray-300 text-center mb-8">
-          Access your vendor dashboard and manage your products, orders, and earnings.
+          Access your vendor dashboard and manage your products, orders, and
+          earnings.
         </p>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Email */}
-          <div>
-            <label className="text-gray-300 font-medium mb-1 block">Email</label>
-            <input
-              type="email"
-              {...register("email", { required: "Email is required" })}
-              placeholder="yourname@deligo.pt"
-              className="w-full px-4 py-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-300 font-medium mb-1 block">
+                    Email
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="yourname@deligo.pt"
+                      className="w-full px-4 py-3 rounded-xl bg-gray-800 border border-transparent text-white placeholder:text-gray-400 placeholder:text-base focus:border-[#DC3173]! focus:ring-0 focus:ring-transparent! focus:outline-none transition h-12"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.email && <p className="text-red-500 mt-1 text-sm">{errors.email.message}</p>}
-          </div>
 
-          {/* Password */}
-       <div className="relative">
-  <label className="text-gray-300 font-medium mb-1 block">Password</label>
-  <div className="relative flex items-center">
-    <input
-      type={showPassword ? "text" : "password"}
-      {...register("password", { required: "Password is required" })}
-      placeholder="********"
-      className="w-full px-4 py-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition pr-12"
-    />
-    <button
-      type="button"
-      className="absolute right-3 flex items-center justify-center h-full text-gray-400 hover:text-pink-400 transition"
-      onClick={() => setShowPassword(!showPassword)}
-    >
-      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-    </button>
-  </div>
-  {errors.password && (
-    <p className="text-red-500 mt-1 text-sm">{errors.password.message}</p>
-  )}
-</div>
+            {/* Password */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-300 font-medium mb-1 block">
+                    Password
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative flex items-center">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="********"
+                        className="w-full px-4 py-3 rounded-xl bg-gray-800 border border-transparent text-white placeholder:text-gray-400 placeholder:text-base focus:border-[#DC3173]! focus:ring-0 focus:ring-[#DC3173]/10! focus:outline-none transition h-12 pr-12"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 flex items-center justify-center h-full text-gray-400 hover:text-pink-400 transition"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-
-
-
-
-
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-3 rounded-full bg-gradient-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-lg transition"
-          >
-            Login
-          </button>
-        </form>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full py-3 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-lg transition"
+            >
+              Login
+            </button>
+          </form>
+        </Form>
 
         {/* Forgot Password */}
         <p className="text-gray-400 text-center mt-4">
           Forgot your password?{" "}
-          <a href="/vendor/forgot-password" className="text-pink-400 font-medium hover:underline">
+          <Link
+            href="/forgot-password"
+            className="text-pink-400 font-medium hover:underline"
+          >
             Reset here
-          </a>
+          </Link>
         </p>
 
         {/* Signup CTA */}
         <p className="text-gray-400 text-center mt-6">
           New to Deligo?{" "}
-          <a href="/vendor/register" className="text-pink-400 font-medium hover:underline">
+          <Link
+            href="/become-vendor"
+            className="text-pink-400 font-medium hover:underline"
+          >
             Create an account
-          </a>
+          </Link>
         </p>
       </motion.div>
     </div>

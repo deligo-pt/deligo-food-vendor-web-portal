@@ -4,6 +4,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowLeftCircle,
   CheckCircle2,
   Eye,
   File,
@@ -21,9 +22,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
+import { TResponse } from "@/src/types";
+import { TVendor } from "@/src/types/vendor.type";
 import { getCookie } from "@/src/utils/cookies";
-import { updateData } from "@/src/utils/requests";
-import { useRouter, useSearchParams } from "next/navigation";
+import { fetchData, updateData } from "@/src/utils/requests";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 /**
  * Upload mock/demo page
@@ -55,14 +60,12 @@ const DOCUMENTS: {
 ];
 
 type FilePreview = {
-  file: File;
-  url: string | null; // object URL for image preview or null for non-previewables
+  file: File | null;
+  url: string | null;
   isImage: boolean;
 };
 
-export default function UploadDemoPage() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+export default function UploadDocumentPage() {
   // store one preview per doc key
   const [previews, setPreviews] = useState<Record<DocKey, FilePreview | null>>({
     businessLicenseDoc: null,
@@ -103,6 +106,10 @@ export default function UploadDemoPage() {
     if (prev && prev.url) URL.revokeObjectURL(prev.url);
 
     setPreviews((p) => ({ ...p, [key]: { file: f, url, isImage } }));
+
+    if (inputsRef.current[key]) {
+      inputsRef.current[key]!.value = "";
+    }
   };
 
   // Remove selected file for a doc (and revoke URL)
@@ -110,18 +117,22 @@ export default function UploadDemoPage() {
     const prev = previews[key];
     if (prev && prev.url) URL.revokeObjectURL(prev.url);
     setPreviews((p) => ({ ...p, [key]: null }));
-    // ensure modal closed if it was open
+
+    if (inputsRef.current[key]) {
+      inputsRef.current[key]!.value = "";
+    }
+
     setShowModal(false);
     setConfettiRunning(false);
   };
 
   // Effect: watch previews, when all five are non-null -> open modal + start confetti
-  useEffect(() => {
-    const allSelected = DOCUMENTS.every((d) => !!previews[d.key]);
-    if (allSelected) {
-      setConfettiRunning(true);
-    }
-  }, [previews]);
+  // useEffect(() => {
+  //   const allSelected = DOCUMENTS.every((d) => !!previews[d.key]);
+  //   if (allSelected) {
+  //     setConfettiRunning(true);
+  //   }
+  // }, [previews]);
 
   // CONFETTI: simple canvas confetti implementation
   useEffect(() => {
@@ -228,51 +239,138 @@ export default function UploadDemoPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const fetchExistingDocs = async () => {
+      try {
+        const accessToken = getCookie("accessToken");
+        const decoded = jwtDecode(accessToken || "") as { id: string };
+
+        const result = (await fetchData(`/vendors/${decoded.id}`, {
+          headers: { authorization: accessToken },
+        })) as TResponse<TVendor>;
+
+        if (result?.success) {
+          const docs = result?.data?.documents || {};
+
+          const newPreviews: Record<DocKey, FilePreview | null> = {
+            businessLicenseDoc: null,
+            taxDoc: null,
+            idProof: null,
+            storePhoto: null,
+            menuUpload: null,
+          };
+
+          (Object.keys(docs) as DocKey[]).forEach((key) => {
+            const url = docs[key];
+            if (url) {
+              newPreviews[key] = {
+                file: null,
+                url: url || "",
+                isImage: /\.(jpg|jpeg|png|gif|webp)$/i.test(url),
+              };
+            }
+          });
+          setPreviews(newPreviews);
+        }
+      } catch (error) {
+        console.log("Failed to fetch existing docs", error);
+      }
+    };
+
+    fetchExistingDocs();
+  }, []);
+
   // Continue button handler: stop confetti and close modal (later you can trigger API)
-  const handleContinue = () => {
-    setConfettiRunning(false);
-    setShowModal(false);
-    router.push("/become-vendor/registration-status?id=" + id);
-    // here you would call your backend to finalize registration
+  const handleContinue = async () => {
+    const toastId = toast.loading("Continuing...");
+    try {
+      const accessToken = getCookie("accessToken");
+      const decoded = jwtDecode(accessToken || "") as { id: string };
+      const result = (await updateData(
+        `/auth/${decoded.id}/submitForApproval`,
+        {},
+        {
+          headers: {
+            authorization: accessToken,
+          },
+        }
+      )) as unknown as TResponse<any>;
+      if (result.success) {
+        toast.success("Request submitted successfully!", {
+          id: toastId,
+        });
+        setConfettiRunning(false);
+        setShowModal(false);
+        router.push("/become-vendor/registration-status");
+        return;
+      }
+      toast.error(result.message, { id: toastId });
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Request submission failed",
+        { id: toastId }
+      );
+      console.log(error);
+    }
   };
 
   const completeReg = async () => {
+    const toastId = toast.loading("Uploading...");
     try {
+      const accessToken = getCookie("accessToken");
+      const decoded = jwtDecode(accessToken || "") as { id: string };
+
       const uploadPromises = Object.keys(previews)
-        .filter((key) => previews[key as keyof typeof previews]?.isImage)
+        .filter((key) => previews[key as keyof typeof previews]?.file)
         .map((key) => {
           const fileData = previews[key as keyof typeof previews];
           const formData = new FormData();
           formData.append("file", fileData?.file as Blob);
           formData.append("data", JSON.stringify({ docImageTitle: key }));
 
-          return updateData(`/vendors/${id}/docImage`, formData, {
+          return updateData(`/vendors/${decoded?.id}/docImage`, formData, {
             headers: {
-              authorization: getCookie("accessToken"),
+              authorization: accessToken,
               "Content-Type": "multipart/form-data",
             },
           });
         });
 
       await Promise.all(uploadPromises);
+      toast.success("Registration successful!", { id: toastId });
       setShowModal(true);
-    } catch (error) {
+      setConfettiRunning(true);
+    } catch (error: any) {
+      toast.error(error.message, { id: toastId });
       console.log(error);
     }
   };
 
-  // small helper to infer file display text
-  const fileDisplay = (p: FilePreview | null) => {
-    if (!p) return "No file selected";
-    if (p.isImage && p.url) return p.file.name;
-    return p.file.name;
-  };
+  function getActualFileName(url: string): string {
+    try {
+      const decoded = decodeURIComponent(url);
+      const lastSegment = decoded.split("/").pop() || "";
+      const match = lastSegment.match(/file-(.+)$/);
+      return match ? match[1] : lastSegment;
+    } catch {
+      return "";
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 py-12 px-4">
+    <div className="min-h-screen bg-linear-to-br from-white via-gray-50 to-gray-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <Card className="rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
-          <CardHeader className="bg-gradient-to-r from-[#DC3173] to-pink-600 p-6 text-white">
+        <Card className="rounded-2xl shadow-2xl overflow-hidden border border-gray-200 relative">
+          <div className="relative p-0">
+            <Button
+              onClick={() => router.push("/become-vendor/bank-details")}
+              variant="link"
+              className="inline-flex items-center px-4 text-sm gap-2 text-[#DC3173] p-0 h-4 absolute -top-2 z-10 cursor-pointer"
+            >
+              <ArrowLeftCircle /> Go Back
+            </Button>
+          </div>
+          <CardHeader className="bg-linear-to-r from-[#DC3173] to-pink-600 p-6 text-white">
             <div className="flex items-center gap-4">
               <div className="rounded-xl bg-white/20 p-3 shadow-md">
                 <UploadCloud className="w-7 h-7 text-white" />
@@ -331,21 +429,26 @@ export default function UploadDemoPage() {
                               <div className="flex items-center gap-2">
                                 <Image
                                   src={preview.url}
-                                  alt={preview.file.name}
+                                  alt={
+                                    preview.file?.name ||
+                                    getActualFileName(preview.url || "")
+                                  }
                                   width={56}
                                   height={40}
                                   className="object-cover rounded-md border"
                                   unoptimized
                                 />
                                 <div className="truncate">
-                                  {preview.file.name}
+                                  {preview.file?.name ||
+                                    getActualFileName(preview.url || "")}
                                 </div>
                               </div>
                             ) : (
                               <div className="flex items-center gap-2">
                                 <File className="w-4 h-4 text-gray-500" />
                                 <div className="truncate">
-                                  {preview.file.name}
+                                  {preview.file?.name ||
+                                    getActualFileName(preview.url || "")}
                                 </div>
                               </div>
                             )
@@ -377,10 +480,9 @@ export default function UploadDemoPage() {
                         <>
                           <button
                             onClick={() =>
-                              // preview in new tab if image or show filename
-                              preview.isImage && preview.url
+                              preview.url
                                 ? window.open(preview.url, "_blank")
-                                : alert(preview.file.name)
+                                : alert(preview.file?.name)
                             }
                             className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm border border-gray-200 hover:shadow"
                           >
@@ -446,7 +548,7 @@ export default function UploadDemoPage() {
             <canvas
               ref={canvasRef}
               className="fixed inset-0 pointer-events-none z-50"
-              style={{ width: "100%", height: "100%" }}
+              style={{ width: "100vw", height: "100vh" }}
             />
 
             <motion.div

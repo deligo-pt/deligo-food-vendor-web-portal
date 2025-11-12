@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import StepperFlow from "@/src/components/Stepper/Stepper";
 import { Button } from "@/src/components/ui/button";
@@ -29,6 +29,7 @@ import { Eye, EyeOff, Lock, Mail, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type FormValues = {
   email: string;
@@ -49,6 +50,7 @@ export default function BecomeVendorPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: FormValues) => {
+    const toastId = toast.loading("Registering...");
     try {
       const result = (await postData(
         "/auth/register/create-vendor",
@@ -57,21 +59,28 @@ export default function BecomeVendorPage() {
       )) as unknown as TResponse<any>;
 
       if (result.success) {
-        router.push("/become-vendor/verify-otp?email=" + data.email);
+        toast.success("Registration successful!", { id: toastId });
+        router.push(`/become-vendor/verify-otp?email=${data.email}`);
+        return;
       }
-    } catch (error) {
+      toast.error(result.message, { id: toastId });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Registration failed", {
+        id: toastId,
+      });
       console.log(error);
     }
   };
 
-  const isFormFilled = !!(
-    form.getValues("email") &&
-    form.getValues("password") &&
-    form.getValues("terms")
-  );
+  const [watchEmail, watchPassword, watchTerms] = useWatch({
+    control: form.control,
+    name: ["email", "password", "terms"],
+  });
+  const isFormFilled = !!watchEmail && !!watchPassword && watchTerms;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 flex flex-col justify-center items-center px-4 py-10">
+    <div className="min-h-screen bg-linear-to-br from-pink-50 via-white to-purple-50 flex flex-col justify-center items-center px-4 py-10">
       {/* 🪜 Stepper Section */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}
@@ -196,11 +205,9 @@ export default function BecomeVendorPage() {
                             id="terms"
                             className="w-4 h-4 rounded-xs data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173] border-[#DC3173] cursor-pointer"
                             {...field}
-                            //set value to boolean
                             value={field.value ? "true" : "false"}
                             onCheckedChange={(checked) => {
                               field.onChange(checked);
-                              // setIsAgreed(checked === true);
                             }}
                           />
                           <label
@@ -239,7 +246,7 @@ export default function BecomeVendorPage() {
                     disabled={!isFormFilled}
                     className={`w-full font-semibold py-3 rounded-xl shadow-xl transition-all duration-300 ${
                       isFormFilled
-                        ? "bg-gradient-to-r from-[#DC3173] to-[#a72b5c] text-white hover:shadow-pink-200 hover:brightness-110"
+                        ? "bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white hover:shadow-pink-200 hover:brightness-110"
                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
                   >

@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { Button } from "@/src/components/ui/button";
 import {
   Card,
@@ -25,11 +26,13 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { TResponse } from "@/src/types";
 import { getCookie } from "@/src/utils/cookies";
-import { updateData } from "@/src/utils/requests";
+import { fetchData, updateData } from "@/src/utils/requests";
 import { businessDetailsValidation } from "@/src/validations/become-vendor/business-details.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { jwtDecode } from "jwt-decode";
 import {
+  ArrowLeftCircle,
   BadgeInfo,
   Briefcase,
   Building2,
@@ -38,8 +41,10 @@ import {
   FileCheck2,
   MapPin,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 type BusinessForm = {
   businessName: string;
@@ -52,11 +57,11 @@ type BusinessForm = {
   closingDays: string[];
 };
 
-const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
-  const hour = Math.floor(i / 2);
-  const minute = i % 2 === 0 ? "00" : "30";
-  return `${String(hour).padStart(2, "0")}:${minute}`;
-});
+// const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
+//   const hour = Math.floor(i / 2);
+//   const minute = i % 2 === 0 ? "00" : "30";
+//   return `${String(hour).padStart(2, "0")}:${minute}`;
+// });
 
 const daysOfWeek = [
   "Sunday",
@@ -69,8 +74,6 @@ const daysOfWeek = [
 ];
 
 export default function BusinessDetailsPage() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
   const form = useForm<BusinessForm>({
     resolver: zodResolver(businessDetailsValidation),
     defaultValues: {
@@ -87,40 +90,123 @@ export default function BusinessDetailsPage() {
   const router = useRouter();
 
   const onSubmit = async (data: BusinessForm) => {
+    const toastId = toast.loading("Updating...");
     try {
+      const accessToken = getCookie("accessToken");
+      const decoded = jwtDecode(accessToken || "") as { id: string };
+
       const result = (await updateData(
-        "/vendors/" + id,
+        "/vendors/" + decoded?.id,
         {
           businessDetails: {
             ...data,
-            noOfBranch: data.branches,
+            noOfBranch: Number(data.branches),
           },
         },
         {
-          headers: { authorization: getCookie("accessToken") },
+          headers: { authorization: accessToken },
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       )) as unknown as TResponse<any>;
 
       if (result.success) {
-        router.push("/become-vendor/business-location?id=" + id);
+        toast.success("Business details updated successfully!", {
+          id: toastId,
+        });
+
+        router.push("/become-vendor/business-location");
+        return;
       }
-    } catch (error) {
+      toast.error(result.message, { id: toastId });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Business details update failed",
+        { id: toastId }
+      );
       console.log(error);
     }
-    router.push("/become-vendor/business-location");
   };
+
+  useEffect(() => {
+    const accessToken = getCookie("accessToken");
+    if (accessToken) {
+      const decoded = jwtDecode(accessToken || "") as {
+        email: string;
+        id: string;
+      };
+      if (decoded?.email) {
+        const fetchUserData = async (id: string, token: string) => {
+          try {
+            const result = (await fetchData(`/vendors/${id}`, {
+              headers: {
+                authorization: token,
+              },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            })) as unknown as TResponse<any>;
+
+            if (result.success) {
+              const data = result.data;
+
+              form.setValue(
+                "businessName",
+                data.businessDetails.businessName || ""
+              );
+              form.setValue(
+                "businessType",
+                data.businessDetails.businessType || ""
+              );
+              form.setValue(
+                "businessLicenseNumber",
+                data.businessDetails.businessLicenseNumber || ""
+              );
+              form.setValue("NIF", data.businessDetails.NIF || "");
+              form.setValue(
+                "branches",
+                String(data.businessDetails.noOfBranch || "")
+              );
+              form.setValue(
+                "openingHours",
+                data.businessDetails.openingHours || ""
+              );
+              form.setValue(
+                "closingHours",
+                data.businessDetails.closingHours || ""
+              );
+              form.setValue(
+                "closingDays",
+                data.businessDetails.closingDays || ""
+              );
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        fetchUserData(decoded.id, accessToken);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <motion.div
-      className="flex justify-center items-center min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100 px-4"
+      className="flex justify-center items-center min-h-screen bg-linear-to-br from-pink-50 via-white to-pink-100 px-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
-      <Card className="w-full max-w-2xl p-6 shadow-2xl border-t-4 border-[#DC3173] bg-white rounded-2xl">
+      <Card className="w-full max-w-2xl p-6 shadow-2xl border-t-4 border-[#DC3173] bg-white rounded-2xl relative">
+        <div className="absolute top-3 left-0">
+          <Button
+            onClick={() => router.push("/become-vendor/personal-details")}
+            variant="link"
+            className="inline-flex items-center px-4 text-sm gap-2 text-[#DC3173] p-0 h-4 cursor-pointer"
+          >
+            <ArrowLeftCircle /> Go Back
+          </Button>
+        </div>
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold text-[#DC3173]">
+          <CardTitle className="text-center text-2xl font-bold text-[#DC3173] mt-2">
             Business Details
           </CardTitle>
           <p className="text-center text-gray-500 mt-1 text-sm">
@@ -163,7 +249,7 @@ export default function BusinessDetailsPage() {
                   <FormField
                     control={form.control}
                     name="businessType"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
                         <div className="relative">
                           <Briefcase className="absolute left-3 top-3.5 text-[#DC3173]/80" />
@@ -174,7 +260,12 @@ export default function BusinessDetailsPage() {
                               onValueChange={field.onChange}
                             >
                               <SelectTrigger
-                                className="pl-11 pr-4 h-12 w-full border-gray-300 bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[]:"
+                                className={cn(
+                                  "pl-11 pr-4 h-12 w-full bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer  ",
+                                  fieldState.invalid
+                                    ? "border-destructive focus-visible:ring-destructive/20"
+                                    : "border-gray-300"
+                                )}
                                 style={{
                                   height: "3rem",
                                 }}
@@ -263,7 +354,7 @@ export default function BusinessDetailsPage() {
                             <Input
                               placeholder="No. of Branches"
                               type="number"
-                              inputMode="numeric"
+                              min="1"
                               className="pl-11 pr-4 h-12 rounded-xl border-gray-300 bg-white/90 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md"
                               {...field}
                             />
@@ -295,27 +386,11 @@ export default function BusinessDetailsPage() {
                             Opening Time
                           </FormLabel>
                           <FormControl>
-                            <Select
+                            <Input
+                              type="time"
+                              className="px-3 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
                               {...field}
-                              value={field.value}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger
-                                className="pl-3 pr-4 h-12 w-full border border-gray-300 bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer"
-                                style={{
-                                  height: "3rem",
-                                }}
-                              >
-                                <SelectValue placeholder="Select Opening Time" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {timeOptions.map((t) => (
-                                  <SelectItem key={t} value={t}>
-                                    {t}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            />
                           </FormControl>
                         </div>
                         <FormMessage />
@@ -335,27 +410,11 @@ export default function BusinessDetailsPage() {
                             Closing Time
                           </FormLabel>
                           <FormControl>
-                            <Select
+                            <Input
+                              type="time"
+                              className="px-3 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
                               {...field}
-                              value={field.value}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger
-                                className="pl-3 pr-4 h-12 w-full border border-gray-300 bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer"
-                                style={{
-                                  height: "3rem",
-                                }}
-                              >
-                                <SelectValue placeholder="Select Closing Time" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {timeOptions.map((t) => (
-                                  <SelectItem key={t} value={t}>
-                                    {t}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            />
                           </FormControl>
                         </div>
                         <FormMessage />

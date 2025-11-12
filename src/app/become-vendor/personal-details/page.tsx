@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -21,14 +22,18 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { TResponse } from "@/src/types";
 import { getCookie } from "@/src/utils/cookies";
-import { updateData } from "@/src/utils/requests";
+import { fetchData, updateData } from "@/src/utils/requests";
 import { personalDetailsValidation } from "@/src/validations/become-vendor/personal-details.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { jwtDecode } from "jwt-decode";
+import parsePhoneNumberFromString from "libphonenumber-js";
 import { Mail, Phone, User } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
+import { toast } from "sonner";
 
 type PersonalForm = {
   firstName: string;
@@ -39,8 +44,6 @@ type PersonalForm = {
 };
 
 export default function PersonalDetailsPage() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
   const form = useForm<PersonalForm>({
     resolver: zodResolver(personalDetailsValidation),
     defaultValues: {
@@ -54,30 +57,85 @@ export default function PersonalDetailsPage() {
   const router = useRouter();
 
   const onSubmit = async (data: PersonalForm) => {
+    const toastId = toast.loading("Updating...");
     try {
+      const accessToken = getCookie("accessToken");
+      const decoded = jwtDecode(accessToken || "") as { id: string };
+
       const result = (await updateData(
-        "/vendors/" + id,
+        "/vendors/" + decoded?.id,
         {
           name: { firstName: data.firstName, lastName: data.lastName },
-          email: data.email,
-          phoneNumber: data.phoneNumber,
+          contactNumber: data.phoneNumber,
         },
         {
-          headers: { authorization: getCookie("accessToken") },
+          headers: {
+            authorization: accessToken,
+          },
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       )) as unknown as TResponse<any>;
 
       if (result.success) {
-        router.push("/become-vendor/business-details?id=" + id);
+        toast.success("Personal details updated successfully!", {
+          id: toastId,
+        });
+
+        router.push("/become-vendor/business-details");
+        return;
       }
-    } catch (error) {
+      toast.error(result.message, { id: toastId });
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Personal details update failed",
+        { id: toastId }
+      );
       console.log(error);
     }
   };
 
+  useEffect(() => {
+    const accessToken = getCookie("accessToken");
+    if (accessToken) {
+      const decoded = jwtDecode(accessToken || "") as {
+        email: string;
+        id: string;
+      };
+      if (decoded?.email) {
+        const fetchUserData = async (id: string, token: string) => {
+          try {
+            const result = (await fetchData(`/vendors/${id}`, {
+              headers: {
+                authorization: token,
+              },
+            })) as unknown as TResponse<any>;
+
+            if (result.success) {
+              const data = result.data;
+              const phone = parsePhoneNumberFromString(data.contactNumber);
+
+              form.setValue("firstName", data.name.firstName || "");
+              form.setValue("lastName", data.name.lastName || "");
+              form.setValue("email", data.email || "");
+              form.setValue(
+                "prefixPhoneNumber",
+                phone?.countryCallingCode
+                  ? `+${phone?.countryCallingCode}`
+                  : "+351"
+              );
+              form.setValue("phoneNumber", phone?.nationalNumber || "");
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        fetchUserData(decoded.id, accessToken);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 px-4">
+    <div className="flex justify-center items-center min-h-screen bg-linear-to-br from-pink-50 via-white to-purple-50 px-4">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -172,6 +230,7 @@ export default function PersonalDetailsPage() {
                             placeholder="Email Address"
                             className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
                             {...field}
+                            disabled
                           />
                         </FormControl>
                       </div>
@@ -255,7 +314,7 @@ export default function PersonalDetailsPage() {
                 >
                   <Button
                     type="submit"
-                    className="w-full font-semibold py-3 rounded-xl bg-gradient-to-r from-[#DC3173] to-[#a72b5c] text-white shadow-lg shadow-pink-200 hover:brightness-110 transition-all duration-300"
+                    className="w-full font-semibold py-3 rounded-xl bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white shadow-lg shadow-pink-200 hover:brightness-110 transition-all duration-300"
                   >
                     Save & Continue
                   </Button>
