@@ -1,0 +1,100 @@
+import { z } from "zod";
+
+export const productValidation = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 character")
+    .max(50, "Name must be at most 50 characters")
+    .nonempty("Name is required"),
+
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(500, "Description must be at most 500 characters")
+    .nonempty("Description is required"),
+
+  category: z
+    .string()
+    .min(2, "Category must be at least 2 characters")
+    .max(50, "Category must be at most 50 characters")
+    .nonempty("Category is required"),
+
+  subCategory: z
+    .string()
+    .min(2, "Subcategory must be at least 2 characters")
+    .max(50, "Subcategory must be at most 50 characters")
+    .optional(),
+
+  brand: z
+    .string()
+    .min(2, "Brand must be at least 2 character")
+    .max(50, "Brand must be at most 50 characters")
+    .nonempty("Brand is required"),
+
+  price: z.number().min(1, "Price is required"),
+
+  discount: z.number().min(0).max(100),
+
+  tax: z.number().min(0).max(100),
+
+  quantity: z.number().min(0, "Quantity must be at least 0"),
+
+  unit: z.string().min(1, "Unit must be at least 1 character"),
+
+  availabilityStatus: z
+    .string()
+    .min(2, "Availability status must be at least 2 characters")
+    .max(50, "Availability status must be at most 50 characters")
+    .nonempty("Availability status is required"),
+
+  tags: z.array(z.string()),
+
+  deliveryType: z
+    .string()
+    .min(2, "Delivery type must be at least 2 characters")
+    .max(50, "Delivery type must be at most 50 characters")
+    .nonempty("Delivery type is required"),
+
+  estimatedTime: z
+    .string()
+    .min(2, "Estimated time must be at least 2 characters")
+    .max(50, "Estimated time must be at most 50 characters")
+    .nonempty("Estimated time is required"),
+
+  deliveryCharge: z.number().min(0, "Delivery charge must be at least 0"),
+
+  freeDeliveryAbove: z
+    .number()
+    .min(0, "Free delivery above must be at least 0"),
+  organic: z.boolean().optional(),
+
+  weight: z.number().min(0, "Weight must be at least 0").optional(),
+
+  packagingType: z
+    .string()
+    .min(2, "Packaging type must be at least 2 characters")
+    .max(50, "Packaging type must be at most 50 characters")
+    .optional(),
+
+  storageTemperature: z
+    .string()
+    .min(2, "Storage temperature must be at least 2 characters")
+    .max(50, "Storage temperature must be at most 50 characters")
+    .optional(),
+
+  isFeatured: z.boolean().optional(),
+
+  isAvailableForPreOrder: z.boolean().optional(),
+
+  status: z
+    .string()
+    .min(2, "Status must be at least 2 characters")
+    .max(50, "Status must be at most 50 characters")
+    .optional(),
+
+  origin: z
+    .string()
+    .min(2, "Origin must be at least 2 characters")
+    .max(50, "Origin must be at most 50 characters")
+    .optional(),
+});

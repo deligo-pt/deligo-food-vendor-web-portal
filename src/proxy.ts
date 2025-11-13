@@ -36,11 +36,12 @@ export async function proxy(req: NextRequest) {
           pathname === "/become-vendor" ||
           pathname === "/become-vendor/verify-otp"
         ) {
-          if (decoded.status !== USER_STATUS.REJECTED) {
-            return NextResponse.redirect(
-              new URL("/become-vendor/registration-status", req.url)
-            );
+          if (decoded.status === USER_STATUS.APPROVED) {
+            return NextResponse.redirect(new URL("/vendor/dashboard", req.url));
           }
+          return NextResponse.redirect(
+            new URL("/become-vendor/registration-status", req.url)
+          );
         } else if (
           pathname === "/become-vendor/personal-details" ||
           pathname === "/become-vendor/business-details" ||

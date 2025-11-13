@@ -279,9 +279,11 @@ export default function RegistrationStatusPage() {
                 <>
                   <Button
                     className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
-                    onClick={() => router.push("/")}
+                    onClick={() =>
+                      router.push("/become-vendor/personal-details")
+                    }
                   >
-                    Go to Home
+                    Submit Details Again
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">

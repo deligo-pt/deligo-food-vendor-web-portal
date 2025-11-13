@@ -19,7 +19,7 @@ import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -30,6 +30,7 @@ type FormData = {
 };
 
 export default function VendorLoginPage() {
+  const redirect = useSearchParams()?.get("redirect");
   const form = useForm<FormData>({
     resolver: zodResolver(loginValidation),
     defaultValues: {
@@ -65,6 +66,10 @@ export default function VendorLoginPage() {
               router.push("/become-vendor/registration-status");
               return;
             case "APPROVED":
+              if (redirect) {
+                router.push(redirect);
+                return;
+              }
               router.push("/vendor/dashboard");
               return;
           }
