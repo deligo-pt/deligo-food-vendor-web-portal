@@ -23,7 +23,7 @@ import { Input } from "@/src/components/ui/input";
 import { TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 import { getCookie } from "@/src/utils/cookies";
-import { postData } from "@/src/utils/requests";
+import { updateData } from "@/src/utils/requests";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -76,39 +76,46 @@ const tabs = [
 
 type FormData = z.infer<typeof productValidation>;
 
-export function ProductForm() {
+interface IProps {
+  prevData: TProduct;
+  refetch: () => void;
+  closeModal: () => void;
+}
+
+export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
   const [activeTab, setActiveTab] = useState(0);
   const [images, setImages] = useState<{ file: File | null; url: string }[]>(
-    []
+    prevData?.images?.map((img) => ({ file: null, url: img })) || []
   );
   const [tag, setTag] = useState("");
   const form = useForm<FormData>({
     resolver: zodResolver(productValidation),
     defaultValues: {
-      name: "",
-      description: "",
-      category: "",
-      subCategory: "",
-      brand: "",
-      price: 0,
-      discount: 0,
-      tax: 0,
-      quantity: 0,
-      unit: "",
-      availabilityStatus: "",
-      tags: [],
-      deliveryType: "",
-      estimatedTime: "",
-      deliveryCharge: 0,
-      freeDeliveryAbove: 0,
-      organic: true,
-      weight: 0,
-      packagingType: "",
-      storageTemperature: "",
-      isFeatured: false,
-      isAvailableForPreOrder: false,
-      status: "",
-      origin: "",
+      name: prevData?.name || "",
+      description: prevData?.description || "",
+      category: prevData?.category || "",
+      subCategory: prevData?.subCategory || "",
+      brand: prevData?.brand || "",
+      price: prevData?.pricing?.price || 0,
+      discount: prevData?.pricing?.discount || 0,
+      tax: prevData?.pricing?.tax || 0,
+      quantity: prevData?.stock?.quantity || 0,
+      unit: prevData?.stock?.unit || "",
+      availabilityStatus: prevData?.stock?.availabilityStatus || "",
+      tags: prevData?.tags || [],
+      deliveryType: prevData?.deliveryInfo?.deliveryType || "",
+      estimatedTime: prevData?.deliveryInfo?.estimatedTime || "",
+      deliveryCharge: prevData?.deliveryInfo?.deliveryCharge || 0,
+      freeDeliveryAbove: prevData?.deliveryInfo?.freeDeliveryAbove || 0,
+      organic: (prevData?.attributes?.organic as boolean) || true,
+      weight: (prevData?.attributes?.weight as number) || 0,
+      packagingType: (prevData?.attributes?.packagingType as string) || "",
+      storageTemperature:
+        (prevData?.attributes?.storageTemperature as string) || "",
+      isFeatured: prevData?.meta?.isFeatured || false,
+      isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
+      status: prevData?.meta?.status || "",
+      origin: prevData?.meta?.origin || "",
     },
   });
 
@@ -131,7 +138,7 @@ export function ProductForm() {
   };
 
   const onSubmit = async (data: FormData) => {
-    const toastId = toast.loading("Creating product...");
+    const toastId = toast.loading("Updating product...");
 
     try {
       const productData = {
@@ -174,31 +181,44 @@ export function ProductForm() {
 
       const formData = new FormData();
       formData.append("data", JSON.stringify(productData));
-      images.map((image) => formData.append("files", image.file as Blob));
+      const filteredImages = images.filter((image) => !!image.file);
 
-      const result = (await postData("/products/create-product", formData, {
-        headers: {
-          authorization: getCookie("accessToken"),
-          "Content-Type": "multipart/form-data",
-        },
-      })) as unknown as TResponse<TProduct>;
+      if (filteredImages?.length > 0) {
+        filteredImages?.map((image) =>
+          formData.append("files", image.file as Blob)
+        );
+      }
+      console.log(filteredImages);
+
+      const result = (await updateData(
+        `/products/${prevData?.productId}`,
+        formData,
+        {
+          headers: {
+            authorization: getCookie("accessToken"),
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )) as unknown as TResponse<TProduct>;
 
       if (result.success) {
-        toast.success("Product created successfully!", { id: toastId });
+        toast.success("Product updated successfully!", { id: toastId });
         form.reset();
         setActiveTab(0);
+        refetch();
+        closeModal();
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Product creation failed", {
+      toast.error(error?.response?.data?.message || "Updating product failed", {
         id: toastId,
       });
     }
   };
 
   return (
-    <div className="p-8">
+    <div className="">
       <motion.div
         initial={{
           opacity: 0,
@@ -214,9 +234,9 @@ export function ProductForm() {
         className="bg-white shadow-xl rounded-2xl overflow-hidden"
       >
         <div className="px-6 py-8 bg-linear-to-r from-[#DC3173] to-[#FF6B98] text-white">
-          <h1 className="text-3xl font-bold">Add New Item</h1>
+          <h1 className="text-3xl font-bold">Update Item</h1>
           <p className="mt-2 text-pink-100">
-            Fill in the details to add a new food item to your menu.
+            Fill in the details to update the food product of your menu.
           </p>
         </div>
         <div className="flex flex-col md:flex-row">

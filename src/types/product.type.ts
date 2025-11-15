@@ -65,7 +65,7 @@ export type TProduct = {
 export type TProductsQueryParams = {
   page?: number;
   limit?: number;
-  sort?: string;
+  sortBy?: string;
   searchTerm?: string;
   "stock.availabilityStatus"?: string;
   category?: string;

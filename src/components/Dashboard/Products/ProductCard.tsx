@@ -7,7 +7,7 @@ import Image from "next/image";
 
 interface IProps {
   product: TProduct;
-  onEdit: (id: string) => void;
+  onEdit: (product: TProduct) => void;
   onDelete: (id: string) => void;
 }
 
@@ -102,10 +102,12 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
             <span className="text-lg font-bold text-[#DC3173]">
               {product.pricing.currency} {product.pricing.finalPrice.toFixed(2)}
             </span>
-            {product.pricing.discount && (
+            {product?.pricing?.discount ? (
               <span className="text-xs line-through text-gray-400 ml-2">
-                {product.pricing.currency} {product.pricing.price.toFixed(2)}
+                {product.pricing.currency} {product?.pricing?.price?.toFixed(2)}
               </span>
+            ) : (
+              ""
             )}
           </div>
           <div
@@ -139,7 +141,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
               whileTap={{
                 scale: 0.95,
               }}
-              onClick={() => onEdit(product.productId)}
+              onClick={() => onEdit(product)}
               className="text-xs px-3 py-1 rounded-md border border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173] hover:text-white transition-colors"
             >
               Edit

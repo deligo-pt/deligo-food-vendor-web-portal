@@ -1,5 +1,5 @@
 import { ProductForm } from "@/src/components/Dashboard/Products/ProductForm";
 
-export default function AddProductPage() {
+export default function AddItemPage() {
   return <ProductForm />;
 }

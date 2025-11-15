@@ -6,9 +6,9 @@ import Image from "next/image";
 import React, { useCallback, useRef, useState } from "react";
 
 interface IProps {
-  images: { file: File; url: string }[];
+  images: { file: File | null; url: string }[];
   setImages: React.Dispatch<
-    React.SetStateAction<{ file: File; url: string }[]>
+    React.SetStateAction<{ file: File | null; url: string }[]>
   >;
 }
 
