@@ -19,12 +19,6 @@ export const productValidation = z.object({
     .max(50, "Category must be at most 50 characters")
     .nonempty("Category is required"),
 
-  subCategory: z
-    .string()
-    .min(2, "Subcategory must be at least 2 characters")
-    .max(50, "Subcategory must be at most 50 characters")
-    .optional(),
-
   brand: z
     .string()
     .min(2, "Brand must be at least 2 character")

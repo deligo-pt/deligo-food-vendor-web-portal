@@ -94,7 +94,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
       name: prevData?.name || "",
       description: prevData?.description || "",
       category: prevData?.category || "",
-      subCategory: prevData?.subCategory || "",
       brand: prevData?.brand || "",
       price: prevData?.pricing?.price || 0,
       discount: prevData?.pricing?.discount || 0,
@@ -145,7 +144,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
         name: data.name,
         description: data.description,
         category: data.category,
-        subCategory: data.subCategory,
         brand: data.brand,
         pricing: {
           price: data.price,
@@ -355,93 +353,47 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                       )}
                     />
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="category"
-                              className="block text-sm font-medium text-gray-700"
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field, fieldState }) => (
+                        <FormItem className="gap-1">
+                          <FormLabel
+                            htmlFor="category"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Category
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
                             >
-                              Category
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
+                              <SelectTrigger
+                                className={cn(
+                                  "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
+                                  fieldState.invalid
+                                    ? "border-destructive"
+                                    : "border-gray-300"
+                                )}
                               >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300"
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select a category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="grocery">
-                                    Grocery
-                                  </SelectItem>
-                                  <SelectItem value="beverages">
-                                    Beverages
-                                  </SelectItem>
-                                  <SelectItem value="snacks">Snacks</SelectItem>
-                                  <SelectItem value="dairy">Dairy</SelectItem>
-                                  <SelectItem value="bakery">Bakery</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="subCategory"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="subCategory"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Subcategory
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300"
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select a subcategory" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="organic">
-                                    Organic
-                                  </SelectItem>
-                                  <SelectItem value="vegan">Vegan</SelectItem>
-                                  <SelectItem value="gluten-free">
-                                    Gluten Free
-                                  </SelectItem>
-                                  <SelectItem value="keto">Keto</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="grocery">Grocery</SelectItem>
+                                <SelectItem value="beverages">
+                                  Beverages
+                                </SelectItem>
+                                <SelectItem value="snacks">Snacks</SelectItem>
+                                <SelectItem value="dairy">Dairy</SelectItem>
+                                <SelectItem value="bakery">Bakery</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -576,7 +528,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                               htmlFor="price"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Price ($)
+                              Price (€)
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -655,14 +607,14 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between">
                           <span className="text-gray-700">Original Price:</span>
-                          <span className="font-medium">${watchPrice}</span>
+                          <span className="font-medium">€ {watchPrice}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-700">
                             Discount ({watchDiscount}%):
                           </span>
                           <span className="font-medium text-red-500">
-                            -$
+                            - €{" "}
                             {((watchPrice * watchDiscount) / 100).toFixed(2)}
                           </span>
                         </div>
@@ -671,7 +623,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                             Tax ({watchTax}%):
                           </span>
                           <span className="font-medium">
-                            +$
+                            + €{" "}
                             {(
                               (watchPrice *
                                 (1 - watchDiscount / 100) *
@@ -683,7 +635,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                         <div className="border-t mt-2 pt-2 flex justify-between">
                           <span className="font-semibold">Final Price:</span>
                           <span className="font-bold text-[#DC3173]">
-                            $
+                            €{" "}
                             {(
                               watchPrice *
                               (1 - watchDiscount / 100) *
@@ -920,7 +872,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                               htmlFor="deliveryCharge"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Delivery Charge ($)
+                              Delivery Charge (€)
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -947,7 +899,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                               htmlFor="freeDeliveryAbove"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Free Delivery Above ($)
+                              Free Delivery Above (€)
                             </FormLabel>
                             <FormControl>
                               <Input

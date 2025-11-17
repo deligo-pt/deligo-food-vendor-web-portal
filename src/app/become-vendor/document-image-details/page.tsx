@@ -99,7 +99,7 @@ export default function UploadDocumentPage() {
   const handleFileChange = (key: DocKey, f?: File | null) => {
     if (!f) return;
     const isImage = f.type.startsWith("image/");
-    const url = isImage ? URL.createObjectURL(f) : null;
+    const url = URL.createObjectURL(f);
 
     // revoke previous url if present
     const prev = previews[key];
@@ -125,14 +125,6 @@ export default function UploadDocumentPage() {
     setShowModal(false);
     setConfettiRunning(false);
   };
-
-  // Effect: watch previews, when all five are non-null -> open modal + start confetti
-  // useEffect(() => {
-  //   const allSelected = DOCUMENTS.every((d) => !!previews[d.key]);
-  //   if (allSelected) {
-  //     setConfettiRunning(true);
-  //   }
-  // }, [previews]);
 
   // CONFETTI: simple canvas confetti implementation
   useEffect(() => {

@@ -1,20 +1,35 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShoppingBag, DollarSign, Truck, Users } from "lucide-react";
+import { EuroIcon, ShoppingBag, Truck, Users } from "lucide-react";
 
 export default function DashboardPage() {
   const stats = [
     { id: 1, name: "Total Orders", value: "1,240", icon: ShoppingBag },
-    { id: 2, name: "Total Revenue", value: "$18,450", icon: DollarSign },
+    { id: 2, name: "Total Revenue", value: "€18,450", icon: EuroIcon },
     { id: 3, name: "Active Deliveries", value: "27", icon: Truck },
     { id: 4, name: "Total Customers", value: "630", icon: Users },
   ];
 
   const recentOrders = [
-    { id: "ORD-1023", customer: "John Doe", amount: "$120", status: "Delivered" },
-    { id: "ORD-1024", customer: "Sara Khan", amount: "$89", status: "In Transit" },
-    { id: "ORD-1025", customer: "Luis Silva", amount: "$245", status: "Pending" },
+    {
+      id: "ORD-1023",
+      customer: "John Doe",
+      amount: "€120",
+      status: "Delivered",
+    },
+    {
+      id: "ORD-1024",
+      customer: "Sara Khan",
+      amount: "€89",
+      status: "In Transit",
+    },
+    {
+      id: "ORD-1025",
+      customer: "Luis Silva",
+      amount: "€245",
+      status: "Pending",
+    },
   ];
 
   return (
@@ -58,7 +73,9 @@ export default function DashboardPage() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white shadow-md rounded-2xl p-4 md:p-6"
       >
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Recent Orders</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          Recent Orders
+        </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>

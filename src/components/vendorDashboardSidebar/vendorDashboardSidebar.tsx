@@ -1,31 +1,30 @@
 "use client";
-import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  AlertCircle,
+  BarChart2,
+  Box,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  EuroIcon,
+  FileText,
+  Gift,
+  Home,
+  Layers,
+  LayoutDashboard,
+  Menu,
+  MessageCircle,
+  Plug,
+  Settings,
+  ShoppingBag,
+  Star,
+  Users,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Home,
-  ShoppingBag,
-  Layers,
-  DollarSign,
-  BarChart2,
-  Star,
-  Box,
-  Gift,
-  Users,
-  Plug,
-  FileText,
-  Settings,
-  MessageCircle,
-  AlertCircle,
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-  Menu,
-  X,
-  LayoutDashboard
-} from "lucide-react";
-
+import { useEffect, useState } from "react";
 
 import Image from "next/image";
 
@@ -86,7 +85,7 @@ export default function Sidebar() {
     {
       id: "payments",
       title: "Payments & Earnings",
-      icon: <DollarSign size={18} />,
+      icon: <EuroIcon size={18} />,
       items: [
         { name: "Payouts", path: "/vendor/payouts" },
         { name: "Earnings Summary", path: "/vendor/earnings" },
@@ -223,7 +222,7 @@ export default function Sidebar() {
       <motion.aside
         animate={{ width: open ? 280 : 80 }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        className="hidden md:flex h-screen bg-gradient-to-b from-pink-50 via-white to-pink-100 shadow-xl flex-col border-r border-pink-200 overflow-hidden fixed left-0 top-0 z-40"
+        className="hidden md:flex h-screen bg-linear-to-b from-pink-50 via-white to-pink-100 shadow-xl flex-col border-r border-pink-200 overflow-hidden fixed left-0 top-0 z-40"
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-pink-200">
           <div className="flex items-center gap-2">
@@ -270,7 +269,7 @@ export default function Sidebar() {
                   href={menu.path}
                   className={`flex items-center w-full justify-between p-2 rounded-lg transition-colors ${
                     pathname === menu.path
-                      ? "bg-gradient-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
+                      ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
                       : "hover:bg-pink-100"
                   }`}
                 >
@@ -320,7 +319,7 @@ export default function Sidebar() {
                             href={sub.path}
                             className={`text-sm px-2 py-1 rounded-md transition-all duration-300 ${
                               pathname === sub.path
-                                ? "bg-gradient-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
+                                ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
                                 : "text-gray-600 hover:text-pink-600 hover:bg-pink-50"
                             }`}
                           >
@@ -360,10 +359,7 @@ export default function Sidebar() {
               className="bg-white w-72 h-full p-4 shadow-xl overflow-y-auto no-scrollbar"
             >
               <div className="flex items-center justify-between mb-4">
-                <h2
-                  className="text-lg font-bold"
-                  style={{ color: PRIMARY }}
-                >
+                <h2 className="text-lg font-bold" style={{ color: PRIMARY }}>
                   DeliGo Menu
                 </h2>
                 <button
