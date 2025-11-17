@@ -92,6 +92,12 @@ export default function BusinessDetailsPage() {
     try {
       const accessToken = getCookie("accessToken");
       const decoded = jwtDecode(accessToken || "") as { id: string };
+      console.log({
+        ...data,
+        NIF: data.NIF.toUpperCase(),
+        businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
+        noOfBranch: Number(data.branches),
+      });
 
       const result = (await updateData(
         "/vendors/" + decoded?.id,
@@ -297,7 +303,7 @@ export default function BusinessDetailsPage() {
                                 {businessCategories.map((category) => (
                                   <SelectItem
                                     key={category?._id}
-                                    value={category?._id}
+                                    value={category?.name}
                                     className="capitalize"
                                   >
                                     {category?.name}
