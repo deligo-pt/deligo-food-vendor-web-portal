@@ -25,6 +25,7 @@ import {
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { TResponse } from "@/src/types";
+import { TBusinessCategory } from "@/src/types/category.type";
 import { getCookie } from "@/src/utils/cookies";
 import { fetchData, updateData } from "@/src/utils/requests";
 import { businessDetailsValidation } from "@/src/validations/become-vendor/business-details.validation";
@@ -42,7 +43,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -57,12 +58,6 @@ type BusinessForm = {
   closingDays: string[];
 };
 
-// const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
-//   const hour = Math.floor(i / 2);
-//   const minute = i % 2 === 0 ? "00" : "30";
-//   return `${String(hour).padStart(2, "0")}:${minute}`;
-// });
-
 const daysOfWeek = [
   "Sunday",
   "Monday",
@@ -74,6 +69,9 @@ const daysOfWeek = [
 ];
 
 export default function BusinessDetailsPage() {
+  const [businessCategories, setBusinessCategories] = useState<
+    TBusinessCategory[]
+  >([]);
   const form = useForm<BusinessForm>({
     resolver: zodResolver(businessDetailsValidation),
     defaultValues: {
@@ -100,6 +98,8 @@ export default function BusinessDetailsPage() {
         {
           businessDetails: {
             ...data,
+            NIF: data.NIF.toUpperCase(),
+            businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
             noOfBranch: Number(data.branches),
           },
         },
@@ -127,6 +127,27 @@ export default function BusinessDetailsPage() {
       console.log(error);
     }
   };
+
+  const getBusinessCategories = async () => {
+    const accessToken = getCookie("accessToken");
+    try {
+      const result = (await fetchData("/categories/businessCategory", {
+        headers: {
+          authorization: accessToken,
+        },
+      })) as unknown as TResponse<{ data: TBusinessCategory[] }>;
+
+      if (result.success) {
+        setBusinessCategories(result?.data?.data || []);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    (() => getBusinessCategories())();
+  }, []);
 
   useEffect(() => {
     const accessToken = getCookie("accessToken");
@@ -273,16 +294,15 @@ export default function BusinessDetailsPage() {
                                 <SelectValue placeholder="Select Business Type" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="store">Store</SelectItem>
-                                <SelectItem value="restaurant">
-                                  Restaurant
-                                </SelectItem>
-                                <SelectItem value="pharmacy">
-                                  Pharmacy
-                                </SelectItem>
-                                <SelectItem value="service">
-                                  Service Provider
-                                </SelectItem>
+                                {businessCategories.map((category) => (
+                                  <SelectItem
+                                    key={category?._id}
+                                    value={category?._id}
+                                    className="capitalize"
+                                  >
+                                    {category?.name}
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -303,7 +323,7 @@ export default function BusinessDetailsPage() {
                           <FormControl>
                             <Input
                               placeholder="License Number"
-                              className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
+                              className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60 uppercase"
                               {...field}
                             />
                           </FormControl>
@@ -324,7 +344,7 @@ export default function BusinessDetailsPage() {
                           <FormControl>
                             <Input
                               placeholder="NIF"
-                              className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
+                              className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60 uppercase"
                               {...field}
                             />
                           </FormControl>

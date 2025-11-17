@@ -13,53 +13,42 @@ import {
 import DeleteProductDialog from "@/src/components/Dashboard/Products/DeleteProductDialog";
 import EditProductDialog from "@/src/components/Dashboard/Products/EditProductDialog";
 import ProductCard from "@/src/components/Dashboard/Products/ProductCard";
-import { Input } from "@/src/components/ui/input";
+import SearchFilter from "@/src/components/Filtering/SearchFilter";
+import SelectFilter from "@/src/components/Filtering/SelectFilter";
 import { TMeta, TResponse } from "@/src/types";
-import { TProduct, TProductsQueryParams } from "@/src/types/product.type";
+import { TProduct } from "@/src/types/product.type";
 import { getCookie } from "@/src/utils/cookies";
-import { deleteData, fetchData } from "@/src/utils/requests";
+import { deleteData } from "@/src/utils/requests";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  PlusCircle,
-  RefreshCcw,
-  Search,
-  SlidersHorizontal,
-  X,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { RefreshCcw, Search, SlidersHorizontal, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
+const sortOptions = [
+  { label: "Newest First", value: "-createdAt" },
+  { label: "Oldest First", value: "createdAt" },
+  { label: "Name (A-Z)", value: "name" },
+  { label: "Name (Z-A)", value: "-name" },
+  { label: "Price (High to Low)", value: "-pricing.finalPrice" },
+  { label: "Price (low to High)", value: "pricing.finalPrice" },
+  { label: "Highest Rated", value: "-rating.average" },
+  { label: "lowest Rated", value: "rating.average" },
+];
 
-const sortOptions = {
-  "-createdAt": "Newest First",
-  createdAt: "Oldest First",
-  name: "Name (A-Z)",
-  "-name": "Name (Z-A)",
-  "-pricing.finalPrice": "Price (High to Low)",
-  "pricing.finalPrice": "Price (Low to High)",
-  "-rating.average": "Highest Rated",
-  "rating.average": "Lowest Rated",
-}
-
-export default function Products() {
+export default function Products({
+  initialData,
+}: {
+  initialData: { data: TProduct[]; meta?: TMeta };
+}) {
   const router = useRouter();
-  const [productsResult, setProductsResult] = useState<{
-    data: TProduct[];
-    meta?: TMeta;
-  }>({ data: [] });
-  const [queryParams, setQueryParams] = useState<TProductsQueryParams>({
-    limit: 10,
-    page: 1,
-    searchTerm: "",
-    sortBy: "-createdAt",
-    "stock.availabilityStatus": "",
-    category: "",
+  const searchParams = useSearchParams();
+  const [prevFilters, setPrevFilters] = useState({
+    status: searchParams?.get("status") || "",
   });
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
-    "stock.availabilityStatus": "",
-    category: "",
+    status: searchParams?.get("status") || "",
   });
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
@@ -67,113 +56,52 @@ export default function Products() {
     product?: TProduct | null;
   }>({ id: null, action: null });
 
-  async function getProducts(queries?: TProductsQueryParams) {
-    try {
-      let params: Partial<TProductsQueryParams> = {};
-
-      if (queries) {
-        queries = Object.fromEntries(
-          Object.entries(queries).filter((q) => !!q?.[1])
-        );
-      } else {
-        params = Object.fromEntries(
-          Object.entries(queryParams).filter((q) => !!q?.[1])
-        );
-      }
-
-      const result = (await fetchData("/products", {
-        params,
-        headers: {
-          authorization: getCookie("accessToken"),
-        },
-      })) as unknown as TResponse<TProduct[]>;
-
-      if (result.success) {
-        setProductsResult({
-          data: result.data,
-          meta: result.meta,
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleSearch = (value: string) => {
-    setQueryParams((prevQuery) => ({ ...prevQuery, searchTerm: value }));
-    getProducts({
-      ...queryParams,
-      searchTerm: value,
-    });
-  };
-
-  const handleSort = (value: string) => {
-    setQueryParams((prevQuery) => ({ ...prevQuery, sortBy: value }));
-    getProducts({
-      ...queryParams,
-      sortBy: value,
-    });
-  };
-
   const handleAddFilter = () => {
-    if (activeFilters["stock.availabilityStatus"].length > 0) {
-      setQueryParams((prevQuery) => ({
+    if (activeFilters?.status?.length > 0) {
+      setPrevFilters((prevQuery) => ({
         ...prevQuery,
-        status: queryParams["stock.availabilityStatus"],
+        status: activeFilters.status,
       }));
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("status", activeFilters.status);
+      router.push(`?${params.toString()}`);
     }
-    if (activeFilters.category.length > 0) {
-      setQueryParams((prevQuery) => ({
-        ...prevQuery,
-        category: queryParams.category,
-      }));
-    }
-    getProducts({
-      ...queryParams,
-      "stock.availabilityStatus": queryParams["stock.availabilityStatus"],
-      category: queryParams.category,
-    });
     setShowFilters(false);
   };
 
-  const removeFilter = (key: "stock.availabilityStatus" | "category") => {
+  const removeFilter = (key: "status") => {
     setActiveFilters((prevFilters) => ({
       ...prevFilters,
       [key]: "",
     }));
-    setQueryParams((prevQuery) => ({
+    setPrevFilters((prevQuery) => ({
       ...prevQuery,
       [key]: "",
     }));
-    getProducts({
-      ...queryParams,
-      [key]: "",
-    });
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(key);
+    router.push(`?${params.toString()}`);
   };
 
   const clearAllFilters = () => {
     setActiveFilters({
-      "stock.availabilityStatus": "",
-      category: "",
+      status: "",
     });
-    setQueryParams((prevQuery) => ({
+    setPrevFilters((prevQuery) => ({
       ...prevQuery,
-      "stock.availabilityStatus": "",
-      category: "",
+      status: "",
     }));
-    getProducts({
-      ...queryParams,
-      "stock.availabilityStatus": "",
-      category: "",
-    });
-  };
-
-  const openEditDialog = (product: TProduct) => {
-    setSelectedProduct({ id: product.productId, action: "edit", product });
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("status");
+    router.push(`?${params.toString()}`);
   };
 
   const openDeleteDialog = (id: string) => {
     setSelectedProduct({ id, action: "delete" });
+  };
+
+  const onEditClick = (product: TProduct) => {
+    setSelectedProduct({ id: product._id as string, action: "edit", product });
   };
 
   const handleDeleteProduct = async () => {
@@ -191,7 +119,7 @@ export default function Products() {
 
         if (result.success) {
           toast.success("Product deleted successfully", { id: toastId });
-          await getProducts(queryParams);
+          // await getProducts(queryParams);
           setSelectedProduct({ id: null, action: null });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -205,13 +133,8 @@ export default function Products() {
     }
   };
 
-  useEffect(() => {
-    (() => getProducts())();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <div className="w-full p-8">
+    <div className="w-full p-4 md:p-6">
       <div className="bg-linear-to-r from-[#DC3173] to-[#FF6CAB] p-6 rounded-lg mb-6 shadow-lg">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
@@ -222,49 +145,18 @@ export default function Products() {
               Manage your restaurant&lsquo;s food delivery catalog
             </p>
           </div>
-          <motion.button
-            whileHover={{
-              scale: 1.05,
-            }}
-            whileTap={{
-              scale: 0.95,
-            }}
-            className="mt-4 md:mt-0 bg-white text-[#DC3173] px-4 py-2 rounded-md font-medium flex items-center shadow-md"
-            onClick={() => router.push("/vendor/add-item")}
-          >
-            <PlusCircle className="w-5 h-5 mr-2" />
-            Add New Item
-          </motion.button>
         </div>
       </div>
       <div className="mb-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start md:items-center justify-between">
-          <div className="relative w-full lg:w-72">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search..."
-              value={queryParams.searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 w-full"
-            />
-          </div>
+          <SearchFilter paramName="searchTerm" placeholder="Searching..." />
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
             <div className="w-full lg:w-48">
-              <Select
-                value={queryParams.sortBy}
-                onValueChange={(value) => handleSort(value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a fruit" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(sortOptions).map(([key, option]) => (
-                    <SelectItem key={key} value={key}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SelectFilter
+                paramName="sortBy"
+                options={sortOptions}
+                placeholder="Sort By"
+              />
             </div>
             <Button
               variant="outline"
@@ -286,30 +178,18 @@ export default function Products() {
             </Button>
           </div>
         </div>
-        {(Object.entries(activeFilters)?.filter((filter) => filter[1] !== "")
-          ?.length > 0) && (
+        {Object.entries(activeFilters)?.filter((filter) => filter[1] !== "")
+          ?.length > 0 && (
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            {activeFilters["stock.availabilityStatus"].length > 0 && (
+            {activeFilters["status"].length > 0 && (
               <Badge
                 variant="outline"
                 className="text-[#DC3173] border-[#DC3173]"
               >
-                {activeFilters["stock.availabilityStatus"]}
+                {activeFilters["status"]}
                 <X
                   className="ml-2 h-4 w-4"
-                  onClick={() => removeFilter("stock.availabilityStatus")}
-                />
-              </Badge>
-            )}
-            {activeFilters.category.length > 0 && (
-              <Badge
-                variant="outline"
-                className="text-[#DC3173] border-[#DC3173]"
-              >
-                {activeFilters.category}
-                <X
-                  className="ml-2 h-4 w-4"
-                  onClick={() => removeFilter("category")}
+                  onClick={() => removeFilter("status")}
                 />
               </Badge>
             )}
@@ -351,11 +231,11 @@ export default function Products() {
                       Availability Status
                     </label>
                     <Select
-                      value={queryParams["stock.availabilityStatus"]}
+                      value={prevFilters.status}
                       onValueChange={(value) =>
                         setActiveFilters((prevFilters) => ({
                           ...prevFilters,
-                          "stock.availabilityStatus": value,
+                          status: value,
                         }))
                       }
                     >
@@ -370,31 +250,6 @@ export default function Products() {
                             </SelectItem>
                           )
                         )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Category
-                    </label>
-                    <Select
-                      value={queryParams.category}
-                      onValueChange={(value) =>
-                        setActiveFilters((prevFilters) => ({
-                          ...prevFilters,
-                          isEmailVerified: value,
-                        }))
-                      }
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select an option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All</SelectItem>
-                        <SelectItem value="verified">Verified</SelectItem>
-                        <SelectItem value="not-verified">
-                          Not Verified
-                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -415,33 +270,31 @@ export default function Products() {
         </AnimatePresence>
       </div>
 
-      {productsResult.data?.length > 0 && (
+      {initialData.data?.length > 0 && (
         <div className="flex justify-between items-center mb-4">
           <p className="text-sm text-gray-500">
             Showing{" "}
-            {((productsResult.meta?.page || 1) - 1) *
-              (productsResult.meta?.limit || 10) +
+            {((initialData.meta?.page || 1) - 1) *
+              (initialData.meta?.limit || 10) +
               1}
-            -
-            {(productsResult.meta?.page || 1) *
-              (productsResult.meta?.limit || 10)}{" "}
-            of {productsResult.meta?.total || 0} items
+            -{(initialData.meta?.page || 1) * (initialData.meta?.limit || 10)}{" "}
+            of {initialData.meta?.total || 0} items
           </p>
         </div>
       )}
 
-      {productsResult?.data?.length > 0 ? (
+      {initialData?.data?.length > 0 ? (
         <motion.div
           layout
           className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
         >
           <AnimatePresence>
-            {productsResult?.data?.map((product) => (
+            {initialData?.data?.map((product) => (
               <ProductCard
                 key={product.productId}
                 product={product}
                 onDelete={openDeleteDialog}
-                onEdit={openEditDialog}
+                onEdit={onEditClick}
               />
             ))}
           </AnimatePresence>
@@ -461,16 +314,15 @@ export default function Products() {
           </div>
           <h3 className="text-xl font-medium mb-2">No items found</h3>
           <p className="text-gray-500 max-w-md">
-            No delivery items match your current filters. Try adjusting your
-            search or filters to find what you&lsquo;re looking for.
+            No items match your current filters. Try adjusting your search or
+            filters to find what you&lsquo;re looking for.
           </p>
           <Button variant="outline" className="mt-4" onClick={clearAllFilters}>
             Clear All Filters
           </Button>
         </motion.div>
       )}
-      {/* Pagination */}
-      {productsResult?.data?.length > 0 && (
+      {initialData?.data?.length > 0 && (
         <div className="mt-8 flex justify-center">
           <Pagination />
         </div>
@@ -490,7 +342,7 @@ export default function Products() {
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
-        refetch={getProducts}
+        refetch={() => {}}
       />
     </div>
   );

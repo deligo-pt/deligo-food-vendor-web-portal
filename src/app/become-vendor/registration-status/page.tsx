@@ -9,7 +9,7 @@ import {
 } from "@/src/components/ui/card";
 import { USER_STATUS } from "@/src/consts/user.const";
 import { TResponse } from "@/src/types";
-import { getCookie } from "@/src/utils/cookies";
+import { getCookie, removeCookie } from "@/src/utils/cookies";
 import { fetchData } from "@/src/utils/requests";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
@@ -30,6 +30,12 @@ export default function RegistrationStatusPage() {
   const router = useRouter();
   const [status, setStatus] = useState("");
   const [remarks, setRemarks] = useState("");
+
+  const logOut = () => {
+    removeCookie("accessToken");
+    removeCookie("refreshToken");
+    router.push("/login");
+  };
 
   useEffect(() => {
     const accessToken = getCookie("accessToken");
@@ -240,6 +246,13 @@ export default function RegistrationStatusPage() {
                   >
                     Submit Details
                   </Button>
+                  <Button
+                    variant="outline"
+                    className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
+                    onClick={logOut}
+                  >
+                    Logout
+                  </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
                     You can check your application status anytime here.
@@ -254,6 +267,13 @@ export default function RegistrationStatusPage() {
                   >
                     Go to Home
                   </Button>
+                  <Button
+                    variant="outline"
+                    className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
+                    onClick={logOut}
+                  >
+                    Logout
+                  </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
                     Wait for your application to be approved.
@@ -267,6 +287,13 @@ export default function RegistrationStatusPage() {
                     onClick={() => router.push("/vendor/dashboard")}
                   >
                     Go to Dashboard
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
+                    onClick={logOut}
+                  >
+                    Logout
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
@@ -284,6 +311,13 @@ export default function RegistrationStatusPage() {
                     }
                   >
                     Submit Details Again
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
+                    onClick={logOut}
+                  >
+                    Logout
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
