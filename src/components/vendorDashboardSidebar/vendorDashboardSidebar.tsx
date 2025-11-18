@@ -291,7 +291,7 @@ export default function Sidebar() {
                     <div className="flex items-center gap-3">
                       <div className="text-pink-600">{menu.icon}</div>
                       {open && (
-                        <span className="font-medium text-gray-700">
+                        <span className="font-medium text-gray-700 text-left">
                           {menu.title}
                         </span>
                       )}

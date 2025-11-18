@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-const DashboardHeader = () => {
+const DashboardHeader = ({ vendorName }: { vendorName: string }) => {
   return (
     <motion.div
       initial={{
@@ -18,7 +18,7 @@ const DashboardHeader = () => {
       }}
     >
       <h1 className="text-3xl font-bold">
-        Hello, <span className="text-[#DC3173]">Administrator</span>
+        Hello, <span className="text-[#DC3173]">{vendorName}</span>
       </h1>
       <p className="text-gray-500 mt-1">
         Welcome to your food delivery dashboard overview

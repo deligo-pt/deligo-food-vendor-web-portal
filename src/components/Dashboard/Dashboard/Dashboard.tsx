@@ -1,11 +1,11 @@
 "use client";
 
-import DashboardHeader from "@/components/Dashboard/DashboardHeader";
-import PopularCategories from "@/components/Dashboard/PopularCategories";
-import RecentOrders from "@/components/Dashboard/RecentOrders";
-import StatCard from "@/components/Dashboard/StatCard";
-import StatusCard from "@/components/Dashboard/StatusCard";
-import TopProducts from "@/components/Dashboard/TopProducts";
+import DashboardHeader from "@/src/components/Dashboard/Dashboard/DashboardHeader";
+import PopularCategories from "@/src/components/Dashboard/Dashboard/PopularCategories";
+import RecentOrders from "@/src/components/Dashboard/Dashboard/RecentOrders";
+import StatCard from "@/src/components/Dashboard/Dashboard/StatCard";
+import StatusCard from "@/src/components/Dashboard/Dashboard/StatusCard";
+import TopProducts from "@/src/components/Dashboard/Dashboard/TopProducts";
 import { motion } from "framer-motion";
 import {
   CheckCircleIcon,
@@ -17,10 +17,10 @@ import {
   XCircleIcon,
 } from "lucide-react";
 
-const Dashboard = () => {
+const Dashboard = ({ vendorName }: { vendorName: string }) => {
   return (
     <div className="max-w-7xl mx-auto">
-      <DashboardHeader />
+      <DashboardHeader vendorName={vendorName} />
       <motion.div
         className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"
         initial={{
