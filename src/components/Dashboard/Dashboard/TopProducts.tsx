@@ -1,51 +1,29 @@
 "use client";
 
+import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
 import { StarIcon } from "lucide-react";
 import Image from "next/image";
 
-const products = [
-  {
-    id: 1,
-    name: "Burger Palace",
-    image:
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    orders: 342,
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    name: "Fresh Salads",
-    image:
-      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    orders: 278,
-    rating: 4.7,
-  },
-  {
-    id: 3,
-    name: "Pizza Express",
-    image:
-      "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    orders: 256,
-    rating: 4.6,
-  },
-  {
-    id: 4,
-    name: "Sushi Master",
-    image:
-      "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    orders: 201,
-    rating: 4.9,
-  },
-];
-const TopProducts = () => {
+// const products = [
+//   {
+//     id: 1,
+//     name: "Burger Palace",
+//     image:
+//       "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+//     orders: 342,
+//     rating: 4.8,
+//   },
+// ];
+
+const TopProducts = ({ products }: { products: TProduct[] }) => {
   return (
     <div className="bg-white rounded-lg shadow p-6 border border-gray-100">
       <h3 className="text-lg font-semibold mb-4">Top rated Products</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {products.map((product, index) => (
+        {products?.map((product, index) => (
           <motion.div
-            key={product.id}
+            key={product._id}
             className="bg-gray-50 rounded-lg overflow-hidden"
             initial={{
               opacity: 0,
@@ -66,7 +44,7 @@ const TopProducts = () => {
           >
             <div className="h-32 w-full overflow-hidden">
               <Image
-                src={product.image}
+                src={product.images?.[0] || ""}
                 alt={product.name}
                 className="w-full h-full object-cover"
                 width={500}
@@ -82,10 +60,10 @@ const TopProducts = () => {
                     className="text-amber-400 mr-1"
                     fill="currentColor"
                   />
-                  <span className="text-sm">{product.rating}</span>
+                  <span className="text-sm">{product?.rating?.average}</span>
                 </div>
                 <span className="text-sm text-gray-600">
-                  {product.orders} orders
+                  {/* {product.orders} orders */}
                 </span>
               </div>
             </div>

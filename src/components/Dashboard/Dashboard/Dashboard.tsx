@@ -6,6 +6,7 @@ import RecentOrders from "@/src/components/Dashboard/Dashboard/RecentOrders";
 import StatCard from "@/src/components/Dashboard/Dashboard/StatCard";
 import StatusCard from "@/src/components/Dashboard/Dashboard/StatusCard";
 import TopProducts from "@/src/components/Dashboard/Dashboard/TopProducts";
+import { TAnalytics } from "@/src/types/analytics.type";
 import { motion } from "framer-motion";
 import {
   CheckCircleIcon,
@@ -17,7 +18,12 @@ import {
   XCircleIcon,
 } from "lucide-react";
 
-const Dashboard = ({ vendorName }: { vendorName: string }) => {
+interface IProps {
+  vendorName: string;
+  analyticsData: TAnalytics;
+}
+
+const Dashboard = ({ vendorName, analyticsData }: IProps) => {
   return (
     <div className="max-w-7xl mx-auto">
       <DashboardHeader vendorName={vendorName} />
@@ -37,9 +43,9 @@ const Dashboard = ({ vendorName }: { vendorName: string }) => {
         }}
       >
         <StatCard
-          title="Total Vendors"
-          value="124"
-          description="Active food partners"
+          title="Total Items"
+          value={analyticsData?.totalProducts?.toLocaleString() || "0"}
+          description="Total listed products"
           icon={<StoreIcon />}
           color="#DC3173"
         />
@@ -74,26 +80,26 @@ const Dashboard = ({ vendorName }: { vendorName: string }) => {
         }}
       >
         <StatusCard
-          title="New Orders"
-          value="28"
+          title="Total Orders"
+          value={analyticsData?.totalOrders?.toLocaleString() || "0"}
           icon={<ShoppingBagIcon />}
           color="#DC3173"
         />
         <StatusCard
-          title="Processing"
-          value="16"
+          title="Pending"
+          value={analyticsData?.pendingOrders?.toLocaleString() || "0"}
           icon={<TrendingUpIcon />}
           color="#DC3173"
         />
         <StatusCard
           title="Completed"
-          value="345"
+          value={analyticsData?.completedOrders?.toLocaleString() || "0"}
           icon={<CheckCircleIcon />}
           color="#DC3173"
         />
         <StatusCard
           title="Cancelled"
-          value="12"
+          value={analyticsData?.cancelledOrders?.toLocaleString() || "0"}
           icon={<XCircleIcon />}
           color="#DC3173"
         />
@@ -135,7 +141,7 @@ const Dashboard = ({ vendorName }: { vendorName: string }) => {
           delay: 0.8,
         }}
       >
-        <TopProducts />
+        <TopProducts products={analyticsData?.topRatedProducts} />
       </motion.div>
     </div>
   );
