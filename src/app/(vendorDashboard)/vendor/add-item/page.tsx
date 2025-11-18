@@ -13,7 +13,6 @@ export default async function AddItemPage() {
 
     if (result?.success) {
       initialData = result?.data?.data || [];
-      console.log(result);
     }
   } catch (err) {
     console.error("Server fetch error:", err);
