@@ -61,11 +61,17 @@ export default function BankDetailsPage() {
     try {
       const accessToken = getCookie("accessToken");
       const decoded = jwtDecode(accessToken || "") as { id: string };
+
+      const bankDetails = {
+        bankDetails: data,
+      };
+
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(bankDetails));
+
       const result = (await updateData(
         "/vendors/" + decoded?.id,
-        {
-          bankDetails: data,
-        },
+        formData,
         {
           headers: { authorization: accessToken },
         }

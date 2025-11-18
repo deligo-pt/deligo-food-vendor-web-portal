@@ -208,15 +208,16 @@ const AddYourBusinessLocation = () => {
       const accessToken = getCookie("accessToken");
       const decoded = jwtDecode(accessToken || "") as { id: string };
 
-      const result = (await updateData(
-        "/vendors/" + decoded?.id,
-        {
-          businessLocation: data,
-        },
-        {
-          headers: { authorization: accessToken },
-        }
-      )) as unknown as TResponse<any>;
+      const businessLocation = {
+        businessLocation: data,
+      };
+
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(businessLocation));
+
+      const result = (await updateData("/vendors/" + decoded?.id, formData, {
+        headers: { authorization: accessToken },
+      })) as unknown as TResponse<any>;
 
       if (result.success) {
         toast.success("Business location updated successfully!", {

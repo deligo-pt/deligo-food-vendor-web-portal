@@ -62,18 +62,19 @@ export default function PersonalDetailsPage() {
       const accessToken = getCookie("accessToken");
       const decoded = jwtDecode(accessToken || "") as { id: string };
 
-      const result = (await updateData(
-        "/vendors/" + decoded?.id,
-        {
-          name: { firstName: data.firstName, lastName: data.lastName },
-          contactNumber: data.phoneNumber,
+      const personalDetails = {
+        name: { firstName: data.firstName, lastName: data.lastName },
+        contactNumber: data.phoneNumber,
+      };
+
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(personalDetails));
+
+      const result = (await updateData("/vendors/" + decoded?.id, formData, {
+        headers: {
+          authorization: accessToken,
         },
-        {
-          headers: {
-            authorization: accessToken,
-          },
-        }
-      )) as unknown as TResponse<any>;
+      })) as unknown as TResponse<any>;
 
       if (result.success) {
         toast.success("Personal details updated successfully!", {

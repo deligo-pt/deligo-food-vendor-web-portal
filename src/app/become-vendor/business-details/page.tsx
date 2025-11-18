@@ -92,23 +92,22 @@ export default function BusinessDetailsPage() {
     try {
       const accessToken = getCookie("accessToken");
       const decoded = jwtDecode(accessToken || "") as { id: string };
-      console.log({
-        ...data,
-        NIF: data.NIF.toUpperCase(),
-        businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
-        noOfBranch: Number(data.branches),
-      });
+
+      const businessDetails = {
+        businessDetails: {
+          ...data,
+          NIF: data.NIF.toUpperCase(),
+          businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
+          noOfBranch: Number(data.branches),
+        },
+      };
+
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(businessDetails));
 
       const result = (await updateData(
         "/vendors/" + decoded?.id,
-        {
-          businessDetails: {
-            ...data,
-            NIF: data.NIF.toUpperCase(),
-            businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
-            noOfBranch: Number(data.branches),
-          },
-        },
+        formData,
         {
           headers: { authorization: accessToken },
         }
