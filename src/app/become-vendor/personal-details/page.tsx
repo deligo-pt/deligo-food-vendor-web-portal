@@ -28,7 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import parsePhoneNumberFromString from "libphonenumber-js";
-import { Mail, Phone, User } from "lucide-react";
+import { ArrowLeftCircle, Mail, Phone, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { PhoneInput } from "react-international-phone";
@@ -143,7 +143,16 @@ export default function PersonalDetailsPage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-lg"
       >
-        <Card className="shadow-xl border border-white/60 backdrop-blur-xl bg-white/80 rounded-2xl p-6">
+        <Card className="shadow-xl border border-white/60 backdrop-blur-xl bg-white/80 rounded-2xl p-6 relative">
+          <div className="absolute top-3 left-0">
+            <Button
+              onClick={() => router.push("/")}
+              variant="link"
+              className="inline-flex items-center px-4 text-sm gap-2 text-[#DC3173] p-0 h-4 cursor-pointer"
+            >
+              <ArrowLeftCircle /> Go Home
+            </Button>
+          </div>
           <CardHeader className="text-center space-y-3">
             <motion.div
               initial={{ scale: 0 }}
