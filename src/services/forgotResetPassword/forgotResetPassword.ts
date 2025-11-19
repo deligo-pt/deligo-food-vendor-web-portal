@@ -1,7 +1,7 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
-import { TResponse } from "@/types";
+import { TResponse } from "@/src/types";
 
 export const forgotPasswordReq = async (data: { email: string }) => {
   const result = (await serverRequest.post("auth/forgot-password", {
