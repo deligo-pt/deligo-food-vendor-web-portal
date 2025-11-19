@@ -198,7 +198,10 @@ export default function Topbar({ sidebarWidth = 280, vendor }: Props) {
                   >
                     <button
                       className="w-full px-4 py-3 flex items-center gap-2 text-gray-700 hover:bg-pink-50"
-                      onClick={() => setProfileOpen(false)}
+                      onClick={() => {
+                        setProfileOpen(false);
+                        router.push("/vendor/profile");
+                      }}
                     >
                       <User size={16} /> Profile
                     </button>
