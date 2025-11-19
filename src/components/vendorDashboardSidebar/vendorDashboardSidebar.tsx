@@ -144,24 +144,13 @@ export default function Sidebar() {
       ],
     },
     {
-      id: "integrations",
-      title: "Integrations",
-      icon: <Plug size={18} />,
-      items: [
-        { name: "POS Integration", path: "/vendor/pos" },
-        { name: "Delivery Partner", path: "/vendor/delivery-partner" },
-        { name: "Marketing Tools", path: "/vendor/marketing" },
-        { name: "API Access", path: "/vendor/api-access" },
-      ],
-    },
-    {
       id: "reports",
       title: "Reports",
       icon: <FileText size={18} />,
       items: [
         { name: "Sales Report", path: "/vendor/sales-report" },
         { name: "Tax Report", path: "/vendor/tax-report" },
-        { name: "Custom Report", path: "/vendor/custom-report" },
+        { name: "Customer Report", path: "/vendor/customer-report" },
       ],
     },
     {
@@ -171,7 +160,7 @@ export default function Sidebar() {
       items: [
         { name: "Business Info", path: "/vendor/business-info" },
         { name: "Notifications", path: "/vendor/notifications" },
-        { name: "Payment Settings", path: "/vendor/payment-settings" },
+        { name: "Change Password", path: "/vendor/change-password" },
         { name: "Theme & Branding", path: "/vendor/theme" },
       ],
     },
