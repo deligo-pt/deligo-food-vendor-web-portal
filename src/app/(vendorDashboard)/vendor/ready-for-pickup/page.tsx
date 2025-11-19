@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* app/vendor/ready-for-pickup/page.tsx */
+
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -19,17 +19,8 @@ import {
   Check,
   BellRing,
   Loader2,
-  MapPinLine,
 } from "lucide-react";
 
-/**
- * Glovo-style vendor page with auto-assign nearest rider on accept.
- * - Simulated riders with lat/lon and availability.
- * - Orders have lat/lon (mock) for distance calculation.
- * - Uses Haversine distance to find nearest rider.
- *
- * Replace simulated data with real API + geocoding for production.
- */
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -114,7 +105,7 @@ function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
 }
 
 /* Format price */
-const formatPrice = (n: number) => `${n.toFixed(2)}$`;
+const formatPrice = (n: number) => `${n.toFixed(2)}€`;
 
 /* ---------------------- Page Component ---------------------- */
 export default function VendorAutoAssignPage() {
