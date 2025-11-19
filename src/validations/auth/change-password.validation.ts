@@ -1,14 +1,10 @@
 import z from "zod";
 
-export const forgotPasswordValidation = z.object({
-  email: z.email("Invalid email address").nonempty("Email is required"),
-});
-
-export const resetPasswordValidation = z
+export const changePasswordValidation = z
   .object({
-    email: z.email("Invalid email address").nonempty("Email is required"),
+    oldPassword: z.string().nonempty("Old password is required"),
 
-    password: z
+    newPassword: z
       .string()
       .min(8, "New password must be at least 8 characters long")
       .refine(
@@ -48,7 +44,7 @@ export const resetPasswordValidation = z
         "Confirm password must contain at least one special character"
       ),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });

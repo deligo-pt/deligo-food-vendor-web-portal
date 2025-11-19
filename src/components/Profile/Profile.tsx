@@ -6,6 +6,7 @@ import ProfilePhotoUpload from "@/src/components/Profile/ProfilePhotoUpload";
 import { ProfileSection } from "@/src/components/Profile/ProfileSection";
 import { USER_STATUS } from "@/src/consts/user.const";
 import { TVendor } from "@/src/types/vendor.type";
+import { format } from "date-fns";
 import { motion } from "framer-motion";
 import {
   BriefcaseIcon,
@@ -40,6 +41,8 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
     };
     return colors[status];
   };
+
+  console.log(vendor.lastLoginAt!);
 
   const accountAge = Math.floor(
     (new Date().getTime() - new Date(vendor.createdAt).getTime()) /
@@ -301,14 +304,19 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
             delay={0.35}
           >
             <div className="space-y-1">
-              <ProfileInfoRow
-                label="Last Login"
-                value={new Date(vendor.lastLoginAt!).toLocaleString()}
-                icon={ClockIcon}
-              />
+              {vendor.lastLoginAt && (
+                <ProfileInfoRow
+                  label="Last Login"
+                  value={format(
+                    vendor.lastLoginAt,
+                    "hh:mm aa, do MMM yyyy"
+                  ).toLocaleString()}
+                  icon={ClockIcon}
+                />
+              )}
               <ProfileInfoRow
                 label="Account Created"
-                value={new Date(vendor.createdAt).toLocaleDateString()}
+                value={format(vendor.createdAt, "do MMM yyyy")}
                 icon={CalendarIcon}
               />
               <ProfileInfoRow
