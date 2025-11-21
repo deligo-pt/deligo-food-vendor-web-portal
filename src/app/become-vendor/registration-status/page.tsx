@@ -9,6 +9,7 @@ import {
 } from "@/src/components/ui/card";
 import { USER_STATUS } from "@/src/consts/user.const";
 import { TResponse } from "@/src/types";
+import { TVendor } from "@/src/types/vendor.type";
 import { getCookie, removeCookie } from "@/src/utils/cookies";
 import { fetchData } from "@/src/utils/requests";
 import { motion } from "framer-motion";
@@ -51,20 +52,22 @@ export default function RegistrationStatusPage() {
               headers: {
                 authorization: token,
               },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            })) as unknown as TResponse<any>;
+            })) as unknown as TResponse<TVendor>;
 
             if (result.success) {
               setRemarks(result.data.remarks || "");
               setStatus(result.data.status);
             }
-          } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } catch (error: any) {
+            if (error?.response) logOut();
             console.log(error);
           }
         };
         fetchUserData(decoded.id, accessToken);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -284,21 +287,13 @@ export default function RegistrationStatusPage() {
                 <>
                   <Button
                     className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
-                    onClick={() => router.push("/vendor/dashboard")}
-                  >
-                    Go to Dashboard
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
                     onClick={logOut}
                   >
-                    Logout
+                    Login Again
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    You can check your application status anytime in your vendor
-                    dashboard.
+                    To get access to your dashboard you need to login again.
                   </p>
                 </>
               )}
