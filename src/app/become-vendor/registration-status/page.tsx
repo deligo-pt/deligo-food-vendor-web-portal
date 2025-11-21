@@ -301,22 +301,13 @@ export default function RegistrationStatusPage() {
                 <>
                   <Button
                     className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
-                    onClick={() =>
-                      router.push("/become-vendor/personal-details")
-                    }
+                    onClick={logOut}
                   >
                     Submit Details Again
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
-                    onClick={logOut}
-                  >
-                    Logout
-                  </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    Your application has been rejected.
+                    Your application has been rejected. You can try again.
                   </p>
                 </>
               )}
