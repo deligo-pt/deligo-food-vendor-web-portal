@@ -7,13 +7,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**",
       },
-<<<<<<< HEAD
-=======
       {
         protocol: "http",
         hostname: "**",
       },
->>>>>>> refs/remotes/origin/sayed
     ],
   },
 };
