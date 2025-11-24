@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { serverRequest } from "@/lib/serverFetch";
 import NewOrders from "@/src/components/Dashboard/Orders/NewOrders/NewOrders";
 import { TResponse } from "@/src/types";

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { serverRequest } from "@/lib/serverFetch";
 import { ProductForm } from "@/src/components/Dashboard/Products/ProductForm";
 import { TResponse } from "@/src/types";
