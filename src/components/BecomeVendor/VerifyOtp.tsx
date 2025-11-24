@@ -54,9 +54,9 @@ export default function VerifyOtp({ email }: { email: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const toastId = toast.loading("Verifying OTP...");
     const finalOtp = otp.join("");
     if (finalOtp.length === 4) {
+      const toastId = toast.loading("Verifying OTP...");
       try {
         const result = (await postData(
           "/auth/verify-otp",
@@ -70,7 +70,7 @@ export default function VerifyOtp({ email }: { email: string }) {
         if (result.success) {
           setCookie("accessToken", result.data.accessToken, 7);
           setCookie("refreshToken", result.data.refreshToken, 365);
-          toast.success("OTP verified successfully!", { id: toastId });
+          toast.success(result.message||"OTP verified successfully!", { id: toastId });
           router.push("/become-vendor/personal-details");
           return;
         }

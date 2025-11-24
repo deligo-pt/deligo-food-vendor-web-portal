@@ -109,7 +109,7 @@ export default function BusinessDetailsForm({
         toast.success("Business details updated successfully!", {
           id: toastId,
         });
-        router.push("/become-vendor/bank-details");
+        router.push("/become-vendor/business-location");
         return;
       } else {
         toast.error(result?.message || "Business details update failed", {
