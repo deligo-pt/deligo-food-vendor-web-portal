@@ -1,9 +1,9 @@
 import VerifyOtp from "@/src/components/BecomeVendor/VerifyOtp";
 
-export default function VerifyOtpPage({
+export default async function VerifyOtpPage({
   searchParams,
 }: {
-  searchParams: { email: string };
+  searchParams: Promise<{ email: string }>;
 }) {
-  return <VerifyOtp email={searchParams.email || ""} />;
+  return <VerifyOtp email={(await searchParams).email || ""} />;
 }

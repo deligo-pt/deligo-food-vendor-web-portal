@@ -1,9 +1,9 @@
 import LoginForm from "@/src/components/Login/LoginForm";
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { redirect: string };
+  searchParams: Promise<{ redirect: string }>;
 }) {
-  return <LoginForm redirect={searchParams.redirect || ""} />;
+  return <LoginForm redirect={(await searchParams).redirect || ""} />;
 }
