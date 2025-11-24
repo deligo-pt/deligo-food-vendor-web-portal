@@ -1,0 +1,78 @@
+import { ORDER_STATUS } from "@/src/consts/order.const";
+
+export type TOrder = {
+  _id?: string;
+
+  // Relationships
+  orderId: string;
+  customerId: string;
+  vendorId: string;
+  deliveryPartnerId?: string; // assigned after vendor accepts
+  useCart?: boolean;
+
+  // Items
+  items: {
+    productId: string;
+    name: string;
+    quantity: number;
+    price: number;
+    subtotal: number;
+  }[];
+
+  // Pricing & Payment
+  totalItems: number;
+  totalPrice: number;
+  discount?: number;
+  finalAmount: number;
+  paymentMethod: "CARD" | "MOBILE";
+  paymentStatus: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+
+  // Order Lifecycle
+  // orderStatus: keyof typeof ORDER_STATUS;
+  orderStatus: keyof typeof ORDER_STATUS;
+
+  remarks?: string;
+  // OTP Verification
+  deliveryOtp?: string; // generated when vendor accepts
+  isOtpVerified?: boolean; // vendor verifies driver OTP
+
+  // Address & Location
+  deliveryAddress: {
+    street?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    zipCode?: string;
+    latitude?: number;
+    longitude?: number;
+    isActive: boolean;
+  }[];
+
+  pickupAddress?: {
+    // vendor’s location
+    streetAddress: string;
+    streetNumber: string;
+    city: string;
+    postalCode: string;
+    latitude?: number;
+    longitude?: number;
+    geoAccuracy?: number; // meters
+  };
+
+  // Delivery Details
+  deliveryCharge?: number;
+  estimatedDeliveryTime?: string; // e.g., "30 mins"
+  deliveredAt?: Date;
+
+  // Status Tracking
+  isPaid: boolean;
+  isDeleted: boolean;
+
+  // Ratings (optional, for later)
+  rating?: {
+    vendorRating?: number;
+    deliveryRating?: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+};
