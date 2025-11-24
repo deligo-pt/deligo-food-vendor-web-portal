@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* app/vendor/ready-for-pickup/page.tsx */
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -19,17 +18,8 @@ import {
   Check,
   BellRing,
   Loader2,
-  MapPinLine,
 } from "lucide-react";
 
-/**
- * Glovo-style vendor page with auto-assign nearest rider on accept.
- * - Simulated riders with lat/lon and availability.
- * - Orders have lat/lon (mock) for distance calculation.
- * - Uses Haversine distance to find nearest rider.
- *
- * Replace simulated data with real API + geocoding for production.
- */
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -114,7 +104,7 @@ function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
 }
 
 /* Format price */
-const formatPrice = (n: number) => `${n.toFixed(2)}$`;
+const formatPrice = (n: number) => `${n.toFixed(2)}€`;
 
 /* ---------------------- Page Component ---------------------- */
 export default function VendorAutoAssignPage() {
@@ -471,11 +461,13 @@ function MiniStat({ title, value, icon, color }: { title: string; value: number;
 /* Status pill */
 function StatusPill({ status, small }: { status: OrderStatus; small?: boolean }) {
   const map: Record<OrderStatus, { label: string; bg: string; color: string }> = {
-    ready: { label: "READY", bg: "#FFE1EC", color: PRIMARY },
-    assigned: { label: "ASSIGNED", bg: "#E8F4FF", color: "#0B67E6" },
-    picked: { label: "PICKED", bg: "#E8FFF0", color: "#0F8A3E" },
-    cancelled: { label: "CANCELLED", bg: "#FFEDEC", color: "#E53935" },
-  };
+  new: { label: "NEW", bg: "#FFF5CC", color: "#D4A100" },  // ← ADD THIS
+  ready: { label: "READY", bg: "#FFE1EC", color: PRIMARY },
+  assigned: { label: "ASSIGNED", bg: "#E8F4FF", color: "#0B67E6" },
+  picked: { label: "PICKED", bg: "#E8FFF0", color: "#0F8A3E" },
+  cancelled: { label: "CANCELLED", bg: "#FFEDEC", color: "#E53935" },
+};
+
   const s = map[status];
   return (
     <div className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2 ${small ? "text-sm" : ""}`} style={{ background: s.bg, color: s.color }}>
