@@ -31,6 +31,7 @@ export default function RegistrationStatusPage() {
   const router = useRouter();
   const [status, setStatus] = useState("");
   const [remarks, setRemarks] = useState("");
+  const [decodedStatus, setDecodedStatus] = useState("");
 
   const logOut = () => {
     removeCookie("accessToken");
@@ -44,8 +45,10 @@ export default function RegistrationStatusPage() {
       const decoded = jwtDecode(accessToken || "") as {
         email: string;
         id: string;
+        status: string;
       };
       if (decoded?.email) {
+        setDecodedStatus(decoded.status);
         const fetchUserData = async (id: string, token: string) => {
           try {
             const result = (await fetchData(`/vendors/${id}`, {
@@ -287,7 +290,11 @@ export default function RegistrationStatusPage() {
                 <>
                   <Button
                     className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
-                    onClick={logOut}
+                    onClick={() =>
+                      decodedStatus === status
+                        ? router.push("/become-vendor/personal-details")
+                        : logOut()
+                    }
                   >
                     Login Again
                   </Button>
@@ -301,7 +308,11 @@ export default function RegistrationStatusPage() {
                 <>
                   <Button
                     className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
-                    onClick={logOut}
+                    onClick={() =>
+                      decodedStatus === status
+                        ? router.push("/become-vendor/personal-details")
+                        : logOut()
+                    }
                   >
                     Submit Details Again
                   </Button>
