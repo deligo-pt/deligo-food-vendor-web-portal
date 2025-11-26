@@ -2,11 +2,11 @@ export const dynamic = "force-dynamic";
 
 import { serverRequest } from "@/lib/serverFetch";
 import NewOrders from "@/src/components/Dashboard/Orders/NewOrders/NewOrders";
-import { TResponse } from "@/src/types";
+import { TMeta, TResponse } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 
 export default async function NewOrdersPage() {
-  let initialData: TOrder[] = [] as TOrder[];
+  const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };
 
   try {
     const result = (await serverRequest.get(
@@ -14,7 +14,8 @@ export default async function NewOrdersPage() {
     )) as unknown as TResponse<TOrder[]>;
 
     if (result?.success) {
-      initialData = result?.data || [];
+      initialData.data = result.data || [];
+      initialData.meta = result.meta;
     }
   } catch (err) {
     console.error("Server fetch error:", err);
@@ -22,5 +23,5 @@ export default async function NewOrdersPage() {
 
   console.log(initialData);
 
-  return <NewOrders />;
+  return <NewOrders ordersResult={initialData} />;
 }

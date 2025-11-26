@@ -6,11 +6,8 @@ import { TVendor } from "@/src/types/vendor.type";
 
 export const updateVendorData = async (id: string, data: Partial<TVendor>) => {
   try {
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(data));
-
     const result = (await serverRequest.patch(`/vendors/${id}`, {
-      data: formData,
+      data,
     })) as TResponse<TVendor>;
 
     return result;

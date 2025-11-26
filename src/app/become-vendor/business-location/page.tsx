@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/src/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { TResponse } from "@/src/types";
 import { getCookie } from "@/src/utils/cookies";
 import { fetchData, updateData } from "@/src/utils/requests";
@@ -20,7 +20,7 @@ import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { ArrowLeftCircle, Save, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -32,207 +32,209 @@ declare global {
 
 type LocationFormType = {
   streetAddress: string;
-  streetNumber: string;
   city: string;
   postalCode: string;
+  country: string;
 };
+
+const formFields = [
+  {
+    label: "Street Address",
+    name: "streetAddress",
+  },
+  {
+    label: "City",
+    name: "city",
+  },
+  {
+    label: "Postal Code",
+    name: "postalCode",
+  },
+  {
+    label: "Country",
+    name: "country",
+  },
+];
+
+const GOOGLE_API_URL = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBHT9ARgpTJIEdvsiaD72Gf7SUUXz-Xqfg&libraries=places`;
 
 const AddYourBusinessLocation = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<any>(null);
+  const geocoderRef = useRef<any>(null);
   const router = useRouter();
+
+  const [locationCoordinates, setLocationCoordinates] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+
   const form = useForm<LocationFormType>({
     resolver: zodResolver(businessLocationValidation),
     defaultValues: {
       streetAddress: "",
-      streetNumber: "",
       city: "",
       postalCode: "",
+      country: "",
     },
   });
 
-  useEffect(() => {
-    const loadScript = (url: string) => {
-      if (document.querySelector(`script[src="${url}"]`)) return;
-      const script = document.createElement("script");
-      script.src = url;
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-    };
+  /** --- Extract and Set Address Fields --- */
+  const fillAddressFields = useCallback(
+    (components: any[]) => {
+      const address: any = {};
+      components.forEach((c) => {
+        if (c.types.includes("route")) address.streetAddress = c.long_name;
+        if (c.types.includes("street_number"))
+          address.streetNumber = c.long_name;
+        if (c.types.includes("locality")) address.city = c.long_name;
+        if (c.types.includes("postal_code")) address.postalCode = c.long_name;
+        if (c.types.includes("country")) address.country = c.long_name;
+      });
 
-    loadScript(
-      `https://maps.googleapis.com/maps/api/js?key=AIzaSyBHT9ARgpTJIEdvsiaD72Gf7SUUXz-Xqfg&libraries=places`
-    );
+      Object.entries(address).forEach(([key, value]) =>
+        form.setValue(key as keyof LocationFormType, (value || "") as string)
+      );
+    },
+    [form]
+  );
 
-    const interval = setInterval(async () => {
-      if (window.google && window.google.maps && window.google.maps.places) {
-        clearInterval(interval);
-
-        const defaultLocation = { lat: 40.4168, lng: -3.7038 }; // Madrid
-
-        // --- Initialize Map
-        const map = new window.google.maps.Map(mapRef.current, {
-          center: defaultLocation,
-          zoom: 12,
-        });
-
-        markerRef.current = new window.google.maps.Marker({
-          map,
-          position: defaultLocation,
-          animation: window.google.maps.Animation.DROP,
-        });
-
-        const geocoder = new window.google.maps.Geocoder();
-
-        // --- Autocomplete
-        const input = document.getElementById(
-          "autocomplete"
-        ) as HTMLInputElement;
-        const autocomplete = new window.google.maps.places.Autocomplete(input, {
-          fields: ["address_components", "geometry", "formatted_address"],
-          types: ["address"],
-        });
-
-        autocomplete.addListener("place_changed", () => {
-          const place = autocomplete.getPlace();
-          if (!place.geometry || !place.address_components) return;
-
-          const location = place.geometry.location;
-          map.setCenter(location);
-          map.setZoom(15);
-          markerRef.current.setPosition(location);
-
-          fillAddressFields(place.address_components);
-        });
-
-        // --- Map click listener
-        map.addListener("click", (e: any) => {
-          const clickedLocation = e.latLng;
-          markerRef.current.setPosition(clickedLocation);
-          map.setCenter(clickedLocation);
-
-          geocoder.geocode(
-            { location: clickedLocation },
-            (results: any, status: any) => {
-              if (status === "OK" && results[0]) {
-                const addressComponents = results[0].address_components;
-                fillAddressFields(addressComponents);
-              }
-            }
-          );
-        });
-
-        // --- Helper for form updates
-        const fillAddressFields = (components: any) => {
-          const address: any = {};
-          components.forEach((c: any) => {
-            const type = c.types[0];
-            switch (type) {
-              case "route":
-                address.streetAddress = c.long_name;
-                break;
-              case "street_number":
-                address.streetNumber = c.long_name;
-                break;
-              case "locality":
-                address.city = c.long_name;
-                break;
-              case "postal_code":
-                address.postalCode = c.long_name;
-                break;
-            }
-          });
-
-          form.setValue("streetAddress", address.streetAddress || "");
-          form.setValue("streetNumber", address.streetNumber || "");
-          form.setValue("city", address.city || "");
-          form.setValue("postalCode", address.postalCode || "");
-        };
-
-        // --- Fetch saved data and move marker
-        const accessToken = getCookie("accessToken");
-        if (accessToken) {
-          const decoded = jwtDecode(accessToken || "") as { id: string };
-          try {
-            const result = (await fetchData(`/vendors/${decoded.id}`, {
-              headers: { authorization: accessToken },
-            })) as unknown as TResponse<any>;
-
-            if (result.success) {
-              const loc = result.data.businessLocation;
-
-              form.setValue("streetAddress", loc.streetAddress || "");
-              form.setValue("streetNumber", loc.streetNumber || "");
-              form.setValue("city", loc.city || "");
-              form.setValue("postalCode", loc.postalCode || "");
-
-              // Geocode saved address and move marker without creating a new map
-              const fullAddress = [
-                loc.streetNumber,
-                loc.streetAddress,
-                loc.city,
-                loc.postalCode,
-              ]
-                .filter(Boolean)
-                .join(", ");
-
-              if (fullAddress.trim()) {
-                geocoder.geocode(
-                  { address: fullAddress },
-                  (results: any, status: any) => {
-                    if (status === "OK" && results[0]) {
-                      const location = results[0].geometry.location;
-                      map.setCenter(location);
-                      map.setZoom(15);
-                      markerRef.current.setPosition(location);
-                    }
-                  }
-                );
-              }
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        }
-      }
-    }, 400);
-
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  /** --- Update Marker Position --- */
+  const updateMarker = useCallback((map: any, location: any) => {
+    markerRef.current.setPosition(location);
+    map.setCenter(location);
+    map.setZoom(15);
   }, []);
 
+  /** --- Initialize Google Map & Autocomplete --- */
+  const initializeMap = useCallback(async () => {
+    if (!window.google?.maps) return;
+
+    const defaultLocation = { lat: 40.4168, lng: -3.7038 }; // Madrid
+    const map = new window.google.maps.Map(mapRef.current, {
+      center: defaultLocation,
+      zoom: 12,
+    });
+
+    geocoderRef.current = new window.google.maps.Geocoder();
+
+    markerRef.current = new window.google.maps.Marker({
+      map,
+      position: defaultLocation,
+      animation: window.google.maps.Animation.DROP,
+    });
+
+    /** Autocomplete */
+    const input = document.getElementById("autocomplete") as HTMLInputElement;
+    const autocomplete = new window.google.maps.places.Autocomplete(input, {
+      fields: ["address_components", "geometry"],
+      types: ["address"],
+    });
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) return;
+
+      const loc = place.geometry.location;
+
+      setLocationCoordinates({ latitude: loc.lat(), longitude: loc.lng() });
+      updateMarker(map, loc);
+      fillAddressFields(place.address_components);
+    });
+
+    /** On Map Click */
+    map.addListener("click", (e: any) => {
+      const loc = e.latLng;
+      setLocationCoordinates({ latitude: loc.lat(), longitude: loc.lng() });
+
+      geocoderRef.current.geocode(
+        { location: loc },
+        (results: any, status: string) => {
+          if (status === "OK" && results[0]) {
+            updateMarker(map, loc);
+            fillAddressFields(results[0].address_components);
+          }
+        }
+      );
+    });
+
+    /** Load Saved Vendor Location */
+    const token = getCookie("accessToken");
+    if (!token) return;
+
+    const decoded = jwtDecode(token) as { id: string };
+    const result = (await fetchData(`/vendors/${decoded.id}`, {
+      headers: { authorization: token },
+    })) as TResponse<any>;
+
+    if (!result.success) return;
+
+    const loc = result.data.businessLocation;
+    form.reset({
+      streetAddress: loc.street || "",
+      city: loc.city || "",
+      postalCode: loc.postalCode || "",
+      country: loc.country || "",
+    });
+
+    if (loc.latitude && loc.longitude) {
+      const savedLoc = new window.google.maps.LatLng(
+        loc.latitude,
+        loc.longitude
+      );
+      setLocationCoordinates({
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+      });
+      updateMarker(map, savedLoc);
+    }
+  }, [fillAddressFields, form, updateMarker]);
+
+  /** --- Load Google Maps Script Once --- */
+  useEffect(() => {
+    if (document.querySelector(`script[src="${GOOGLE_API_URL}"]`)) {
+      initializeMap();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = GOOGLE_API_URL;
+    script.async = true;
+    script.onload = initializeMap;
+    document.body.appendChild(script);
+  }, [initializeMap]);
+
+  /** --- Submit Handler --- */
   const handleSave = async (data: LocationFormType) => {
     const toastId = toast.loading("Updating...");
+
     try {
       const accessToken = getCookie("accessToken");
       const decoded = jwtDecode(accessToken || "") as { id: string };
 
-      const businessLocation = {
-        businessLocation: data,
+      const payload = {
+        businessLocation: {
+          street: data.streetAddress,
+          city: data.city,
+          postalCode: data.postalCode,
+          country: data.country,
+          latitude: locationCoordinates.latitude,
+          longitude: locationCoordinates.longitude,
+        },
       };
 
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(businessLocation));
-
-      const result = (await updateData("/vendors/" + decoded?.id, formData, {
+      const result = (await updateData("/vendors/" + decoded?.id, payload, {
         headers: { authorization: accessToken },
       })) as unknown as TResponse<any>;
 
-      if (result.success) {
-        toast.success("Business location updated successfully!", {
-          id: toastId,
-        });
-        router.push("/become-vendor/bank-details");
-        return;
-      }
-      toast.error(result.message, { id: toastId });
-    } catch (error: any) {
-      console.log(error);
-      toast.error(
-        error?.response?.data?.message || "Business location update failed",
-        { id: toastId }
-      );
+      if (!result.success) throw new Error(result.message);
+
+      toast.success("Business location updated!", { id: toastId });
+      router.push("/become-vendor/bank-details");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Update failed", {
+        id: toastId,
+      });
     }
   };
 
@@ -243,15 +245,14 @@ const AddYourBusinessLocation = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="relative py-1">
-        <Button
-          onClick={() => router.push("/become-vendor/business-details")}
-          variant="link"
-          className="inline-flex items-center text-sm gap-2 text-[#DC3173] p-0 px-0! h-4 cursor-pointer absolute -top-6"
-        >
-          <ArrowLeftCircle /> Go Back
-        </Button>
-      </div>
+      <Button
+        onClick={() => router.push("/become-vendor/business-details")}
+        variant="link"
+        className="inline-flex items-center gap-2 text-[#DC3173] absolute -top-6"
+      >
+        <ArrowLeftCircle /> Go Back
+      </Button>
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSave)}
@@ -263,91 +264,41 @@ const AddYourBusinessLocation = () => {
             <input
               id="autocomplete"
               placeholder="Search your business address..."
-              className="pl-10 py-3 text-base rounded-xl focus-visible:ring-2 focus-visible:ring-[#DC3173] w-full border border-gray-300"
+              className="pl-10 py-3 rounded-xl border w-full"
             />
           </div>
 
-          {/* Map */}
           <div
             ref={mapRef}
-            className="w-full h-80 rounded-xl shadow-md border border-gray-300"
+            className="w-full h-80 rounded-xl shadow-md border"
           />
 
-          {/* Address Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
+            {formFields.map((field) => (
               <FormField
+                key={field.name}
                 control={form.control}
-                name="streetAddress"
-                render={({ field }) => (
+                name={field.name as keyof LocationFormType}
+                render={({ field: formField }) => (
                   <FormItem>
-                    <FormLabel>Street Address</FormLabel>
+                    <FormLabel>{field.label}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Street Address" />
+                      <Input {...formField} placeholder={field.label} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div>
-              <FormField
-                control={form.control}
-                name="streetNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Street Number</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Street Number" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div>
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="City" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div>
-              <FormField
-                control={form.control}
-                name="postalCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Postal Code</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Postal Code" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            ))}
           </div>
 
           <motion.button
             type="submit"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-[#DC3173] text-white font-semibold rounded-xl shadow-md hover:bg-[#c42c67] transition"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#DC3173] text-white rounded-xl"
           >
-            <Save className="w-5 h-5" />
-            Save Location & Next
+            <Save className="w-5 h-5" /> Save Location & Next
           </motion.button>
         </form>
       </Form>

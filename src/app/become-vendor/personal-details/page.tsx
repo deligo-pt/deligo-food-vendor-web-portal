@@ -67,14 +67,15 @@ export default function PersonalDetailsPage() {
         contactNumber: data.phoneNumber,
       };
 
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(personalDetails));
-
-      const result = (await updateData("/vendors/" + decoded?.id, formData, {
-        headers: {
-          authorization: accessToken,
-        },
-      })) as unknown as TResponse<any>;
+      const result = (await updateData(
+        "/vendors/" + decoded?.id,
+        personalDetails,
+        {
+          headers: {
+            authorization: accessToken,
+          },
+        }
+      )) as unknown as TResponse<any>;
 
       if (result.success) {
         toast.success("Personal details updated successfully!", {

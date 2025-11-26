@@ -49,7 +49,7 @@ export type TVendor = {
     businessType: string;
     businessLicenseNumber?: string;
     NIF?: string;
-    noOfBranch: number;
+    totalBranches: number;
     openingHours?: string; // e.g. "09:00 AM"
     closingHours?: string; // e.g. "11:00 PM"
     closingDays?: string[]; // ["Friday", "Public Holidays"]

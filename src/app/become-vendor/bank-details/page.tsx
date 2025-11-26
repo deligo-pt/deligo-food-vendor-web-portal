@@ -66,12 +66,9 @@ export default function BankDetailsPage() {
         bankDetails: data,
       };
 
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(bankDetails));
-
       const result = (await updateData(
         "/vendors/" + decoded?.id,
-        formData,
+        bankDetails,
         {
           headers: { authorization: accessToken },
         }

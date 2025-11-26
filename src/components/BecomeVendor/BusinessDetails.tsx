@@ -77,7 +77,7 @@ export default function BusinessDetailsForm({
       businessLicenseNumber:
         vendor?.businessDetails?.businessLicenseNumber || "",
       NIF: vendor?.businessDetails?.NIF || "",
-      branches: vendor?.businessDetails?.noOfBranch?.toString() || "",
+      branches: vendor?.businessDetails?.totalBranches?.toString() || "",
       openingHours: vendor?.businessDetails?.openingHours || "",
       closingHours: vendor?.businessDetails?.closingHours || "",
       closingDays: vendor?.businessDetails?.closingDays || [],
@@ -96,7 +96,7 @@ export default function BusinessDetailsForm({
           ...data,
           NIF: data.NIF.toUpperCase(),
           businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
-          noOfBranch: Number(data.branches),
+          totalBranches: Number(data.branches),
         },
       };
 

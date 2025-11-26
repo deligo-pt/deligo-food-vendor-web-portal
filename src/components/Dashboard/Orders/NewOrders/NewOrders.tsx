@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { TMeta } from "@/src/types";
+import { TOrder } from "@/src/types/order.type";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle,
@@ -32,6 +34,13 @@ const CARD_BG = "#FFFFFF";
 const PINK_SOFT = "#FFE1EC";
 
 const PINK_BORDER = "#FFD0E1";
+
+interface IProps {
+  ordersResult: {
+    data: TOrder[];
+    meta?: TMeta;
+  };
+}
 
 type Status = "new" | "accepted" | "preparing" | "ready";
 type Order = {
@@ -107,10 +116,12 @@ const incomingPool: Order[] = [
   },
 ];
 
-export default function NewOrders() {
+export default function NewOrders({ ordersResult }: IProps) {
   const [orders, setOrders] = useState<Order[]>(baseOrders);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<"all" | Status | string>("all");
+
+  console.log(ordersResult);
 
   /* Live incoming simulation: add one order every 12s */
   useEffect(() => {
@@ -285,7 +296,11 @@ export default function NewOrders() {
 
                         <div className="flex items-center gap-2 mt-3">
                           {order.status === "new" && (
-                            <Button size="sm" onClick={() => accept(order.id)}>
+                            <Button
+                              size="sm"
+                              onClick={() => accept(order.id)}
+                              className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                            >
                               Accept
                             </Button>
                           )}
@@ -293,6 +308,7 @@ export default function NewOrders() {
                             <Button
                               size="sm"
                               onClick={() => startPreparing(order.id)}
+                              className="bg-sky-500 hover:bg-sky-600"
                             >
                               Start
                             </Button>
@@ -301,6 +317,7 @@ export default function NewOrders() {
                             <Button
                               size="sm"
                               onClick={() => markReady(order.id)}
+                              className="bg-green-500 hover:bg-green-600"
                             >
                               Mark Ready
                             </Button>

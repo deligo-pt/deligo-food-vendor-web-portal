@@ -7,11 +7,11 @@ export const businessLocationValidation = z.object({
     .min(5, "Street Address must be at least 5 characters")
     .max(100, "Street Address must be at most 100 characters"),
 
-  streetNumber: z
-    .string()
-    .nonempty("Street Number is required")
-    .min(1, "Street Number must be at least 1 character")
-    .max(10, "Street Number must be at most 10 characters"),
+  // streetNumber: z
+  //   .string()
+  //   .nonempty("Street Number is required")
+  //   .min(1, "Street Number must be at least 1 character")
+  //   .max(10, "Street Number must be at most 10 characters"),
 
   city: z
     .string()
@@ -24,4 +24,10 @@ export const businessLocationValidation = z.object({
     .nonempty("Postal Code is required")
     .min(4, "Postal Code must be at least 4 characters")
     .max(10, "Postal Code must be at most 10 characters"),
+
+  country: z
+    .string()
+    .nonempty("Country is required")
+    .min(2, "Country must be at least 2 characters")
+    .max(50, "Country must be at most 50 characters"),
 });
