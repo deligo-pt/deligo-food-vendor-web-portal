@@ -248,7 +248,7 @@ const AddYourBusinessLocation = () => {
       <Button
         onClick={() => router.push("/become-vendor/business-details")}
         variant="link"
-        className="inline-flex items-center gap-2 text-[#DC3173] absolute -top-6"
+        className="inline-flex items-center gap-2 text-[#DC3173] absolute top-0.5 px-0! cursor-pointer"
       >
         <ArrowLeftCircle /> Go Back
       </Button>

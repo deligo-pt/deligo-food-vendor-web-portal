@@ -214,7 +214,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
               />
               <ProfileInfoRow
                 label="Number of Branches"
-                value={vendor.businessDetails?.noOfBranch}
+                value={vendor.businessDetails?.totalBranches}
                 icon={NetworkIcon}
               />
               <ProfileInfoRow
