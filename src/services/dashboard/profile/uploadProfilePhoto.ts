@@ -3,17 +3,12 @@
 import { serverRequest } from "@/lib/serverFetch";
 import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
-import { jwtDecode } from "jwt-decode";
-import { cookies } from "next/headers";
 
 export const uploadProfilePhoto = async (file: File) => {
-  const accessToken = (await cookies())?.get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as { id: string };
-
   const formData = new FormData();
   formData.append("file", file);
 
-  const result = (await serverRequest.patch(`/vendors/${decoded.id}`, {
+  const result = (await serverRequest.patch("/profile", {
     data: formData,
   })) as TResponse<TVendor>;
 

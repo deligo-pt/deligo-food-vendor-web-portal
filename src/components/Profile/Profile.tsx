@@ -42,8 +42,6 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
     return colors[status];
   };
 
-  console.log(vendor.lastLoginAt!);
-
   const accountAge = Math.floor(
     (new Date().getTime() - new Date(vendor.createdAt).getTime()) /
       (1000 * 60 * 60 * 24)

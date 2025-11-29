@@ -9,9 +9,9 @@ export default async function NewOrdersPage() {
   const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };
 
   try {
-    const result = (await serverRequest.get(
-      "orders/new"
-    )) as unknown as TResponse<TOrder[]>;
+    const result = (await serverRequest.get("/orders")) as unknown as TResponse<
+      TOrder[]
+    >;
 
     if (result?.success) {
       initialData.data = result.data || [];
@@ -20,8 +20,6 @@ export default async function NewOrdersPage() {
   } catch (err) {
     console.error("Server fetch error:", err);
   }
-
-  console.log(initialData);
 
   return <NewOrders ordersResult={initialData} />;
 }

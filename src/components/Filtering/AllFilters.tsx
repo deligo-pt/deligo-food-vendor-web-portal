@@ -125,10 +125,12 @@ export default function AllFilters({ sortOptions, filterOptions }: IProps) {
               className="text-[#DC3173] border-[#DC3173]"
             >
               {paramFilters[option.key]}
-              <X
-                className="ml-2 h-4 w-4"
-                onClick={() => removeFilter(option.key)}
-              />
+              <span>
+                <X
+                  className="ml-2 h-4 w-4"
+                  onClick={() => removeFilter(option.key)}
+                />
+              </span>
             </Badge>
           ) : (
             ""
