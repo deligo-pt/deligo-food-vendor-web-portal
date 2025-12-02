@@ -29,6 +29,8 @@ import { productValidation } from "@/src/validations/product/product.validation"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
   ImageIcon,
   InfoIcon,
   PackageIcon,
@@ -36,7 +38,6 @@ import {
   SaveIcon,
   StarIcon,
   TagIcon,
-  TruckIcon,
   XIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -60,10 +61,6 @@ const tabs = [
   {
     name: "Stock",
     icon: <PackageIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Delivery",
-    icon: <TruckIcon className="h-5 w-5" />,
   },
   {
     name: "Attributes",
@@ -101,18 +98,12 @@ export function ProductForm({
       unit: "",
       availabilityStatus: "",
       tags: [],
-      deliveryType: "",
-      estimatedTime: "",
-      deliveryCharge: 0,
-      freeDeliveryAbove: 0,
       organic: true,
       weight: 0,
       packagingType: "",
       storageTemperature: "",
       isFeatured: false,
       isAvailableForPreOrder: false,
-      status: "",
-      origin: "",
     },
   });
 
@@ -155,12 +146,6 @@ export function ProductForm({
           availabilityStatus: data.availabilityStatus,
         },
         tags: data.tags,
-        deliveryInfo: {
-          deliveryType: data.deliveryType,
-          estimatedTime: data.estimatedTime,
-          deliveryCharge: data.deliveryCharge,
-          freeDeliveryAbove: data.freeDeliveryAbove,
-        },
         attributes: {
           organic: data.organic,
           weight: data.weight,
@@ -170,8 +155,6 @@ export function ProductForm({
         meta: {
           isFeatured: data.isFeatured,
           isAvailableForPreOrder: data.isAvailableForPreOrder,
-          status: data.status,
-          origin: data.origin,
         },
         images: images,
       };
@@ -382,50 +365,6 @@ export function ProductForm({
                         </FormItem>
                       )}
                     />
-                    {/* <FormField
-                        control={form.control}
-                        name="subCategory"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="subCategory"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Subcategory
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300"
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select a subcategory" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="organic">
-                                    Organic
-                                  </SelectItem>
-                                  <SelectItem value="vegan">Vegan</SelectItem>
-                                  <SelectItem value="gluten-free">
-                                    Gluten Free
-                                  </SelectItem>
-                                  <SelectItem value="keto">Keto</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      /> */}
-                    {/* </div> */}
-
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Tags
@@ -489,27 +428,6 @@ export function ProductForm({
                         )}
                       />
                     </div>
-                    <FormField
-                      control={form.control}
-                      name="origin"
-                      render={({ field }) => (
-                        <FormItem className="gap-1">
-                          <FormLabel
-                            htmlFor="origin"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Origin
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </motion.div>
                 )}
                 {/* Images Tab */}
@@ -814,145 +732,8 @@ export function ProductForm({
                     </div>
                   </motion.div>
                 )}
-                {/* Delivery Tab */}
-                {activeTab === 4 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      Delivery Information
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="deliveryType"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="deliveryType"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Delivery Type
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300"
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select a selivery type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Instant">
-                                    Instant
-                                  </SelectItem>
-                                  <SelectItem value="Scheduled">
-                                    Scheduled
-                                  </SelectItem>
-                                  <SelectItem value="Pickup">Pickup</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="estimatedTime"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="estimatedTime"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Estimated Delivery Time
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="deliveryCharge"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="deliveryCharge"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Delivery Charge (€)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="freeDeliveryAbove"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="freeDeliveryAbove"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Free Delivery Above (€)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </motion.div>
-                )}
                 {/* Attributes Tab */}
-                {activeTab === 5 && (
+                {activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -1114,7 +895,7 @@ export function ProductForm({
                   </motion.div>
                 )}
                 {/* Meta Tab */}
-                {activeTab === 6 && (
+                {activeTab === 5 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -1186,44 +967,6 @@ export function ProductForm({
                         )}
                       />
                     </div>
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="gap-1">
-                          <FormLabel
-                            htmlFor="status"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Status
-                          </FormLabel>
-                          <FormControl>
-                            <Select
-                              value={field.value}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger
-                                className={cn(
-                                  "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                  fieldState.invalid
-                                    ? "border-destructive"
-                                    : "border-gray-300"
-                                )}
-                              >
-                                <SelectValue placeholder="Select a status" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Active">Active</SelectItem>
-                                <SelectItem value="Inactive">
-                                  Inactive
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </motion.div>
                 )}
                 <div className="flex justify-between pt-6">
@@ -1243,18 +986,7 @@ export function ProductForm({
                         : "bg-gray-200 hover:bg-gray-300 text-gray-800"
                     }`}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                      <ChevronLeftIcon className="h-4 w-4" />
                     <span>Previous</span>
                   </motion.button>
                   {activeTab === tabs.length - 1 ? (
@@ -1287,18 +1019,7 @@ export function ProductForm({
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2"
                     >
                       <span>Next</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <ChevronRightIcon className="h-4 w-4" />
                     </motion.button>
                   )}
                 </div>

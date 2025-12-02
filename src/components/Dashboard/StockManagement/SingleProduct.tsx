@@ -25,7 +25,7 @@ const getStockStatus = (stock: number) => {
     };
   if (stock < 10)
     return {
-      text: "Low Stock",
+      text: "Limited",
       color: "#EA580C",
       icon: <AlertTriangle size={16} />,
     };

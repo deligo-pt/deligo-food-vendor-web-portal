@@ -43,23 +43,6 @@ export const productValidation = z.object({
 
   tags: z.array(z.string()),
 
-  deliveryType: z
-    .string()
-    .min(2, "Delivery type must be at least 2 characters")
-    .max(50, "Delivery type must be at most 50 characters")
-    .nonempty("Delivery type is required"),
-
-  estimatedTime: z
-    .string()
-    .min(2, "Estimated time must be at least 2 characters")
-    .max(50, "Estimated time must be at most 50 characters")
-    .nonempty("Estimated time is required"),
-
-  deliveryCharge: z.number().min(0, "Delivery charge must be at least 0"),
-
-  freeDeliveryAbove: z
-    .number()
-    .min(0, "Free delivery above must be at least 0"),
   organic: z.boolean().optional(),
 
   weight: z.number().min(0, "Weight must be at least 0").optional(),
@@ -79,16 +62,4 @@ export const productValidation = z.object({
   isFeatured: z.boolean().optional(),
 
   isAvailableForPreOrder: z.boolean().optional(),
-
-  status: z
-    .string()
-    .min(2, "Status must be at least 2 characters")
-    .max(50, "Status must be at most 50 characters")
-    .optional(),
-
-  origin: z
-    .string()
-    .min(2, "Origin must be at least 2 characters")
-    .max(50, "Origin must be at most 50 characters")
-    .optional(),
 });

@@ -1,0 +1,26 @@
+"use server";
+
+import { serverRequest } from "@/lib/serverFetch";
+import { TResponse } from "@/src/types";
+import { TOffer } from "@/src/types/offer.type";
+
+export const createOffer = async (payload: TOffer) => {
+  try {
+    const result = (await serverRequest.patch("/offers/create-offer", {
+      data: payload,
+    })) as TResponse<null>;
+
+    if (result.success) {
+      return { success: true, data: result.data, message: result.message };
+    }
+    return { success: false, data: result.data, message: result.message };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.log(error);
+    return {
+      success: false,
+      data: null,
+      message: error?.response?.data?.message || "Offer creation failed",
+    };
+  }
+};
