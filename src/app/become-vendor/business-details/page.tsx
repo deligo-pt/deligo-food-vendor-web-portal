@@ -22,7 +22,7 @@ export default async function BusinessDetailsPage() {
       businessCategories = result?.data?.data;
     }
   } catch (err) {
-    console.error("Server fetchProducts error:", err);
+    console.error("Server fetch error:", err);
   }
 
   try {
@@ -34,7 +34,7 @@ export default async function BusinessDetailsPage() {
       vendor = result?.data;
     }
   } catch (err) {
-    console.error("Server fetchProducts error:", err);
+    console.error("Server fetch error:", err);
   }
 
   return (
