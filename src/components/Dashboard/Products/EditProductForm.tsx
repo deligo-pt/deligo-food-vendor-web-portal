@@ -35,7 +35,6 @@ import {
   SaveIcon,
   StarIcon,
   TagIcon,
-  TruckIcon,
   XIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -59,10 +58,6 @@ const tabs = [
   {
     name: "Stock",
     icon: <PackageIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Delivery",
-    icon: <TruckIcon className="h-5 w-5" />,
   },
   {
     name: "Attributes",
@@ -102,10 +97,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
       unit: prevData?.stock?.unit || "",
       availabilityStatus: prevData?.stock?.availabilityStatus || "",
       tags: prevData?.tags || [],
-      deliveryType: prevData?.deliveryInfo?.deliveryType || "",
-      estimatedTime: prevData?.deliveryInfo?.estimatedTime || "",
-      deliveryCharge: prevData?.deliveryInfo?.deliveryCharge || 0,
-      freeDeliveryAbove: prevData?.deliveryInfo?.freeDeliveryAbove || 0,
       organic: (prevData?.attributes?.organic as boolean) || true,
       weight: (prevData?.attributes?.weight as number) || 0,
       packagingType: (prevData?.attributes?.packagingType as string) || "",
@@ -113,8 +104,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
         (prevData?.attributes?.storageTemperature as string) || "",
       isFeatured: prevData?.meta?.isFeatured || false,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
-      status: prevData?.meta?.status || "",
-      origin: prevData?.meta?.origin || "",
     },
   });
 
@@ -156,12 +145,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
           availabilityStatus: data.availabilityStatus,
         },
         tags: data.tags,
-        deliveryInfo: {
-          deliveryType: data.deliveryType,
-          estimatedTime: data.estimatedTime,
-          deliveryCharge: data.deliveryCharge,
-          freeDeliveryAbove: data.freeDeliveryAbove,
-        },
         attributes: {
           organic: data.organic,
           weight: data.weight,
@@ -171,8 +154,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
         meta: {
           isFeatured: data.isFeatured,
           isAvailableForPreOrder: data.isAvailableForPreOrder,
-          status: data.status,
-          origin: data.origin,
         },
         images: images,
       };
@@ -458,27 +439,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                         )}
                       />
                     </div>
-                    <FormField
-                      control={form.control}
-                      name="origin"
-                      render={({ field }) => (
-                        <FormItem className="gap-1">
-                          <FormLabel
-                            htmlFor="origin"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Origin
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </motion.div>
                 )}
                 {/* Images Tab */}
@@ -783,145 +743,8 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                     </div>
                   </motion.div>
                 )}
-                {/* Delivery Tab */}
-                {activeTab === 4 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      Delivery Information
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="deliveryType"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="deliveryType"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Delivery Type
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300"
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select a selivery type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Instant">
-                                    Instant
-                                  </SelectItem>
-                                  <SelectItem value="Scheduled">
-                                    Scheduled
-                                  </SelectItem>
-                                  <SelectItem value="Pickup">Pickup</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="estimatedTime"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="estimatedTime"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Estimated Delivery Time
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="deliveryCharge"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="deliveryCharge"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Delivery Charge (€)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="freeDeliveryAbove"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="freeDeliveryAbove"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Free Delivery Above (€)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </motion.div>
-                )}
                 {/* Attributes Tab */}
-                {activeTab === 5 && (
+                {activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -1083,7 +906,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                   </motion.div>
                 )}
                 {/* Meta Tab */}
-                {activeTab === 6 && (
+                {activeTab === 5 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -1155,44 +978,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                         )}
                       />
                     </div>
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="gap-1">
-                          <FormLabel
-                            htmlFor="status"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Status
-                          </FormLabel>
-                          <FormControl>
-                            <Select
-                              value={field.value}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger
-                                className={cn(
-                                  "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                  fieldState.invalid
-                                    ? "border-destructive"
-                                    : "border-gray-300"
-                                )}
-                              >
-                                <SelectValue placeholder="Select a status" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Active">Active</SelectItem>
-                                <SelectItem value="Inactive">
-                                  Inactive
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </motion.div>
                 )}
                 <div className="flex justify-between pt-6">
