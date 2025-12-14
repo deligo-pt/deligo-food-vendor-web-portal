@@ -2,13 +2,13 @@ import { ORDER_STATUS } from "@/src/consts/order.const";
 
 export type TOrder = {
   _id?: string;
+  flash?: boolean;
 
   // Relationships
   orderId: string;
   customerId: string;
   vendorId: string;
   deliveryPartnerId?: string; // assigned after vendor accepts
-  useCart?: boolean;
 
   // Items
   items: {
@@ -28,8 +28,8 @@ export type TOrder = {
   paymentStatus: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
 
   // Order Lifecycle
-  // orderStatus: keyof typeof ORDER_STATUS;
   orderStatus: keyof typeof ORDER_STATUS;
+  cancelReason?: string;
 
   remarks?: string;
   // OTP Verification
@@ -42,17 +42,18 @@ export type TOrder = {
     city?: string;
     state?: string;
     country?: string;
-    zipCode?: string;
+    postalCode?: string;
     latitude?: number;
     longitude?: number;
-    isActive: boolean;
-  }[];
+    gooAccuracy?: number;
+  };
 
   pickupAddress?: {
     // vendor’s location
-    streetAddress: string;
-    streetNumber: string;
+    street: string;
     city: string;
+    state: string;
+    country: string;
     postalCode: string;
     latitude?: number;
     longitude?: number;

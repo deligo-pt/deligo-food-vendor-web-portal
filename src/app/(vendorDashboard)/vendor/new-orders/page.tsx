@@ -9,9 +9,9 @@ export default async function NewOrdersPage() {
   const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };
 
   try {
-    const result = (await serverRequest.get("/orders")) as unknown as TResponse<
-      TOrder[]
-    >;
+    const result = (await serverRequest.get("/orders", {
+      params: { isPaid: true },
+    })) as unknown as TResponse<TOrder[]>;
 
     if (result?.success) {
       initialData.data = result.data || [];
