@@ -15,7 +15,6 @@ import {
   LayoutDashboard,
   Menu,
   MessageCircle,
-  Plug,
   Settings,
   ShoppingBag,
   Star,
@@ -30,11 +29,157 @@ import Image from "next/image";
 
 const PRIMARY = "#DC3173";
 
+const MENU = [
+  {
+    id: "home",
+    title: "Home",
+    icon: <Home size={18} />,
+    path: "/",
+  },
+  {
+    id: "dashboard",
+    title: "Dashboard",
+    icon: <LayoutDashboard size={18} />,
+    path: "/vendor/dashboard",
+  },
+  {
+    id: "orders",
+    title: "Orders",
+    icon: <ShoppingBag size={18} />,
+    items: [
+      { name: "New Orders", path: "/vendor/new-orders" },
+      { name: "Preparing", path: "/vendor/preparing" },
+      { name: "Ready for Pickup", path: "/vendor/ready-for-pickup" },
+      { name: "Ongoing Deliveries", path: "/vendor/ongoing-deliveries" },
+      { name: "Completed", path: "/vendor/completed" },
+      { name: "Cancelled", path: "/vendor/cancelled" },
+    ],
+  },
+  {
+    id: "menu",
+    title: "Menu & Items",
+    icon: <Layers size={18} />,
+    items: [
+      { name: "All Items", path: "/vendor/all-items" },
+      { name: "Categories", path: "/vendor/categories" },
+      { name: "Add New Item", path: "/vendor/add-item" },
+      { name: "Stock Management", path: "/vendor/stock" },
+      { name: "Add-ons", path: "/vendor/addons" },
+    ],
+  },
+  {
+    id: "payments",
+    title: "Payments & Earnings",
+    icon: <EuroIcon size={18} />,
+    items: [
+      { name: "Payouts", path: "/vendor/payouts" },
+      { name: "Earnings Summary", path: "/vendor/earnings" },
+      { name: "Payment Settings", path: "/vendor/payment-settings" },
+      { name: "Transaction History", path: "/vendor/transactions" },
+    ],
+  },
+  {
+    id: "analytics",
+    title: "Analytics & Insights",
+    icon: <BarChart2 size={18} />,
+    items: [
+      { name: "Sales Analytics", path: "/vendor/sales-analytics" },
+      { name: "Customer Insights", path: "/vendor/customer-insights" },
+      { name: "Order Trends", path: "/vendor/order-trends" },
+      { name: "Top Performing Items", path: "/vendor/top-items" },
+    ],
+  },
+  {
+    id: "reviews",
+    title: "Reviews & Ratings",
+    icon: <Star size={18} />,
+    items: [
+      { name: "Customer Reviews", path: "/vendor/reviews" },
+      { name: "Rating Summary", path: "/vendor/rating-summary" },
+    ],
+  },
+  {
+    id: "inventory",
+    title: "Inventory",
+    icon: <Box size={18} />,
+    items: [
+      { name: "Ingredients", path: "/vendor/ingredients" },
+      { name: "Stock Alerts", path: "/vendor/stock-alerts" },
+      { name: "Suppliers", path: "/vendor/suppliers" },
+    ],
+  },
+  {
+    id: "offers",
+    title: "Offers & Coupons",
+    icon: <Gift size={18} />,
+    items: [
+      { name: "Active Offers", path: "/vendor/offers" },
+      { name: "Create New Offer", path: "/vendor/create-offer" },
+      { name: "Coupon Analytics", path: "/vendor/coupon-analytics" },
+    ],
+  },
+  {
+    id: "staff",
+    title: "Staff Management",
+    icon: <Users size={18} />,
+    items: [
+      { name: "All Staff", path: "/vendor/all-staff" },
+      { name: "Roles & Permissions", path: "/vendor/roles" },
+      { name: "Add New Staff", path: "/vendor/add-staff" },
+    ],
+  },
+  {
+    id: "reports",
+    title: "Reports",
+    icon: <FileText size={18} />,
+    items: [
+      { name: "Sales Report", path: "/vendor/sales-report" },
+      { name: "Tax Report", path: "/vendor/tax-report" },
+      { name: "Customer Report", path: "/vendor/customer-report" },
+    ],
+  },
+  {
+    id: "settings",
+    title: "Settings",
+    icon: <Settings size={18} />,
+    items: [
+      { name: "Business Info", path: "/vendor/business-info" },
+      { name: "Notifications", path: "/vendor/notifications" },
+      { name: "Change Password", path: "/vendor/change-password" },
+      { name: "Theme & Branding", path: "/vendor/theme" },
+    ],
+  },
+  {
+    id: "support",
+    title: "Support Center",
+    icon: <MessageCircle size={18} />,
+    items: [
+      { name: "Chat with Support", path: "/vendor/chat-support" },
+      { name: "Help Articles", path: "/vendor/help" },
+      { name: "Report an Issue", path: "/vendor/report" },
+    ],
+  },
+  {
+    id: "sos",
+    title: "SOS / Emergency",
+    icon: <AlertCircle size={18} />,
+    items: [
+      { name: "Contact Support", path: "/vendor/contact-support" },
+      { name: "Safety Guidelines", path: "/vendor/safety" },
+    ],
+  },
+];
+
 export default function Sidebar() {
+  const pathname = usePathname();
+  const currentMenuId = MENU.find((menu) =>
+    menu.items?.some((item) => pathname.includes(item.path))
+  )?.id;
   const [open, setOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const pathname = usePathname();
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({
+    ...(currentMenuId ? { [currentMenuId]: true } : {}),
+  });
 
   const toggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -43,147 +188,6 @@ export default function Sidebar() {
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "auto";
   }, [mobileOpen]);
-
-  const MENU = [
-    {
-      id: "home",
-      title: "Home",
-      icon: <Home size={18} />,
-      path: "/",
-    },
-    {
-      id: "dashboard",
-      title: "Dashboard",
-      icon: <LayoutDashboard size={18} />,
-      path: "/vendor/dashboard",
-    },
-    {
-      id: "orders",
-      title: "Orders",
-      icon: <ShoppingBag size={18} />,
-      items: [
-        { name: "New Orders", path: "/vendor/new-orders" },
-        { name: "Preparing", path: "/vendor/preparing" },
-        { name: "Ready for Pickup", path: "/vendor/ready-for-pickup" },
-        { name: "Ongoing Deliveries", path: "/vendor/ongoing-deliveries" },
-        { name: "Completed", path: "/vendor/completed" },
-        { name: "Cancelled", path: "/vendor/cancelled" },
-      ],
-    },
-    {
-      id: "menu",
-      title: "Menu & Items",
-      icon: <Layers size={18} />,
-      items: [
-        { name: "All Items", path: "/vendor/all-items" },
-        { name: "Categories", path: "/vendor/categories" },
-        { name: "Add New Item", path: "/vendor/add-item" },
-        { name: "Stock Management", path: "/vendor/stock" },
-        { name: "Add-ons", path: "/vendor/addons" },
-      ],
-    },
-    {
-      id: "payments",
-      title: "Payments & Earnings",
-      icon: <EuroIcon size={18} />,
-      items: [
-        { name: "Payouts", path: "/vendor/payouts" },
-        { name: "Earnings Summary", path: "/vendor/earnings" },
-        { name: "Payment Settings", path: "/vendor/payment-settings" },
-        { name: "Transaction History", path: "/vendor/transactions" },
-      ],
-    },
-    {
-      id: "analytics",
-      title: "Analytics & Insights",
-      icon: <BarChart2 size={18} />,
-      items: [
-        { name: "Sales Analytics", path: "/vendor/sales-analytics" },
-        { name: "Customer Insights", path: "/vendor/customer-insights" },
-        { name: "Order Trends", path: "/vendor/order-trends" },
-        { name: "Top Performing Items", path: "/vendor/top-items" },
-      ],
-    },
-    {
-      id: "reviews",
-      title: "Reviews & Ratings",
-      icon: <Star size={18} />,
-      items: [
-        { name: "Customer Reviews", path: "/vendor/reviews" },
-        { name: "Rating Summary", path: "/vendor/rating-summary" },
-      ],
-    },
-    {
-      id: "inventory",
-      title: "Inventory",
-      icon: <Box size={18} />,
-      items: [
-        { name: "Ingredients", path: "/vendor/ingredients" },
-        { name: "Stock Alerts", path: "/vendor/stock-alerts" },
-        { name: "Suppliers", path: "/vendor/suppliers" },
-      ],
-    },
-    {
-      id: "offers",
-      title: "Offers & Coupons",
-      icon: <Gift size={18} />,
-      items: [
-        { name: "Active Offers", path: "/vendor/offers" },
-        { name: "Create New Offer", path: "/vendor/create-offer" },
-        { name: "Coupon Analytics", path: "/vendor/coupon-analytics" },
-      ],
-    },
-    {
-      id: "staff",
-      title: "Staff Management",
-      icon: <Users size={18} />,
-      items: [
-        { name: "All Staff", path: "/vendor/all-staff" },
-        { name: "Roles & Permissions", path: "/vendor/roles" },
-        { name: "Add New Staff", path: "/vendor/add-staff" },
-      ],
-    },
-    {
-      id: "reports",
-      title: "Reports",
-      icon: <FileText size={18} />,
-      items: [
-        { name: "Sales Report", path: "/vendor/sales-report" },
-        { name: "Tax Report", path: "/vendor/tax-report" },
-        { name: "Customer Report", path: "/vendor/customer-report" },
-      ],
-    },
-    {
-      id: "settings",
-      title: "Settings",
-      icon: <Settings size={18} />,
-      items: [
-        { name: "Business Info", path: "/vendor/business-info" },
-        { name: "Notifications", path: "/vendor/notifications" },
-        { name: "Change Password", path: "/vendor/change-password" },
-        { name: "Theme & Branding", path: "/vendor/theme" },
-      ],
-    },
-    {
-      id: "support",
-      title: "Support Center",
-      icon: <MessageCircle size={18} />,
-      items: [
-        { name: "Chat with Support", path: "/vendor/chat-support" },
-        { name: "Help Articles", path: "/vendor/help" },
-        { name: "Report an Issue", path: "/vendor/report" },
-      ],
-    },
-    {
-      id: "sos",
-      title: "SOS / Emergency",
-      icon: <AlertCircle size={18} />,
-      items: [
-        { name: "Contact Support", path: "/vendor/contact-support" },
-        { name: "Safety Guidelines", path: "/vendor/safety" },
-      ],
-    },
-  ];
 
   return (
     <>
