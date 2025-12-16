@@ -70,7 +70,9 @@ export default function VerifyOtp({ email }: { email: string }) {
         if (result.success) {
           setCookie("accessToken", result.data.accessToken, 7);
           setCookie("refreshToken", result.data.refreshToken, 365);
-          toast.success(result.message||"OTP verified successfully!", { id: toastId });
+          toast.success(result.message || "OTP verified successfully!", {
+            id: toastId,
+          });
           router.push("/become-vendor/personal-details");
           return;
         }
@@ -162,6 +164,7 @@ export default function VerifyOtp({ email }: { email: string }) {
                       ref={(el) => {
                         inputRefs.current[index] = el;
                       }}
+                      autoFocus={true}
                       className="w-14 h-14 text-center text-2xl font-bold rounded-xl border border-gray-300 shadow-sm bg-white focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173] group-hover:border-[#DC3173]/50 transition-all duration-300"
                     />
 
