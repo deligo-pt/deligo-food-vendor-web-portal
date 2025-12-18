@@ -1,7 +1,6 @@
-// FAQSection.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -41,45 +40,86 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="py-20 px-6 sm:px-10 lg:px-20 bg-gray-900 rounded-3xl shadow-2xl">
-      <h2 className="text-4xl font-extrabold text-white mb-10 text-center">
-        Frequently Asked Questions
+    <section className="relative py-24 px-6 sm:px-12 lg:px-28 bg-[#F9FAFB] rounded-3xl overflow-hidden">
+      {/* Soft pink gradient top */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(220,49,115,0.09),_transparent_70%)] pointer-events-none" />
+
+      {/* Heading */}
+      <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-14 text-center tracking-wide">
+        Frequently Asked{" "}
+        <span className="bg-gradient-to-r from-[#DC3173] to-pink-600 bg-clip-text text-transparent">
+          Questions
+        </span>
       </h2>
 
-      <div className="space-y-4 max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto space-y-6 relative z-10">
         {faqData.map((item, i) => (
-          <div
+          <motion.div
             key={i}
-            className="bg-gray-800 rounded-xl overflow-hidden shadow-lg"
+            initial={false}
+            animate={{
+              boxShadow:
+                activeIndex === i
+                  ? "0px 8px 25px rgba(220,49,115,0.25)"
+                  : "0px 4px 12px rgba(0,0,0,0.08)",
+              scale: activeIndex === i ? 1.02 : 1,
+            }}
+            transition={{ type: "spring", stiffness: 220, damping: 20 }}
+            className={`bg-white border rounded-2xl overflow-hidden transition-all duration-300 
+            ${
+              activeIndex === i
+                ? "border-[#DC3173]"
+                : "border-gray-300 hover:border-[#DC3173]/60"
+            }`}
           >
+            {/* Question Row */}
             <button
               onClick={() => toggleAccordion(i)}
-              className="w-full px-6 py-4 flex justify-between items-center text-left text-white font-semibold hover:bg-gray-700 transition-colors"
+              className="w-full px-6 py-6 flex justify-between items-center text-left"
             >
-              <span>{item.question}</span>
+              <span className="text-lg font-semibold text-gray-900">
+                {item.question}
+              </span>
+
               <motion.span
                 animate={{ rotate: activeIndex === i ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.35 }}
+                className="flex items-center justify-center"
               >
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-6 h-6 text-[#DC3173]" />
               </motion.span>
             </button>
 
+            {/* Answer */}
             <AnimatePresence initial={false}>
               {activeIndex === i && (
                 <motion.div
                   key="content"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="px-6 py-4 text-gray-300 bg-gray-800"
+                  initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    transition: {
+                      opacity: { duration: 0.3 },
+                      y: { type: "spring", stiffness: 200, damping: 22 },
+                      scale: { duration: 0.25 },
+                    },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -10,
+                    scale: 0.98,
+                    transition: { duration: 0.2 },
+                  }}
                 >
-                  {item.answer}
+                  <div className="px-6 pb-6 text-gray-600 leading-relaxed">
+                    {item.answer}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
