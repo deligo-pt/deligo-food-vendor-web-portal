@@ -332,7 +332,7 @@ export function ProductForm({
                             htmlFor="category"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Category
+                            Product Category
                           </FormLabel>
                           <FormControl>
                             <Select
@@ -986,7 +986,7 @@ export function ProductForm({
                         : "bg-gray-200 hover:bg-gray-300 text-gray-800"
                     }`}
                   >
-                      <ChevronLeftIcon className="h-4 w-4" />
+                    <ChevronLeftIcon className="h-4 w-4" />
                     <span>Previous</span>
                   </motion.button>
                   {activeTab === tabs.length - 1 ? (
