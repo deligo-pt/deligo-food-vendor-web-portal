@@ -4,8 +4,10 @@
 import { useState } from "react";
 import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 export default function ContactUsPremium() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,13 +33,13 @@ export default function ContactUsPremium() {
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-10 shadow-2xl"
+          className="bg-linear-to-br from-gray-800 to-gray-900 rounded-3xl p-10 shadow-2xl"
         >
           <h2 className="text-4xl font-extrabold text-white mb-4">
-            Need help or want a personal demo?
+            {t('contactUsTitle')}
           </h2>
           <p className="text-gray-300 mb-8">
-            Fill out the form and our team will reach out promptly. Takes less than 2 minutes.
+            {t('contactUsDesc')}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -46,7 +48,7 @@ export default function ContactUsPremium() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Your Name"
+              placeholder={t('nameFieldPlaceholder')}
               required
               className="w-full px-5 py-3 rounded-2xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
             />
@@ -55,7 +57,7 @@ export default function ContactUsPremium() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Your Email"
+              placeholder={t('emailFieldPlaceholder')}
               required
               className="w-full px-5 py-3 rounded-2xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
             />
@@ -64,23 +66,23 @@ export default function ContactUsPremium() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="Phone (Optional)"
+              placeholder={t('phoneFieldPlaceholder')}
               className="w-full px-5 py-3 rounded-2xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
             />
             <textarea
               name="message"
               value={formData.message}
               onChange={handleChange}
-              placeholder="Your Message"
+              placeholder={t('messageFieldPlaceholder')}
               required
               rows={5}
               className="w-full px-5 py-3 rounded-2xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
             />
             <button
               type="submit"
-              className="w-full py-4 rounded-full bg-gradient-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-2xl transition"
+              className="w-full py-4 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-2xl transition"
             >
-              Send Message
+              {t('formCTA')}
             </button>
           </form>
 
@@ -98,29 +100,29 @@ export default function ContactUsPremium() {
             <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-4 hover:bg-[#DC3173]/10 transition cursor-pointer">
               <Mail className="w-6 h-6 text-pink-400" />
               <div className="flex-1 min-w-0">
-  <a
-    href="mailto:support@deligo.pt"
-    className="block text-white font-medium hover:text-pink-400 transition-all truncate"
-    title="support@deligo.pt"
-  >
-    support@deligo.pt
-  </a>
-</div>
+                <a
+                  href="mailto:support@deligo.pt"
+                  className="block text-white font-medium hover:text-pink-400 transition-all truncate"
+                  title="support@deligo.pt"
+                >
+                  support@deligo.pt
+                </a>
+              </div>
             </div>
             <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-4 hover:bg-[#DC3173]/10 transition cursor-pointer">
               <MessageCircle className="w-6 h-6 text-pink-400" />
               <div>
-                <p className="text-gray-300 text-sm">Live Chat</p>
+                <p className="text-gray-300 text-sm">{t('contactUsLiveChat')}</p>
                 <a href="/live-chat" className="text-white font-medium hover:text-pink-400 transition">
-                  Start Chat
+                  {t('contactUsStartChat')}
                 </a>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-4 hover:bg-[#DC3173]/10 transition cursor-pointer">
               <MapPin className="w-6 h-6 text-pink-400" />
               <div>
-                <p className="text-gray-300 text-sm">Office</p>
-                <span className="text-white font-medium">Lisbon, Portugal</span>
+                <p className="text-gray-300 text-sm">{t('contactUsOffice')}</p>
+                <span className="text-white font-medium">{t('contactUsOfficeLocation')}</span>
               </div>
             </div>
           </div>

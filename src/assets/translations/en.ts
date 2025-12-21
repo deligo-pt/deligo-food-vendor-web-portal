@@ -1,4 +1,16 @@
 export const en = {
+    // navigation
+    home: "Home",
+    tools: "Tools",
+    promotions: "Promotions",
+    ads: "Ads",
+    manageProducts: "Manage Products",
+    contactUs: "Contact Us",
+    becomeVendor: "Become a Vendor",
+    login: "Login",
+    becomePartner: "Become a Partner",
+
+
     // hero section
     heroTitle: 'Join Portugal’s Fastest Growing Food & Grocery Delivery Platform',
     heroSubTitle: ' Start selling online in just a few minutes. Manage everything from one dashboard.',
@@ -121,4 +133,70 @@ export const en = {
     faqQuestion5: "What support is available?",
     faqAnswer5: "24/7 multilingual support is available via chat, email, and phone for all vendors.",
 
+    // contact us page
+    contactUsTitle: "Need help or want a personal demo?",
+    contactUsDesc: "Fill out the form and our team will reach out promptly. Takes less than 2 minutes.",
+    nameFieldPlaceholder: "Your Name",
+    emailFieldPlaceholder: "Your Email",
+    phoneFieldPlaceholder: "Phone (Optional)",
+    messageFieldPlaceholder: "Your Message",
+    formCTA: "Send Message",
+    contactUsLiveChat: "Live Chat",
+    contactUsStartChat: "Start Chat",
+    contactUsOffice: "Office",
+    contactUsOfficeLocation: "Lisbon, Portugal",
+
+
+    // login
+    loginTitle: 'Vendor Login',
+    loginDesc: ' Access your vendor dashboard and manage your products, orders, and earnings.',
+    loginCTA: 'Login',
+    loginForgotTitle: 'Forgot your password?',
+    loginResetHere: 'Reset here',
+    loginNewToDeligo: 'New to Deligo?',
+    loginCreateAcc: 'Create an account',
+
+    //tools -> promotions page
+    promotionsHeading: 'Launch Promotions in Minutes & Grow Your Sales',
+    promotionsDesc: 'Create, publish, and track your promotions instantly without any hassle.',
+    promotionsCTA: 'Start a Promotion',
+    promotionFeaturesTitle1: "Fast Promotion Setup",
+    promotionFeaturesDesc1: "Launch your deals in under 5 minutes without any hassle.",
+    promotionFeaturesTitle2: "Reach More Customers",
+    promotionFeaturesDesc2: "Connect instantly with thousands of customers across Portugal.",
+    promotionFeaturesTitle3: "Track Campaign Performance",
+    promotionFeaturesDesc3: "Monitor orders and engagement in real-time for better insights.",
+    promotionFeaturesTitle4: "Weekly Payouts",
+    promotionFeaturesDesc4: "Receive revenue securely and on time, every week.",
+    promotionLivePreview: "Live Preview of Promotions",
+    promotionTitle1: "Lisbon Weekend Sale",
+    promotionTitle2: "Porto Grocery Deal",
+    promotionTitle3: "Bakery Specials",
+    promotionDiscount: 'Discount',
+    promotionTarget: "of target reached",
+    promotionCTAHeading: "Ready to Launch Your First Promotion?",
+    promotionCTADesc: " Fast, easy, and effective – get started in minutes and grow your sales.",
+    promotionCTA: "Start Now",
+
+
+    // footer
+    footerAboutUs: "About Us",
+    footerCareers: "Careers",
+    footerPress: "Press",
+    footerBecomePartner: "Become a Partner",
+    footerHelpCenter: "Help Center",
+    footerVendorLogin: "Vendor Login",
+    footerPrivacyPolicy: "Privacy Policy",
+    footerTerms: "Terms & Conditions",
+    footerCookie: "Cookie Policy",
+    footerSecurity: "Security",
+    footerTitle: "Powering Local Business with",
+    footerTitleSmart: "Smart Delivery",
+    footerCompany: "Company",
+    footerVendors: "Vendors",
+    footerLegal: "Legal",
+    footerConnect: "Connect",
+    footerLanguage: "Language",
+    footerCopyright: "DeliGo — Powered with",
+    footerCopyrightEfficiency: "Efficiency"
 };

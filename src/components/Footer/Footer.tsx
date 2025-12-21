@@ -3,8 +3,10 @@
 import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 export default function FooterDeligoPremium() {
+  const { t } = useTranslation();
   const [language, setLanguage] = useState("PT");
 
   const languages = [
@@ -13,29 +15,29 @@ export default function FooterDeligoPremium() {
   ];
 
   const companyLinks = [
-    { name: "About Us", href: "/about-us" },
-    { name: "Careers", href: "/careers" },
-    { name: "Press", href: "/press" },
+    { name: t('footerAboutUs'), href: "/about-us" },
+    { name: t('footerCareers'), href: "/careers" },
+    { name: t('footerPress'), href: "/press" },
   ];
 
   const vendorLinks = [
-    { name: "Become a Partner", href: "/become-vendor" },
-    { name: "Help Center", href: "/help-center" },
-    { name: "Vendor Login", href: "/login" },
+    { name: t('footerBecomePartner'), href: "/become-vendor" },
+    { name: t('footerHelpCenter'), href: "/help-center" },
+    { name: t('footerVendorLogin'), href: "/login" },
   ];
 
   const legalLinks = [
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Terms & Conditions", href: "/terms" },
-    { name: "Cookie Policy", href: "/cookie-policy" },
-    { name: "Security", href: "/security" },
+    { name: t('footerPrivacyPolicy'), href: "/privacy" },
+    { name: t('footerTerms'), href: "/terms" },
+    { name: t('footerCookie'), href: "/cookie-policy" },
+    { name: t('footerSecurity'), href: "/security" },
   ];
 
   return (
     <footer className="relative bg-[#111] text-white overflow-hidden pt-24 pb-16 px-6 sm:px-12 lg:px-24">
 
       {/* Soft top gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(220,49,115,0.22),_transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(220,49,115,0.22),transparent_70%)] pointer-events-none" />
 
       <motion.h2
         initial={{ opacity: 0, y: -25 }}
@@ -44,8 +46,8 @@ export default function FooterDeligoPremium() {
         transition={{ duration: 0.6 }}
         className="text-3xl sm:text-4xl font-extrabold text-center text-white tracking-wide mb-14"
       >
-        Powering Local Business with{" "}
-        <span className="text-[#DC3173]">Smart Delivery</span>
+        {t('footerTitle')}{" "}
+        <span className="text-[#DC3173]">{t('footerTitleSmart')}</span>
       </motion.h2>
 
       <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-10">
@@ -56,7 +58,7 @@ export default function FooterDeligoPremium() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">Company</h3>
+          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">{t('footerCompany')}</h3>
           <ul className="space-y-2 text-gray-300">
             {companyLinks.map((l, i) => (
               <li key={i}>
@@ -74,7 +76,7 @@ export default function FooterDeligoPremium() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
-          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">Vendors</h3>
+          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">{t('footerVendors')}</h3>
           <ul className="space-y-2 text-gray-300">
             {vendorLinks.map((l, i) => (
               <li key={i}>
@@ -92,7 +94,7 @@ export default function FooterDeligoPremium() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
-          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">Legal</h3>
+          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">{t('footerLegal')}</h3>
           <ul className="space-y-2 text-gray-300">
             {legalLinks.map((l, i) => (
               <li key={i}>
@@ -110,7 +112,7 @@ export default function FooterDeligoPremium() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
         >
-          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">Connect</h3>
+          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">{t('footerConnect')}</h3>
           <div className="flex gap-5 items-center">
             {[Facebook, Instagram, Linkedin, Youtube].map((Icon, i) => (
               <motion.a
@@ -132,7 +134,7 @@ export default function FooterDeligoPremium() {
           transition={{ duration: 0.7, delay: 0.4 }}
         >
           <h3 className="text-lg font-bold mb-3 text-[#DC3173]">
-            Language
+            {t('footerLanguage')}
           </h3>
           <select
             className="bg-[#1b1b1d] text-gray-200 px-4 py-3 rounded-xl border border-gray-600 hover:border-[#DC3173] transition w-full font-medium"
@@ -158,8 +160,8 @@ export default function FooterDeligoPremium() {
         transition={{ duration: 1 }}
         className="text-center text-gray-400 text-sm"
       >
-        © {new Date().getFullYear()} DeliGo — Powered with{" "}
-        <span className="text-[#DC3173] font-bold">Efficiency</span>
+        © {new Date().getFullYear()} {t('footerCopyright')}{" "}
+        <span className="text-[#DC3173] font-bold">{t('footerCopyrightEfficiency')}</span>
       </motion.div>
     </footer>
   );
