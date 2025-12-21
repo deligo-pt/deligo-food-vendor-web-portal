@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { Globe2, Store, ShoppingBag, Headset } from "lucide-react";
-
-const stats = [
-  { id: 1, icon: ShoppingBag, label: "Orders Daily", value: 10000, suffix: "+" },
-  { id: 2, icon: Store, label: "Active Vendors", value: 3000, suffix: "+" },
-  { id: 3, icon: Globe2, label: "Cities in Portugal", value: 50, suffix: "+" },
-  { id: 4, icon: Headset, label: "Support Languages", value: 2, suffix: "" },
-];
+import { useTranslation } from "@/src/hooks/use-translation";
 
 export default function KeyMetrics() {
+  const { t } = useTranslation();
+
+  const stats = [
+    { id: 1, icon: ShoppingBag, label: t('label1'), value: 10000, suffix: "+" },
+    { id: 2, icon: Store, label: t('label2'), value: 3000, suffix: "+" },
+    { id: 3, icon: Globe2, label: t('label3'), value: 50, suffix: "+" },
+    { id: 4, icon: Headset, label: t('label4'), value: 2, suffix: "" },
+  ];
   const [counts, setCounts] = useState(stats.map(() => 0));
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function KeyMetrics() {
 
       <div className="relative z-10 max-w-6xl mx-auto text-center">
         <h2 className="text-4xl sm:text-5xl font-extrabold mb-12 drop-shadow-md">
-          Our Growth & Impact
+          {t('keyMetricsTitle')}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

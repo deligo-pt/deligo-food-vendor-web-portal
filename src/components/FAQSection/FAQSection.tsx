@@ -4,37 +4,36 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useTranslation } from "@/src/hooks/use-translation";
 
-const faqData = [
-  {
-    question: "What documents are required to become a vendor?",
-    answer:
-      "You need a valid business registration, tax ID, and a proof of address. Additional documents may be required depending on your business type.",
-  },
-  {
-    question: "How long does approval take?",
-    answer:
-      "Typically, vendor approval takes 24-48 hours after submitting all required documents.",
-  },
-  {
-    question: "When will I receive payments?",
-    answer:
-      "Payments are processed weekly via SEPA transfer. You can track your earnings in real-time on your dashboard.",
-  },
-  {
-    question: "Can I manage multiple locations?",
-    answer:
-      "Yes, you can add and manage multiple store locations under a single vendor account.",
-  },
-  {
-    question: "What support is available?",
-    answer:
-      "24/7 multilingual support is available via chat, email, and phone for all vendors.",
-  },
-];
 
 export default function FAQSection() {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+
+  const faqData = [
+    {
+      question: t('faqQuestion1'),
+      answer: t('faqAnswer1'),
+    },
+    {
+      question: t('faqQuestion2'),
+      answer: t('faqAnswer2'),
+    },
+    {
+      question: t('faqQuestion3'),
+      answer: t('faqAnswer3'),
+    },
+    {
+      question: t('faqQuestion4'),
+      answer: t('faqAnswer4'),
+    },
+    {
+      question: t('faqQuestion5'),
+      answer: t('faqAnswer5'),
+    },
+  ];
 
   const toggleAccordion = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -47,9 +46,9 @@ export default function FAQSection() {
 
       {/* Heading */}
       <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-14 text-center tracking-wide">
-        Frequently Asked{" "}
+        {t('faqTitle')}{" "}
         <span className="bg-linear-to-r from-[#DC3173] to-pink-600 bg-clip-text text-transparent">
-          Questions
+          {t('faqTitleStrong')}
         </span>
       </h2>
 

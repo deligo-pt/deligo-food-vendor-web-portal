@@ -1,6 +1,12 @@
+'use client'
+
+import { useTranslation } from "@/src/hooks/use-translation";
 import Image from "next/image";
+import Link from "next/link";
 
 const AboutCompany = () => {
+    const { t } = useTranslation();
+
     return (
         <section className="relative py-24 px-6 sm:px-12 lg:px-28 bg-white overflow-hidden">
             {/* Background Gradient */}
@@ -22,41 +28,37 @@ const AboutCompany = () => {
                 {/* Content Section */}
                 <div>
                     <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
-                        Powering the Future of{" "}
+                        {t('aboutCompanyTitle')} {" "}
                         <span className="bg-linear-to-r from-[#DC3173] to-pink-600 bg-clip-text text-transparent">
-                            Local Commerce
+                            {t('aboutCompanyTitleLocal')}
                         </span>
                     </h1>
 
                     <p className="mt-6 text-lg text-gray-600 leading-relaxed">
-                        We are building Portugal’s fastest-growing food & grocery delivery
-                        platform — helping local restaurants, supermarkets, and independent
-                        vendors reach more customers and grow their business online.
+                        {t('aboutCompanyDesc1')}
                     </p>
 
                     <p className="mt-4 text-gray-600 leading-relaxed">
-                        From seamless order management to fast deliveries and real-time
-                        insights, our platform empowers vendors with everything they need
-                        to succeed — all from one simple dashboard.
+                        {t('aboutCompanyDesc2')}
                     </p>
 
                     {/* Stats */}
                     <div className="mt-8 grid grid-cols-2 gap-6">
                         <div className="bg-white rounded-2xl p-6 shadow-sm">
                             <p className="text-3xl font-bold text-[#DC3173]">10K+</p>
-                            <p className="text-gray-600 text-sm mt-1">Orders Delivered</p>
+                            <p className="text-gray-600 text-sm mt-1">{t("aboutCompanyStatDesc")}</p>
                         </div>
                         <div className="bg-white rounded-2xl p-6 shadow-sm">
                             <p className="text-3xl font-bold text-[#DC3173]">500+</p>
-                            <p className="text-gray-600 text-sm mt-1">Active Vendors</p>
+                            <p className="text-gray-600 text-sm mt-1">{t("aboutCompanyStatDesc2")}</p>
                         </div>
                     </div>
 
                     {/* CTA */}
                     <div className="mt-10">
-                        <button className="inline-flex items-center justify-center rounded-full bg-[#DC3173] px-8 py-4 text-white font-semibold shadow-lg hover:bg-pink-600 transition-all">
-                            Join as a Vendor
-                        </button>
+                        <Link href="/become-vendor" className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all">
+                            {t("aboutCompanyCTA")}
+                        </Link>
                     </div>
                 </div>
             </div>
