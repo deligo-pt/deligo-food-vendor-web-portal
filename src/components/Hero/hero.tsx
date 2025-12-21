@@ -1,4 +1,6 @@
 "use client"
+
+import { useTranslation } from '@/src/hooks/use-translation';
 import { motion, Transition, Variants } from 'framer-motion';
 import Link from 'next/link';
 
@@ -28,8 +30,10 @@ const floatingVariants: Variants = {
 };
 
 export default function HeroSectionNextLevel() {
+  const { t } = useTranslation()
+
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-gradient-to-br from-[#1B1B2F] via-[#2D1B3F] to-[#DC3173]">
+    <section className="relative w-full h-screen overflow-hidden bg-linear-to-br from-[#1B1B2F] via-[#2D1B3F] to-[#DC3173]">
       {/* Dynamic Particles / Growth Icons */}
       <motion.div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-10 left-1/4 w-2 h-2 bg-[#F1FAEE] rounded-sm animate-bounce-slow"></div>
@@ -45,7 +49,7 @@ export default function HeroSectionNextLevel() {
           transition={{ ...springTransition, duration: 1.2 }}
           className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#F1FAEE] drop-shadow-xl"
         >
-          Join Portugal’s Fastest Growing Food & Grocery Delivery Platform
+          {t('heroTitle')}
         </motion.h1>
 
         <motion.p
@@ -54,7 +58,7 @@ export default function HeroSectionNextLevel() {
           transition={{ ...springTransition, delay: 0.5, duration: 1 }}
           className="mt-6 text-lg sm:text-xl text-[#F1FAEE] max-w-2xl drop-shadow-md"
         >
-          Start selling online in just a few minutes. Manage everything from one dashboard.
+          {t('heroSubTitle')}
         </motion.p>
 
         <motion.div
@@ -64,10 +68,10 @@ export default function HeroSectionNextLevel() {
           className="mt-8 flex flex-wrap gap-4"
         >
           <Link href="/become-vendor" className="px-6 py-3 bg-[#DC3173] text-white font-semibold rounded-lg shadow-2xl hover:bg-[#a72b5c] transition-all duration-300 transform hover:scale-105 hover:shadow-3xl">
-            Become a Vendor
+            {t('heroVendorCTA')}
           </Link>
           <a href="#about" className="px-6 py-3 bg-[#F1FAEE] text-[#DC3173] font-semibold rounded-lg shadow-2xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-3xl">
-            Learn More
+            {t('heroLearnMoreCTA')}
           </a>
         </motion.div>
       </div>

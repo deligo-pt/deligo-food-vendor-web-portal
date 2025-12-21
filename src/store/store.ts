@@ -1,8 +1,8 @@
 import { create } from "zustand"
 
 type StoreState = {
-    lang: string
-    setLang: (selectedLang: string) => void
+    lang: 'en' | 'pt'
+    setLang: (selectedLang: 'en' | 'pt') => void
 }
 
 export const useStore = create<StoreState>((set) => ({

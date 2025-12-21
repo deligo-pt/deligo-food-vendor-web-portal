@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useStore } from '@/src/store/store';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/src/hooks/use-translation';
 
 
 export default function Navbar() {
@@ -13,19 +14,20 @@ export default function Navbar() {
   const [productSubOpen, setProductSubOpen] = useState(false);
   const [toolsSubOpen, setToolsSubOpen] = useState(false);
   const { lang, setLang } = useStore();
+  const { t } = useTranslation();
 
   const navItems = [
-    { name: 'Home', href: '/' },
+    { name: t('home'), href: '/' },
     {
-      name: 'Tools',
+      name: t('tools'),
       submenu: [
-        { name: 'Promotions', href: '/tools/promotions' },
-        { name: 'Ads', href: '/tools/ads' },
-        { name: 'Manage Products', href: '/tools/manage-products' },
+        { name: t('promotions'), href: '/tools/promotions' },
+        { name: t('ads'), href: '/tools/ads' },
+        { name: t('manageProducts'), href: '/tools/manage-products' },
 
       ],
     },
-    { name: 'Contact Us', href: '/contact-us' },
+    { name: t('contactUs'), href: '/contact-us' },
   ];
 
   return (
@@ -33,7 +35,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Left: Logo */}
-          <div className="flex-shrink-0 flex items-center">
+          <div className="shrink-0 flex items-center">
             {/* Logo Section */}
             <Link
               href="/"
@@ -97,7 +99,7 @@ export default function Navbar() {
             {/* language switcher */}
             <Select
               value={lang}
-              onValueChange={(value) => {
+              onValueChange={(value: 'en' | 'pt') => {
                 setLang(value)
                 console.log("Selected language:", value)
               }}
@@ -113,14 +115,14 @@ export default function Navbar() {
 
             {/* Become a Partner Button */}
             <Link href="/become-vendor" className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all">
-              Become a Vendor
+              {t('becomeVendor')}
             </Link>
             {/* Login Button */}
             <Link
               href="/login"
-              className="ml-4 px-5 py-2 bg-gradient-to-r from-[#DC3173] to-[#a72b5c] text-white font-semibold rounded-full shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
+              className="ml-4 px-5 py-2 bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
             >
-              Login
+              {t('login')}
             </Link>
           </div>
 
@@ -128,7 +130,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3 md:hidden">
             <Select
               value={lang}
-              onValueChange={(value) => {
+              onValueChange={(value: 'en' | 'pt') => {
                 setLang(value)
                 console.log("Selected language:", value)
               }}
@@ -211,8 +213,8 @@ export default function Navbar() {
                 </div>
               ))}
 
-              <Link href="/become-partner" className="block mt-4 px-4 py-2 bg-[#DC3173] text-white font-semibold rounded-lg text-center hover:bg-[#a72b5c]">
-                Become a Partner
+              <Link href="/become-vendor" className="block mt-4 px-4 py-2 bg-[#DC3173] text-white font-semibold rounded-lg text-center hover:bg-[#a72b5c]">
+                {t('becomePartner')}
               </Link>
             </nav>
           </div>

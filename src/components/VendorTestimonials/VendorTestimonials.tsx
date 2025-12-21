@@ -4,51 +4,49 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Quote } from "lucide-react";
 import { useState } from "react";
-
-const testimonials = [
-  {
-    name: "Maria Fernandes",
-    store: "Lisboa Fresh Market",
-    city: "Lisbon",
-    img: "/vendors/maria.jpg",
-    quote:
-      "Since joining the platform, my sales have doubled! The system is easy to use and customers love the fast delivery.",
-  },
-  {
-    name: "João Pereira",
-    store: "O Grelhador",
-    city: "Porto",
-    img: "/vendors/joao.jpg",
-    quote:
-      "A game-changer for my restaurant. We reached hundreds of new customers every week. Highly recommend joining!",
-  },
-  {
-    name: "Ana Silva",
-    store: "Mercado Verde",
-    city: "Coimbra",
-    img: "/vendors/ana.jpg",
-    quote:
-      "I love how transparent the payments are. Weekly payouts make managing finances so much easier.",
-  },
-  {
-    name: "Ricardo Lopes",
-    store: "Café do Bairro",
-    city: "Braga",
-    img: "/vendors/ricardo.jpg",
-    quote:
-      "The platform helped us grow from a local café to a city favorite. The team is always supportive!",
-  },
-];
+import { useTranslation } from "@/src/hooks/use-translation";
 
 export default function VendorTestimonials() {
+  const { t } = useTranslation();
   const [current, setCurrent] = useState(0);
 
   const nextSlide = () => setCurrent((prev) => (prev + 1) % testimonials.length);
   const prevSlide = () =>
     setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
 
+  const testimonials = [
+    {
+      name: t('testiName1'),
+      store: t('testiStore1'),
+      city: t('testiCity1'),
+      quote: t('testiQuote1'),
+      img: "/vendors/maria.jpg",
+    },
+    {
+      name: t('testiName2'),
+      store: t('testiStore2'),
+      city: t('testiCity2'),
+      quote: t('testiQuote2'),
+      img: "/vendors/joao.jpg",
+    },
+    {
+      name: t('testiName3'),
+      store: t('testiStore3'),
+      city: t('testiCity3'),
+      quote: t('testiQuote3'),
+      img: "/vendors/ana.jpg",
+    },
+    {
+      name: t('testiName4'),
+      store: t('testiStore4'),
+      city: t('testiCity4'),
+      quote: t('testiQuote4'),
+      img: "/vendors/ricardo.jpg",
+    },
+  ];
+
   return (
-    <section className="relative overflow-hidden py-24 bg-gradient-to-b from-[#0A0F1F] via-[#111B2E] to-[#0A0F1F]">
+    <section className="relative overflow-hidden py-24 bg-linear-to-b from-[#0A0F1F] via-[#111B2E] to-[#0A0F1F]">
       {/* Background Glows */}
       <div className="absolute inset-0">
         <div className="absolute top-10 left-10 w-72 h-72 bg-[#DC3173]/20 blur-[150px] animate-pulse-slow"></div>
@@ -60,9 +58,9 @@ export default function VendorTestimonials() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#DC3173] to-[#FF6F61] mb-14"
+          className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-[#DC3173] to-[#FF6F61] mb-14"
         >
-          See How Local Businesses are Growing with Us
+          {t('vendorTitle')}
         </motion.h2>
 
         <div className="relative flex items-center justify-center">
@@ -118,11 +116,10 @@ export default function VendorTestimonials() {
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                i === current
-                  ? "bg-gradient-to-r from-[#DC3173] to-[#FF6F61] scale-125"
-                  : "bg-white/30 hover:bg-white/60"
-              }`}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${i === current
+                ? "bg-linear-to-r from-[#DC3173] to-[#FF6F61] scale-125"
+                : "bg-white/30 hover:bg-white/60"
+                }`}
             ></button>
           ))}
         </div>

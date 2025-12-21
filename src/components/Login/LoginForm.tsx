@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/src/components/ui/input";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TResponse } from "@/src/types";
 import { setCookie } from "@/src/utils/cookies";
 import { postData } from "@/src/utils/requests";
@@ -30,6 +31,8 @@ type FormData = {
 };
 
 export default function LoginForm({ redirect }: { redirect?: string }) {
+  const {t} = useTranslation();
+
   const form = useForm<FormData>({
     resolver: zodResolver(loginValidation),
     defaultValues: {
@@ -95,11 +98,10 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
         className="bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md p-10"
       >
         <h1 className="text-4xl font-extrabold text-white text-center mb-8">
-          Vendor Login
+          {t('loginTitle')}
         </h1>
         <p className="text-gray-300 text-center mb-8">
-          Access your vendor dashboard and manage your products, orders, and
-          earnings.
+         {t('loginDesc')}
         </p>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -165,30 +167,30 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
               type="submit"
               className="w-full py-3 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-lg transition"
             >
-              Login
+             {t('loginCTA')}
             </button>
           </form>
         </Form>
 
         {/* Forgot Password */}
         <p className="text-gray-400 text-center mt-4">
-          Forgot your password?{" "}
+          {t('loginForgotTitle')}{" "}
           <Link
             href="/forgot-password"
             className="text-pink-400 font-medium hover:underline"
           >
-            Reset here
+            {t('loginResetHere')}
           </Link>
         </p>
 
         {/* Signup CTA */}
         <p className="text-gray-400 text-center mt-6">
-          New to Deligo?{" "}
+          {t('loginNewToDeligo')}{" "}
           <Link
             href="/become-vendor"
             className="text-pink-400 font-medium hover:underline"
           >
-            Create an account
+            {t('loginCreateAcc')}
           </Link>
         </p>
       </motion.div>
