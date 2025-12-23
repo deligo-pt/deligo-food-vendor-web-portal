@@ -132,18 +132,20 @@ export default function FooterDeligoPremium() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
         >
-          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">Connect</h3>
+          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">
+            {t("footerConnect")}
+          </h3>
           <div className="flex gap-5 items-center">
-            {socials.map(({ icon: Icon, url }, i) => (
+            {socials.map((s, i) => (
               <motion.a
                 key={i}
                 whileHover={{ scale: 1.25 }}
                 className="text-gray-300 hover:text-[#DC3173] transition"
-                href={url}
+                href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Icon className="w-7 h-7" />
+                <s.icon className="w-7 h-7" />
               </motion.a>
             ))}
           </div>
