@@ -30,6 +30,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 type FormValues = {
   email: string;
@@ -38,6 +39,7 @@ type FormValues = {
 };
 
 export default function BecomeVendorPage() {
+  const { t } = useTranslation();
   const form = useForm<FormValues>({
     resolver: zodResolver(becomeVendorValidation),
     defaultValues: {
@@ -90,10 +92,10 @@ export default function BecomeVendorPage() {
       >
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-[#DC3173]">
-            Vendor Registration Steps
+            {t("vendorRegistration")}
           </h2>
           <p className="text-gray-500 text-sm mt-1">
-            Follow these simple steps to become a verified vendor
+            {t("vendorRegistrationDesc")}
           </p>
         </div>
         <StepperFlow />
@@ -119,10 +121,10 @@ export default function BecomeVendorPage() {
               </div>
             </motion.div>
             <CardTitle className="text-3xl font-bold text-[#DC3173] tracking-wide">
-              Become a Vendor
+              {t("becomeVendor")}
             </CardTitle>
             <p className="text-gray-600 text-sm font-medium">
-              Join our partner network and grow with us
+              {t("joinPartnerNetwork")}
             </p>
           </CardHeader>
 
@@ -214,19 +216,19 @@ export default function BecomeVendorPage() {
                             htmlFor="terms"
                             className="cursor-pointer leading-tight text-gray-700"
                           >
-                            I accept the{" "}
+                            {t("iAcceptThe")}{" "}
                             <Link
                               href="/terms"
                               className="text-[#DC3173] font-semibold hover:underline"
                             >
-                              Terms & Conditions
+                              {t("termCondition")}
                             </Link>{" "}
-                            and{" "}
+                            {t("and")}{" "}
                             <Link
                               href="/privacy"
                               className="text-[#DC3173] font-semibold hover:underline"
                             >
-                              Privacy Policy
+                              {t("privacyPolicy")}
                             </Link>
                           </label>
                         </div>
@@ -244,24 +246,23 @@ export default function BecomeVendorPage() {
                   <Button
                     type="submit"
                     disabled={!isFormFilled}
-                    className={`w-full font-semibold py-3 rounded-xl shadow-xl transition-all duration-300 ${
-                      isFormFilled
-                        ? "bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white hover:shadow-pink-200 hover:brightness-110"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    }`}
+                    className={`w-full font-semibold py-3 rounded-xl shadow-xl transition-all duration-300 ${isFormFilled
+                      ? "bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white hover:shadow-pink-200 hover:brightness-110"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
                   >
-                    Confirm & Continue
+                    {t("confirmAndContinue")}
                   </Button>
                 </motion.div>
 
                 {/* Already Vendor */}
                 <div className="text-center text-sm text-gray-600">
-                  Already a Vendor?{" "}
+                  {t("alreadyVendor")}{" "}
                   <Link
                     href="/login"
                     className="text-[#DC3173] font-semibold hover:underline hover:text-[#a72b5c]"
                   >
-                    Login
+                    {t("login")}
                   </Link>
                 </div>
               </form>
