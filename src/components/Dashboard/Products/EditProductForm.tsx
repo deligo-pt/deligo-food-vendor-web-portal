@@ -155,7 +155,6 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
           isFeatured: data.isFeatured,
           isAvailableForPreOrder: data.isAvailableForPreOrder,
         },
-        images: images,
       };
 
       const formData = new FormData();
