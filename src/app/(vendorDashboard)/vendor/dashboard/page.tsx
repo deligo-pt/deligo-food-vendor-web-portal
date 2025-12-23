@@ -11,7 +11,9 @@ export default async function DashboardPage() {
   let analyticsData: TAnalytics = {} as TAnalytics;
 
   try {
-    const result = await serverRequest.get("/analytics/vendor");
+    const result = await serverRequest.get(
+      "/analytics/vendor-dashboard-analytics"
+    );
 
     if (result?.success) {
       analyticsData = result?.data;
