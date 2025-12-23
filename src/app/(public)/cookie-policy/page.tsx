@@ -1,47 +1,47 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 import { Cookie, Shield, Info, AlertCircle, Settings, Lock, PieChart } from "lucide-react";
 
 export default function CookiesPolicy() {
+  const { t } = useTranslation();
+
   const sections = [
     {
       icon: <Cookie className="w-6 h-6 text-[#DC3173]" />,
-      title: "Introduction",
-      content: `At Deligo, we value your privacy and transparency. This Cookies Policy explains how we collect, store, and use cookies and similar technologies when you visit our platform in Portugal.`
+      title: t("cookieSecTitle1"),
+      content: t("cookieSecDesc1")
     },
     {
       icon: <Shield className="w-6 h-6 text-[#DC3173]" />,
-      title: "What Are Cookies?",
-      content: `Cookies are small text files stored on your device to enhance your experience, remember preferences, track performance, and provide personalized content. They help us serve you faster and more efficiently.`
+      title: t("cookieSecTitle2"),
+      content: t("cookieSecDesc2")
     },
     {
       icon: <Settings className="w-6 h-6 text-[#DC3173]" />,
-      title: "Types of Cookies We Use",
-      content: `1. **Essential Cookies:** Necessary for basic platform functionality, including login, order processing, and cart management.  
-2. **Performance & Analytics Cookies:** Monitor user behavior to improve our platform’s performance.  
-3. **Functional Cookies:** Remember your preferences such as language, theme, and location.  
-4. **Marketing & Advertising Cookies:** Used for promotions, personalized campaigns, and third-party analytics.`
+      title: t("cookieSecTitle3"),
+      content: t("cookieSecDesc3")
     },
     {
       icon: <PieChart className="w-6 h-6 text-[#DC3173]" />,
-      title: "Cookie Duration & Management",
-      content: `Cookies may be session-based (deleted after you leave the site) or persistent (stored until expiration). You can control cookies via your browser settings. Please note that disabling certain cookies may affect your platform experience.`
+      title: t("cookieSecTitle4"),
+      content: t("cookieSecDesc4")
     },
     {
       icon: <Lock className="w-6 h-6 text-[#DC3173]" />,
-      title: "Third-Party Cookies",
-      content: `Deligo uses trusted third-party services for analytics and marketing, which may set their own cookies. These cookies are subject to the third-party's privacy policies. Examples include Google Analytics, Facebook Ads, and payment gateways.`
+      title: t("cookieSecTitle5"),
+      content: t("cookieSecDesc5")
     },
     {
       icon: <Info className="w-6 h-6 text-[#DC3173]" />,
-      title: "Your Consent",
-      content: `By using Deligo, you consent to our use of cookies as described in this policy. You can withdraw consent anytime through your browser settings, but some features may be impacted.`
+      title: t("cookieSecTitle6"),
+      content: t("cookieSecDesc6")
     },
     {
       icon: <AlertCircle className="w-6 h-6 text-[#DC3173]" />,
-      title: "Updates to This Policy",
-      content: `We may update this Cookies Policy occasionally. Updates will be notified on the platform. Always check this page for the latest information regarding cookie usage.`
+      title: t("cookieSecTitle7"),
+      content: t("cookieSecDesc7")
     },
   ];
 
@@ -54,10 +54,10 @@ export default function CookiesPolicy() {
         className="max-w-6xl mx-auto"
       >
         <h1 className="text-5xl font-extrabold text-gray-900 mb-6 text-center">
-          Cookies Policy
+          {t("cookieHeading")}
         </h1>
         <p className="text-gray-700 mb-16 text-center text-lg">
-          Learn how Deligo collects and uses cookies to provide a fast, secure, and personalized experience for our users in Portugal.
+          {t("cookieDesc")}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -86,13 +86,13 @@ export default function CookiesPolicy() {
           className="mt-20 text-center"
         >
           <p className="text-gray-700 mb-6 text-lg">
-            Need further assistance or have questions about cookies?
+            {t("cookieCTATitle")}
           </p>
           <a
             href="mailto:support@deligo.pt"
-            className="inline-block px-10 py-4 bg-gradient-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold rounded-full text-lg hover:scale-105 hover:shadow-lg transition"
+            className="inline-block px-10 py-4 bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold rounded-full text-lg hover:scale-105 hover:shadow-lg transition"
           >
-            Contact Support
+            {t("cookieCTA")}
           </a>
         </motion.div>
       </motion.div>

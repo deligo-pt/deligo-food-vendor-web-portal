@@ -3,10 +3,13 @@
 
 import { Mail, Phone, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 export default function PrivacyPolicySection() {
+  const { t } = useTranslation();
+
   return (
-    <section className="bg-gradient-to-b from-[#FFE7F0] to-[#FFF5F8] py-24 px-6 sm:px-10 lg:px-20">
+    <section className="bg-linear-to-b from-[#FFE7F0] to-[#FFF5F8] py-24 px-6 sm:px-10 lg:px-20">
       {/* Header */}
       <motion.div
         className="max-w-4xl mx-auto text-center mb-16"
@@ -15,10 +18,10 @@ export default function PrivacyPolicySection() {
         transition={{ duration: 0.8 }}
       >
         <h1 className="text-5xl font-extrabold text-gray-900 mb-4">
-          Privacy Policy
+          {t("privacyHeading")}
         </h1>
         <p className="text-gray-700 text-lg">
-          At deliGo, we prioritize your privacy. This policy explains how we collect, use, and protect your information while offering fast commerce and delivery services across Portugal.
+          {t("privacyDesc")}
         </p>
       </motion.div>
 
@@ -31,9 +34,9 @@ export default function PrivacyPolicySection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">Information We Collect</h2>
+          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">{t("privacyInformationHeading")}</h2>
           <p className="text-gray-700 leading-relaxed">
-            We collect personal information you provide when signing up, such as name, email, phone number, address, payment details, and business information if you are a vendor. We may also collect data automatically through cookies and usage analytics.
+            {t("privacyInformationDesc")}
           </p>
         </motion.div>
 
@@ -44,13 +47,13 @@ export default function PrivacyPolicySection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
         >
-          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">How We Use Your Information</h2>
+          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">{t("privacyWeUseInfoHeading")}</h2>
           <ul className="text-gray-700 list-disc list-inside space-y-2">
-            <li>Provide and improve deliGo services across Portugal.</li>
-            <li>Process orders and payments securely for customers and vendors.</li>
-            <li>Send promotional offers and service updates if consent is given.</li>
-            <li>Ensure compliance with Portuguese legal and financial regulations.</li>
-            <li>Analyze usage trends to optimize delivery routes and vendor performance.</li>
+            <li>{t("privacyWeUseInfoList1")}</li>
+            <li>{t("privacyWeUseInfoList2")}</li>
+            <li>{t("privacyWeUseInfoList3")}</li>
+            <li>{t("privacyWeUseInfoList4")}</li>
+            <li>{t("privacyWeUseInfoList5")}</li>
           </ul>
         </motion.div>
 
@@ -61,9 +64,9 @@ export default function PrivacyPolicySection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">Cookies & Tracking</h2>
+          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">{t("privacyCookiesHeading")}</h2>
           <p className="text-gray-700 leading-relaxed">
-            We use cookies and similar technologies to enhance your browsing experience, remember your preferences, track orders, and deliver personalized promotions. You can manage cookies via your browser settings.
+            {t("privacyCookiesDesc")}
           </p>
         </motion.div>
 
@@ -74,15 +77,15 @@ export default function PrivacyPolicySection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
-          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">Your Rights under GDPR</h2>
+          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">{t("")}</h2>
           <p className="text-gray-700 leading-relaxed">
-            Being based in the EU, deliGo ensures all user and vendor rights under GDPR:
+            {t("")}
           </p>
           <ul className="text-gray-700 list-disc list-inside space-y-2 mt-2">
-            <li>Right to access, correct, or delete your personal data.</li>
-            <li>Right to withdraw consent to marketing communications.</li>
-            <li>Right to object to data processing for profiling or analytics.</li>
-            <li>Right to data portability between service providers.</li>
+            <li>{t("privacyRightsList1")}</li>
+            <li>{t("privacyRightsList2")}</li>
+            <li>{t("privacyRightsList3")}</li>
+            <li>{t("privacyRightsList4")}</li>
           </ul>
         </motion.div>
 
@@ -93,9 +96,9 @@ export default function PrivacyPolicySection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">Payments & Financial Data</h2>
+          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">{t("privacyPaymentsHeading")}</h2>
           <p className="text-gray-700 leading-relaxed">
-            All payment information is processed through secure gateways like Stripe and PayPal. We never store full card details. Transactions are encrypted and comply with PCI DSS standards.
+            {t("privacyPaymentsDesc")}
           </p>
         </motion.div>
 
@@ -106,9 +109,9 @@ export default function PrivacyPolicySection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
-          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">Delivery & Location Data</h2>
+          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">{t("privacyDeliveryHeading")}</h2>
           <p className="text-gray-700 leading-relaxed">
-            We collect delivery addresses and location data to ensure accurate, timely deliveries. Location data is used solely for operational purposes and never shared with third parties without consent.
+            {t("privacyDeliveryDesc")}
           </p>
         </motion.div>
 
@@ -119,9 +122,9 @@ export default function PrivacyPolicySection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">Data Security Measures</h2>
+          <h2 className="text-2xl font-bold text-[#DC3173] mb-4">{t("")}</h2>
           <p className="text-gray-700 leading-relaxed">
-            We use state-of-the-art security measures including encryption, secure servers, firewalls, and regular audits. Access to personal data is limited to authorized employees and vendors.
+            {t("")}
           </p>
         </motion.div>
       </div>
@@ -134,26 +137,26 @@ export default function PrivacyPolicySection() {
         transition={{ duration: 0.8 }}
       >
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          Questions about your data?
+          {t("privacyContactHeading")}
         </h2>
         <p className="text-gray-700 mb-8">
-          Our Portugal-based support team is ready to assist vendors and customers.
+          {t("privacyContactDesc")}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Email */}
           <div className="flex items-center gap-4 bg-white rounded-2xl p-6 hover:shadow-lg transition cursor-pointer w-full min-w-0">
-  <Mail className="w-6 h-6 text-[#DC3173] flex-shrink-0" />
-  <div className="text-left break-words min-w-0">
-    <p className="text-gray-500 text-sm">Email</p>
-    <a
-      href="mailto:support@deligo.pt"
-      className="text-gray-900 font-semibold hover:text-[#FF7EB3] transition break-words min-w-0"
-    >
-      support@deligo.pt
-    </a>
-  </div>
-</div>
+            <Mail className="w-6 h-6 text-[#DC3173] flex-shrink-0" />
+            <div className="text-left break-words min-w-0">
+              <p className="text-gray-500 text-sm">Email</p>
+              <a
+                href="mailto:support@deligo.pt"
+                className="text-gray-900 font-semibold hover:text-[#FF7EB3] transition break-words min-w-0"
+              >
+                support@deligo.pt
+              </a>
+            </div>
+          </div>
 
 
 
@@ -163,7 +166,7 @@ export default function PrivacyPolicySection() {
             <div className="text-left">
               <p className="text-gray-500 text-sm">WhatsApp</p>
               <a href="https://wa.me/YOUR_NUMBER" target="_blank" className="text-gray-900 font-semibold hover:text-[#FF7EB3] transition">
-                Chat Now
+                {t("privacyChatNow")}
               </a>
             </div>
           </div>
@@ -172,9 +175,9 @@ export default function PrivacyPolicySection() {
           <div className="flex items-center gap-4 bg-white rounded-2xl p-6 hover:shadow-lg transition cursor-pointer">
             <MessageCircle className="w-6 h-6 text-[#DC3173]" />
             <div className="text-left">
-              <p className="text-gray-500 text-sm">Live Chat</p>
+              <p className="text-gray-500 text-sm">{t("privacyLiveChat")}</p>
               <a href="/live-chat" className="text-gray-900 font-semibold hover:text-[#FF7EB3] transition">
-                Start Chat
+                {t("privacyStartChat")}
               </a>
             </div>
           </div>
