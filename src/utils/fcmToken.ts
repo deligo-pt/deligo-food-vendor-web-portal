@@ -1,4 +1,5 @@
 import { messaging } from "@/src/config/firebase";
+import { postData } from "@/src/utils/requests";
 import { getToken } from "firebase/messaging";
 
 export async function getFcmToken(): Promise<string | null> {
@@ -15,9 +16,19 @@ export async function getFcmToken(): Promise<string | null> {
 export async function saveFcmToken(token: string): Promise<void> {
   const payload = { token };
 
-  await fetch("/api/notifications/token", {
+  await postData("/auth/save-fcm-token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+}
+
+export async function getAndSaveFcmToken(): Promise<void> {
+  try {
+    const token = await getFcmToken();
+    if (!token) return;
+    await saveFcmToken(token);
+  } catch (fcmError) {
+    console.log(fcmError);
+  }
 }
