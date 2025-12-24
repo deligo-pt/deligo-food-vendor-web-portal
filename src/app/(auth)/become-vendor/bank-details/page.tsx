@@ -36,6 +36,7 @@ import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 type FormValues = {
   bankName: string;
@@ -45,6 +46,7 @@ type FormValues = {
 };
 
 export default function BankDetailsPage() {
+  const { t } = useTranslation();
   const form = useForm<FormValues>({
     resolver: zodResolver(bankDetailsValidation),
     defaultValues: {
@@ -148,7 +150,7 @@ export default function BankDetailsPage() {
               variant="link"
               className="inline-flex items-center px-4 text-sm gap-2 text-[#DC3173] p-0 h-4 absolute -top-2 z-10 cursor-pointer"
             >
-              <ArrowLeftCircle /> Go Back
+              <ArrowLeftCircle /> {t("goBack")}
             </Button>
           </div>
           <CardHeader className="bg-linear-to-r from-[#DC3173] to-pink-600 text-white p-6">
@@ -157,12 +159,11 @@ export default function BankDetailsPage() {
                 <CreditCard className="w-7 h-7 text-white" />
               </div>
               <CardTitle className="text-xl font-semibold tracking-wide">
-                Bank Details
+                {t("bankDetails")}
               </CardTitle>
             </div>
             <p className="mt-3 text-sm text-white/90 max-w-xl leading-relaxed">
-              Add your bank details so we can pay you. Your data is encrypted
-              and stored securely.
+              {t("bankDetailsDesc")}
             </p>
           </CardHeader>
 
@@ -182,7 +183,7 @@ export default function BankDetailsPage() {
                           <div className="relative">
                             <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
                               <CreditCard className="w-4 h-4 text-[#DC3173]" />{" "}
-                              Bank Name
+                              {t("bankName")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -206,7 +207,7 @@ export default function BankDetailsPage() {
                           <div className="relative">
                             <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
                               <User className="w-4 h-4 text-[#DC3173]" />{" "}
-                              Account Holder
+                              {t("accountHolder")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -231,7 +232,7 @@ export default function BankDetailsPage() {
                           <div className="relative">
                             <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
                               <FileText className="w-4 h-4 text-[#DC3173]" />{" "}
-                              IBAN
+                              {t("iban")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -255,8 +256,7 @@ export default function BankDetailsPage() {
                         <FormItem>
                           <div className="relative">
                             <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                              <Globe className="w-4 h-4 text-[#DC3173]" /> SWIFT
-                              / BIC
+                              <Globe className="w-4 h-4 text-[#DC3173]" /> {t("swift_bic")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -283,7 +283,7 @@ export default function BankDetailsPage() {
                   >
                     <Save className="w-5 h-5" />
                     <span className="font-semibold tracking-wide">
-                      Save & Continue
+                      {t("saveContinue")}
                     </span>
                   </motion.button>
                 </div>

@@ -1,46 +1,60 @@
 "use client";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 import { Briefcase, Users, Rocket, HeartHandshake, Star } from "lucide-react";
 
 export default function CareersPage() {
+  const { t } = useTranslation();
+
   const values = [
     {
       icon: <Users className="w-10 h-10 text-[#DC3173]" />,
-      title: "Collaborative Culture",
-      description:
-        "At Deligo, teamwork is everything. From delivery partners to developers, everyone’s voice matters. We thrive on collaboration and innovation.",
+      title: t("valuesTitle1"),
+      description: t("valuesDesc1"),
     },
     {
       icon: <Rocket className="w-10 h-10 text-[#DC3173]" />,
-      title: "Career Growth",
-      description:
-        "We believe in constant growth. Whether you're in tech, logistics, or support — Deligo gives you the platform to learn, lead, and grow faster.",
+      title: t("valuesTitle2"),
+      description: t("valuesDesc2"),
     },
     {
       icon: <HeartHandshake className="w-10 h-10 text-[#DC3173]" />,
-      title: "Positive Impact",
-      description:
-        "Join a mission that connects people and simplifies lives. From food to rides, you’ll be part of a movement that impacts millions daily.",
+      title: t("valuesTitle3"),
+      description: t("valuesDesc3"),
     },
     {
       icon: <Star className="w-10 h-10 text-[#DC3173]" />,
-      title: "Recognition & Rewards",
-      description:
-        "We value passion and dedication. At Deligo, your hard work is celebrated — not just through words but real opportunities and rewards.",
+      title: t("valuesTitle3"),
+      description: t("valuesDesc3"),
     },
   ];
+
+  const features = [
+    {
+      title: t("careersFeatureTitle1"),
+      desc: t("careersFeatureDesc1")
+    },
+    {
+      title: t("careersFeatureTitle2"),
+      desc: t("careersFeatureDesc2")
+    },
+    {
+      title: t("careersFeatureTitle3"),
+      desc: t("careersFeatureDesc3")
+    },
+  ]
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#DC3173] to-[#9b1c54] text-white py-24 px-6 text-center">
+      <section className="bg-linear-to-br from-[#DC3173] to-[#9b1c54] text-white py-24 px-6 text-center">
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-4xl sm:text-5xl font-extrabold mb-6"
         >
-          Build Your Future with <span className="text-yellow-300">Deligo</span>
+          {t("careersHeader")} <span className="text-yellow-300">{t("careersHeaderDeligo")}</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 40 }}
@@ -48,7 +62,7 @@ export default function CareersPage() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="max-w-3xl mx-auto text-lg sm:text-xl text-gray-100"
         >
-          Deligo isn’t just a platform — it’s a revolution in convenience. We bring together technology, people, and passion to make everyday life smarter, faster, and easier.
+          {t("careersDesc")}
         </motion.p>
       </section>
 
@@ -62,10 +76,10 @@ export default function CareersPage() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Why Work at Deligo?
+            {t("whyWork")}
           </h2>
           <p className="text-gray-600 max-w-3xl mx-auto">
-            Joining Deligo means joining a family that’s driven by innovation and powered by people. Whether it’s delivering food, enabling local stores, or redefining mobility — you’ll play a role in shaping the future of quick commerce.
+            {t("whyWorkDesc")}
           </p>
         </motion.div>
 
@@ -88,7 +102,7 @@ export default function CareersPage() {
       </section>
 
       {/* Life at Deligo */}
-      <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-20 px-6">
+      <section className="bg-linear-to-r from-gray-900 to-gray-800 text-white py-20 px-6">
         <div className="max-w-5xl mx-auto text-center">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
@@ -97,7 +111,7 @@ export default function CareersPage() {
             viewport={{ once: true }}
             className="text-3xl sm:text-4xl font-bold mb-6"
           >
-            Life at Deligo
+            {t("lifeAtDeligo")}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -106,15 +120,11 @@ export default function CareersPage() {
             viewport={{ once: true }}
             className="max-w-3xl mx-auto text-gray-300 text-lg mb-12"
           >
-            We believe work should be more than just a job. It should be meaningful, inspiring, and fun. At Deligo, you’ll find flexible work culture, modern tools, creative minds, and endless learning opportunities.
+            {t("lifeAtDeligoDesc")}
           </motion.p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[
-              { title: "Innovation Everyday", desc: "We love experimenting, building, and breaking boundaries." },
-              { title: "People First", desc: "We care deeply about our team, partners, and users." },
-              { title: "Empowerment", desc: "You’ll have the freedom to create and make real impact." },
-            ].map((item, i) => (
+            {features.map((item, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 40 }}
@@ -141,7 +151,7 @@ export default function CareersPage() {
           viewport={{ once: true }}
           className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
         >
-          Be Part of Something Big
+          {t("careersCTAHeading")}
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 40 }}
@@ -150,7 +160,7 @@ export default function CareersPage() {
           viewport={{ once: true }}
           className="text-gray-600 max-w-3xl mx-auto mb-8"
         >
-          We’re redefining the quick-commerce experience — connecting people, technology, and local businesses in one platform. Join Deligo and help us deliver the future, faster.
+          {t("careersCTADesc")}
         </motion.p>
 
         <motion.button
@@ -158,7 +168,7 @@ export default function CareersPage() {
           whileTap={{ scale: 0.95 }}
           className="px-8 py-3 bg-[#DC3173] text-white font-semibold rounded-full shadow-md hover:bg-[#b92561] transition"
         >
-          Join the Movement
+          {t("careersCTA")}
         </motion.button>
       </section>
     </div>

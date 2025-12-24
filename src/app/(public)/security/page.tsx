@@ -3,61 +3,58 @@
 
 import { Shield, Lock, Key, UserCheck } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 export default function SecurityPage() {
+  const { t } = useTranslation();
+
   const vendorFeatures = [
     {
       icon: <Shield className="w-10 h-10 text-pink-400" />,
-      title: "Data Encryption",
-      description:
-        "All vendor data is secured with advanced encryption methods to prevent unauthorized access.",
+      title: t("vendorFeaturesTitle1"),
+      description: t("vendorFeaturesDesc1"),
     },
     {
       icon: <Lock className="w-10 h-10 text-pink-400" />,
-      title: "Two-Factor Authentication",
-      description:
-        "Protect your account with 2FA and login alerts for complete account security.",
+      title: t("vendorFeaturesTitle2"),
+      description: t("vendorFeaturesDesc2"),
     },
     {
       icon: <Key className="w-10 h-10 text-pink-400" />,
-      title: "Fraud Monitoring",
-      description:
-        "Automatic detection of suspicious activity to protect your business and earnings.",
+      title: t("vendorFeaturesTitle3"),
+      description: t("vendorFeaturesDesc3"),
     },
   ];
 
   const customerFeatures = [
     {
       icon: <UserCheck className="w-10 h-10 text-blue-400" />,
-      title: "Safe Payments",
-      description:
-        "Secure checkout with PCI-compliant payment processing and instant verification.",
+      title: t("customerFeaturesTitle1"),
+      description: t("customerFeaturesDesc1"),
     },
     {
       icon: <Lock className="w-10 h-10 text-blue-400" />,
-      title: "Privacy Protection",
-      description:
-        "Your personal information is encrypted and handled in full compliance with GDPR.",
+      title: t("customerFeaturesTitle2"),
+      description: t("customerFeaturesDesc2"),
     },
     {
       icon: <Shield className="w-10 h-10 text-blue-400" />,
-      title: "Trusted Platform",
-      description:
-        "Deligo ensures a safe environment for all transactions and interactions.",
+      title: t("customerFeaturesTitle3"),
+      description: t("customerFeaturesDesc3"),
     },
   ];
 
   return (
     <div className="bg-gray-900 text-white min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-[#FF7EB3]/40 to-[#DC3173]/40 overflow-hidden py-32 px-6 text-center">
+      <section className="relative bg-linear-to-r from-[#FF7EB3]/40 to-[#DC3173]/40 overflow-hidden py-32 px-6 text-center">
         <motion.h1
           initial={{ y: -30, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
           className="text-4xl md:text-6xl font-extrabold text-white mb-6"
         >
-          Your Data & Business Are Safe with Deligo
+          {t("securityHeading")}
         </motion.h1>
         <motion.p
           initial={{ y: 30, opacity: 0 }}
@@ -65,14 +62,14 @@ export default function SecurityPage() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto"
         >
-          Advanced security measures for vendors and customers across Portugal.
+          {t("securityDesc")}
         </motion.p>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="mt-8 px-8 py-4 rounded-full bg-gradient-to-r from-[#FF7EB3] to-[#DC3173] font-bold text-lg"
+          className="mt-8 px-8 py-4 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] font-bold text-lg"
         >
-          Contact Security Team
+          {t("securityButton")}
         </motion.button>
 
         {/* Animated floating icons */}
@@ -95,14 +92,14 @@ export default function SecurityPage() {
       {/* Features Section */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-12">
-          Security Features
+          {t("securityFeatures")}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           {/* Vendor Features */}
           <div>
             <h3 className="text-2xl font-bold text-pink-400 mb-6 text-center md:text-left">
-              Vendor Protection
+              {t("vendorProtection")}
             </h3>
             <div className="space-y-6">
               {vendorFeatures.map((feature, idx) => (
@@ -126,7 +123,7 @@ export default function SecurityPage() {
           {/* Customer Features */}
           <div>
             <h3 className="text-2xl font-bold text-blue-400 mb-6 text-center md:text-left">
-              Customer Security
+              {t("customerSecurity")}
             </h3>
             <div className="space-y-6">
               {customerFeatures.map((feature, idx) => (
@@ -150,14 +147,14 @@ export default function SecurityPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-gradient-to-r from-[#FF7EB3]/20 to-[#DC3173]/20 text-center rounded-3xl mx-6 md:mx-20 my-12">
+      <section className="py-20 px-6 bg-linear-to-r from-[#FF7EB3]/20 to-[#DC3173]/20 text-center rounded-3xl mx-6 md:mx-20 my-12">
         <motion.h2
           initial={{ y: 20, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
           className="text-3xl md:text-4xl font-extrabold mb-6"
         >
-          Stay Secure with Deligo
+          {t("securityCTAHeading")}
         </motion.h2>
         <motion.p
           initial={{ y: 20, opacity: 0 }}
@@ -165,14 +162,14 @@ export default function SecurityPage() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-gray-300 mb-8"
         >
-          Our team continuously monitors and upgrades security measures to protect you and your business.
+          {t("securityCTADesc")}
         </motion.p>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-8 py-4 rounded-full bg-gradient-to-r from-[#FF7EB3] to-[#DC3173] font-bold text-lg"
+          className="px-8 py-4 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] font-bold text-lg"
         >
-          Contact Security Team
+          {t("securityCTA")}
         </motion.button>
       </section>
     </div>

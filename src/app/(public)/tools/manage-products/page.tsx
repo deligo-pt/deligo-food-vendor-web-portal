@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 import {
   Boxes,
@@ -12,35 +13,33 @@ import {
 } from "lucide-react";
 
 export default function ManageProductsInfoPage() {
+  const { t } = useTranslation();
+
   const steps = [
     {
       icon: <Upload className="w-8 h-8 text-pink-500" />,
-      title: "Easily Add Your Products",
-      description:
-        "Upload your product images, details, and pricing in just a few clicks using our simplified product upload system.",
+      title: t("productStepTitle1"),
+      description: t("productStepDesc1"),
     },
     {
       icon: <Edit3 className="w-8 h-8 text-purple-500" />,
-      title: "Edit Instantly Anytime",
-      description:
-        "Need to update stock, description, or price? Do it instantly — changes reflect across your store in seconds.",
+      title: t("productStepTitle2"),
+      description: t("productStepDesc2"),
     },
     {
       icon: <BarChart3 className="w-8 h-8 text-indigo-500" />,
-      title: "Track Product Performance",
-      description:
-        "View how your products are performing — best sellers, low stock alerts, and sales trends all in one dashboard.",
+      title: t("productStepTitle3"),
+      description: t("productStepDesc3"),
     },
     {
       icon: <Settings className="w-8 h-8 text-blue-500" />,
-      title: "Smart Management Tools",
-      description:
-        "Automate repetitive updates, set visibility schedules, and manage your entire inventory effortlessly.",
+      title: t("productStepTitle4"),
+      description: t("productStepDesc4"),
     },
   ];
 
   return (
-    <section className="bg-gradient-to-br from-gray-900 via-[#1a1a1a] to-black min-h-screen text-white py-20 px-6 sm:px-10 lg:px-20">
+    <section className="bg-linear-to-br from-gray-900 via-[#1a1a1a] to-black min-h-screen text-white py-20 px-6 sm:px-10 lg:px-20">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
         <motion.div
@@ -49,12 +48,11 @@ export default function ManageProductsInfoPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <h1 className="text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-400">
-            Manage Products Seamlessly
+          <h1 className="text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-linear-to-r from-pink-500 via-purple-500 to-indigo-400">
+            {t("manageProductsHeading")}
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl mx-auto">
-            DeliGo is bringing a smarter way for vendors to manage their products — simple,
-            visual, and lightning fast.  
+            {t("manageProductsDesc")}.
           </p>
         </motion.div>
 
@@ -80,17 +78,16 @@ export default function ManageProductsInfoPage() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-gradient-to-r from-purple-700/20 via-pink-600/20 to-indigo-700/20 rounded-3xl p-10 shadow-inner text-center border border-white/10"
+          className="bg-linear-to-r from-purple-700/20 via-pink-600/20 to-indigo-700/20 rounded-3xl p-10 shadow-inner text-center border border-white/10"
         >
           <Boxes className="w-14 h-14 text-pink-400 mx-auto mb-6" />
           <h2 className="text-3xl font-bold mb-3">
-            Manage All Products From One Dashboard
+            {t("productMockupHeading")}
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto mb-6">
-            DeliGo’s upcoming vendor dashboard will let you view, update, and organize
-            all your products with ease — no more switching between tabs or tools.
+            {t("productMockupDesc")}
           </p>
-          
+
         </motion.div>
 
         {/* FUTURE BENEFITS */}
@@ -102,20 +99,20 @@ export default function ManageProductsInfoPage() {
             className="space-y-6"
           >
             <h2 className="text-4xl font-extrabold text-pink-400">
-              Why It’s a Game-Changer
+              {t("")}
             </h2>
             <ul className="space-y-4 text-gray-300">
               <li className="flex gap-3 items-start">
-                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
-                <span>Real-time stock & pricing updates directly from your dashboard</span>
+                <CheckCircle className="w-6 h-6 text-green-400 shrink-0" />
+                <span>{t("productBenefitTitle1")}</span>
               </li>
               <li className="flex gap-3 items-start">
-                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
-                <span>Auto-sync product visibility across all DeliGo partner platforms</span>
+                <CheckCircle className="w-6 h-6 text-green-400 shrink-0" />
+                <span>{t("productBenefitTitle2")}</span>
               </li>
               <li className="flex gap-3 items-start">
-                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
-                <span>Performance insights and growth analytics at your fingertips</span>
+                <CheckCircle className="w-6 h-6 text-green-400 shrink-0" />
+                <span>{t("productBenefitTitle3")}</span>
               </li>
             </ul>
           </motion.div>

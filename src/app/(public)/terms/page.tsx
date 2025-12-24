@@ -1,60 +1,53 @@
 // TermsConditions.tsx
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 import { ClipboardX, Shield, CreditCard, UserCheck, AlertCircle } from "lucide-react";
 
 export default function TermsConditions() {
+  const { t } = useTranslation();
+
   const sections = [
     {
       icon: <ClipboardX className="w-6 h-6 text-[#DC3173]" />,
-      title: "Vendor Registration & Account",
-      content: `To join Deligo as a vendor, you must create an account with accurate business information. 
-      Ensure your business is registered in Portugal and all documentation is valid. 
-      Vendors are responsible for maintaining updated information in their dashboard.`
+      title: t("termsSectionTitle1"),
+      content: t("termsSectionDesc1")
     },
     {
       icon: <Shield className="w-6 h-6 text-[#DC3173]" />,
-      title: "Compliance & Legal Obligations",
-      content: `Vendors must comply with all Portuguese laws regarding food safety, business operations, 
-      and taxation. Deligo may request proof of compliance at any time. 
-      Non-compliance may result in suspension or termination.`
+      title: t("termsSectionTitle2"),
+      content: t("termsSectionDesc2")
     },
     {
       icon: <CreditCard className="w-6 h-6 text-[#DC3173]" />,
-      title: "Payment & Commission",
-      content: `Deligo charges a commission of 15% per order. Payouts are processed weekly via secure SEPA transfer. 
-      Vendors are responsible for correct banking details. Any discrepancies must be reported immediately.`
+      title: t("termsSectionTitle3"),
+      content: t("termsSectionDesc3")
     },
     {
       icon: <UserCheck className="w-6 h-6 text-[#DC3173]" />,
-      title: "Product & Service Standards",
-      content: `Vendors must ensure product quality, accurate descriptions, and timely delivery. 
-      All listings must reflect actual availability. Failure to meet standards may impact ratings and platform access.`
+      title: t("termsSectionTitle4"),
+      content: t("termsSectionDesc4")
     },
     {
       icon: <AlertCircle className="w-6 h-6 text-[#DC3173]" />,
-      title: "Termination & Suspension",
-      content: `Deligo reserves the right to suspend or terminate vendor accounts for violations of terms, fraudulent activity, 
-      or repeated customer complaints. Vendors may terminate their participation by providing written notice.`
+      title: t("termsSectionTitle5"),
+      content: t("termsSectionDesc5")
     },
     {
       icon: <ClipboardX className="w-6 h-6 text-[#DC3173]" />,
-      title: "Dispute Resolution & Liability",
-      content: `All disputes will first attempt to be resolved amicably between Deligo and the vendor. 
-      Deligo is not liable for losses arising from vendor non-compliance, delivery issues, or technical failures.`
+      title: t("termsSectionTitle6"),
+      content: t("termsSectionDesc6")
     },
     {
       icon: <Shield className="w-6 h-6 text-[#DC3173]" />,
-      title: "Confidentiality & Data Protection",
-      content: `Vendors must not share customer data outside the platform. All personal and order data 
-      must be handled according to GDPR regulations. Deligo may audit data handling practices periodically.`
+      title: t("termsSectionTitle7"),
+      content: t("termsSectionDesc7")
     },
     {
       icon: <CreditCard className="w-6 h-6 text-[#DC3173]" />,
-      title: "Amendments to Terms",
-      content: `Deligo reserves the right to modify these terms at any time. Vendors will be notified 
-      via email and dashboard notification. Continued use after modifications constitutes acceptance.`
+      title: t("termsSectionTitle8"),
+      content: t("termsSectionDesc8")
     }
   ];
 
@@ -67,11 +60,10 @@ export default function TermsConditions() {
         className="max-w-6xl mx-auto"
       >
         <h1 className="text-5xl font-extrabold text-gray-900 mb-8 text-center">
-          Vendor Terms & Conditions
+          {t("termsHeading")}
         </h1>
         <p className="text-gray-700 mb-12 text-center text-lg">
-          By joining Deligo as a vendor, you agree to comply with the following terms and conditions. 
-          Please read carefully before registering.
+          {t("termsDesc")}
         </p>
 
         {/* Sections */}
@@ -101,13 +93,13 @@ export default function TermsConditions() {
           className="mt-16 text-center"
         >
           <p className="text-gray-700 mb-4 text-lg">
-            Ready to join Deligo? Start growing your business today.
+            {t("termsCTAHeading")}
           </p>
           <a
             href="/vendor-signup"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold rounded-full text-lg hover:scale-105 hover:shadow-lg transition"
+            className="inline-block px-8 py-4 bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold rounded-full text-lg hover:scale-105 hover:shadow-lg transition"
           >
-            Become a Vendor
+            {t("termsCTA")}
           </a>
         </motion.div>
       </motion.div>
