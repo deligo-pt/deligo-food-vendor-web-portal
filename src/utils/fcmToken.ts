@@ -13,21 +13,27 @@ export async function getFcmToken(): Promise<string | null> {
   });
 }
 
-export async function saveFcmToken(token: string): Promise<void> {
+export async function saveFcmToken(
+  accessToken: string,
+  token: string
+): Promise<void> {
   const payload = { token };
 
   await postData("/auth/save-fcm-token", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      authorization: accessToken,
+    },
     body: JSON.stringify(payload),
   });
 }
 
-export async function getAndSaveFcmToken(): Promise<void> {
+export async function getAndSaveFcmToken(accessToken: string): Promise<void> {
   try {
     const token = await getFcmToken();
     if (!token) return;
-    await saveFcmToken(token);
+    await saveFcmToken(accessToken, token);
   } catch (fcmError) {
     console.log(fcmError);
   }

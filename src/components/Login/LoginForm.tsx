@@ -64,7 +64,7 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
           toast.success("Login successful!", { id: toastId });
 
           // get and save fcm token
-          getAndSaveFcmToken();
+          getAndSaveFcmToken(result.data.accessToken);
 
           switch (decoded.status) {
             case "PENDING":
