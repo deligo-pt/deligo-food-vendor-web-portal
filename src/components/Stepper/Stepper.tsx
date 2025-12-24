@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 import {
   User,
@@ -10,41 +11,43 @@ import {
 } from "lucide-react";
 
 export default function StepperFlow() {
+  const { t } = useTranslation();
+
   const steps = [
     {
       id: 1,
-      title: "Personal",
-      subtitle: "Your Info",
+      title: t("processTitle1"),
+      subtitle: t("processSubTitle1"),
       icon: <User className="w-5 h-5" />,
     },
     {
       id: 2,
-      title: "Business",
-      subtitle: "Company Info",
+      title: t("processTitle2"),
+      subtitle: t("processSubTitle2"),
       icon: <Briefcase className="w-5 h-5" />,
     },
     {
       id: 3,
-      title: "Bank",
-      subtitle: "Payment Setup",
+      title: t("processTitle3"),
+      subtitle: t("processSubTitle3"),
       icon: <CreditCard className="w-5 h-5" />,
     },
     {
       id: 4,
-      title: "Documents",
-      subtitle: "Upload Files",
+      title: t("processTitle4"),
+      subtitle: t("processSubTitle4"),
       icon: <FileText className="w-5 h-5" />,
     },
     {
       id: 5,
-      title: "Complete",
-      subtitle: "Finish Setup",
+      title: t("processTitle5"),
+      subtitle: t("processSubTitle5"),
       icon: <CheckCircle2 className="w-5 h-5" />,
     },
   ];
 
   return (
-    <div className="w-full py-10 px-4 sm:px-8 bg-gradient-to-r from-[#DC3173]/5 via-[#DC3173]/10 to-[#DC3173]/5 rounded-3xl backdrop-blur-md shadow-inner border border-[#DC3173]/20 overflow-hidden">
+    <div className="w-full py-10 px-4 sm:px-8 bg-linear-to-r from-[#DC3173]/5 via-[#DC3173]/10 to-[#DC3173]/5 rounded-3xl backdrop-blur-md shadow-inner border border-[#DC3173]/20 overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -15 }}
@@ -52,11 +55,11 @@ export default function StepperFlow() {
         transition={{ duration: 0.6 }}
         className="text-center mb-8"
       >
-        <h2 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-[#DC3173] to-[#a72b5c] bg-clip-text text-transparent tracking-wide">
-          Vendor Registration Process
+        <h2 className="text-2xl sm:text-3xl font-extrabold bg-linear-to-r from-[#DC3173] to-[#a72b5c] bg-clip-text text-transparent tracking-wide">
+          {t("vendorRegistrationProcess")}
         </h2>
         <p className="text-gray-600 text-sm mt-2">
-          Follow these simple steps to become a verified vendor
+          {t("vendorRegistrationProcessDesc")}
         </p>
       </motion.div>
 
@@ -64,7 +67,7 @@ export default function StepperFlow() {
       <div className="hidden md:block">
         <div className="relative mx-auto max-w-5xl px-6">
           {/* Line */}
-          <div className="absolute top-1/2 left-0 right-0 h-[3px] -translate-y-1/2 bg-gradient-to-r from-[#DC3173]/70 to-[#a72b5c]/70 rounded-full" />
+          <div className="absolute top-1/2 left-0 right-0 h-[3px] -translate-y-1/2 bg-linear-to-r from-[#DC3173]/70 to-[#a72b5c]/70 rounded-full" />
 
           <ol className="relative flex justify-between items-center flex-wrap gap-y-8">
             {steps.map((s, i) => (
@@ -78,7 +81,7 @@ export default function StepperFlow() {
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 3 }}
                   transition={{ type: "spring", stiffness: 200 }}
-                  className="flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-[#DC3173] to-[#a72b5c] rounded-full text-white shadow-lg shadow-[#DC3173]/30 border border-white/30"
+                  className="flex items-center justify-center w-16 h-16 bg-linear-to-tr from-[#DC3173] to-[#a72b5c] rounded-full text-white shadow-lg shadow-[#DC3173]/30 border border-white/30"
                 >
                   <CheckCircle2 className="w-7 h-7" />
                 </motion.div>
@@ -100,7 +103,7 @@ export default function StepperFlow() {
               key={s.id}
               whileHover={{ scale: 1.05 }}
               transition={{ delay: i * 0.05 }}
-              className="min-w-[95px] flex-shrink-0 flex flex-col items-center bg-gradient-to-r from-[#DC3173] to-[#a72b5c] text-white py-4 px-3 rounded-2xl shadow-md shadow-[#DC3173]/30"
+              className="min-w-[95px] shrink-0 flex flex-col items-center bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white py-4 px-3 rounded-2xl shadow-md shadow-[#DC3173]/30"
             >
               <div className="flex items-center justify-center w-10 h-10 mb-2 bg-white/10 rounded-full">
                 <CheckCircle2 className="w-5 h-5" />

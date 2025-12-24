@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { USER_STATUS } from "@/src/consts/user.const";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
 import { getCookie, removeCookie } from "@/src/utils/cookies";
@@ -28,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function RegistrationStatusPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [status, setStatus] = useState("");
   const [remarks, setRemarks] = useState("");
@@ -135,11 +137,10 @@ export default function RegistrationStatusPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">
-                    Submission in Progress
+                    {t("submissionInProgress")}
                   </h3>
                   <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                    You did not submit your registration details. To complete
-                    the registration process, please click the button below.
+                    {t("submissionProgressDesc")}
                   </p>
                 </div>
               </motion.div>
@@ -157,15 +158,14 @@ export default function RegistrationStatusPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800">
-                      Review in Progress
+                      {t("reviewInProgress")}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                      Our admin team is currently reviewing your information.
-                      You will receive an update within{" "}
+                      {t("reviewInProgressDesc")}{" "}
                       <span className="font-medium text-[#DC3173]">
-                        24–48 hours
+                        {t("hours24_48")}
                       </span>{" "}
-                      once the verification process is complete.
+                      {t("reviewInProgressDesc2")}
                     </p>
                   </div>
                 </motion.div>
@@ -181,15 +181,14 @@ export default function RegistrationStatusPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800">
-                      Next Step — Verification
+                      {t("nextStep")}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                      Once your details are verified, you will become a{" "}
+                      {t("nextStepDesc")}{" "}
                       <span className="font-semibold text-green-600">
-                        Verified Partner
+                        {t("verifiedPartner")}
                       </span>{" "}
-                      and gain access to the vendor dashboard, store management,
-                      and payouts.
+                      {t("nextStepDesc2")}
                     </p>
                   </div>
                 </motion.div>
@@ -207,7 +206,7 @@ export default function RegistrationStatusPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">
-                    Approved by Admin
+                    {t("approvedByAdmin")}
                   </h3>
                   <p className="text-sm text-gray-600 mt-1 leading-relaxed">
                     {remarks}
@@ -227,7 +226,7 @@ export default function RegistrationStatusPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">
-                    Rejected by Admin
+                    {t("rejectedByAdmin")}
                   </h3>
                   <p className="text-sm text-gray-600 mt-1 leading-relaxed">
                     {remarks}
@@ -250,18 +249,18 @@ export default function RegistrationStatusPage() {
                       router.push("/become-vendor/personal-details")
                     }
                   >
-                    Submit Details
+                    {t("submitDetails")}
                   </Button>
                   <Button
                     variant="outline"
                     className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
                     onClick={logOut}
                   >
-                    Logout
+                    {t("logout")}
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    You can check your application status anytime here.
+                    {t("applicationStatus")}
                   </p>
                 </>
               )}
@@ -271,18 +270,18 @@ export default function RegistrationStatusPage() {
                     className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
                     onClick={() => router.push("/")}
                   >
-                    Go to Home
+                    {t("goToHome")}
                   </Button>
                   <Button
                     variant="outline"
                     className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
                     onClick={logOut}
                   >
-                    Logout
+                    {t("logout")}
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    Wait for your application to be approved.
+                    {t("applicationApproved")}
                   </p>
                 </>
               )}
@@ -296,11 +295,11 @@ export default function RegistrationStatusPage() {
                         : logOut()
                     }
                   >
-                    Login Again
+                    {t("loginAgain")}
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    To get access to your dashboard you need to login again.
+                    {t("loginAgainDesc")}
                   </p>
                 </>
               )}
@@ -314,11 +313,11 @@ export default function RegistrationStatusPage() {
                         : logOut()
                     }
                   >
-                    Submit Details Again
+                    {t("submitDetailsAgain")}
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    Your application has been rejected. You can try again.
+                    {t("applicationTryAgain")}
                   </p>
                 </>
               )}

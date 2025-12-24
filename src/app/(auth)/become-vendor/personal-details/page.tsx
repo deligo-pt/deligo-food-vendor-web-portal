@@ -34,6 +34,7 @@ import { useEffect } from "react";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { toast } from "sonner";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 type PersonalForm = {
   firstName: string;
@@ -44,6 +45,7 @@ type PersonalForm = {
 };
 
 export default function PersonalDetailsPage() {
+  const { t } = useTranslation();
   const form = useForm<PersonalForm>({
     resolver: zodResolver(personalDetailsValidation),
     defaultValues: {
@@ -151,7 +153,7 @@ export default function PersonalDetailsPage() {
               variant="link"
               className="inline-flex items-center px-4 text-sm gap-2 text-[#DC3173] p-0 h-4 cursor-pointer"
             >
-              <ArrowLeftCircle /> Go Home
+              <ArrowLeftCircle /> {t("goHome")}
             </Button>
           </div>
           <CardHeader className="text-center space-y-3">
@@ -166,10 +168,10 @@ export default function PersonalDetailsPage() {
               </div>
             </motion.div>
             <CardTitle className="text-2xl font-bold text-[#DC3173] tracking-wide">
-              Personal Details
+              {t("personalDetails")}
             </CardTitle>
             <p className="text-gray-500 text-sm">
-              Let’s start with your basic information
+              {t("personalDetailsDesc")}
             </p>
           </CardHeader>
 
@@ -327,7 +329,7 @@ export default function PersonalDetailsPage() {
                     type="submit"
                     className="w-full font-semibold py-3 rounded-xl bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white shadow-lg shadow-pink-200 hover:brightness-110 transition-all duration-300"
                   >
-                    Save & Continue
+                    {t("saveContinue")}
                   </Button>
                 </motion.div>
               </form>

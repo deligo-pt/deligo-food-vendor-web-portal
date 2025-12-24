@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TResponse } from "@/src/types";
 import { getCookie } from "@/src/utils/cookies";
 import { fetchData, updateData } from "@/src/utils/requests";
@@ -37,28 +38,10 @@ type LocationFormType = {
   country: string;
 };
 
-const formFields = [
-  {
-    label: "Street Address",
-    name: "streetAddress",
-  },
-  {
-    label: "City",
-    name: "city",
-  },
-  {
-    label: "Postal Code",
-    name: "postalCode",
-  },
-  {
-    label: "Country",
-    name: "country",
-  },
-];
-
 const GOOGLE_API_URL = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBHT9ARgpTJIEdvsiaD72Gf7SUUXz-Xqfg&libraries=places`;
 
 const AddYourBusinessLocation = () => {
+  const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<any>(null);
   const geocoderRef = useRef<any>(null);
@@ -68,6 +51,26 @@ const AddYourBusinessLocation = () => {
     latitude: 0,
     longitude: 0,
   });
+
+
+  const formFields = [
+    {
+      label: t("streetAddress") ,
+      name: "streetAddress",
+    },
+    {
+      label: t("city") ,
+      name: "city",
+    },
+    {
+      label: t("postalCode") ,
+      name: "postalCode",
+    },
+    {
+      label: t("country") ,
+      name: "country",
+    },
+  ];
 
   const form = useForm<LocationFormType>({
     resolver: zodResolver(businessLocationValidation),
@@ -250,7 +253,7 @@ const AddYourBusinessLocation = () => {
         variant="link"
         className="inline-flex items-center gap-2 text-[#DC3173] absolute top-0.5 px-0! cursor-pointer"
       >
-        <ArrowLeftCircle /> Go Back
+        <ArrowLeftCircle /> {t("goBack")}
       </Button>
 
       <Form {...form}>
@@ -298,7 +301,7 @@ const AddYourBusinessLocation = () => {
             whileTap={{ scale: 0.95 }}
             className="flex items-center justify-center gap-2 px-6 py-3 bg-[#DC3173] text-white rounded-xl"
           >
-            <Save className="w-5 h-5" /> Save Location & Next
+            <Save className="w-5 h-5" /> {t("saveLocationNext")}
           </motion.button>
         </form>
       </Form>

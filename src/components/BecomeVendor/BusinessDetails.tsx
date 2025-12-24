@@ -24,6 +24,7 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { updateVendorData } from "@/src/services/becomeVendor/updateVendorData";
 import { TResponse } from "@/src/types";
 import { TBusinessCategory } from "@/src/types/category.type";
@@ -69,6 +70,7 @@ export default function BusinessDetailsForm({
   businessCategories,
   vendor,
 }: IProps) {
+  const { t } = useTranslation();
   const form = useForm<BusinessForm>({
     resolver: zodResolver(businessDetailsValidation),
     defaultValues: {
@@ -140,15 +142,15 @@ export default function BusinessDetailsForm({
             variant="link"
             className="inline-flex items-center px-4 text-sm gap-2 text-[#DC3173] p-0 h-4 cursor-pointer"
           >
-            <ArrowLeftCircle /> Go Back
+            <ArrowLeftCircle /> {t("goBack")}
           </Button>
         </div>
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold text-[#DC3173] mt-2">
-            Business Details
+            {t("businessDetails")}
           </CardTitle>
           <p className="text-center text-gray-500 mt-1 text-sm">
-            Fill in your business information to complete registration
+            {t("businessDetailsDesc")}
           </p>
         </CardHeader>
 
@@ -158,7 +160,7 @@ export default function BusinessDetailsForm({
               {/* ========== Section 1: Basic Info ========== */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
-                  🏢 Basic Information
+                  {t("basicInformation")}
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -276,7 +278,7 @@ export default function BusinessDetailsForm({
               {/* ========== Section 2: Branch Info ========== */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
-                  📍 Branch Information
+                  {t("branchInformation")}
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -307,7 +309,7 @@ export default function BusinessDetailsForm({
               {/* ========== Section 3: Working Hours ========== */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
-                  ⏰ Working Hours
+                  {t("workingHours")}
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -320,7 +322,7 @@ export default function BusinessDetailsForm({
                         <div className="relative">
                           <FormLabel className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                             <Clock className="w-4 h-4 text-[#DC3173]" />
-                            Opening Time
+                            {t("openingTime")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -344,7 +346,7 @@ export default function BusinessDetailsForm({
                         <div className="relative">
                           <FormLabel className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                             <Clock className="w-4 h-4 text-[#DC3173]" />
-                            Closing Time
+                            {t("closingTime")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -369,7 +371,7 @@ export default function BusinessDetailsForm({
                       <div className="mt-5">
                         <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                           <CalendarX2 className="w-4 h-4 text-[#DC3173]" />
-                          Closing Days
+                          {t("closingDays")}
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {daysOfWeek.map((day) => (
@@ -384,11 +386,10 @@ export default function BusinessDetailsForm({
                                 );
                               }}
                               whileTap={{ scale: 0.95 }}
-                              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${
-                                field.value.includes(day)
-                                  ? "bg-[#DC3173] text-white border-[#DC3173]"
-                                  : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
-                              }`}
+                              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${field.value.includes(day)
+                                ? "bg-[#DC3173] text-white border-[#DC3173]"
+                                : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
+                                }`}
                             >
                               {day}
                             </motion.button>
@@ -410,7 +411,7 @@ export default function BusinessDetailsForm({
                   type="submit"
                   className="w-full h-12 bg-[#DC3173] hover:bg-[#b12b61] text-white text-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
-                  Save & Continue
+                  {t("saveContinue")}
                 </Button>
               </motion.div>
             </form>
