@@ -10,14 +10,15 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TResponse } from "@/src/types";
 import { setCookie } from "@/src/utils/cookies";
+import { getAndSaveFcmToken } from "@/src/utils/fcmToken";
 import { postData } from "@/src/utils/requests";
 import { motion } from "framer-motion";
 import { Clock, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 export default function VerifyOtp({ email }: { email: string }) {
   const { t } = useTranslation();
@@ -75,6 +76,10 @@ export default function VerifyOtp({ email }: { email: string }) {
           toast.success(result.message || "OTP verified successfully!", {
             id: toastId,
           });
+
+          // get and save fcm token
+          getAndSaveFcmToken(result.data.accessToken);
+
           router.push("/become-vendor/personal-details");
           return;
         }
@@ -143,9 +148,7 @@ export default function VerifyOtp({ email }: { email: string }) {
             <CardTitle className="text-2xl font-semibold text-[#DC3173]">
               {t("verifyOTP")}
             </CardTitle>
-            <p className="text-gray-500 text-sm mt-1">
-              {t("otp4DigitCode")}
-            </p>
+            <p className="text-gray-500 text-sm mt-1">{t("otp4DigitCode")}</p>
           </CardHeader>
 
           <CardContent>
@@ -183,7 +186,9 @@ export default function VerifyOtp({ email }: { email: string }) {
                   {canResend ? (
                     <span className="text-gray-500">{t("expired")}</span>
                   ) : (
-                    <span>{formatTime(timer)} {t("remaining")}</span>
+                    <span>
+                      {formatTime(timer)} {t("remaining")}
+                    </span>
                   )}
                 </div>
 
@@ -191,10 +196,11 @@ export default function VerifyOtp({ email }: { email: string }) {
                   type="button"
                   onClick={resendOtp}
                   disabled={!canResend}
-                  className={`flex items-center gap-1 font-medium ${canResend
-                    ? "text-[#DC3173] hover:text-[#a72b5c]"
-                    : "text-gray-400 cursor-not-allowed"
-                    } transition-colors`}
+                  className={`flex items-center gap-1 font-medium ${
+                    canResend
+                      ? "text-[#DC3173] hover:text-[#a72b5c]"
+                      : "text-gray-400 cursor-not-allowed"
+                  } transition-colors`}
                 >
                   <RefreshCcw className="w-4 h-4" />
                   {t("resendOTP")}

@@ -4,12 +4,17 @@ import { getToken } from "firebase/messaging";
 
 export async function getFcmToken(): Promise<string | null> {
   if (!messaging) return null;
+  if (!("serviceWorker" in navigator)) return null;
 
   const permission = await Notification.requestPermission();
   if (permission !== "granted") return null;
 
+  // 🔥 THIS is the key line
+  const registration = await navigator.serviceWorker.ready;
+
   return await getToken(messaging, {
     vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY!,
+    serviceWorkerRegistration: registration,
   });
 }
 
@@ -19,13 +24,11 @@ export async function saveFcmToken(
 ): Promise<void> {
   const payload = { token };
 
-  await postData("/auth/save-fcm-token", {
-    method: "POST",
+  await postData("/auth/save-fcm-token", JSON.stringify(payload), {
     headers: {
       "Content-Type": "application/json",
       authorization: accessToken,
     },
-    body: JSON.stringify(payload),
   });
 }
 
