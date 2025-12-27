@@ -1,4 +1,5 @@
 import { serverRequest } from "@/lib/serverFetch";
+import NotificationToast from "@/src/components/NotificationToast/NotificationToast";
 import DesktopSidebar from "@/src/components/vendorDashboardSidebar/DesktopSidebar";
 import Sidebar from "@/src/components/vendorDashboardSidebar/vendorDashboardSidebar";
 import Topbar from "@/src/components/vendorTopbar/Topbar";
@@ -43,6 +44,7 @@ export default async function VendorLayout({
           <Topbar />
         </div>
         <main className="flex-1 p-4 overflow-y-auto">{children}</main>
+        <NotificationToast />
       </div>
 
       {/* Desktop view */}
