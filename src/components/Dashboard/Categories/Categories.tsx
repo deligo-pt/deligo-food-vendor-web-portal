@@ -45,7 +45,7 @@ export default function Categories({ categoriesResult }: IProps) {
           </h1>
           <p className="text-gray-600 mt-1 text-sm">
             These are platform-managed categories. Vendors cannot create or edit
-            categories (Glovo-style).
+            categories.
           </p>
         </div>
 

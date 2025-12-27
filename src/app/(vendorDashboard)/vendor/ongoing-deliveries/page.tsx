@@ -259,7 +259,7 @@ function DeliveryCard({ delivery: d }: { delivery: OngoingDelivery }) {
 }
 
 /* -----------------------------------
-   Timeline Component (Glovo-style)
+   Timeline Component
 ------------------------------------ */
 function ProgressTimeline({ stage }: { stage: DeliveryStage }) {
   const stages: DeliveryStage[] = [
