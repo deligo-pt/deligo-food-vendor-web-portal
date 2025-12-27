@@ -101,7 +101,6 @@ export default function Navbar() {
               value={lang}
               onValueChange={(value: 'en' | 'pt') => {
                 setLang(value)
-                console.log("Selected language:", value)
               }}
             >
               <SelectTrigger className="w-[70px] hover:border hover:border-[#DC3173]">
