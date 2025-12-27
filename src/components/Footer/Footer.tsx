@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/src/hooks/use-translation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import { useState } from "react";
@@ -69,12 +70,9 @@ export default function FooterDeligoPremium() {
           <ul className="space-y-2 text-gray-300">
             {companyLinks.map((l, i) => (
               <li key={i}>
-                <a
-                  className="hover:text-[#ff7eb3] transition-colors"
-                  href={l.href}
-                >
+                <Link className="hover:text-[#ff7eb3] transition-colors" href={l.href}>
                   {l.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -92,12 +90,9 @@ export default function FooterDeligoPremium() {
           <ul className="space-y-2 text-gray-300">
             {vendorLinks.map((l, i) => (
               <li key={i}>
-                <a
-                  className="hover:text-[#ff7eb3] transition-colors"
-                  href={l.href}
-                >
+                <Link className="hover:text-[#ff7eb3] transition-colors" href={l.href}>
                   {l.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -115,12 +110,9 @@ export default function FooterDeligoPremium() {
           <ul className="space-y-2 text-gray-300">
             {legalLinks.map((l, i) => (
               <li key={i}>
-                <a
-                  className="hover:text-[#ff7eb3] transition-colors"
-                  href={l.href}
-                >
+                <Link className="hover:text-[#ff7eb3] transition-colors" href={l.href}>
                   {l.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
