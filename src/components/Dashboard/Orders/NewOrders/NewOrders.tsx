@@ -3,31 +3,18 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import AllFilters from "@/src/components/Filtering/AllFilters";
 import { ORDER_STATUS } from "@/src/consts/order.const";
+import { updateOrderStatusReq } from "@/src/services/dashboard/order/order";
 import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 import { formatDistanceToNow } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  CheckCircle,
-  ChevronRight,
-  Circle,
-  Clock,
-  CookingPot,
-  MapPin,
-  Truck,
-} from "lucide-react";
-import React, { useState } from "react";
+import { ChevronRight, Clock, MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 // Brand / colors
 const PRIMARY = "#DC3173"; // Deligo primary
@@ -44,129 +31,49 @@ interface IProps {
   };
 }
 
-type Status = "new" | "accepted" | "preparing" | "ready";
-// type Order = {
-//   id: string;
-//   customer: string;
-//   items: { name: string; qty: number }[];
-//   total: number;
-//   eta: string;
-//   address: string;
-//   status: Status;
-//   time: string;
-//   flash?: boolean;
-// };
-
-/* initial orders */
-// const baseOrders: Order[] = [
-//   {
-//     id: "DG-1001",
-//     customer: "Maria Silva",
-//     total: 12.5,
-//     items: [
-//       { name: "Chicken Pasta", qty: 1 },
-//       { name: "Garlic Bread", qty: 1 },
-//     ],
-//     status: "new",
-//     eta: "20–25 min",
-//     address: "Braga Central Road, Portugal",
-//     time: "14:20",
-//   },
-//   {
-//     id: "DG-1002",
-//     customer: "Afonso Neves",
-//     total: 8.0,
-//     items: [{ name: "Veg Burger", qty: 2 }],
-//     status: "preparing",
-//     eta: "12–18 min",
-//     address: "Porto City Mall, Portugal",
-//     time: "14:18",
-//   },
-// ];
-
-// /* incoming pool for simulation */
-// const incomingPool: Order[] = [
-//   {
-//     id: "DG-2001",
-//     customer: "Inês Ramos",
-//     total: 14.9,
-//     items: [{ name: "Beef Wrap", qty: 1 }],
-//     status: "new",
-//     eta: "15–22 min",
-//     address: "Lisbon Block 7, Portugal",
-//     time: "14:28",
-//   },
-//   {
-//     id: "DG-2002",
-//     customer: "João Pedro",
-//     total: 6.9,
-//     items: [{ name: "Tuna Sandwich", qty: 1 }],
-//     status: "new",
-//     eta: "10–14 min",
-//     address: "Aveiro City Street 5",
-//     time: "14:30",
-//   },
-//   {
-//     id: "DG-2003",
-//     customer: "Rita Costa",
-//     total: 20.5,
-//     items: [{ name: "Steak Plate", qty: 1 }],
-//     status: "new",
-//     eta: "22–30 min",
-//     address: "Faro Market Road",
-//     time: "14:32",
-//   },
-// ];
+const sortOptions = [
+  { label: "Newest First", value: "-createdAt" },
+  { label: "Oldest First", value: "createdAt" },
+];
 
 export default function NewOrders({ ordersResult }: IProps) {
-  // const [orders, setOrders] = useState<Order[]>(baseOrders);
-  const [query, setQuery] = useState("");
-  console.log(ordersResult);
-
-  // const [filter, setFilter] = useState<"all" | Status | string>("all");
-
-  /* Live incoming simulation: add one order every 12s */
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const pick =
-  //       incomingPool[Math.floor(Math.random() * incomingPool.length)];
-  //     const incoming = { ...pick, id: `${pick.id}-${Date.now()}`, flash: true };
-  //     // add to top
-  //     setOrders((prev) => [incoming, ...prev]);
-
-  //     // remove flash highlight after short time
-  //     setTimeout(() => {
-  //       setOrders((prev) => prev.map((o) => ({ ...o, flash: false })));
-  //     }, 1200);
-  //   }, 12000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  // Search + filter
-  // const filtered = useMemo(() => {
-  //   return orders.filter((o) => {
-  //     if (filter !== "all" && o.status !== filter) return false;
-  //     if (!query) return true;
-  //     const q = query.toLowerCase();
-  //     return (
-  //       o.id.toLowerCase().includes(q) ||
-  //       o.customer.toLowerCase().includes(q) ||
-  //       o.address.toLowerCase().includes(q) ||
-  //       o.items.some((it) => it.name.toLowerCase().includes(q))
-  //     );
-  //   });
-  // }, [orders, query, filter]);
+  const router = useRouter();
 
   // status updates
-  const updateStatus = (id: string, status: Status) => {
-    console.log(id, status);
+  const updateStatus = async (
+    id: string,
+    status: keyof typeof ORDER_STATUS
+  ) => {
+    const toastId = toast.loading("Order status updating...");
 
-    // setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+    try {
+      const result = await updateOrderStatusReq(id, status);
+
+      if (result?.success) {
+        router.refresh();
+        toast.success(result.message || "Order status updated successfully!", {
+          id: toastId,
+        });
+        return;
+      }
+      toast.error(result.message || "Order status update failed", {
+        id: toastId,
+      });
+    } catch (error: any) {
+      console.log(error);
+      toast.error(
+        error?.response?.data?.message || "Order status update failed",
+        {
+          id: toastId,
+        }
+      );
+    }
   };
-  const accept = (id: string) => updateStatus(id, "accepted");
-  const startPreparing = (id: string) => updateStatus(id, "preparing");
-  const markReady = (id: string) => updateStatus(id, "ready");
+
+  const accept = (id: string) => updateStatus(id, "ACCEPTED");
+  const reject = (id: string) => updateStatus(id, "REJECTED");
+  const startPreparing = (id: string) => updateStatus(id, "PREPARING");
+  const markReady = (id: string) => updateStatus(id, "READY_FOR_PICKUP");
 
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG_SOFT }}>
@@ -186,8 +93,10 @@ export default function NewOrders({ ordersResult }: IProps) {
           </h1>
         </motion.div>
 
+        <AllFilters sortOptions={sortOptions} />
+
         {/* Search & Filter */}
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <Input
             placeholder="Search: order ID, customer, item..."
             className="w-72 md:w-96 bg-white border border-pink-200 text-gray-700"
@@ -210,10 +119,11 @@ export default function NewOrders({ ordersResult }: IProps) {
             <Button size="sm">Reset</Button>
             <Badge className="text-sm">Realtime</Badge>
           </div>
-        </div>
+        </div> */}
 
         {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-4 gap-8"> */}
+        <div>
           {/* Orders list */}
           <Card className="lg:col-span-3 bg-white shadow-xl rounded-2xl border border-pink-200">
             <CardHeader>
@@ -262,13 +172,15 @@ export default function NewOrders({ ordersResult }: IProps) {
                           className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm shrink-0"
                           style={{ background: PRIMARY + "22", color: PRIMARY }}
                         >
-                          {order.customerId.charAt(0)}
+                          {order.customerId?.name?.firstName?.charAt(0)}
+                          {order.customerId?.name?.lastName?.charAt(0)}
                         </div>
 
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
                             <h3 className="text-lg font-semibold text-gray-800 truncate">
-                              {order.customerId}
+                              {order.customerId?.name?.firstName}{" "}
+                              {order.customerId?.name?.lastName}
                             </h3>
                             <span className="text-xs text-gray-500 flex items-center gap-1">
                               <Clock size={12} />{" "}
@@ -314,7 +226,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                               </Button>
                               <Button
                                 size="sm"
-                                onClick={() => accept(order.orderId)}
+                                onClick={() => reject(order.orderId)}
                                 className="bg-yellow-500 hover:bg-yellow-500/90"
                               >
                                 Reject
@@ -327,10 +239,10 @@ export default function NewOrders({ ordersResult }: IProps) {
                               onClick={() => startPreparing(order.orderId)}
                               className="bg-sky-500 hover:bg-sky-600"
                             >
-                              Assign
+                              Prepare
                             </Button>
                           )}
-                          {/* {order.orderStatus === "preparing" && (
+                          {order.orderStatus === ORDER_STATUS.PREPARING && (
                             <Button
                               size="sm"
                               onClick={() => markReady(order.orderId)}
@@ -338,7 +250,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                             >
                               Mark Ready
                             </Button>
-                          )} */}
+                          )}
 
                           <Sheet>
                             <SheetTrigger asChild>
@@ -378,7 +290,7 @@ export default function NewOrders({ ordersResult }: IProps) {
 
           {/* Right column: overview + live status */}
           <div className="space-y-5">
-            <Card className="p-6 bg-white shadow-xl rounded-2xl border border-pink-200">
+            {/* <Card className="p-6 bg-white shadow-xl rounded-2xl border border-pink-200">
               <h2
                 className="text-xl font-extrabold mb-6"
                 style={{ color: PRIMARY }}
@@ -386,7 +298,6 @@ export default function NewOrders({ ordersResult }: IProps) {
                 Overview
               </h2>
 
-              {/* Horizontal scrolling container */}
               <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                 <OverviewMiniCard
                   title="New Orders"
@@ -434,7 +345,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                   <p className="text-xl font-bold">14</p>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>
@@ -446,14 +357,17 @@ export default function NewOrders({ ordersResult }: IProps) {
 type TOrderStatus = keyof typeof ORDER_STATUS;
 function StatusBadge({ status }: { status: TOrderStatus }) {
   const map: Record<
-    keyof Pick<typeof ORDER_STATUS, "PENDING" | "ACCEPTED" | "REJECTED">,
+    keyof Pick<
+      typeof ORDER_STATUS,
+      "PENDING" | "ACCEPTED" | "REJECTED" | "PREPARING" | "READY_FOR_PICKUP"
+    >,
     { label: string; bg: string; color: string }
   > = {
     PENDING: { label: "NEW", bg: "#FFE1EC", color: PRIMARY },
     ACCEPTED: { label: "ACCEPTED", bg: "#E8F7FF", color: "#0B67E6" },
     REJECTED: { label: "ACCEPTED", bg: "#E8F7FF", color: "#0B67E6" },
-    // preparing: { label: "PREPARING", bg: "#FFF4E1", color: "#B45309" },
-    // ready: { label: "READY", bg: "#E8FFF0", color: "#0F8A3E" },
+    PREPARING: { label: "PREPARING", bg: "#FFF4E1", color: "#B45309" },
+    READY_FOR_PICKUP: { label: "READY", bg: "#E8FFF0", color: "#0F8A3E" },
   };
   const m = map[status as "PENDING" | "ACCEPTED" | "REJECTED"];
   return (
@@ -543,7 +457,8 @@ function OrderDetails({
         <div>
           <h2 className="text-xl font-bold">{order.orderId}</h2>
           <p className="text-sm text-gray-600">
-            {order.customerId} •{" "}
+            {order.customerId?.name?.firstName}{" "}
+            {order.customerId?.name?.lastName} •{" "}
             {formatDistanceToNow(new Date(order.updatedAt), {
               addSuffix: true,
             })}
@@ -601,29 +516,29 @@ function OrderDetails({
   );
 }
 
-function OverviewMiniCard({
-  title,
-  value,
-  icon,
-  bg,
-}: {
-  title: string;
-  value: number;
-  icon: React.ReactNode;
-  bg: string;
-}) {
-  return (
-    <div
-      className="min-w-[130px] rounded-2xl p-4 flex flex-col items-center justify-center text-center border shadow-md"
-      style={{ background: bg, borderColor: "#FFD0E1" }}
-    >
-      <div className="w-12 h-12 rounded-xl bg-white shadow flex items-center justify-center mb-3">
-        {icon}
-      </div>
+// function OverviewMiniCard({
+//   title,
+//   value,
+//   icon,
+//   bg,
+// }: {
+//   title: string;
+//   value: number;
+//   icon: React.ReactNode;
+//   bg: string;
+// }) {
+//   return (
+//     <div
+//       className="min-w-[130px] rounded-2xl p-4 flex flex-col items-center justify-center text-center border shadow-md"
+//       style={{ background: bg, borderColor: "#FFD0E1" }}
+//     >
+//       <div className="w-12 h-12 rounded-xl bg-white shadow flex items-center justify-center mb-3">
+//         {icon}
+//       </div>
 
-      <div className="text-2xl font-extrabold text-gray-900">{value}</div>
+//       <div className="text-2xl font-extrabold text-gray-900">{value}</div>
 
-      <div className="text-sm font-medium text-gray-700 mt-1">{title}</div>
-    </div>
-  );
-}
+//       <div className="text-sm font-medium text-gray-700 mt-1">{title}</div>
+//     </div>
+//   );
+// }

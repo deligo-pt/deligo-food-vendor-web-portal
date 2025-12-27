@@ -8,6 +8,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,12 +20,15 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { createOffer } from "@/src/services/dashboard/offers/offers";
 import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 import { offerValidation } from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 const PRIMARY = "#DC3173";
@@ -45,13 +49,14 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       offerType: "PERCENT",
       discountValue: 0,
       maxDiscountAmount: 0,
-      buyQty: 0,
-      getQty: 0,
+      buyQty: 1,
+      getQty: 1,
       itemId: "",
       startDate: new Date(),
       endDate: new Date(),
       minOrderAmount: 0,
       code: "",
+      isAutoApply: false,
     },
   });
 
@@ -60,8 +65,29 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     name: "offerType",
   });
 
-  const onSubmit = (data: TOfferForm) => {
-    console.log(data);
+  const onSubmit = async (data: TOfferForm) => {
+    const toastId = toast.loading("Creating offer...");
+
+    try {
+      const result = await createOffer(data);
+
+      if (result.success) {
+        toast.success(result.message || "Offer created successfully!", {
+          id: toastId,
+        });
+        return;
+      }
+
+      toast.error(result.message || "Offer creation failed", { id: toastId });
+      console.log(result);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.log(error.response);
+      toast.error(error?.response?.data?.message || "Password Update Failed", {
+        id: toastId,
+      });
+    }
   };
 
   return (
@@ -98,6 +124,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -115,6 +142,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -122,7 +150,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   <FormField
                     control={form.control}
                     name="offerType"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
                         <FormControl>
                           <div className="space-y-2">
@@ -133,7 +161,12 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               onValueChange={field.onChange}
                               value={field.value}
                             >
-                              <SelectTrigger className="w-full h-12">
+                              <SelectTrigger
+                                className={cn(
+                                  "w-full h-12",
+                                  fieldState.invalid ? "border-destructive" : ""
+                                )}
+                              >
                                 <SelectValue placeholder="Select type" />
                               </SelectTrigger>
                               <SelectContent>
@@ -150,6 +183,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             </Select>
                           </div>
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -158,7 +192,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   {watchOfferType === "PERCENT" && (
                     <FormField
                       control={form.control}
-                      name="description"
+                      name="discountValue"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -169,8 +203,13 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               max={100}
                               className="h-12 text-base"
                               {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
                             />
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -179,7 +218,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   {watchOfferType === "FLAT" && (
                     <FormField
                       control={form.control}
-                      name="description"
+                      name="discountValue"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -190,8 +229,13 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               max={100}
                               className="h-12 text-base"
                               {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
                             />
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -225,6 +269,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               </Select>
                             </div>
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -257,6 +302,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               />
                             </div>
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -280,6 +326,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               />
                             </div>
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -297,11 +344,45 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             </FormLabel>
                             <Input
                               type="number"
+                              min={0}
                               className="h-12 text-base"
                               {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
                             />
                           </div>
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="isAutoApply"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <FormLabel className="flex space-y-2 gap-2 items-center">
+                            <Input
+                              type="checkbox"
+                              placeholder="Offer Description"
+                              className="w-4 h-4 mb-0"
+                              {...field}
+                              checked={field.value ? true : false}
+                              value={"true"}
+                              onChange={(e) => field.onChange(e.target.checked)}
+                            />
+                            <span
+                              onClick={() => field.onChange(!field.value)}
+                              className="font-medium text-sm text-gray-700"
+                            >
+                              Will Auto Apply?
+                            </span>
+                          </FormLabel>
+                        </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -323,6 +404,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />

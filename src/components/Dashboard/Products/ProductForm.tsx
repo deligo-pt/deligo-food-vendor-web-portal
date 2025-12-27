@@ -988,7 +988,7 @@ export function ProductForm({
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>Previous</span>
                   </motion.button>
-                  {activeTab === tabs.length - 1 ? (
+                  {activeTab === 5 && (
                     <motion.button
                       whileHover={{
                         scale: 1.05,
@@ -1002,7 +1002,8 @@ export function ProductForm({
                       <SaveIcon className="h-5 w-5" />
                       <span>Save Product</span>
                     </motion.button>
-                  ) : (
+                  )}
+                  {activeTab < 5 && (
                     <motion.button
                       whileHover={{
                         scale: 1.02,
@@ -1012,8 +1013,7 @@ export function ProductForm({
                       }}
                       type="button"
                       onClick={() =>
-                        activeTab < tabs.length - 1 &&
-                        setActiveTab(activeTab + 1)
+                        activeTab < 5 && setActiveTab(activeTab + 1)
                       }
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2"
                     >
