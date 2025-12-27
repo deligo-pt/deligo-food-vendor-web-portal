@@ -115,9 +115,8 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
             {/* language switcher */}
             <Select
               value={lang}
-              onValueChange={(value: "en" | "pt") => {
-                setLang(value);
-                console.log("Selected language:", value);
+              onValueChange={(value: 'en' | 'pt') => {
+                setLang(value)
               }}
             >
               <SelectTrigger className="w-[70px] hover:border hover:border-[#DC3173]">
