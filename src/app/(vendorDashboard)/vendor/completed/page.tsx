@@ -32,7 +32,7 @@ export default async function CompletedOrdersPage({ searchParams }: IProps) {
       params: {
         ...query,
         isPaid: true,
-        status: "DELIVERED",
+        orderStatus: "DELIVERED",
       },
     })) as unknown as TResponse<TOrder[]>;
 

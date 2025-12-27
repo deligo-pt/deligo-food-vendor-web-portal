@@ -32,7 +32,7 @@ export default async function ReadyForPickupOrdersPage({
       params: {
         ...query,
         isPaid: true,
-        status: "READY_FOR_PICKUP",
+        orderStatus: "READY_FOR_PICKUP",
       },
     })) as unknown as TResponse<TOrder[]>;
 

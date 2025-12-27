@@ -30,9 +30,11 @@ export default async function PreparingOrdersPage({ searchParams }: IProps) {
       params: {
         ...query,
         isPaid: true,
-        status: "PREPARING",
+        orderStatus: "PREPARING",
       },
     })) as unknown as TResponse<TOrder[]>;
+
+    console.log(result);
 
     if (result?.success) {
       initialData.data = result.data || [];

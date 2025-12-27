@@ -30,7 +30,7 @@ export default async function OngoingDeliveriesPage({ searchParams }: IProps) {
       params: {
         ...query,
         isPaid: true,
-        status: "PREPARING",
+        orderStatus: "PREPARING",
       },
     })) as unknown as TResponse<TOrder[]>;
 

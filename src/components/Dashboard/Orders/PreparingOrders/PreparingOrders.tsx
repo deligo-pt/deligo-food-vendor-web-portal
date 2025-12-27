@@ -85,7 +85,8 @@ export default function PreparingOrders({ ordersResult }: IProps) {
         <AllFilters sortOptions={sortOptions} />
 
         {/* content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6"> */}
+        <div>
           {/* left: list */}
           <Card className="col-span-2 p-0 overflow-hidden rounded-2xl shadow-lg">
             <CardHeader className="flex items-center justify-between p-4">

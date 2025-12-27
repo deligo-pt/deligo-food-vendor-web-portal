@@ -30,7 +30,7 @@ export default async function CancelledOrdersPage({ searchParams }: IProps) {
       params: {
         ...query,
         isPaid: true,
-        status: "CANCELLED",
+        orderStatus: "CANCELLED",
       },
     })) as unknown as TResponse<TOrder[]>;
 
