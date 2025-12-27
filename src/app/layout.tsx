@@ -1,3 +1,4 @@
+import { RegisterFCMSW } from "@/src/components/RegisterFCMSW/RegisterFCMSW";
 import SonnerToaster from "@/src/components/SonnerToaster/SonnerToaster";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -8,7 +9,6 @@ export const metadata: Metadata = {
     "DeliGo Vendor Portal empowers restaurants and business partners to manage menus, orders, delivery operations, payouts, analytics, and growth — all from one smart dashboard.",
 };
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
+        <RegisterFCMSW />
         {children}
         <SonnerToaster />
       </body>

@@ -1,4 +1,5 @@
 import { serverRequest } from "@/lib/serverFetch";
+import DesktopSidebar from "@/src/components/vendorDashboardSidebar/DesktopSidebar";
 import Sidebar from "@/src/components/vendorDashboardSidebar/vendorDashboardSidebar";
 import Topbar from "@/src/components/vendorTopbar/Topbar";
 import { TVendor } from "@/src/types/vendor.type";
@@ -45,22 +46,7 @@ export default async function VendorLayout({
       </div>
 
       {/* Desktop view */}
-      <div className="hidden md:flex w-full">
-        {/* Sidebar fixed left */}
-        <div className="w-[280px] h-screen fixed top-0 left-0 z-50 bg-white border-r">
-          <Sidebar />
-        </div>
-
-        {/* Content area */}
-        <div className="flex-1 flex flex-col md:ml-[280px]">
-          {/* Topbar sticky */}
-          <div className="w-full sticky top-0 z-40">
-            <Topbar vendor={vendorData} />
-          </div>
-          {/* Page content */}
-          <main className="flex-1 p-4 overflow-y-auto">{children}</main>
-        </div>
-      </div>
+      <DesktopSidebar vendorData={vendorData}>{children}</DesktopSidebar>
     </div>
   );
 }

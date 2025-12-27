@@ -156,7 +156,6 @@ export function ProductForm({
           isFeatured: data.isFeatured,
           isAvailableForPreOrder: data.isAvailableForPreOrder,
         },
-        images: images,
       };
 
       const formData = new FormData();

@@ -44,22 +44,22 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
       >
         <StatCard
           title="Total Items"
-          value={analyticsData?.totalProducts?.toLocaleString() || "0"}
+          value={analyticsData?.products?.total?.toLocaleString() || "0"}
           description="Total listed products"
           icon={<StoreIcon />}
           color="#DC3173"
         />
         <StatCard
-          title="Total Fleet Managers"
-          value="18"
-          description="Managing deliveries"
+          title="Active Products"
+          value={analyticsData?.products?.active?.toLocaleString() || "0"}
+          description="Items for sale"
           icon={<TruckIcon />}
           color="#DC3173"
         />
         <StatCard
-          title="Total Customers"
-          value="2,456"
-          description="Registered users"
+          title="Inactive Products"
+          value={analyticsData?.products?.inactive?.toLocaleString() || "0"}
+          description="Items not for sale"
           icon={<UsersIcon />}
           color="#DC3173"
         />
@@ -81,25 +81,25 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
       >
         <StatusCard
           title="Total Orders"
-          value={analyticsData?.totalOrders?.toLocaleString() || "0"}
+          value={analyticsData?.orders?.total?.toLocaleString() || "0"}
           icon={<ShoppingBagIcon />}
           color="#DC3173"
         />
         <StatusCard
           title="Pending"
-          value={analyticsData?.pendingOrders?.toLocaleString() || "0"}
+          value={analyticsData?.orders?.pending?.toLocaleString() || "0"}
           icon={<TrendingUpIcon />}
           color="#DC3173"
         />
         <StatusCard
           title="Completed"
-          value={analyticsData?.completedOrders?.toLocaleString() || "0"}
+          value={analyticsData?.orders?.completed?.toLocaleString() || "0"}
           icon={<CheckCircleIcon />}
           color="#DC3173"
         />
         <StatusCard
           title="Cancelled"
-          value={analyticsData?.cancelledOrders?.toLocaleString() || "0"}
+          value={analyticsData?.orders?.cancelled?.toLocaleString() || "0"}
           icon={<XCircleIcon />}
           color="#DC3173"
         />
@@ -120,10 +120,12 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
         }}
       >
         <div className="lg:col-span-2">
-          <PopularCategories />
+          <PopularCategories
+            popularCategories={analyticsData?.popularCategories}
+          />
         </div>
         <div>
-          <RecentOrders />
+          <RecentOrders recentOrders={analyticsData?.recentOrders} />
         </div>
       </motion.div>
       <motion.div
@@ -141,7 +143,7 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
           delay: 0.8,
         }}
       >
-        <TopProducts products={analyticsData?.topRatedProducts} />
+        <TopProducts topRatedItems={analyticsData?.topRatedItems} />
       </motion.div>
     </div>
   );
