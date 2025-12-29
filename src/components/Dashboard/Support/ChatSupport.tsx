@@ -5,16 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useRef, useState } from "react";
-import { Socket } from "socket.io-client";
 
 import { useChatSocket } from "@/src/hooks/use-chat-socket";
+import { TMeta } from "@/src/types";
 import { TConversation, TMessage } from "@/src/types/chat.type";
 import { getCookie } from "@/src/utils/cookies";
+import { format } from "date-fns";
 import { Bot, Clock, PhoneCall, Send } from "lucide-react";
 
 interface IProps {
   initialConversation: TConversation;
-  initialMessages: TMessage[];
+  initialMessagesData: { data: TMessage[]; meta?: TMeta };
 }
 
 const PRIMARY = "#DC3173";
@@ -22,21 +23,19 @@ const BG = "#FFF1F7";
 const SHADOW = "0 6px 22px rgba(0,0,0,0.06)";
 
 export default function VendorChatSupport({
-  initialConversation,
-  initialMessages,
+  initialConversation: conversation,
+  initialMessagesData,
 }: IProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const socketRef = useRef<Socket | null>(null);
-
-  const [conversation, setConversation] =
-    useState<TConversation>(initialConversation);
-  const [messages, setMessages] = useState<TMessage[]>(initialMessages);
+  const [messages, setMessages] = useState<TMessage[]>(
+    initialMessagesData?.data || []
+  );
   const [text, setText] = useState("");
   const [status, setStatus] = useState(conversation.status);
-  const [input, setInput] = useState("");
   const accessToken = getCookie("accessToken");
 
-  const { sendMessage, closeConversation } = useChatSocket({
+  const { sendMessage } = useChatSocket({
+    // const { sendMessage, closeConversation } = useChatSocket({
     room: conversation.room,
     token: accessToken as string,
     onMessage: (msg) => setMessages((prev) => [...prev, msg]),
@@ -47,13 +46,18 @@ export default function VendorChatSupport({
   const isLocked =
     status === "IN_PROGRESS" &&
     conversation.handledBy !== null &&
-    conversation.handledBy !== "ME"; // replace with actual userId
+    conversation.handledBy !== "ME";
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages]);
+  console.log(isLocked);
 
-  // const sendMessage = () => {
+  const handleSendMessage = () => {
+    if (!text.trim()) return;
+
+    sendMessage(text);
+    setText("");
+  };
+
+  // const handleSendMessage = () => {
   //   if (!text.trim()) return;
 
   //   // const newMsg = { from: "vendor", text, time: "Just now" };
@@ -113,6 +117,10 @@ export default function VendorChatSupport({
   //   };
   // }, []);
 
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+  }, [messages]);
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[950px] mx-auto space-y-8">
@@ -159,18 +167,22 @@ export default function VendorChatSupport({
                 <div
                   key={i}
                   className={`flex ${
-                    msg.senderId === "vendor" ? "justify-end" : "justify-start"
+                    msg.senderRole === "VENDOR"
+                      ? "justify-end"
+                      : "justify-start"
                   }`}
                 >
                   <div
                     className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
-                      msg.from === "vendor"
+                      msg.senderRole === "VENDOR"
                         ? "bg-[" + PRIMARY + "] text-white rounded-br-none"
                         : "bg-white rounded-bl-none border"
                     }`}
                   >
-                    <div className="text-sm leading-relaxed">{msg.text}</div>
-                    <p className="text-[10px] opacity-70 mt-1">{msg.time}</p>
+                    <div className="text-sm leading-relaxed">{msg.message}</div>
+                    <p className="text-[10px] opacity-70 mt-1">
+                      {format(msg.createdAt as Date, "hh:mm a")}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -184,11 +196,16 @@ export default function VendorChatSupport({
                 placeholder="Type your message…"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    handleSendMessage();
+                  }
+                }}
                 className="flex-1"
               />
 
               <Button
-                onClick={sendMessage}
+                onClick={handleSendMessage}
                 className="flex items-center gap-1 text-white"
                 style={{ background: PRIMARY }}
               >
