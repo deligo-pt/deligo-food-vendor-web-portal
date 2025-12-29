@@ -2,6 +2,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import { TMeta } from "@/src/types";
@@ -143,7 +144,17 @@ function DeliveryCard({ delivery: d }: { delivery: TOrder }) {
         </div>
 
         {/* items */}
-        <div className="text-sm text-gray-700">Items: {d.items.join(", ")}</div>
+        {d.items?.map((item, i) => (
+          <div
+            key={item.productId._id}
+            className={cn(
+              "text-sm text-gray-700 bg-gray-100 px-3 py-2 rounded-lg",
+              i < d.items.length - 1 && "mb-1.5"
+            )}
+          >
+            Items: {item.productId?.name} x {item.quantity}
+          </div>
+        ))}
 
         {/* address */}
         <p className="text-sm flex items-center gap-2 text-gray-700">

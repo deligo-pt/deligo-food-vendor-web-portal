@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import CancelOrderModal from "@/src/components/Dashboard/Orders/OrderCancelModal/OrderCancelModal";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import { ORDER_STATUS } from "@/src/consts/order.const";
@@ -13,6 +14,7 @@ import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 import { Clock, MapPin, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface IProps {
@@ -31,23 +33,29 @@ const sortOptions = [
 
 export default function PreparingOrders({ ordersResult }: IProps) {
   const router = useRouter();
+  const [cancelId, setCancelId] = useState<string | null>(null);
 
   // status updates
   const updateStatus = async (
     id: string,
-    status: keyof typeof ORDER_STATUS
+    status: keyof typeof ORDER_STATUS,
+    reason?: string
   ) => {
     const toastId = toast.loading("Order status updating...");
 
     try {
-      const result = await updateOrderStatusReq(id, status);
+      const result = await updateOrderStatusReq(id, status, reason);
 
       if (result?.success) {
         router.refresh();
         toast.success(result.message || "Order status updated successfully!", {
           id: toastId,
         });
+        return;
       }
+      toast.error(result.message || "Order status update failed", {
+        id: toastId,
+      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log(error);
@@ -63,7 +71,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
   // actions
   const markReady = (id: string) => updateStatus(id, "READY_FOR_PICKUP");
 
-  const cancelOrder = (id: string) => updateStatus(id, "CANCELED");
+  const cancelOrder = (id: string) => setCancelId(id);
 
   return (
     <div className="min-h-screen p-6 md:p-10 bg-linear-to-br from-gray-50 to-white">
@@ -242,6 +250,14 @@ export default function PreparingOrders({ ordersResult }: IProps) {
           </div>
         )}
       </div>
+      <CancelOrderModal
+        open={!!cancelId}
+        onOpenChange={(open) => {
+          if (!open) setCancelId(null);
+        }}
+        orderId={cancelId || ""}
+        updateStatus={updateStatus}
+      />
     </div>
   );
 }

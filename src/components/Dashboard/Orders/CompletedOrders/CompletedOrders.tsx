@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { Card, CardContent } from "@/components/ui/card";
 
+import { cn } from "@/lib/utils";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import { TMeta } from "@/src/types";
@@ -137,15 +138,23 @@ export default function CompletedOrders({ ordersResult }: IProps) {
                           Completed
                         </div>
                         <div className="text-2xl font-bold mt-2">
-                          {o.finalAmount?.toFixed(2)}€
+                          {o.totalPrice?.toFixed(2)}€
                         </div>
                       </div>
                     </div>
 
                     {/* ITEMS */}
-                    <div className="text-sm text-gray-700">
-                      Items: {o.items.join(", ")}
-                    </div>
+                    {o.items?.map((item, i) => (
+                      <div
+                        key={item.productId._id}
+                        className={cn(
+                          "text-sm text-gray-700 bg-gray-100 px-3 py-2 rounded-lg",
+                          i < o.items.length - 1 && "mb-1.5"
+                        )}
+                      >
+                        Items: {item.productId?.name} x {item.quantity}
+                      </div>
+                    ))}
 
                     {/* ADDRESS */}
                     <div className="flex items-center gap-2 text-gray-700 text-sm">
