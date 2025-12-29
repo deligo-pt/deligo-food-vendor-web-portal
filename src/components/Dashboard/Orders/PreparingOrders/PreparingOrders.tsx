@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import AllFilters from "@/src/components/Filtering/AllFilters";
+import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import { ORDER_STATUS } from "@/src/consts/order.const";
 import { updateOrderStatusReq } from "@/src/services/dashboard/order/order";
 import { TMeta } from "@/src/types";
@@ -64,11 +65,8 @@ export default function PreparingOrders({ ordersResult }: IProps) {
 
   const cancelOrder = (id: string) => updateStatus(id, "CANCELED");
 
-  // helper to toggle checkbox in selected
-  //   const toggleSelect = (id: string) => setSelected((s) => ({ ...s, [id]: !s[id] }));
-
   return (
-    <div className="min-h-screen p-6 md:p-10 bg-gradient-to-br from-gray-50 to-white">
+    <div className="min-h-screen p-6 md:p-10 bg-linear-to-br from-gray-50 to-white">
       <div className="max-w-[1400px] mx-auto space-y-6">
         {/* header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -85,9 +83,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
         <AllFilters sortOptions={sortOptions} />
 
         {/* content */}
-        {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6"> */}
         <div>
-          {/* left: list */}
           <Card className="col-span-2 p-0 overflow-hidden rounded-2xl shadow-lg">
             <CardHeader className="flex items-center justify-between p-4">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -103,6 +99,15 @@ export default function PreparingOrders({ ordersResult }: IProps) {
               {/* animated list */}
               <div className="space-y-4">
                 <AnimatePresence>
+                  {ordersResult?.data?.length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="py-12 text-center text-gray-500"
+                    >
+                      No orders match your query.
+                    </motion.div>
+                  )}
                   {ordersResult?.data?.map((order) => (
                     <motion.div
                       key={order._id}
@@ -118,7 +123,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                       className="bg-white rounded-2xl shadow-sm p-4 flex flex-col md:flex-row gap-3 md:gap-6 items-start md:items-center"
                     >
                       <div className="flex items-start gap-3 md:items-center min-w-0 w-full">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <div
                             className="w-14 h-14 rounded-xl bg-[rgba(220,49,115,0.08)] flex items-center justify-center text-xl font-bold"
                             style={{ color: DELIGO }}
@@ -142,10 +147,10 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                                 </div>
                               </div>
 
-                              <div className="text-sm text-gray-700 mt-2 leading-5 break-words">
+                              <div className="text-sm text-gray-700 mt-2 leading-5 wrap-break-word">
                                 {order.items.map((it, i) => (
                                   <span key={i} className="inline-block mr-3">
-                                    {it.quantity}× {it.name}
+                                    {it.quantity}× {it.productId?.name}
                                   </span>
                                 ))}
                               </div>
@@ -184,7 +189,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                       </div>
 
                       {/* actions */}
-                      <div className="flex-shrink-0 flex flex-col items-end gap-2 md:items-center">
+                      <div className="shrink-0 flex flex-col items-end gap-2 md:items-center">
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -228,47 +233,14 @@ export default function PreparingOrders({ ordersResult }: IProps) {
               </div>
             </CardContent>
           </Card>
-
-          {/* right: stats & quick actions */}
-          {/* <div className="space-y-4">
-            <Card className="p-4 rounded-2xl shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm text-gray-600">Preparing Orders</div>
-                  <div className="text-2xl font-bold">{orders.filter((o) => o.status === "preparing").length}</div>
-                </div>
-
-                <div className="text-right">
-                  <div className="text-xs text-gray-500">Avg time</div>
-                  <div className="font-semibold">15m</div>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <Button variant="ghost" className="w-full" onClick={() => setOrders((prev) => prev.map((o) => (o.status === "preparing" ? { ...o, progress: Math.min(100, (o.progress ?? 0) + 10) } : o)))}>
-                  Boost Progress (+10%)
-                </Button>
-                <Button variant="outline" className="w-full" onClick={() => setSelected({})}>Clear Selection</Button>
-              </div>
-            </Card>
-
-            <Card className="p-4 rounded-2xl shadow">
-              <div className="flex items-start gap-3">
-                <div className="p-3 rounded-lg bg-[rgba(220,49,115,0.08)]" style={{ color: DELIGO }}>
-                  <Truck />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">Delivery Partners</div>
-                  <div className="text-xl font-bold">18</div>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <Button className="w-full" style={{ background: DELIGO, color: "#fff" }}>Open Rider Pool</Button>
-              </div>
-            </Card>
-          </div> */}
         </div>
+        {!!ordersResult?.meta?.total && ordersResult?.meta?.total > 0 && (
+          <div className="px-6 pb-4">
+            <PaginationComponent
+              totalPages={ordersResult?.meta?.totalPage || 0}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -320,7 +292,7 @@ function OrderSheetContent({
               key={i}
               className="flex justify-between items-center p-3 rounded-md bg-gray-50"
             >
-              <div>{it.name}</div>
+              <div>{it.productId?.name}</div>
               <div className="text-sm text-gray-600">Qty {it.quantity}</div>
             </li>
           ))}

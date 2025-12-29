@@ -3,6 +3,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import AllFilters from "@/src/components/Filtering/AllFilters";
+import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
@@ -74,6 +75,15 @@ export default function OngoingDeliveries({ ordersResult }: IProps) {
         {/* List */}
         <div className="space-y-5">
           <AnimatePresence>
+            {ordersResult?.data?.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="py-12 text-center text-gray-500"
+              >
+                No orders match your query.
+              </motion.div>
+            )}
             {ordersResult?.data?.map((d) => (
               <motion.div
                 key={d._id}
@@ -86,6 +96,13 @@ export default function OngoingDeliveries({ ordersResult }: IProps) {
             ))}
           </AnimatePresence>
         </div>
+        {!!ordersResult?.meta?.total && ordersResult?.meta?.total > 0 && (
+          <div className="px-6 pb-4">
+            <PaginationComponent
+              totalPages={ordersResult?.meta?.totalPage || 0}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

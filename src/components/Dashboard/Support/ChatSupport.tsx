@@ -5,79 +5,113 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 
+import { useChatSocket } from "@/src/hooks/use-chat-socket";
+import { TConversation, TMessage } from "@/src/types/chat.type";
 import { getCookie } from "@/src/utils/cookies";
 import { Bot, Clock, PhoneCall, Send } from "lucide-react";
+
+interface IProps {
+  initialConversation: TConversation;
+  initialMessages: TMessage[];
+}
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0 6px 22px rgba(0,0,0,0.06)";
 
-export default function VendorChatSupport() {
-  const [messages, setMessages] = useState([
-    { from: "support", text: "Hello! How can we help you today?", time: "Now" },
-  ]);
+export default function VendorChatSupport({
+  initialConversation,
+  initialMessages,
+}: IProps) {
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
+  const [conversation, setConversation] =
+    useState<TConversation>(initialConversation);
+  const [messages, setMessages] = useState<TMessage[]>(initialMessages);
   const [text, setText] = useState("");
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [status, setStatus] = useState(conversation.status);
+  const [input, setInput] = useState("");
+  const accessToken = getCookie("accessToken");
+
+  const { sendMessage, closeConversation } = useChatSocket({
+    room: conversation.room,
+    token: accessToken as string,
+    onMessage: (msg) => setMessages((prev) => [...prev, msg]),
+    onClosed: () => setStatus("CLOSED"),
+    onError: (msg) => alert(msg),
+  });
+
+  const isLocked =
+    status === "IN_PROGRESS" &&
+    conversation.handledBy !== null &&
+    conversation.handledBy !== "ME"; // replace with actual userId
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
 
-  const sendMessage = () => {
-    if (!text.trim()) return;
+  // const sendMessage = () => {
+  //   if (!text.trim()) return;
 
-    // const newMsg = { from: "vendor", text, time: "Just now" };
-    // setMessages((prev) => [...prev, newMsg]);
-    // setText("");
+  //   // const newMsg = { from: "vendor", text, time: "Just now" };
+  //   // setMessages((prev) => [...prev, newMsg]);
+  //   // setText("");
 
-    if (!text.trim()) return;
-    socketRef.current?.emit("message", text);
-    // setMessages((prev) => [
-    //   ...prev,
-    //   { from: "vendor", text, time: "Just now" },
-    // ]);
+  //   if (!text.trim()) return;
+  //   socketRef.current?.emit("message", text);
+  //   // setMessages((prev) => [
+  //   //   ...prev,
+  //   //   { from: "vendor", text, time: "Just now" },
+  //   // ]);
 
-    setText("");
+  //   setText("");
 
-    // Auto bot reply
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          from: "support",
-          text: "Thank you, we’re reviewing your message.",
-          time: "Now",
-        },
-      ]);
-    }, 1000);
-  };
+  //   // Auto bot reply
+  //   setTimeout(() => {
+  //     setMessages((prev) => [
+  //       ...prev,
+  //       {
+  //         from: "support",
+  //         text: "Thank you, we’re reviewing your message.",
+  //         time: "Now",
+  //       },
+  //     ]);
+  //   }, 1000);
+  // };
+
+  //  useChatSocket({
+  //     room: conversation.room,
+  //     onMessage: (msg) =>
+  //       setMessages((prev) => [...prev, msg]),
+  //     onClose: () =>
+  //       setConversation((c) => ({ ...c, status: "CLOSED" })),
+  //   });
 
   // connect to room with socket.io-client
-  useEffect(() => {
-    const accessToken = getCookie("accessToken");
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
-      reconnectionDelayMax: 10000,
-      auth: {
-        token: accessToken,
-      },
-    });
-    socketRef.current = socket;
-    socket.on("message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+  // useEffect(() => {
+  //   const accessToken = getCookie("accessToken");
+  //   const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+  //     reconnectionDelayMax: 10000,
+  //     auth: {
+  //       token: accessToken,
+  //     },
+  //   });
+  //   socketRef.current = socket;
+  //   socket.on("message", (msg) => {
+  //     setMessages((prev) => [...prev, msg]);
+  //   });
 
-    socket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+  //   socket.on("disconnect", () => {
+  //     console.log("Socket disconnected");
+  //   });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
@@ -125,7 +159,7 @@ export default function VendorChatSupport() {
                 <div
                   key={i}
                   className={`flex ${
-                    msg.from === "vendor" ? "justify-end" : "justify-start"
+                    msg.senderId === "vendor" ? "justify-end" : "justify-start"
                   }`}
                 >
                   <div

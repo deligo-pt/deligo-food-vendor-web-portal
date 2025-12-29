@@ -75,6 +75,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         toast.success(result.message || "Offer created successfully!", {
           id: toastId,
         });
+        form.reset();
         return;
       }
 

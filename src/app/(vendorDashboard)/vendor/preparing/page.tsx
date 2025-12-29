@@ -34,8 +34,6 @@ export default async function PreparingOrdersPage({ searchParams }: IProps) {
       },
     })) as unknown as TResponse<TOrder[]>;
 
-    console.log(result);
-
     if (result?.success) {
       initialData.data = result.data || [];
       initialData.meta = result.meta;

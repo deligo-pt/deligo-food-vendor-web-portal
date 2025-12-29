@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pagination } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -13,6 +12,7 @@ import {
 import DeleteProductDialog from "@/src/components/Dashboard/Products/DeleteProductDialog";
 import EditProductDialog from "@/src/components/Dashboard/Products/EditProductDialog";
 import ProductCard from "@/src/components/Dashboard/Products/ProductCard";
+import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import SearchFilter from "@/src/components/Filtering/SearchFilter";
 import SelectFilter from "@/src/components/Filtering/SelectFilter";
 import { TMeta, TResponse } from "@/src/types";
@@ -322,9 +322,9 @@ export default function Products({
           </Button>
         </motion.div>
       )}
-      {initialData?.data?.length > 0 && (
-        <div className="mt-8 flex justify-center">
-          <Pagination />
+      {!!initialData?.meta?.total && initialData?.meta?.total > 0 && (
+        <div className="pb-4 my-3">
+          <PaginationComponent totalPages={initialData?.meta?.totalPage || 0} />
         </div>
       )}
 
