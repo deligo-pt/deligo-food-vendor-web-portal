@@ -259,7 +259,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                                   </Button>
                                 </>
                               )}
-                              {order.orderStatus === ORDER_STATUS.ACCEPTED && (
+                              {order.orderStatus === ORDER_STATUS.ASSIGNED && (
                                 <Button
                                   size="sm"
                                   onClick={() => startPreparing(order.orderId)}
@@ -381,12 +381,13 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
   const steps: {
     key: keyof Pick<
       typeof ORDER_STATUS,
-      "PENDING" | "ACCEPTED" | "PREPARING" | "READY_FOR_PICKUP"
+      "PENDING" | "ACCEPTED" | "ASSIGNED" | "PREPARING" | "READY_FOR_PICKUP"
     >;
     label: string;
   }[] = [
     { key: "PENDING", label: "New" },
     { key: "ACCEPTED", label: "Accepted" },
+    { key: "ASSIGNED", label: "Assigned" },
     { key: "PREPARING", label: "Preparing" },
     { key: "READY_FOR_PICKUP", label: "Ready" },
     // { key: "REJECTED", label: "Rejected" },
