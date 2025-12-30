@@ -4,16 +4,12 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
-import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useStore } from "@/src/store/store";
 
 export default function FooterDeligoPremium() {
   const { t } = useTranslation();
-  const [language, setLanguage] = useState("PT");
-
-  const languages = [
-    { code: "PT", label: "Português" },
-    { code: "EN", label: "English" },
-  ];
+  const { lang, setLang } = useStore();
 
   const companyLinks = [
     { name: t("footerAboutUs"), href: "/about-us" },
@@ -152,17 +148,21 @@ export default function FooterDeligoPremium() {
           <h3 className="text-lg font-bold mb-3 text-[#DC3173]">
             {t("footerLanguage")}
           </h3>
-          <select
-            className="bg-[#1b1b1d] text-gray-200 px-4 py-3 rounded-xl border border-gray-600 hover:border-[#DC3173] transition w-full font-medium"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
+          <Select
+            value={lang}
+            onValueChange={(value: "en" | "pt") => {
+              setLang(value);
+            }}
           >
-            {languages.map((lang) => (
-              <option key={lang.code} value={lang.code}>
-                {lang.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-[140px] hover:border hover:border-[#DC3173]">
+              <SelectValue placeholder="Language" />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectItem value="en">English</SelectItem>
+              <SelectItem value="pt">Português</SelectItem>
+            </SelectContent>
+          </Select>
         </motion.div>
       </div>
 
