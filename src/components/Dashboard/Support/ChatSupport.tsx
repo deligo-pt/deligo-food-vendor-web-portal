@@ -5,79 +5,121 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
 
+import { useChatSocket } from "@/src/hooks/use-chat-socket";
+import { TMeta } from "@/src/types";
+import { TConversation, TMessage } from "@/src/types/chat.type";
 import { getCookie } from "@/src/utils/cookies";
+import { format } from "date-fns";
 import { Bot, Clock, PhoneCall, Send } from "lucide-react";
+
+interface IProps {
+  initialConversation: TConversation;
+  initialMessagesData: { data: TMessage[]; meta?: TMeta };
+}
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0 6px 22px rgba(0,0,0,0.06)";
 
-export default function VendorChatSupport() {
-  const [messages, setMessages] = useState([
-    { from: "support", text: "Hello! How can we help you today?", time: "Now" },
-  ]);
-  const socketRef = useRef<Socket | null>(null);
-
-  const [text, setText] = useState("");
+export default function VendorChatSupport({
+  initialConversation: conversation,
+  initialMessagesData,
+}: IProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [messages, setMessages] = useState<TMessage[]>(
+    initialMessagesData?.data || []
+  );
+  const [text, setText] = useState("");
+  const [status, setStatus] = useState(conversation.status);
+  const accessToken = getCookie("accessToken");
+
+  const { sendMessage } = useChatSocket({
+    // const { sendMessage, closeConversation } = useChatSocket({
+    room: conversation.room,
+    token: accessToken as string,
+    onMessage: (msg) => setMessages((prev) => [...prev, msg]),
+    onClosed: () => setStatus("CLOSED"),
+    onError: (msg) => alert(msg),
+  });
+
+  const isLocked =
+    status === "IN_PROGRESS" &&
+    conversation.handledBy !== null &&
+    conversation.handledBy !== "ME";
+
+  console.log(isLocked);
+
+  const handleSendMessage = () => {
+    if (!text.trim()) return;
+
+    sendMessage(text);
+    setText("");
+  };
+
+  // const handleSendMessage = () => {
+  //   if (!text.trim()) return;
+
+  //   // const newMsg = { from: "vendor", text, time: "Just now" };
+  //   // setMessages((prev) => [...prev, newMsg]);
+  //   // setText("");
+
+  //   if (!text.trim()) return;
+  //   socketRef.current?.emit("message", text);
+  //   // setMessages((prev) => [
+  //   //   ...prev,
+  //   //   { from: "vendor", text, time: "Just now" },
+  //   // ]);
+
+  //   setText("");
+
+  //   // Auto bot reply
+  //   setTimeout(() => {
+  //     setMessages((prev) => [
+  //       ...prev,
+  //       {
+  //         from: "support",
+  //         text: "Thank you, we’re reviewing your message.",
+  //         time: "Now",
+  //       },
+  //     ]);
+  //   }, 1000);
+  // };
+
+  //  useChatSocket({
+  //     room: conversation.room,
+  //     onMessage: (msg) =>
+  //       setMessages((prev) => [...prev, msg]),
+  //     onClose: () =>
+  //       setConversation((c) => ({ ...c, status: "CLOSED" })),
+  //   });
+
+  // connect to room with socket.io-client
+  // useEffect(() => {
+  //   const accessToken = getCookie("accessToken");
+  //   const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+  //     reconnectionDelayMax: 10000,
+  //     auth: {
+  //       token: accessToken,
+  //     },
+  //   });
+  //   socketRef.current = socket;
+  //   socket.on("message", (msg) => {
+  //     setMessages((prev) => [...prev, msg]);
+  //   });
+
+  //   socket.on("disconnect", () => {
+  //     console.log("Socket disconnected");
+  //   });
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
-
-  const sendMessage = () => {
-    if (!text.trim()) return;
-
-    // const newMsg = { from: "vendor", text, time: "Just now" };
-    // setMessages((prev) => [...prev, newMsg]);
-    // setText("");
-
-    if (!text.trim()) return;
-    socketRef.current?.emit("message", text);
-    // setMessages((prev) => [
-    //   ...prev,
-    //   { from: "vendor", text, time: "Just now" },
-    // ]);
-
-    setText("");
-
-    // Auto bot reply
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          from: "support",
-          text: "Thank you, we’re reviewing your message.",
-          time: "Now",
-        },
-      ]);
-    }, 1000);
-  };
-
-  // connect to room with socket.io-client
-  useEffect(() => {
-    const accessToken = getCookie("accessToken");
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
-      reconnectionDelayMax: 10000,
-      auth: {
-        token: accessToken,
-      },
-    });
-    socketRef.current = socket;
-    socket.on("message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
 
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
@@ -125,18 +167,22 @@ export default function VendorChatSupport() {
                 <div
                   key={i}
                   className={`flex ${
-                    msg.from === "vendor" ? "justify-end" : "justify-start"
+                    msg.senderRole === "VENDOR"
+                      ? "justify-end"
+                      : "justify-start"
                   }`}
                 >
                   <div
                     className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
-                      msg.from === "vendor"
+                      msg.senderRole === "VENDOR"
                         ? "bg-[" + PRIMARY + "] text-white rounded-br-none"
                         : "bg-white rounded-bl-none border"
                     }`}
                   >
-                    <div className="text-sm leading-relaxed">{msg.text}</div>
-                    <p className="text-[10px] opacity-70 mt-1">{msg.time}</p>
+                    <div className="text-sm leading-relaxed">{msg.message}</div>
+                    <p className="text-[10px] opacity-70 mt-1">
+                      {format(msg.createdAt as Date, "hh:mm a")}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -150,11 +196,16 @@ export default function VendorChatSupport() {
                 placeholder="Type your message…"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    handleSendMessage();
+                  }
+                }}
                 className="flex-1"
               />
 
               <Button
-                onClick={sendMessage}
+                onClick={handleSendMessage}
                 className="flex items-center gap-1 text-white"
                 style={{ background: PRIMARY }}
               >

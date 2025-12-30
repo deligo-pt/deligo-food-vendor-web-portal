@@ -57,10 +57,11 @@ export type TVendor = {
 
   // Business Location
   businessLocation?: {
-    streetAddress: string;
-    streetNumber: string;
-    city: string;
-    postalCode: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
     latitude?: number;
     longitude?: number;
     geoAccuracy?: number; // meters

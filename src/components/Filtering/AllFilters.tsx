@@ -25,9 +25,14 @@ interface IProps {
     type: string;
     items: { label: string; value: string }[];
   }[];
+  searchPlaceholder?: string;
 }
 
-export default function AllFilters({ sortOptions, filterOptions }: IProps) {
+export default function AllFilters({
+  sortOptions,
+  filterOptions,
+  searchPlaceholder,
+}: IProps) {
   const searchParams = useSearchParams();
   const oldFilters =
     filterOptions?.reduce((acc, option) => {
@@ -44,11 +49,19 @@ export default function AllFilters({ sortOptions, filterOptions }: IProps) {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(activeFilters).forEach(([key, value]) => {
       if (value) {
-        setParamFilters((prevFilters) => ({
-          ...prevFilters,
-          [key]: value,
-        }));
-        params.set(key, value);
+        if (value !== "all") {
+          setParamFilters((prevFilters) => ({
+            ...prevFilters,
+            [key]: value,
+          }));
+          params.set(key, value);
+        } else {
+          setParamFilters((prevFilters) => ({
+            ...prevFilters,
+            [key]: "",
+          }));
+          params.delete(key);
+        }
       }
     });
     router.push(`?${params.toString()}`);
@@ -84,7 +97,10 @@ export default function AllFilters({ sortOptions, filterOptions }: IProps) {
       className="mb-1"
     >
       <div className="flex flex-col lg:flex-row gap-4 items-start md:items-center justify-between">
-        <SearchFilter paramName="searchTerm" placeholder="Searching..." />
+        <SearchFilter
+          paramName="searchTerm"
+          placeholder={searchPlaceholder || "Search..."}
+        />
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
           <div className="w-full lg:w-48">
             <SelectFilter

@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { createOffer } from "@/src/services/dashboard/offers/offers";
 import { TMeta } from "@/src/types";
+import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
 import { offerValidation } from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,25 +39,26 @@ type TOfferForm = z.infer<typeof offerValidation>;
 
 interface IProps {
   itemsResult: { data: TProduct[]; meta?: TMeta };
+  offer: TOffer;
 }
 
-export default function VendorCreateOffer({ itemsResult }: IProps) {
+export default function VendorCreateOffer({ itemsResult, offer }: IProps) {
   const form = useForm<TOfferForm>({
     resolver: zodResolver(offerValidation),
-    defaultValues: {
-      title: "",
-      description: "",
-      offerType: "PERCENT",
-      discountValue: 0,
-      maxDiscountAmount: 0,
-      buyQty: 1,
-      getQty: 1,
-      itemId: "",
-      startDate: new Date(),
-      endDate: new Date(),
-      minOrderAmount: 0,
-      code: "",
-      isAutoApply: false,
+    values: {
+      title: offer?.title || "",
+      description: offer?.description || "",
+      offerType: offer?.offerType || "PERCENT",
+      discountValue: offer?.discountValue || 0,
+      maxDiscountAmount: offer?.maxDiscountAmount || 0,
+      buyQty: offer?.bogo?.buyQty || 1,
+      getQty: offer?.bogo?.getQty || 1,
+      itemId: offer?.bogo?.itemId || "",
+      startDate: offer.startDate,
+      endDate: offer.endDate,
+      minOrderAmount: offer?.minOrderAmount || 0,
+      code: offer?.code || "",
+      isAutoApply: offer?.isAutoApply || false,
     },
   });
 

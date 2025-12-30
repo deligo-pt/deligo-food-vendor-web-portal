@@ -1,4 +1,7 @@
 import { ORDER_STATUS } from "@/src/consts/order.const";
+import { TCustomer } from "@/src/types/customer.type";
+import { TDeliveryPartner } from "@/src/types/delivery-partner.type";
+import { TVendor } from "@/src/types/vendor.type";
 
 export type TOrder = {
   _id?: string;
@@ -6,14 +9,17 @@ export type TOrder = {
 
   // Relationships
   orderId: string;
-  customerId: string;
-  vendorId: string;
-  deliveryPartnerId?: string; // assigned after vendor accepts
+  customerId: TCustomer;
+  vendorId: TVendor;
+  deliveryPartnerId?: TDeliveryPartner; // assigned after vendor accepts
 
   // Items
   items: {
-    productId: string;
-    name: string;
+    productId: {
+      name: string;
+      productId: string;
+      _id: string;
+    };
     quantity: number;
     price: number;
     subtotal: number;

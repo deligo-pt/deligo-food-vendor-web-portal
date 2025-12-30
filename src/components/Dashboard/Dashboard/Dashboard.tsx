@@ -86,19 +86,19 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
           color="#DC3173"
         />
         <StatusCard
-          title="Pending"
+          title="Pending Orders"
           value={analyticsData?.orders?.pending?.toLocaleString() || "0"}
           icon={<TrendingUpIcon />}
           color="#DC3173"
         />
         <StatusCard
-          title="Completed"
+          title="Completed Orders"
           value={analyticsData?.orders?.completed?.toLocaleString() || "0"}
           icon={<CheckCircleIcon />}
           color="#DC3173"
         />
         <StatusCard
-          title="Cancelled"
+          title="Cancelled Orders"
           value={analyticsData?.orders?.cancelled?.toLocaleString() || "0"}
           icon={<XCircleIcon />}
           color="#DC3173"

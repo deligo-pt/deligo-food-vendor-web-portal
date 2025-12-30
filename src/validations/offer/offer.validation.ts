@@ -27,15 +27,9 @@ export const offerValidation = z
       .max(100, "Max discount amount must be at most 100")
       .optional(),
 
-    buyQty: z
-      .number("Buy quantity must be a number")
-      .min(1, "Buy quantity must be at least 1")
-      .optional(),
+    buyQty: z.number("Buy quantity must be a number").optional(),
 
-    getQty: z
-      .number("Get quantity must be a number")
-      .min(1, "Get quantity must be at least 1")
-      .optional(),
+    getQty: z.number("Get quantity must be a number").optional(),
 
     itemId: z.string().optional(),
 
@@ -48,13 +42,17 @@ export const offerValidation = z
       .optional(),
 
     code: z.string().optional(),
+    isAutoApply: z.boolean("Auto apply must be a boolean").optional(),
   })
-  .refine((data) => {
-    if (
-      data.offerType === "BOGO" &&
-      (!data.buyQty || !data.getQty || !data.itemId)
-    ) {
-      return false;
+  .refine(
+    (data) => {
+      if (data.offerType === "BOGO" && !data.itemId) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Item id is required",
+      path: ["itemId"],
     }
-    return true;
-  }, "Buy quantity, get quantity, and item ID are required for BOGO offer type");
+  );

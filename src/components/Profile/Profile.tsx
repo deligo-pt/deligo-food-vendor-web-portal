@@ -19,6 +19,7 @@ import {
   DoorClosedIcon,
   DoorOpenIcon,
   FileTextIcon,
+  GlobeIcon,
   HashIcon,
   MailIcon,
   MapIcon,
@@ -244,7 +245,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
             <div className="space-y-1">
               <ProfileInfoRow
                 label="Street Address"
-                value={`${vendor.businessLocation?.streetNumber} ${vendor.businessLocation?.streetAddress}`}
+                value={`${vendor.businessLocation?.street}`}
                 icon={MapIcon}
               />
               <ProfileInfoRow
@@ -256,6 +257,11 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 label="Postal Code"
                 value={vendor.businessLocation?.postalCode}
                 icon={HashIcon}
+              />
+              <ProfileInfoRow
+                label="Country"
+                value={vendor.businessLocation?.country}
+                icon={GlobeIcon}
               />
             </div>
           </ProfileSection>

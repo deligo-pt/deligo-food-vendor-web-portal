@@ -14,6 +14,7 @@ import {
   UserCheckIcon,
   XCircleIcon,
 } from "lucide-react";
+import Link from "next/link";
 
 interface IProps {
   recentOrders: TRecentOrder[];
@@ -23,10 +24,31 @@ const STATUS_MAP = {
   PENDING: { label: "Pending", color: "text-amber-500", icon: ClockIcon },
   ACCEPTED: { label: "Accepted", color: "text-blue-500", icon: ThumbsUpIcon },
   REJECTED: { label: "Rejected", color: "text-red-500", icon: XCircleIcon },
+  PREPARING: { label: "Preparing", color: "text-yellow-500", icon: ClockIcon },
+  READY_FOR_PICKUP: {
+    label: "Ready For Pickup",
+    color: "text-green-500",
+    icon: ThumbsUpIcon,
+  },
+  DISPATCHING: {
+    label: "Dispatching",
+    color: "text-sky-500",
+    icon: TruckIcon,
+  },
+  AWAITING_PARTNER: {
+    label: "Awaiting Partner",
+    color: "text-purple-500",
+    icon: TruckIcon,
+  },
   ASSIGNED: {
     label: "Assigned",
     color: "text-indigo-500",
     icon: UserCheckIcon,
+  },
+  REASSIGNMENT_NEEDED: {
+    label: "Reassignment Needed",
+    color: "text-red-500",
+    icon: XCircleIcon,
   },
   PICKED_UP: {
     label: "Picked Up",
@@ -119,12 +141,14 @@ const RecentOrders = ({ recentOrders }: IProps) => {
           </motion.div>
         ))}
       </motion.div>
-      <Button
-        variant="link"
-        className="w-full mt-4 text-[#DC3173] text-sm font-medium hover:underline"
-      >
-        View All Orders
-      </Button>
+      <Link href="/vendor/new-orders">
+        <Button
+          variant="link"
+          className="w-full mt-4 text-[#DC3173] text-sm font-medium hover:underline"
+        >
+          View All Orders
+        </Button>
+      </Link>
     </div>
   );
 };
