@@ -2,29 +2,14 @@ import { serverRequest } from "@/lib/serverFetch";
 import VendorChatSupport from "@/src/components/Dashboard/Support/ChatSupport";
 import { TMeta, TResponse } from "@/src/types";
 import { TConversation, TMessage } from "@/src/types/chat.type";
-import { TVendor } from "@/src/types/vendor.type";
 
 export default async function ChatSupportPage() {
   let conversationData = {} as TConversation;
   let messagesData = {} as { data: TMessage[]; meta?: TMeta };
 
   try {
-    const profileResult = (await serverRequest.get(
-      "/profile"
-    )) as TResponse<TVendor>;
-
     const conversationResult = (await serverRequest.post(
-      "/support/conversation",
-      {
-        data: {
-          type: "SUPPORT",
-          targetUser: {
-            userId: profileResult?.data?.userId,
-            role: profileResult?.data?.role,
-            name: `${profileResult?.data?.name?.firstName} ${profileResult?.data?.name?.lastName}`,
-          },
-        },
-      }
+      "/support/conversation"
     )) as TResponse<TConversation>;
 
     conversationData = conversationResult.data;

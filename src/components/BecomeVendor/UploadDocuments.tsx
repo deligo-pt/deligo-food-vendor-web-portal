@@ -45,7 +45,8 @@ interface IDoc {
 type DocKey =
   | "businessLicenseDoc"
   | "taxDoc"
-  | "idProof"
+  | "idProofFront"
+  | "idProofBack"
   | "storePhoto"
   | "menuUpload";
 
@@ -92,7 +93,8 @@ export default function UploadDocuments({
       prefersImagePreview: false,
     }, // PDF/name
     { key: "taxDoc", label: t("documentsLabel2"), prefersImagePreview: false }, // PDF/name
-    { key: "idProof", label: t("documentsLabel3"), prefersImagePreview: true }, // image preview ok
+    { key: "idProofFront", label: t("documentsLabel3"), prefersImagePreview: true }, // image preview ok
+    { key: "idProofBack", label: t("documentsLabel3"), prefersImagePreview: true }, // image preview ok
     { key: "storePhoto", label: t("documentsLabel4"), prefersImagePreview: true },
     { key: "menuUpload", label: t("documentsLabel5"), prefersImagePreview: true },
   ];
