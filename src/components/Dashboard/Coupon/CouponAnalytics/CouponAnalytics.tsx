@@ -1,55 +1,21 @@
-
-
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { TMeta } from "@/src/types";
+import { TCouponAnalytics } from "@/src/types/coupon.type";
 import { motion } from "framer-motion";
-import {
-    ArrowDownLeft,
-    ArrowUpRight,
-    BarChart3,
-    ChartBar,
-    Flame,
-    Percent,
-    Tag,
-    TrendingUp,
-} from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0 6px 20px rgba(0,0,0,0.06)";
 
-const COUPONS = [
-  {
-    code: "BURGER20",
-    usage: 122,
-    boost: 18,
-    type: "percentage",
-    revenueImpact: +342,
-    topItems: ["Chicken Burger", "Cheese Burger", "Double Patty"],
-  },
-  {
-    code: "JUICEB1G1",
-    usage: 89,
-    boost: 26,
-    type: "bogo",
-    revenueImpact: +198,
-    topItems: ["Orange Juice", "Mango Juice"],
-  },
-  {
-    code: "SAVE3",
-    usage: 64,
-    boost: 11,
-    type: "flat",
-    revenueImpact: -40,
-    topItems: ["Veg Pizza", "Pepperoni Pizza"],
-  },
-];
+interface IProps {
+  couponsAnalyticsResult: { data: TCouponAnalytics[]; meta?: TMeta };
+}
 
-export default function VendorCouponAnalytics() {
+export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1200px] mx-auto space-y-12">
@@ -59,55 +25,76 @@ export default function VendorCouponAnalytics() {
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
               Coupon Analytics
             </h1>
-            <p className="text-gray-600 text-sm mt-1">Performance insights for all active & past coupons</p>
+            <p className="text-gray-600 text-sm mt-1">
+              Performance insights for all active & past coupons
+            </p>
           </div>
 
-          <Button className="text-white" style={{ background: PRIMARY }}>
+          {/* <Button className="text-white" style={{ background: PRIMARY }}>
             Export Report
-          </Button>
+          </Button> */}
         </div>
 
         {/* CHART PLACEHOLDER */}
-        <Card className="rounded-3xl bg-white border shadow-md" style={{ height: "280px" }}>
+        {/* <Card
+          className="rounded-3xl bg-white border shadow-md"
+          style={{ height: "280px" }}
+        >
           <CardContent className="flex items-center justify-center h-full text-gray-500">
-            <ChartBar size={36} className="mr-2 text-pink-500" /> Monthly Analytics Chart Coming Soon
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={couponsAnalyticsResult?.data?.monthlyAnalysis}>
+                <XAxis dataKey="couponCode" />
+                <YAxis />
+                <Tooltip cursor={{ display: "none" }} />
+                <Bar dataKey="redeemedCount" fill="#8884d8" name="Redeemed" />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* COUPON LIST */}
         <div className="space-y-6">
-          {COUPONS.map((c, idx) => (
+          {couponsAnalyticsResult?.data?.map((c, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: idx * 0.05 }}
             >
-              <Card className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all" style={{ boxShadow: SHADOW }}>
+              <Card
+                className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all"
+                style={{ boxShadow: SHADOW }}
+              >
                 <CardContent className="p-6 flex flex-col md:flex-row justify-between gap-6">
                   {/* LEFT */}
                   <div className="flex items-start gap-4">
                     <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600">
-                      {c.type === "percentage" && <Percent size={28} />}
+                      {/* {c.type === "percentage" && <Percent size={28} />}
                       {c.type === "bogo" && <Tag size={28} />}
-                      {c.type === "flat" && <Flame size={28} />}
+                      {c.type === "flat" && <Flame size={28} />} */}
                     </div>
 
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-800">{c.code}</h2>
+                      <h2 className="text-2xl font-bold text-gray-800">
+                        {c.couponCode}
+                      </h2>
 
                       <div className="flex items-center gap-3 text-sm mt-2 text-gray-600">
-                        <Badge variant="outline">Usage: {c.usage}</Badge>
-                        <span className="flex items-center gap-1 text-green-600 font-semibold">
-                          <TrendingUp size={16} /> {c.boost}% boost
-                        </span>
+                        <Badge variant="outline">
+                          Usage: {c.totalCustomerUsage}
+                        </Badge>
+                        {/* <span className="flex items-center gap-1 text-green-600 font-semibold">
+                          <TrendingUp size={16} /> {c.}% boost
+                        </span> */}
                       </div>
 
                       <div className="mt-3">
-                        <p className="text-sm text-gray-500">Top items influenced:</p>
+                        <p className="text-sm text-gray-500">
+                          Top items influenced:
+                        </p>
                         <ul className="text-sm list-disc pl-5 text-gray-700">
-                          {c.topItems.map((i, k) => (
-                            <li key={k}>{i}</li>
+                          {c.topItemsInfluenced.map((i, k) => (
+                            <li key={k}>{i.name}</li>
                           ))}
                         </ul>
                       </div>
@@ -128,9 +115,9 @@ export default function VendorCouponAnalytics() {
                       </p>
                     )}
 
-                    <Button variant="outline" className="mt-4 w-full">
+                    {/* <Button variant="outline" className="mt-4 w-full">
                       View Details
-                    </Button>
+                    </Button> */}
                   </div>
                 </CardContent>
               </Card>
@@ -139,7 +126,7 @@ export default function VendorCouponAnalytics() {
         </div>
 
         {/* AI INSIGHTS */}
-        <Card className="rounded-3xl bg-white border shadow-md">
+        {/* <Card className="rounded-3xl bg-white border shadow-md">
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <BarChart3 className="text-gray-800" />
@@ -150,7 +137,9 @@ export default function VendorCouponAnalytics() {
             <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
               <li>B1G1 offers produce highest customer engagement.</li>
               <li>Percentage discounts perform best during dinner hours.</li>
-              <li>Flat discounts help increase conversion on low basket orders.</li>
+              <li>
+                Flat discounts help increase conversion on low basket orders.
+              </li>
               <li>Coupons ending soon should be pushed via banners.</li>
             </ul>
 
@@ -158,7 +147,7 @@ export default function VendorCouponAnalytics() {
               Optimize Coupons
             </Button>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

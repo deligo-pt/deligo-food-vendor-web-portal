@@ -15,3 +15,22 @@ export type TCoupon = {
   createdAt?: Date;
   updatedAt?: Date;
 };
+
+export type TopItemsInfluenced = {
+  name: string;
+  quantity: number;
+};
+
+export type MonthlyAnalysis = {
+  month: string;
+  usage: number;
+  revenue: number;
+};
+
+export type TCouponAnalytics = {
+  couponCode: string;
+  totalCustomerUsage: number;
+  revenueImpact: number;
+  topItemsInfluenced: TopItemsInfluenced[];
+  monthlyAnalysis: MonthlyAnalysis[];
+};

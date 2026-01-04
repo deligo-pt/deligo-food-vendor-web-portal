@@ -1,165 +1,43 @@
+export const dynamic = "force-dynamic";
 
+import { serverRequest } from "@/lib/serverFetch";
+import CouponAnalytics from "@/src/components/Dashboard/Coupon/CouponAnalytics/CouponAnalytics";
+import { TMeta, TResponse } from "@/src/types";
+import { TCouponAnalytics } from "@/src/types/coupon.type";
 
-"use client";
+type IProps = {
+  searchParams?: Promise<Record<string, string | undefined>>;
+};
 
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Percent,
-  Flame,
-  Tag,
-  BarChart3,
-  ArrowUpRight,
-  ArrowDownLeft,
-  TrendingUp,
-  ChartBar,
-} from "lucide-react";
+export default async function CouponAnalyticsPage({ searchParams }: IProps) {
+  const queries = (await searchParams) || {};
+  const limit = Number(queries?.limit || 10);
+  const page = Number(queries.page || 1);
+  const searchTerm = queries.searchTerm || "";
+  const sortBy = queries.sortBy || "-createdAt";
 
-const PRIMARY = "#DC3173";
-const BG = "#FFF1F7";
-const SHADOW = "0 6px 20px rgba(0,0,0,0.06)";
+  const query = {
+    limit,
+    page,
+    sortBy,
+    ...(searchTerm ? { searchTerm: searchTerm } : {}),
+  };
 
-const COUPONS = [
-  {
-    code: "BURGER20",
-    usage: 122,
-    boost: 18,
-    type: "percentage",
-    revenueImpact: +342,
-    topItems: ["Chicken Burger", "Cheese Burger", "Double Patty"],
-  },
-  {
-    code: "JUICEB1G1",
-    usage: 89,
-    boost: 26,
-    type: "bogo",
-    revenueImpact: +198,
-    topItems: ["Orange Juice", "Mango Juice"],
-  },
-  {
-    code: "SAVE3",
-    usage: 64,
-    boost: 11,
-    type: "flat",
-    revenueImpact: -40,
-    topItems: ["Veg Pizza", "Pepperoni Pizza"],
-  },
-];
+  const initialData: { data: TCouponAnalytics[]; meta?: TMeta } = { data: [] };
 
-export default function VendorCouponAnalytics() {
-  return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[1200px] mx-auto space-y-12">
-        {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Coupon Analytics
-            </h1>
-            <p className="text-gray-600 text-sm mt-1">Performance insights for all active & past coupons</p>
-          </div>
+  try {
+    const result = (await serverRequest.get("/coupons/analytics", {
+      params: query,
+    })) as unknown as TResponse<{ data: TCouponAnalytics[]; meta?: TMeta }>;
+    console.log(result);
 
-          <Button className="text-white" style={{ background: PRIMARY }}>
-            Export Report
-          </Button>
-        </div>
+    if (result?.success) {
+      initialData.data = result.data?.data || [];
+      initialData.meta = result.data?.meta;
+    }
+  } catch (err) {
+    console.error("Server fetch error:", err);
+  }
 
-        {/* CHART PLACEHOLDER */}
-        <Card className="rounded-3xl bg-white border shadow-md" style={{ height: "280px" }}>
-          <CardContent className="flex items-center justify-center h-full text-gray-500">
-            <ChartBar size={36} className="mr-2 text-pink-500" /> Monthly Analytics Chart Coming Soon
-          </CardContent>
-        </Card>
-
-        {/* COUPON LIST */}
-        <div className="space-y-6">
-          {COUPONS.map((c, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: idx * 0.05 }}
-            >
-              <Card className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all" style={{ boxShadow: SHADOW }}>
-                <CardContent className="p-6 flex flex-col md:flex-row justify-between gap-6">
-                  {/* LEFT */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600">
-                      {c.type === "percentage" && <Percent size={28} />}
-                      {c.type === "bogo" && <Tag size={28} />}
-                      {c.type === "flat" && <Flame size={28} />}
-                    </div>
-
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-800">{c.code}</h2>
-
-                      <div className="flex items-center gap-3 text-sm mt-2 text-gray-600">
-                        <Badge variant="outline">Usage: {c.usage}</Badge>
-                        <span className="flex items-center gap-1 text-green-600 font-semibold">
-                          <TrendingUp size={16} /> {c.boost}% boost
-                        </span>
-                      </div>
-
-                      <div className="mt-3">
-                        <p className="text-sm text-gray-500">Top items influenced:</p>
-                        <ul className="text-sm list-disc pl-5 text-gray-700">
-                          {c.topItems.map((i, k) => (
-                            <li key={k}>{i}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* RIGHT */}
-                  <div className="text-right md:min-w-[220px]">
-                    <p className="text-sm text-gray-500">Revenue Impact</p>
-
-                    {c.revenueImpact >= 0 ? (
-                      <p className="text-3xl font-bold text-green-600 flex items-center justify-end gap-1">
-                        <ArrowUpRight size={20} /> €{c.revenueImpact}
-                      </p>
-                    ) : (
-                      <p className="text-3xl font-bold text-red-600 flex items-center justify-end gap-1">
-                        <ArrowDownLeft size={20} /> €{c.revenueImpact}
-                      </p>
-                    )}
-
-                    <Button variant="outline" className="mt-4 w-full">
-                      View Details
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* AI INSIGHTS */}
-        <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6 space-y-3">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Insights</h2>
-            </div>
-            <Separator />
-
-            <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
-              <li>B1G1 offers produce highest customer engagement.</li>
-              <li>Percentage discounts perform best during dinner hours.</li>
-              <li>Flat discounts help increase conversion on low basket orders.</li>
-              <li>Coupons ending soon should be pushed via banners.</li>
-            </ul>
-
-            <Button className="text-white" style={{ background: PRIMARY }}>
-              Optimize Coupons
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+  return <CouponAnalytics couponsAnalyticsResult={initialData} />;
 }
