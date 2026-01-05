@@ -4,9 +4,7 @@ import DesktopSidebar from "@/src/components/vendorDashboardSidebar/DesktopSideb
 import Sidebar from "@/src/components/vendorDashboardSidebar/vendorDashboardSidebar";
 import Topbar from "@/src/components/vendorTopbar/Topbar";
 import { TVendor } from "@/src/types/vendor.type";
-import { jwtDecode } from "jwt-decode";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Vendor Dashboard",
@@ -18,13 +16,10 @@ export default async function VendorLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as { id: string };
-
   let vendorData: TVendor = {} as TVendor;
 
   try {
-    const result = await serverRequest.get(`/vendors/${decoded.id}`);
+    const result = await serverRequest.get("/profile");
 
     if (result?.success) {
       vendorData = result?.data;

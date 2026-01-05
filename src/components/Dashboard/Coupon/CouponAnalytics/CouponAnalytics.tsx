@@ -2,17 +2,24 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { TMeta } from "@/src/types";
 import { TCouponAnalytics } from "@/src/types/coupon.type";
 import { motion } from "framer-motion";
-import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Flame, Percent } from "lucide-react";
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0 6px 20px rgba(0,0,0,0.06)";
 
 interface IProps {
-  couponsAnalyticsResult: { data: TCouponAnalytics[]; meta?: TMeta };
+  couponsAnalyticsResult: TCouponAnalytics;
 }
 
 export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
@@ -36,25 +43,25 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
         </div>
 
         {/* CHART PLACEHOLDER */}
-        {/* <Card
+        <Card
           className="rounded-3xl bg-white border shadow-md"
           style={{ height: "280px" }}
         >
           <CardContent className="flex items-center justify-center h-full text-gray-500">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={couponsAnalyticsResult?.data?.monthlyAnalysis}>
-                <XAxis dataKey="couponCode" />
+              <BarChart data={couponsAnalyticsResult?.monthlyAnalysis}>
+                <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip cursor={{ display: "none" }} />
-                <Bar dataKey="redeemedCount" fill="#8884d8" name="Redeemed" />
+                <Bar dataKey="revenue" fill="#8884d8" name="Revenue" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card> */}
+        </Card>
 
         {/* COUPON LIST */}
         <div className="space-y-6">
-          {couponsAnalyticsResult?.data?.map((c, idx) => (
+          {couponsAnalyticsResult?.coupons?.map((c, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 12 }}
@@ -69,9 +76,8 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
                   {/* LEFT */}
                   <div className="flex items-start gap-4">
                     <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600">
-                      {/* {c.type === "percentage" && <Percent size={28} />}
-                      {c.type === "bogo" && <Tag size={28} />}
-                      {c.type === "flat" && <Flame size={28} />} */}
+                      {c.discountType === "PERCENT" && <Percent size={28} />}
+                      {c.discountType === "FLAT" && <Flame size={28} />}
                     </div>
 
                     <div>

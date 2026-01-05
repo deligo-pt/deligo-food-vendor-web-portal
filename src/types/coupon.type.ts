@@ -28,9 +28,12 @@ export type MonthlyAnalysis = {
 };
 
 export type TCouponAnalytics = {
-  couponCode: string;
-  totalCustomerUsage: number;
-  revenueImpact: number;
-  topItemsInfluenced: TopItemsInfluenced[];
+  coupons: {
+    couponCode: string;
+    discountType: "PERCENT" | "FLAT";
+    totalCustomerUsage: number;
+    revenueImpact: number;
+    topItemsInfluenced: TopItemsInfluenced[];
+  }[];
   monthlyAnalysis: MonthlyAnalysis[];
 };

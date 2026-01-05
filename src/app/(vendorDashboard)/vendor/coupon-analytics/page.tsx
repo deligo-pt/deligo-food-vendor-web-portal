@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { serverRequest } from "@/lib/serverFetch";
 import CouponAnalytics from "@/src/components/Dashboard/Coupon/CouponAnalytics/CouponAnalytics";
-import { TMeta, TResponse } from "@/src/types";
+import { TResponse } from "@/src/types";
 import { TCouponAnalytics } from "@/src/types/coupon.type";
 
 type IProps = {
@@ -23,17 +23,16 @@ export default async function CouponAnalyticsPage({ searchParams }: IProps) {
     ...(searchTerm ? { searchTerm: searchTerm } : {}),
   };
 
-  const initialData: { data: TCouponAnalytics[]; meta?: TMeta } = { data: [] };
+  let initialData = {} as TCouponAnalytics;
 
   try {
     const result = (await serverRequest.get("/coupons/analytics", {
       params: query,
-    })) as unknown as TResponse<{ data: TCouponAnalytics[]; meta?: TMeta }>;
+    })) as unknown as TResponse<TCouponAnalytics>;
     console.log(result);
 
     if (result?.success) {
-      initialData.data = result.data?.data || [];
-      initialData.meta = result.data?.meta;
+      initialData = result.data;
     }
   } catch (err) {
     console.error("Server fetch error:", err);
