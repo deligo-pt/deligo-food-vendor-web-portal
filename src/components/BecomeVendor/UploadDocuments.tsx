@@ -22,6 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { uploadDocumentsReq } from "@/src/services/becomeVendor/uploadDocumentsReq";
 import { TResponse } from "@/src/types";
 import { getCookie } from "@/src/utils/cookies";
@@ -29,7 +30,6 @@ import { updateData } from "@/src/utils/requests";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 /**
  * Upload mock/demo page
@@ -93,8 +93,8 @@ export default function UploadDocuments({
       prefersImagePreview: false,
     }, // PDF/name
     { key: "taxDoc", label: t("documentsLabel2"), prefersImagePreview: false }, // PDF/name
-    { key: "idProofFront", label: t("documentsLabel3"), prefersImagePreview: true }, // image preview ok
-    { key: "idProofBack", label: t("documentsLabel3"), prefersImagePreview: true }, // image preview ok
+    { key: "idProofFront", label: "ID Proof Front", prefersImagePreview: true }, // image preview ok
+    { key: "idProofBack", label: "ID Proof Back ", prefersImagePreview: true }, // image preview ok
     { key: "storePhoto", label: t("documentsLabel4"), prefersImagePreview: true },
     { key: "menuUpload", label: t("documentsLabel5"), prefersImagePreview: true },
   ];
