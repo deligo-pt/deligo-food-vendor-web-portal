@@ -6,7 +6,9 @@ import { cookies } from "next/headers";
 
 export default async function DashboardPage() {
   const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as { name: string };
+  const decoded = jwtDecode(accessToken) as {
+    name: { firstName: string; lastName: string };
+  };
 
   let analyticsData: TAnalytics = {} as TAnalytics;
 
@@ -22,5 +24,10 @@ export default async function DashboardPage() {
     console.error("Server fetch error:", err);
   }
 
-  return <Dashboard vendorName={decoded.name} analyticsData={analyticsData} />;
+  return (
+    <Dashboard
+      vendorName={`${decoded.name?.firstName} ${decoded.name?.lastName}`}
+      analyticsData={analyticsData}
+    />
+  );
 }
