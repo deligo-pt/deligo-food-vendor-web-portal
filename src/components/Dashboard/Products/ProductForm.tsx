@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -9,6 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -21,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
 import { Input } from "@/src/components/ui/input";
 import { TResponse } from "@/src/types";
+import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TBusinessCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 import { getCookie } from "@/src/utils/cookies";
@@ -33,6 +36,7 @@ import {
   ChevronRightIcon,
   ImageIcon,
   InfoIcon,
+  LayersIcon,
   PackageIcon,
   PlusIcon,
   SaveIcon,
@@ -59,6 +63,10 @@ const tabs = [
     icon: <TagIcon className="h-5 w-5" />,
   },
   {
+    name: "Add-ons and Variants",
+    icon: <LayersIcon className="h-5 w-5" />,
+  },
+  {
     name: "Stock",
     icon: <PackageIcon className="h-5 w-5" />,
   },
@@ -76,10 +84,20 @@ type FormData = z.infer<typeof productValidation>;
 
 export function ProductForm({
   productCategories,
+  addonGroupsData,
 }: {
   productCategories: TBusinessCategory[];
+  addonGroupsData: TAddonGroup[];
 }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [options, setOptions] = useState<{ label: string; price: number }[]>(
+    []
+  );
+  const [option, setOption] = useState<{ label: string; price: string }>({
+    label: "",
+    price: "",
+  });
+  const [variationName, setVariationName] = useState("");
   const [images, setImages] = useState<{ file: File | null; url: string }[]>(
     []
   );
@@ -98,6 +116,8 @@ export function ProductForm({
       unit: "",
       availabilityStatus: "",
       tags: [],
+      addonGroups: [],
+      variations: [],
       organic: true,
       weight: 0,
       packagingType: "",
@@ -107,9 +127,16 @@ export function ProductForm({
     },
   });
 
-  const [watchPrice, watchDiscount, watchTax, watchTags] = useWatch({
+  const [
+    watchPrice,
+    watchDiscount,
+    watchTax,
+    watchTags,
+    watchAddons,
+    watchVariations,
+  ] = useWatch({
     control: form.control,
-    name: ["price", "discount", "tax", "tags"],
+    name: ["price", "discount", "tax", "tags", "addonGroups", "variations"],
   });
 
   const addTag = () => {
@@ -123,6 +150,62 @@ export function ProductForm({
   const removeTag = (tagToRemove: string) => {
     const newTags = form?.getValues("tags")?.filter((t) => t !== tagToRemove);
     form.setValue("tags", newTags);
+  };
+
+  const addAddon = (id: string) => {
+    if (!form?.getValues("addonGroups")?.includes(id)) {
+      const newAddonGroups = [...form?.getValues("addonGroups"), id];
+      form.setValue("addonGroups", newAddonGroups);
+    }
+  };
+
+  const removeAddon = (idToRemove: string) => {
+    const newAddonGroups = form
+      ?.getValues("addonGroups")
+      ?.filter((id) => id !== idToRemove);
+    form.setValue("addonGroups", newAddonGroups);
+  };
+
+  const addOption = () => {
+    if (option.label && option.price) {
+      if (!options.find((opt) => opt.label === option.label)) {
+        setOptions((prev) => [
+          ...prev,
+          { label: option.label, price: Number(option.price) },
+        ]);
+        setOption({ label: "", price: "" });
+      }
+    } else {
+      toast.error("Option label and price are required");
+    }
+  };
+
+  const removeOption = (optionToRemove: string) => {
+    setOptions(
+      (prev) => prev.filter((opt) => opt.label !== optionToRemove) || []
+    );
+  };
+
+  const addVariation = () => {
+    if (variationName && options.length > 0) {
+      if (!form.getValues("variations").find((v) => v.name === variationName)) {
+        form.setValue("variations", [
+          ...form.getValues("variations"),
+          { name: variationName, options: options },
+        ]);
+        setVariationName("");
+        setOptions([]);
+      }
+    } else {
+      toast.error("Variation name and options are required");
+    }
+  };
+
+  const removeVariation = (nameToRemove: string) => {
+    form.setValue(
+      "variations",
+      form.getValues("variations").filter((v) => v.name !== nameToRemove)
+    );
   };
 
   const onSubmit = async (data: FormData) => {
@@ -172,6 +255,7 @@ export function ProductForm({
       if (result.success) {
         toast.success("Product created successfully!", { id: toastId });
         form.reset();
+        setImages([]);
         setActiveTab(0);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -225,7 +309,7 @@ export function ProductForm({
                       : "hover:bg-gray-100 text-gray-700"
                   }`}
                 >
-                  {tab.icon}
+                  <div className="w-5 h-5">{tab.icon}</div>
                   <span>{tab.name}</span>
                 </motion.button>
               ))}
@@ -595,8 +679,214 @@ export function ProductForm({
                     )}
                   </motion.div>
                 )}
-                {/* Stock Tab */}
+                {/* Add-Ons & Variants Tab */}
                 {activeTab === 3 && (
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                    }}
+                    transition={{
+                      duration: 0.3,
+                    }}
+                    className="space-y-6"
+                  >
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      Add-Ons & Variants
+                    </h2>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Add-Ons
+                      </label>
+                      {watchAddons?.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-1">
+                          {watchAddons?.map((id) => (
+                            <motion.div
+                              key={id}
+                              initial={{
+                                scale: 0,
+                              }}
+                              animate={{
+                                scale: 1,
+                              }}
+                              className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
+                            >
+                              <span>
+                                {
+                                  addonGroupsData?.find(
+                                    (group) => group._id === id
+                                  )?.title
+                                }
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeAddon(id)}
+                                className="ml-2 text-white hover:text-[#CCC]"
+                              >
+                                <XIcon className="h-4 w-4" />
+                              </button>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                      <FormField
+                        control={form.control}
+                        name="addonGroups"
+                        render={({ fieldState }) => (
+                          <FormItem className="gap-1">
+                            <FormControl>
+                              <Select onValueChange={(val) => addAddon(val)}>
+                                <SelectTrigger
+                                  className={cn(
+                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
+                                    fieldState.invalid
+                                      ? "border-destructive"
+                                      : "border-gray-300"
+                                  )}
+                                >
+                                  <SelectValue placeholder="Choose Add-On" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {addonGroupsData?.map((group) => (
+                                    <SelectItem
+                                      key={group._id}
+                                      value={group._id}
+                                    >
+                                      {group.title}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="space-y-2 ">
+                      <label className="block mb-1">Variations</label>
+                      <div>
+                        {watchVariations?.length > 0 &&
+                          watchVariations?.map((variation, i) => (
+                            <div
+                              key={i}
+                              className="relative p-4 border rounded-md bg-gray-50 mb-4"
+                            >
+                              <div>Name: {variation.name}</div>
+                              <div className="flex flex-wrap gap-2 items-center">
+                                Options:{" "}
+                                {variation.options?.map((option, i2) => (
+                                  <div
+                                    key={i2}
+                                    className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
+                                  >
+                                    <span>{option.label}</span>
+                                    <span className="ml-2">
+                                      (€{option.price})
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => removeVariation(variation.name)}
+                                className="ml-2 hover:text-[#333] absolute top-1 right-1"
+                              >
+                                <XIcon className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                      <div className="border rounded-md p-4 bg-gray-50 space-y-2">
+                        <div>
+                          <Label className="text-gray-700 mb-1">Name</Label>
+                          <Input
+                            type="text"
+                            value={variationName}
+                            onChange={(e) => setVariationName(e.target.value)}
+                            placeholder="Add a variation name"
+                          />
+                        </div>
+                        <Label className="text-gray-700">Options</Label>
+                        {options?.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-1">
+                            {options?.map((option) => (
+                              <div
+                                key={option.label}
+                                className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
+                              >
+                                <span>{option.label}</span>
+                                <span className="ml-2">(€{option.price})</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeOption(option.label)}
+                                  className="ml-2 text-white hover:text-[#CCC]"
+                                >
+                                  <XIcon className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <div className="border border-dashed rounded-md p-4 bg-gray-100 space-y-2">
+                          <div>
+                            <Label className="text-gray-700 mb-1">Label</Label>
+                            <Input
+                              type="text"
+                              value={option.label}
+                              onChange={(e) =>
+                                setOption({ ...option, label: e.target.value })
+                              }
+                              placeholder="Add an option label"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-700 mb-1">Price</Label>
+                            <Input
+                              type="number"
+                              min={0}
+                              value={option.price}
+                              onChange={(e) =>
+                                setOption({ ...option, price: e.target.value })
+                              }
+                              placeholder="Add an option price"
+                              onKeyUp={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                }
+                              }}
+                            />
+                          </div>
+                          <div className="text-right">
+                            <Button
+                              onClick={addOption}
+                              type="button"
+                              size="sm"
+                              className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                            >
+                              Add Option
+                            </Button>
+                          </div>
+                        </div>
+                        <div>
+                          <Button
+                            onClick={addVariation}
+                            type="button"
+                            size="sm"
+                            className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                          >
+                            Add Variation
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+                {/* Stock Tab */}
+                {activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -678,6 +968,7 @@ export function ProductForm({
                                   <SelectItem value="pcs">
                                     Pieces (pcs)
                                   </SelectItem>
+                                  <SelectItem value="others">Others</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -732,7 +1023,7 @@ export function ProductForm({
                   </motion.div>
                 )}
                 {/* Attributes Tab */}
-                {activeTab === 4 && (
+                {activeTab === 5 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -839,6 +1130,7 @@ export function ProductForm({
                                   <SelectItem value="Box">Box</SelectItem>
                                   <SelectItem value="Tin">Tin</SelectItem>
                                   <SelectItem value="Bottle">Bottle</SelectItem>
+                                  <SelectItem value="Others">Others</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -883,6 +1175,7 @@ export function ProductForm({
                                   <SelectItem value="Cool and dry">
                                     Cool and dry
                                   </SelectItem>
+                                  <SelectItem value="Others">Others</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -894,7 +1187,7 @@ export function ProductForm({
                   </motion.div>
                 )}
                 {/* Meta Tab */}
-                {activeTab === 5 && (
+                {activeTab === 6 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -988,7 +1281,7 @@ export function ProductForm({
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>Previous</span>
                   </motion.button>
-                  {activeTab === 5 && (
+                  {activeTab === 6 && (
                     <motion.button
                       whileHover={{
                         scale: 1.05,
@@ -1003,7 +1296,7 @@ export function ProductForm({
                       <span>Save Product</span>
                     </motion.button>
                   )}
-                  {activeTab < 5 && (
+                  {activeTab < 6 && (
                     <motion.button
                       whileHover={{
                         scale: 1.02,
@@ -1013,7 +1306,7 @@ export function ProductForm({
                       }}
                       type="button"
                       onClick={() =>
-                        activeTab < 5 && setActiveTab(activeTab + 1)
+                        activeTab < 6 && setActiveTab(activeTab + 1)
                       }
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2"
                     >

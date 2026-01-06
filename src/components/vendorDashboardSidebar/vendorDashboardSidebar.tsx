@@ -118,7 +118,9 @@ const MENU = [
     title: "Offers & Coupons",
     icon: <Gift size={18} />,
     items: [
-      { name: "Active Offers", path: "/vendor/offers" },
+      { name: "All Offers", path: "/vendor/offers" },
+      { name: "Active Offers", path: "/vendor/active-offers" },
+      { name: "Inactive Offers", path: "/vendor/inactive-offers" },
       { name: "Create New Offer", path: "/vendor/create-offer" },
       { name: "Coupon Analytics", path: "/vendor/coupon-analytics" },
     ],

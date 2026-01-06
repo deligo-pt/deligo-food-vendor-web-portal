@@ -3,13 +3,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import EditOffer from "@/src/components/Dashboard/Offers/ActiveOffers/EditOffer";
 import AllFilters from "@/src/components/Filtering/AllFilters";
+import DeleteModal from "@/src/components/Modals/DeleteModal";
+import {
+  deleteOfferReq,
+  toggleOfferStatusReq,
+} from "@/src/services/dashboard/offers/offers";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { CalendarClock, Flame, Percent, Plus, Tag } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -20,6 +29,7 @@ interface IProps {
     data: TOffer[];
     meta?: TMeta;
   };
+  title: string;
 }
 
 const sortOptions = [
@@ -27,7 +37,46 @@ const sortOptions = [
   { label: "Oldest First", value: "createdAt" },
 ];
 
-export default function ActiveOffers({ offersResult }: IProps) {
+export default function ActiveOffers({ offersResult, title }: IProps) {
+  const router = useRouter();
+  const [editOffer, setEditOffer] = useState<TOffer | null>(null);
+  const [deleteId, setDeleteId] = useState<string>("");
+
+  const toggleStatus = async (offerId: string) => {
+    const toastId = toast.loading("Updating offer status...");
+
+    const result = await toggleOfferStatusReq(offerId);
+    if (result.success) {
+      router.refresh();
+      toast.success(result.message || "Offer status updated successfully!", {
+        id: toastId,
+      });
+      return;
+    }
+
+    toast.error(result.message || "Offer status update failed", {
+      id: toastId,
+    });
+  };
+
+  const deleteOffer = async () => {
+    const toastId = toast.loading("Deleting offer...");
+
+    const result = await deleteOfferReq(deleteId);
+    if (result.success) {
+      router.refresh();
+      toast.success(result.message || "Offer deleted successfully!", {
+        id: toastId,
+      });
+      setDeleteId("");
+      return;
+    }
+
+    toast.error(result.message || "Offer deletion failed", {
+      id: toastId,
+    });
+  };
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1100px] mx-auto space-y-12">
@@ -35,7 +84,7 @@ export default function ActiveOffers({ offersResult }: IProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Active Offers
+              {title} Offers
             </h1>
             <p className="text-gray-600 text-sm mt-1">
               Boost sales with special discounts & promotions
@@ -67,42 +116,78 @@ export default function ActiveOffers({ offersResult }: IProps) {
                 className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all"
                 style={{ boxShadow: SHADOW }}
               >
-                <CardContent className="p-6 flex flex-col md:flex-row justify-between gap-6">
-                  {/* LEFT */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600">
-                      {offer.offerType === "PERCENT" && <Percent size={28} />}
-                      {offer.offerType === "BOGO" && <Tag size={28} />}
-                      {offer.offerType === "FLAT" && <Flame size={28} />}
-                    </div>
-
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-800">
-                        {offer.title}
-                      </h2>
-
-                      <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
-                        <Badge variant="outline">
-                          Code: {offer.code || "N/A"}
-                        </Badge>
+                <CardContent className="px-6 py-3">
+                  <div className="flex flex-col md:flex-row justify-between gap-6">
+                    {/* LEFT */}
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600">
+                        {offer.offerType === "PERCENT" && <Percent size={28} />}
+                        {offer.offerType === "BOGO" && <Tag size={28} />}
+                        {offer.offerType === "FLAT" && <Flame size={28} />}
                       </div>
 
-                      <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
-                        <CalendarClock size={14} /> Valid till:{" "}
-                        {format(offer.endDate, "dd MMM, yyyy")}
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800">
+                          {offer.title}
+                        </h2>
+
+                        <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
+                          <Badge variant="outline">
+                            Code: {offer.code || "N/A"}
+                          </Badge>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
+                          <CalendarClock size={14} /> Valid till:{" "}
+                          {format(offer.endDate, "dd MMM, yyyy")}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* RIGHT */}
+                    <div className="text-right md:min-w-[200px]">
+                      <p className="text-sm text-gray-500">Total Used</p>
+                      <p className="text-3xl font-bold text-gray-900">
+                        {offer.usageCount}
+                      </p>
+                      <div>
+                        <Badge
+                          className={
+                            offer.isActive
+                              ? "bg-[#DC3173] text-white"
+                              : "bg-yellow-500 text-white"
+                          }
+                        >
+                          {offer.isActive ? "Active" : "Inactive"}
+                        </Badge>
                       </div>
                     </div>
                   </div>
-
-                  {/* RIGHT */}
-                  <div className="text-right md:min-w-[200px]">
-                    <p className="text-sm text-gray-500">Total Used</p>
-                    <p className="text-3xl font-bold text-gray-900">
-                      {offer.usageCount}
-                    </p>
-
-                    <Button variant="outline" className="mt-4 w-full">
-                      Manage
+                  <div className="flex items-center justify-end gap-4 mt-4">
+                    <Button
+                      className={
+                        offer.isActive
+                          ? "bg-yellow-500 hover:bg-yellow-500/90"
+                          : "bg-blue-500 hover:bg-blue-500/90"
+                      }
+                      size="sm"
+                      onClick={() => toggleStatus(offer._id)}
+                    >
+                      {offer.isActive ? "Deactivate" : "Activate"}
+                    </Button>
+                    <Button
+                      className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                      size="sm"
+                      onClick={() => setEditOffer(offer)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => setDeleteId(offer._id)}
+                      variant="destructive"
+                      size="sm"
+                    >
+                      Delete
                     </Button>
                   </div>
                 </CardContent>
@@ -114,6 +199,22 @@ export default function ActiveOffers({ offersResult }: IProps) {
             <p className="text-center text-gray-500 py-10">No offers found.</p>
           )}
         </div>
+
+        {/* Delete Confirmation Modal */}
+        <DeleteModal
+          open={!!deleteId}
+          onOpenChange={(open) => !open && setDeleteId("")}
+          onConfirm={() => deleteOffer()}
+        />
+
+        {/* Edit Offer Modal */}
+        {offersResult.data?.length > 0 && (
+          <EditOffer
+            open={!!editOffer}
+            onOpenChange={(open) => !open && setEditOffer(null)}
+            offer={editOffer || offersResult.data?.[0]}
+          />
+        )}
 
         {/* AI INSIGHTS */}
         {/* <Card className="rounded-3xl bg-white border shadow-md">

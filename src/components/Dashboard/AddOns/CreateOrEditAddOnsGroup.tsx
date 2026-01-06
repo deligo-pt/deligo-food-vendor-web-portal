@@ -196,10 +196,8 @@ export default function CreateOrEditAddOnsGroup({
               )}
             />
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Options
-              </label>
+            <div className="space-y-2 ">
+              <label className="block mb-1">Options</label>
               {watchOptions?.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-1">
                   {watchOptions?.map((option) => (
@@ -220,44 +218,19 @@ export default function CreateOrEditAddOnsGroup({
                   ))}
                 </div>
               )}
-              <FormField
-                control={form.control}
-                name="optionName"
-                render={() => (
-                  <FormItem className="gap-1">
-                    <FormControl>
-                      <Input
-                        type="text"
-                        value={optionName}
-                        onChange={(e) => setOptionName(e.target.value)}
-                        placeholder="Add an option name"
-                        onKeyUp={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            addOption();
-                          }
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="optionPrice"
-                render={() => (
-                  <FormItem className="gap-1">
-                    <FormControl>
-                      <div className="relative">
+              <div className="border rounded-md p-4 bg-gray-50 space-y-2">
+                <FormField
+                  control={form.control}
+                  name="optionName"
+                  render={() => (
+                    <FormItem className="gap-1">
+                      <FormLabel>Option Name</FormLabel>
+                      <FormControl>
                         <Input
-                          type="number"
-                          min="0"
-                          value={optionPrice}
-                          onChange={(e) =>
-                            setOptionPrice(Number(e.target.value))
-                          }
-                          placeholder="Option Price"
+                          type="text"
+                          value={optionName}
+                          onChange={(e) => setOptionName(e.target.value)}
+                          placeholder="Add an option name"
                           onKeyUp={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
@@ -265,19 +238,48 @@ export default function CreateOrEditAddOnsGroup({
                             }
                           }}
                         />
-                        <button
-                          type="button"
-                          onClick={addOption}
-                          className="bg-[#DC3173] text-white px-4 py-2 rounded-r-md hover:bg-[#B02458] transition-colors absolute top-0 right-0 h-full"
-                        >
-                          <PlusIcon className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="optionPrice"
+                  render={() => (
+                    <FormItem className="gap-1">
+                      <FormLabel>Option Price</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            min="0"
+                            value={optionPrice}
+                            onChange={(e) =>
+                              setOptionPrice(Number(e.target.value))
+                            }
+                            placeholder="Option Price"
+                            onKeyUp={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                addOption();
+                              }
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={addOption}
+                            className="bg-[#DC3173] text-white px-4 py-2 rounded-r-md hover:bg-[#B02458] transition-colors absolute top-0 right-0 h-full"
+                          >
+                            <PlusIcon className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
             <div className="mt-6">
               <Button

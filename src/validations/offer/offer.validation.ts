@@ -41,8 +41,9 @@ export const offerValidation = z
       .min(0, "Minimum order amount must be at least 0")
       .optional(),
 
-    code: z.string().optional(),
-    isAutoApply: z.boolean("Auto apply must be a boolean").optional(),
+    code: z.string().nonempty("Code is required"),
+    // code: z.string().optional(),
+    // isAutoApply: z.boolean("Auto apply must be a boolean").optional(),
   })
   .refine(
     (data) => {

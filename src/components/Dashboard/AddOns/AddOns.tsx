@@ -12,6 +12,7 @@ import AddOptionsForm from "@/src/components/Dashboard/AddOns/AddOptionsForm";
 import CreateOrEditAddOnsGroup from "@/src/components/Dashboard/AddOns/CreateOrEditAddOnsGroup";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
+import DeleteModal from "@/src/components/Modals/DeleteModal";
 import { deleteOptionFromGroup } from "@/src/services/dashboard/add-ons/add-ons";
 import { TMeta } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
@@ -34,6 +35,10 @@ const sortOptions = [
 
 export default function AddOns({ addOnsResult }: IProps) {
   const router = useRouter();
+  const [deleteOptionInfo, setDeleteOptionInfo] = useState<{
+    groupId: string;
+    optionId: string;
+  }>({ groupId: "", optionId: "" });
   const [selectedGroupForEdit, setSelectedGroupForEdit] = useState<
     TAddonGroup | undefined
   >(undefined);
@@ -44,10 +49,12 @@ export default function AddOns({ addOnsResult }: IProps) {
 
   // const deleteGroup = (id: string) => {};
 
-  const handleDeleteOption = async (groupId: string, optionName: string) => {
-    const result = await deleteOptionFromGroup(groupId, optionName);
+  const handleDeleteOption = async () => {
+    const { groupId, optionId } = deleteOptionInfo;
+    const result = await deleteOptionFromGroup(groupId, optionId);
     if (result.success) {
       router.refresh();
+      setDeleteOptionInfo({ groupId: "", optionId: "" });
       return;
     }
     toast.error(result.message || "Failed to delete option");
@@ -204,7 +211,10 @@ export default function AddOns({ addOnsResult }: IProps) {
                                 variant="ghost"
                                 className="p-0! h-fit text-destructive"
                                 onClick={() =>
-                                  handleDeleteOption(group._id, option.name)
+                                  setDeleteOptionInfo({
+                                    groupId: group._id,
+                                    optionId: option._id as string,
+                                  })
                                 }
                               >
                                 <Trash2 size={20} />
@@ -220,6 +230,14 @@ export default function AddOns({ addOnsResult }: IProps) {
             ))}
           </AnimatePresence>
         </div>
+
+        <DeleteModal
+          open={!!deleteOptionInfo.optionId && !!deleteOptionInfo.groupId}
+          onOpenChange={(open) =>
+            !open && setDeleteOptionInfo({ groupId: "", optionId: "" })
+          }
+          onConfirm={() => handleDeleteOption()}
+        />
 
         {/* PAGINATION */}
         {!!addOnsResult?.meta?.total && addOnsResult?.meta?.total > 0 && (

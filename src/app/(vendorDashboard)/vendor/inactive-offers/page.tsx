@@ -9,7 +9,7 @@ type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
 };
 
-export default async function AllOffersPage({ searchParams }: IProps) {
+export default async function InactiveOffersPage({ searchParams }: IProps) {
   const queries = (await searchParams) || {};
   const limit = Number(queries?.limit || 10);
   const page = Number(queries.page || 1);
@@ -21,6 +21,7 @@ export default async function AllOffersPage({ searchParams }: IProps) {
     page,
     sortBy,
     ...(searchTerm ? { searchTerm: searchTerm } : {}),
+    isActive: false,
     isDeleted: false,
   };
 
@@ -39,5 +40,5 @@ export default async function AllOffersPage({ searchParams }: IProps) {
     console.error("Server fetch error:", err);
   }
 
-  return <ActiveOffers offersResult={initialData} title="All" />;
+  return <ActiveOffers offersResult={initialData} title="Inactive" />;
 }

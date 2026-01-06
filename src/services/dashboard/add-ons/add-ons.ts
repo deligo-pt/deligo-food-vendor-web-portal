@@ -55,9 +55,12 @@ export const addOptionInGroup = async (
   data: { name: string; price: number }
 ) => {
   try {
-    const result = (await serverRequest.patch(`/add-ons/${groupId}/add-option`, {
-      data,
-    })) as TResponse<null>;
+    const result = (await serverRequest.patch(
+      `/add-ons/${groupId}/add-option`,
+      {
+        data,
+      }
+    )) as TResponse<null>;
 
     if (result.success) {
       return { success: true, data: result.data, message: result.message };
@@ -76,13 +79,13 @@ export const addOptionInGroup = async (
 
 export const deleteOptionFromGroup = async (
   groupId: string,
-  optionName: string
+  optionId: string
 ) => {
   try {
     const result = (await serverRequest.delete(
       `/add-ons/${groupId}/delete-option`,
       {
-        params: { optionName },
+        data: { optionId },
       }
     )) as TResponse<null>;
 

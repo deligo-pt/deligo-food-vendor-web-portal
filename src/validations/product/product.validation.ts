@@ -43,6 +43,20 @@ export const productValidation = z.object({
 
   tags: z.array(z.string()),
 
+  addonGroups: z.array(z.string()),
+
+  variations: z.array(
+    z.object({
+      name: z.string(),
+      options: z.array(
+        z.object({
+          label: z.string(),
+          price: z.number().min(0),
+        })
+      ),
+    })
+  ),
+
   organic: z.boolean().optional(),
 
   weight: z.number().min(0, "Weight must be at least 0").optional(),

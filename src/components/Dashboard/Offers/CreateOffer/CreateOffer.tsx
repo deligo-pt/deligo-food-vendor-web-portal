@@ -56,7 +56,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       endDate: new Date(),
       minOrderAmount: 0,
       code: "",
-      isAutoApply: false,
+      // isAutoApply: false,
     },
   });
 
@@ -69,7 +69,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     const toastId = toast.loading("Creating offer...");
 
     try {
-      const result = await createOffer(data);
+      const result = await createOffer({ ...data, isAutoApply: false });
 
       if (result.success) {
         toast.success(result.message || "Offer created successfully!", {
@@ -359,7 +359,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="isAutoApply"
                     render={({ field }) => (
@@ -386,7 +386,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
                 </div>
 
                 {/* PROMO CODE */}
@@ -400,9 +400,13 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       <FormItem>
                         <FormControl>
                           <Input
-                            placeholder="Enter promo code (optional)"
+                            // placeholder="Enter promo code (optional)"
+                            placeholder="Enter promo code"
                             className="h-12 text-base uppercase"
                             {...field}
+                            onChange={(e) =>
+                              field.onChange(e.target.value.toUpperCase())
+                            }
                           />
                         </FormControl>
                         <FormMessage />

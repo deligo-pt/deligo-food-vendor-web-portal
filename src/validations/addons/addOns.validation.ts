@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createAddonOptionValidationSchema = z.object({
-  name: z.string("Option name is required"),
-  price: z.number().min(0, "Price cannot be negative"),
+  name: z.string().nonempty("Option name is required"),
+  price: z.number("Price must be a number").min(0, "Price cannot be negative"),
 });
 
 export const createAddonGroupValidationSchema = z
@@ -19,7 +19,14 @@ export const createAddonGroupValidationSchema = z
       .number("Maximum selection must be a number")
       .min(1, "Maximum selection must be at least 1"),
     options: z
-      .array(createAddonOptionValidationSchema)
+      .array(
+        z.object({
+          name: z.string(),
+          price: z
+            .number("Price must be a number")
+            .min(0, "Price cannot be negative"),
+        })
+      )
       .min(1, "At least one option must be provided in the group"),
     optionName: z.string().optional(),
     optionPrice: z.number().min(0).optional(),

@@ -1,6 +1,7 @@
 import { TVendor } from "@/src/types/vendor.type";
 
 export type TAddonOption = {
+  _id?: string;
   name: string;
   price: number;
   isActive?: boolean;
