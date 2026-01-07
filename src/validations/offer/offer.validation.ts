@@ -56,4 +56,28 @@ export const offerValidation = z
       message: "Item id is required",
       path: ["itemId"],
     }
+  )
+  .refine(
+    (data) => {
+      if (data.offerType === "BOGO" && (!data.buyQty || data.buyQty <= 0)) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Buy quantity are required for BOGO offers",
+      path: ["buyQty"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.offerType === "BOGO" && (!data.getQty || data.getQty <= 0)) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Get quantity are required for BOGO offers",
+      path: ["getQty"],
+    }
   );

@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { createOffer } from "@/src/services/dashboard/offers/offers";
 import { TMeta } from "@/src/types";
+import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
 import { offerValidation } from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -68,8 +69,22 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Creating offer...");
 
+    const offerData: Partial<TOffer> = {
+      ...data,
+      isAutoApply: false,
+      ...(data.offerType === "BOGO"
+        ? {
+            bogo: {
+              buyQty: data.buyQty as number,
+              getQty: data.getQty as number,
+              itemId: data.itemId as string,
+            },
+          }
+        : {}),
+    };
+
     try {
-      const result = await createOffer({ ...data, isAutoApply: false });
+      const result = await createOffer(offerData);
 
       if (result.success) {
         toast.success(result.message || "Offer created successfully!", {
@@ -269,6 +284,56 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                 </SelectContent>
                               </Select>
                             </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {watchOfferType === "BOGO" && (
+                    <FormField
+                      control={form.control}
+                      name="buyQty"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Buy Quantity (e.g., 2)"
+                              type="number"
+                              min={1}
+                              className="h-12 text-base"
+                              {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {watchOfferType === "BOGO" && (
+                    <FormField
+                      control={form.control}
+                      name="getQty"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Get Quantity (e.g., 1)"
+                              type="number"
+                              min={1}
+                              className="h-12 text-base"
+                              {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

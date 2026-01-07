@@ -1,7 +1,8 @@
 export type DocKey =
   | "businessLicenseDoc"
   | "taxDoc"
-  | "idProof"
+  | "idProofFront"
+  | "idProofBack"
   | "storePhoto"
   | "menuUpload";
 

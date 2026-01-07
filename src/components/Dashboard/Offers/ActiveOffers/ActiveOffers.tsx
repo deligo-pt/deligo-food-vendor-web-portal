@@ -141,6 +141,11 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                           <CalendarClock size={14} /> Valid till:{" "}
                           {format(offer.endDate, "dd MMM, yyyy")}
                         </div>
+                        {/* {offer.offerType === "BOGO" && (
+                          <p className="text-sm text-gray-500 mt-1 mb-2">
+                            {offer?.bogo?.itemId?.name}
+                          </p>
+                        )} */}
                       </div>
                     </div>
 
@@ -161,6 +166,15 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                           {offer.isActive ? "Active" : "Inactive"}
                         </Badge>
                       </div>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {offer.offerType === "PERCENT"
+                          ? `${offer.discountValue}% Off`
+                          : offer.offerType === "FLAT"
+                          ? `€ ${offer.discountValue} Off`
+                          : offer.offerType === "BOGO"
+                          ? `Buy ${offer.bogo?.buyQty} Get ${offer.bogo?.getQty}`
+                          : ""}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center justify-end gap-4 mt-4">

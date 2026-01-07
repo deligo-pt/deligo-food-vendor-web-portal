@@ -129,7 +129,7 @@ export default function CreateOrEditAddOnsGroup({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="p-6">
+      <SheetContent className="p-6 overflow-auto">
         <SheetHeader className="px-0">
           <SheetTitle>
             {actionType === "create" ? "Create" : "Edit"} Addon Group

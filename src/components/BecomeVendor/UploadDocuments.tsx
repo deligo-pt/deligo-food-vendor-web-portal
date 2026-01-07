@@ -25,6 +25,7 @@ import {
 import { useTranslation } from "@/src/hooks/use-translation";
 import { uploadDocumentsReq } from "@/src/services/becomeVendor/uploadDocumentsReq";
 import { TResponse } from "@/src/types";
+import { DocKey, FilePreview } from "@/src/types/documents.type";
 import { getCookie } from "@/src/utils/cookies";
 import { updateData } from "@/src/utils/requests";
 import { jwtDecode } from "jwt-decode";
@@ -41,20 +42,6 @@ interface IDoc {
   label: string;
   prefersImagePreview: boolean;
 }
-
-type DocKey =
-  | "businessLicenseDoc"
-  | "taxDoc"
-  | "idProofFront"
-  | "idProofBack"
-  | "storePhoto"
-  | "menuUpload";
-
-type FilePreview = {
-  file: File | null;
-  url: string | null;
-  isImage: boolean;
-};
 
 export default function UploadDocuments({
   savedPreviews,
@@ -95,8 +82,16 @@ export default function UploadDocuments({
     { key: "taxDoc", label: t("documentsLabel2"), prefersImagePreview: false }, // PDF/name
     { key: "idProofFront", label: "ID Proof Front", prefersImagePreview: true }, // image preview ok
     { key: "idProofBack", label: "ID Proof Back ", prefersImagePreview: true }, // image preview ok
-    { key: "storePhoto", label: t("documentsLabel4"), prefersImagePreview: true },
-    { key: "menuUpload", label: t("documentsLabel5"), prefersImagePreview: true },
+    {
+      key: "storePhoto",
+      label: t("documentsLabel4"),
+      prefersImagePreview: true,
+    },
+    {
+      key: "menuUpload",
+      label: t("documentsLabel5"),
+      prefersImagePreview: true,
+    },
   ];
 
   // handle file selection (client-side only)
@@ -340,15 +335,17 @@ export default function UploadDocuments({
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.06 }}
-                    className={`flex items-center justify-between p-4 border rounded-xl shadow-sm hover:shadow-md transition-all ${isSelected
-                      ? "border-[#DC3173]/30 bg-[#FFF7FB]"
-                      : "bg-white"
-                      }`}
+                    className={`flex items-center justify-between p-4 border rounded-xl shadow-sm hover:shadow-md transition-all ${
+                      isSelected
+                        ? "border-[#DC3173]/30 bg-[#FFF7FB]"
+                        : "bg-white"
+                    }`}
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-14 h-14 rounded-lg flex items-center justify-center ${isSelected ? "bg-[#DC3173]/10" : "bg-gray-50"
-                          }`}
+                        className={`w-14 h-14 rounded-lg flex items-center justify-center ${
+                          isSelected ? "bg-[#DC3173]/10" : "bg-gray-50"
+                        }`}
                       >
                         {d.prefersImagePreview ? (
                           <ImageIcon className="w-6 h-6 text-[#DC3173]" />
@@ -424,7 +421,8 @@ export default function UploadDocuments({
                             }
                             className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm border border-gray-200 hover:shadow"
                           >
-                            <Eye className="w-4 h-4 text-[#DC3173]" /> {t("viewCTA")}
+                            <Eye className="w-4 h-4 text-[#DC3173]" />{" "}
+                            {t("viewCTA")}
                           </button>
 
                           <button
@@ -450,9 +448,7 @@ export default function UploadDocuments({
             </div>
 
             <div className="pt-6">
-              <div className="text-sm text-gray-500">
-                {t("tipDesc")}.
-              </div>
+              <div className="text-sm text-gray-500">{t("tipDesc")}.</div>
             </div>
             <div className="pt-4">
               <Button

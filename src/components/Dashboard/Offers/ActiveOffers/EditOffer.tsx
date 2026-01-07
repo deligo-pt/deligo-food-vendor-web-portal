@@ -84,7 +84,21 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Updating offer...");
 
-    const result = await updateOfferReq(offer._id, data);
+    const offerData: Partial<TOffer> = {
+      ...data,
+      isAutoApply: false,
+      ...(data.offerType === "BOGO"
+        ? {
+            bogo: {
+              buyQty: data.buyQty as number,
+              getQty: data.getQty as number,
+              itemId: data.itemId as string,
+            },
+          }
+        : {}),
+    };
+
+    const result = await updateOfferReq(offer._id, offerData);
 
     if (result.success) {
       router.refresh();
@@ -279,6 +293,56 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                             </SelectContent>
                           </Select>
                         </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {watchOfferType === "BOGO" && (
+                <FormField
+                  control={form.control}
+                  name="buyQty"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder="Buy Quantity (e.g., 2)"
+                          type="number"
+                          min={1}
+                          className="h-12 text-base"
+                          {...field}
+                          value={String(field.value)}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {watchOfferType === "BOGO" && (
+                <FormField
+                  control={form.control}
+                  name="getQty"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder="Get Quantity (e.g., 1)"
+                          type="number"
+                          min={1}
+                          className="h-12 text-base"
+                          {...field}
+                          value={String(field.value)}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
