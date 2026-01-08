@@ -31,6 +31,7 @@ export default function VendorChatSupport({
     initialMessagesData?.data || []
   );
   const [text, setText] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState(conversation.status);
   const accessToken = getCookie("accessToken");
 
@@ -42,13 +43,6 @@ export default function VendorChatSupport({
     onClosed: () => setStatus("CLOSED"),
     onError: (msg) => alert(msg),
   });
-
-  const isLocked =
-    status === "IN_PROGRESS" &&
-    conversation.handledBy !== null &&
-    conversation.handledBy !== "ME";
-
-  console.log(isLocked);
 
   const handleSendMessage = () => {
     if (!text.trim()) return;
