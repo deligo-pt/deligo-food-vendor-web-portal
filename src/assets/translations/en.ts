@@ -571,5 +571,45 @@ export const en = {
     footerConnect: "Connect",
     footerLanguage: "Language",
     footerCopyright: "DeliGo — Powered with",
-    footerCopyrightEfficiency: "Efficiency"
+    footerCopyrightEfficiency: "Efficiency",
+
+
+
+    // vendor dashboard
+    // dashboard page
+    hello: "Hello",
+    welcomeDashboard: "Welcome to your food delivery dashboard overview",
+    total_items: "Total Items",
+    total_listed_products: "Total listed products",
+    active_products: "Active Products",
+    items_for_sale: " Items for sale",
+    inactive_products: "Inactive Products",
+    items_not_for_sale: " Items not for sale",
+    total_orders: "Total Orders",
+    pending_orders: "Pending Orders",
+    completed_orders: "Completed Orders",
+    cancelled_orders: "Cancelled Orders",
+    popular_categories: "Popular Categories",
+    no_popular_categories: "No popular categories found",
+    recent_orders: "Recent Orders",
+    no_recent_orders: "No recent orders found",
+    view_all_orders: "View All Orders",
+    top_rated_items: "Top rated Items",
+    no_top_rated_items: "No top rated items found",
+    orders: "",
+    // -> status
+    pending: "Pending",
+    accepted: "Accepted",
+    rejected: "Rejected",
+    preparing: "Preparing",
+    ready_for_pickup: "Ready for Pickup",
+    dispatching: "Dispatching",
+    awaiting_partner: "Awaiting Partner",
+    assigned: "Assigned",
+    reassignment_needed: " Reassignment Needed",
+    picked_up: "Picked Up",
+    on_the_way: "On The Way",
+    delivered: "Delivered",
+    cancelled: "Canceled",
+
 };
