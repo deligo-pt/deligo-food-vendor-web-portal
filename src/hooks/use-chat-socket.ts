@@ -11,7 +11,7 @@ interface Props {
   onMessage: (msg: TMessage) => void;
   onClosed: () => void;
   onError: (msg: string) => void;
-  onTyping: (msg: {
+  onTyping: (data: {
     userId: string;
     name: {
       firstName: string;
