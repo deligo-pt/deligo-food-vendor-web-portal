@@ -576,6 +576,9 @@ export const en = {
 
 
     // vendor dashboard
+    // sorting
+    newest_first : "Newest First",
+    oldest_first : "Oldest First",
     // dashboard page
     hello: "Hello",
     welcomeDashboard: "Welcome to your food delivery dashboard overview",
@@ -611,5 +614,20 @@ export const en = {
     on_the_way: "On The Way",
     delivered: "Delivered",
     cancelled: "Canceled",
+
+    // new orders page
+    vendor_new_orders: "Vendor — New Orders",
+    live_orders: "Live Orders",
+    no_orders_match_query: "No orders match your query.",
+    click_assign_delivery_partner: "Click to assign delivery partner.",
+    accept: "Accept",
+    reject: "Reject",
+    prepare: "Prepare",
+    mark_ready: "Mark Ready",
+    view: "View",
+    items: "Items",
+    qty: "Qty",
+    delivery: "Delivery",
+
 
 };
