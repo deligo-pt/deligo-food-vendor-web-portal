@@ -15,6 +15,7 @@ import ProductCard from "@/src/components/Dashboard/Products/ProductCard";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import SearchFilter from "@/src/components/Filtering/SearchFilter";
 import SelectFilter from "@/src/components/Filtering/SelectFilter";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta, TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 import { getCookie } from "@/src/utils/cookies";
@@ -25,22 +26,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-  { label: "Name (A-Z)", value: "name" },
-  { label: "Name (Z-A)", value: "-name" },
-  { label: "Price (High to Low)", value: "-pricing.finalPrice" },
-  { label: "Price (low to High)", value: "pricing.finalPrice" },
-  { label: "Highest Rated", value: "-rating.average" },
-  { label: "lowest Rated", value: "rating.average" },
-];
-
 export default function Products({
   initialData,
 }: {
   initialData: { data: TProduct[]; meta?: TMeta };
 }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [prevFilters, setPrevFilters] = useState({
@@ -55,6 +46,17 @@ export default function Products({
     action: "edit" | "delete" | null;
     product?: TProduct | null;
   }>({ id: null, action: null });
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+    { label: t("name_a_to_z"), value: "name" },
+    { label: t("name_z_to_a"), value: "-name" },
+    { label: t("price_high_to_low"), value: "-pricing.finalPrice" },
+    { label: t("price_low_to_high"), value: "pricing.finalPrice" },
+    { label: t("highest_rated"), value: "-rating.average" },
+    { label: t("lowest_rated"), value: "rating.average" },
+  ];
 
   const handleAddFilter = () => {
     if (activeFilters?.status?.length > 0) {
@@ -139,10 +141,10 @@ export default function Products({
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-white">
-              Food Items
+              {t("food_items")}
             </h1>
             <p className="text-pink-100 mt-1">
-              Manage your restaurant&lsquo;s food delivery catalog
+              {t("manage_your_restaurants_food_delivery_items")}
             </p>
           </div>
         </div>
@@ -160,18 +162,17 @@ export default function Products({
             </div>
             <Button
               variant="outline"
-              className={`flex items-center ${
-                showFilters ||
+              className={`flex items-center ${showFilters ||
                 Object.entries(activeFilters)?.filter(
                   (filter) => filter[1] !== ""
                 )?.length > 0
-                  ? "border-[#DC3173] text-[#DC3173]"
-                  : ""
-              }`}
+                ? "border-[#DC3173] text-[#DC3173]"
+                : ""
+                }`}
               onClick={() => setShowFilters(!showFilters)}
             >
               <SlidersHorizontal className="mr-2 h-4 w-4" />
-              Filters{" "}
+              {t("filters")}{" "}
               {Object.entries(activeFilters)?.filter(
                 (filter) => filter[1] !== ""
               )?.length || ""}
@@ -180,29 +181,29 @@ export default function Products({
         </div>
         {Object.entries(activeFilters)?.filter((filter) => filter[1] !== "")
           ?.length > 0 && (
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {activeFilters["status"].length > 0 && (
-              <Badge
-                variant="outline"
-                className="text-[#DC3173] border-[#DC3173]"
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {activeFilters["status"].length > 0 && (
+                <Badge
+                  variant="outline"
+                  className="text-[#DC3173] border-[#DC3173]"
+                >
+                  {activeFilters["status"]}
+                  <X
+                    className="ml-2 h-4 w-4"
+                    onClick={() => removeFilter("status")}
+                  />
+                </Badge>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearAllFilters}
+                className="text-sm text-[#DC3173] hover:text-[#DC3173] hover:bg-pink-50"
               >
-                {activeFilters["status"]}
-                <X
-                  className="ml-2 h-4 w-4"
-                  onClick={() => removeFilter("status")}
-                />
-              </Badge>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearAllFilters}
-              className="text-sm text-[#DC3173] hover:text-[#DC3173] hover:bg-pink-50"
-            >
-              <RefreshCcw className="h-3 w-3 mr-1" /> Clear All
-            </Button>
-          </div>
-        )}
+                <RefreshCcw className="h-3 w-3 mr-1" /> {t("clear_all")}
+              </Button>
+            </div>
+          )}
 
         <AnimatePresence>
           {showFilters && (
@@ -228,7 +229,7 @@ export default function Products({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Availability Status
+                      {t("availability_status")}
                     </label>
                     <Select
                       value={prevFilters.status}
@@ -243,7 +244,7 @@ export default function Products({
                         <SelectValue placeholder="Select a status" />
                       </SelectTrigger>
                       <SelectContent>
-                        {["In Stock", "Out of Stock", "Limited"].map(
+                        {[t("in_stock"), t("out_of_stock"), t("limited")].map(
                           (status) => (
                             <SelectItem key={status} value={status || "a"}>
                               {status}
@@ -260,9 +261,9 @@ export default function Products({
                     className="mr-2"
                     onClick={() => setShowFilters(false)}
                   >
-                    Cancel
+                    {t("cancel")}
                   </Button>
-                  <Button onClick={handleAddFilter}>Apply Filters</Button>
+                  <Button onClick={handleAddFilter}>{t("apply_filters")}</Button>
                 </div>
               </div>
             </motion.div>
@@ -273,12 +274,12 @@ export default function Products({
       {initialData.data?.length > 0 && (
         <div className="flex justify-between items-center mb-4">
           <p className="text-sm text-gray-500">
-            Showing{" "}
+            {t("showing")}{" "}
             {((initialData.meta?.page || 1) - 1) *
               (initialData.meta?.limit || 10) +
               1}
             -{(initialData.meta?.page || 1) * (initialData.meta?.limit || 10)}{" "}
-            of {initialData.meta?.total || 0} items
+            {t("of")} {initialData.meta?.total || 0} {t("items")}
           </p>
         </div>
       )}
@@ -312,13 +313,12 @@ export default function Products({
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <Search className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="text-xl font-medium mb-2">No items found</h3>
+          <h3 className="text-xl font-medium mb-2">{t("no_items_found")}</h3>
           <p className="text-gray-500 max-w-md">
-            No items match your current filters. Try adjusting your search or
-            filters to find what you&lsquo;re looking for.
+            {t("no_items_match_current_filters")}
           </p>
           <Button variant="outline" className="mt-4" onClick={clearAllFilters}>
-            Clear All Filters
+            {t("clear_all_filters")}
           </Button>
         </motion.div>
       )}
@@ -342,7 +342,7 @@ export default function Products({
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
-        refetch={() => {}}
+        refetch={() => { }}
       />
     </div>
   );

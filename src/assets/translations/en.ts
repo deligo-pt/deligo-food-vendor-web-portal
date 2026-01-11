@@ -579,6 +579,12 @@ export const en = {
     // sorting
     newest_first: "Newest First",
     oldest_first: "Oldest First",
+    name_a_to_z : "Name (A-Z)",
+    name_z_to_a : "Name (Z-A)",
+    price_high_to_low : "Price (High to Low)",
+    price_low_to_high : "Price (Low to High)",
+    highest_rated : "Highest Rated",
+    lowest_rated : "Lowest Rated",
     // -> sidebar
     dashboard: "Dashboard",
     orders: "Orders",
@@ -687,6 +693,39 @@ export const en = {
     manage_orders_in_kitchen: "Manage orders currently in kitchen — progress, assign riders & mark ready.",
     details: "Details",
     cancel_order: "Cancel Order",
+    // ready for pickup page
+    vendor: "Vendor",
+    // ongoing deliveries page
+    track_your_live_orders: "Track your live orders — rider location, ETA, and delivery stage.",
+    rider_id: "Rider ID",
+    call_rider: "Call Rider",
+    // completed orders page
+    fully_delivered_orders_with_earnings_rider_data: "Fully delivered orders with earnings & rider data.",
+    delivered_at: "Delivered at",
+    payment: " Payment",
+    payment_method: "Payment Method",
+    select_payment_method: "Select Payment Method",
+    // cancelled orders page
+    see_all_orders_were_cancelled: "See all orders that were cancelled — reason, payment, customer info.",
+    reason: "Reason",
+    cancelled_at: "Cancelled at",
+    // all-items page
+    food_items: "Food Items",
+    manage_your_restaurants_food_delivery_items: "Manage your restaurant's food delivery catalog",
+    filters: "Filters",
+    clear_all: "Clear All",
+    availability_status: "Availability Status",
+    in_stock: "In Stock",
+    out_of_stock: "Out of Stock",
+    limited: "Limited",
+    cancel: "Cancel",
+    apply_filters: "Apply Filters",
+    showing: "Showing",
+    of: "of",
+    no_items_found: "No items found",
+    no_items_match_current_filters: "No items match your current filters. Try adjusting your search or filters to find what you're looking for.",
+    clear_all_filters: "Clear all filters",
+
 
 
 };

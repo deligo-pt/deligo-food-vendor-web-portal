@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
@@ -32,15 +33,18 @@ interface IProps {
 //   delivered: { label: "Delivered", color: "#16A34A" },
 // };
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-];
 
 /* -----------------------------------
    Component
 ------------------------------------ */
 export default function OngoingDeliveries({ ordersResult }: IProps) {
+  const { t } = useTranslation();
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+  ];
+
   /* Simulate stage progression every 25s */
   //   useEffect(() => {
   //     const interval = setInterval(() => {
@@ -64,10 +68,10 @@ export default function OngoingDeliveries({ ordersResult }: IProps) {
       <div className="max-w-[950px] mx-auto space-y-8">
         <header>
           <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-            Ongoing Deliveries
+            {t("ongoing_deliveries")}
           </h1>
           <p className="text-gray-600 mt-1">
-            Track your live orders — rider location, ETA, and delivery stage.
+            {t("track_your_live_orders")}
           </p>
         </header>
 
@@ -82,7 +86,7 @@ export default function OngoingDeliveries({ ordersResult }: IProps) {
                 animate={{ opacity: 1 }}
                 className="py-12 text-center text-gray-500"
               >
-                No orders match your query.
+                {t("no_orders_match_query")}
               </motion.div>
             )}
             {ordersResult?.data?.map((d) => (
@@ -113,6 +117,7 @@ export default function OngoingDeliveries({ ordersResult }: IProps) {
    Delivery Card Component
 ------------------------------------ */
 function DeliveryCard({ delivery: d }: { delivery: TOrder }) {
+  const { t } = useTranslation();
   return (
     <Card className="rounded-3xl shadow-sm border bg-white p-6">
       <CardContent className="space-y-6 p-0">
@@ -152,7 +157,7 @@ function DeliveryCard({ delivery: d }: { delivery: TOrder }) {
               i < d.items.length - 1 && "mb-1.5"
             )}
           >
-            Items: {item.productId?.name} x {item.quantity}
+            {t("items")}: {item.productId?.name} x {item.quantity}
           </div>
         ))}
 
@@ -183,7 +188,7 @@ function DeliveryCard({ delivery: d }: { delivery: TOrder }) {
                 {d.deliveryPartnerId?.name?.lastName}
               </p>
               <p className="text-xs text-gray-500">
-                Rider ID: {d.deliveryPartnerId?.userId}
+                {t("rider_id")}: {d.deliveryPartnerId?.userId}
               </p>
             </div>
           </div>
@@ -192,7 +197,7 @@ function DeliveryCard({ delivery: d }: { delivery: TOrder }) {
             href={`tel:${d.deliveryPartnerId?.contactNumber}`}
             className="flex items-center gap-2"
           >
-            <Phone size={16} /> Call Rider
+            <Phone size={16} /> {t("call_rider")}
           </a>
         </div>
 

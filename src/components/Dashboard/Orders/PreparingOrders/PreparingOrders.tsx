@@ -291,6 +291,8 @@ function OrderSheetContent({
   onReady?: () => void;
   onCancel?: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4">
       <div>
@@ -303,7 +305,7 @@ function OrderSheetContent({
       </div>
 
       <div>
-        <h4 className="font-semibold">Items</h4>
+        <h4 className="font-semibold">{t("items")}</h4>
         <ul className="mt-2 space-y-2">
           {order.items.map((it, i) => (
             <li
@@ -311,14 +313,14 @@ function OrderSheetContent({
               className="flex justify-between items-center p-3 rounded-md bg-gray-50"
             >
               <div>{it.productId?.name}</div>
-              <div className="text-sm text-gray-600">Qty {it.quantity}</div>
+              <div className="text-sm text-gray-600">{t("qty")} {it.quantity}</div>
             </li>
           ))}
         </ul>
       </div>
 
       <div>
-        <h4 className="font-semibold">Delivery</h4>
+        <h4 className="font-semibold">{t("delivery")}</h4>
         <div className="text-sm text-gray-600 flex items-center gap-2 mt-1">
           <MapPin size={14} /> {order.pickupAddress?.street},{" "}
           {order.pickupAddress?.postalCode}, {order.pickupAddress?.city},{" "}
@@ -333,7 +335,7 @@ function OrderSheetContent({
             className="flex-1"
             onClick={() => onReady && onReady()}
           >
-            Mark Ready
+            {t("mark_ready")}
           </Button>
         </div>
         <Button
@@ -341,7 +343,7 @@ function OrderSheetContent({
           className="w-full"
           onClick={() => onCancel && onCancel()}
         >
-          Cancel Order
+          {t("cancel_order")}
         </Button>
       </div>
     </div>

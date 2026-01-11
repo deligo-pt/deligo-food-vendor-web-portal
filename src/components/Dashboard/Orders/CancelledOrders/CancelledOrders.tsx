@@ -12,6 +12,7 @@ import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
 import { Clock, MapPin, XCircle } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 interface IProps {
   ordersResult: {
@@ -37,12 +38,15 @@ const SHADOW = "0px 4px 24px rgba(0,0,0,0.07)";
 //   delivery_failed: { text: "Delivery Failed", color: "#DC2626" },
 // };
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-];
 
 export default function CancelledOrders({ ordersResult }: IProps) {
+  const { t } = useTranslation();
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+  ];
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[900px] mx-auto space-y-8">
@@ -54,10 +58,10 @@ export default function CancelledOrders({ ordersResult }: IProps) {
             className="text-4xl font-extrabold tracking-tight"
             style={{ color: PRIMARY }}
           >
-            Cancelled Orders
+            {t("cancelled_orders")}
           </h1>
           <p className="text-gray-600 text-sm">
-            See all orders that were cancelled — reason, payment, customer info.
+            {t("see_all_orders_were_cancelled")}
           </p>
         </header>
 
@@ -84,7 +88,7 @@ export default function CancelledOrders({ ordersResult }: IProps) {
                 animate={{ opacity: 1 }}
                 className="py-12 text-center text-gray-500"
               >
-                No orders match your query.
+                {t("no_orders_match_query")}
               </motion.div>
             )}
             {ordersResult?.data?.map((o) => (
@@ -115,7 +119,7 @@ export default function CancelledOrders({ ordersResult }: IProps) {
                           {o.vendorId?.businessDetails?.businessName}
                         </p>
                         <p className="text-gray-600">
-                          Reason:{" "}
+                          {t("reason")}:{" "}
                           <span className="text-yellow-500">
                             {o.cancelReason}
                           </span>
@@ -123,7 +127,7 @@ export default function CancelledOrders({ ordersResult }: IProps) {
 
                         <div className="flex items-center gap-1 text-gray-500 text-sm mt-2">
                           <Clock size={14} />
-                          Cancelled at {format(o.updatedAt, "HH:mm")}
+                          {t("cancelled_at")} {format(o.updatedAt, "HH:mm")}
                         </div>
                       </div>
 
@@ -149,7 +153,7 @@ export default function CancelledOrders({ ordersResult }: IProps) {
                           i < o.items.length - 1 && "mb-1.5"
                         )}
                       >
-                        Items: {item.productId?.name} x {item.quantity}
+                        {t("items")}: {item.productId?.name} x {item.quantity}
                       </div>
                     ))}
 
@@ -162,7 +166,7 @@ export default function CancelledOrders({ ordersResult }: IProps) {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">
-                        Payment: {o.paymentMethod}
+                        {t("payment")}: {o.paymentMethod}
                       </p>
                     </div>
 
