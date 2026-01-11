@@ -18,6 +18,7 @@ import {
   BarChart3,
   FileBarChart,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const GRADIENT = "linear-gradient(135deg, #FFE0ED, #FFFFFF)";
@@ -50,6 +51,7 @@ const maxValue = Math.max(...DAILY_EARNINGS.map((d) => d.value));
 const BAR_MAX_HEIGHT = 160; // px
 
 export default function EarningsSummaryPage() {
+  const { t } = useTranslation();
   const [range, setRange] = useState<"7d" | "30d">("7d");
 
   return (
@@ -59,24 +61,24 @@ export default function EarningsSummaryPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight" style={{ color: PRIMARY }}>
-              Earnings Summary
+              {t("earnings_summary")}
             </h1>
-            <p className="text-gray-600 text-sm mt-1">Performance overview — revenue, orders and trends</p>
+            <p className="text-gray-600 text-sm mt-1">{t("performance_overview")}</p>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-600">Range</div>
+            <div className="text-sm text-gray-600">{t("range")}</div>
             <div className="flex items-center gap-2 bg-white rounded-full p-1 shadow-sm">
               <button
                 onClick={() => setRange("7d")}
-                className={`px-3 py-1 rounded-full text-sm ${range === "7d" ? "bg-[rgba(220,49,115,0.12)] text-[var(--primary)]" : "text-gray-600"}`}
+                className={`px-3 py-1 rounded-full text-sm ${range === "7d" ? "bg-[rgba(220,49,115,0.12)] text-primary" : "text-gray-600"}`}
                 style={range === "7d" ? { color: PRIMARY } : {}}
               >
                 7d
               </button>
               <button
                 onClick={() => setRange("30d")}
-                className={`px-3 py-1 rounded-full text-sm ${range === "30d" ? "bg-[rgba(220,49,115,0.12)] text-[var(--primary)]" : "text-gray-600"}`}
+                className={`px-3 py-1 rounded-full text-sm ${range === "30d" ? "bg-[rgba(220,49,115,0.12)] text-primary" : "text-gray-600"}`}
                 style={range === "30d" ? { color: PRIMARY } : {}}
               >
                 30d
@@ -84,7 +86,7 @@ export default function EarningsSummaryPage() {
             </div>
 
             <Button style={{ background: PRIMARY }} className="text-white flex items-center gap-2">
-              <FileBarChart size={16} /> Export Report
+              <FileBarChart size={16} /> {t("export_report")}
             </Button>
           </div>
         </div>
@@ -95,11 +97,11 @@ export default function EarningsSummaryPage() {
           <Card className="rounded-3xl border" style={{ background: GRADIENT, boxShadow: SHADOW }}>
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">Total Earnings</p>
+                <p className="text-gray-600 text-sm">{t("total_earnings")}</p>
                 <h2 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
                   €{SUMMARY.totalEarnings.toFixed(2)}
                 </h2>
-                <p className="text-xs text-gray-500 mt-2">Since joining the platform</p>
+                <p className="text-xs text-gray-500 mt-2">{t("since_joining_the_platform")}</p>
               </div>
               <div className="p-4 rounded-2xl bg-white shadow-inner">
                 <Wallet size={42} className="text-pink-600" />
@@ -111,9 +113,9 @@ export default function EarningsSummaryPage() {
           <Card className="rounded-3xl border bg-white shadow-md">
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">This Week</p>
+                <p className="text-gray-600 text-sm">{t("this_week")}</p>
                 <h2 className="text-3xl font-bold">€{SUMMARY.thisWeek.toFixed(2)}</h2>
-                <div className="text-xs text-gray-500 mt-1">vs last week</div>
+                <div className="text-xs text-gray-500 mt-1">{t("vs_last_week")}</div>
               </div>
               <TrendingUp size={36} className="text-green-600" />
             </CardContent>
@@ -123,9 +125,9 @@ export default function EarningsSummaryPage() {
           <Card className="rounded-3xl border bg-white shadow-md">
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">Last Week</p>
+                <p className="text-gray-600 text-sm">{t("last_week")}</p>
                 <h2 className="text-3xl font-bold">€{SUMMARY.lastWeek.toFixed(2)}</h2>
-                <div className="text-xs text-gray-500 mt-1">reference</div>
+                <div className="text-xs text-gray-500 mt-1">{t("reference")}</div>
               </div>
               <ArrowDownCircle size={36} className="text-amber-600" />
             </CardContent>
@@ -138,10 +140,10 @@ export default function EarningsSummaryPage() {
             <div className="mb-5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BarChart3 className="text-gray-600" />
-                <h2 className="font-bold text-lg">Weekly Earnings Overview</h2>
+                <h2 className="font-bold text-lg">{t("weekly_earnings_overview")}</h2>
               </div>
 
-              <div className="text-sm text-gray-500">Total this week: <span className="font-semibold text-gray-800">€{SUMMARY.thisWeek.toFixed(2)}</span></div>
+              <div className="text-sm text-gray-500">{t("total_this_week")}: <span className="font-semibold text-gray-800">€{SUMMARY.thisWeek.toFixed(2)}</span></div>
             </div>
 
             {/* Bars */}
@@ -171,16 +173,16 @@ export default function EarningsSummaryPage() {
           <CardContent className="p-6 space-y-4">
             <div className="flex items-center gap-2">
               <CalendarDays className="text-gray-600" />
-              <h2 className="font-bold text-lg">Order Metrics</h2>
+              <h2 className="font-bold text-lg">{t("order_metrics")}</h2>
             </div>
 
             <Separator />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <Metric label="Completed Orders" value={SUMMARY.completedOrders} tone="green" />
-              <Metric label="Cancelled Orders" value={SUMMARY.cancelledOrders} tone="red" />
-              <Metric label="Avg Order Value" value={`€${SUMMARY.avgOrderValue}`} tone="pink" />
-              <Metric label="Total Revenue" value={`€${SUMMARY.totalEarnings.toFixed(0)}`} tone="gray" />
+              <Metric label={t("completed_orders")} value={SUMMARY.completedOrders} tone="green" />
+              <Metric label={t("cancelled_orders")} value={SUMMARY.cancelledOrders} tone="red" />
+              <Metric label={t("avg_order_value")} value={`€${SUMMARY.avgOrderValue}`} tone="pink" />
+              <Metric label={t("total_revenue")} value={`€${SUMMARY.totalEarnings.toFixed(0)}`} tone="gray" />
             </div>
           </CardContent>
         </Card>

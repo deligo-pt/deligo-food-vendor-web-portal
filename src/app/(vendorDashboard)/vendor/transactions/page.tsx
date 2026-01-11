@@ -15,10 +15,11 @@ import {
   ArrowDownLeft,
   Wallet,
   Search,
- 
+
   Receipt,
 
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -64,6 +65,7 @@ const STATIC_TRANSACTIONS = [
 ];
 
 export default function VendorTransactionsHistory() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
 
@@ -98,10 +100,10 @@ export default function VendorTransactionsHistory() {
         {/* HEADER */}
         <div>
           <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-            Transaction History
+            {t("transaction_history")}
           </h1>
           <p className="text-gray-600 text-sm mt-1">
-            Full breakdown of earnings, payouts, fees & adjustments
+            {t("full_breakdown_of_earnings_payouts_fees")}
           </p>
         </div>
 
@@ -111,7 +113,7 @@ export default function VendorTransactionsHistory() {
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
             <Input
-              placeholder="Search transactions..."
+              placeholder={t("search_transactions")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="pl-9 bg-white"
@@ -124,11 +126,11 @@ export default function VendorTransactionsHistory() {
               <SelectValue placeholder="Filter" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="order">Orders</SelectItem>
-              <SelectItem value="payout">Payouts</SelectItem>
-              <SelectItem value="fee">Fees</SelectItem>
-              <SelectItem value="refund">Refunds</SelectItem>
+              <SelectItem value="all">{t("all")}</SelectItem>
+              <SelectItem value="order">{t("orders")}</SelectItem>
+              <SelectItem value="payout">{t("payouts")}</SelectItem>
+              <SelectItem value="fee">{t("fees")}</SelectItem>
+              <SelectItem value="refund">{t("refunds")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -136,9 +138,9 @@ export default function VendorTransactionsHistory() {
         {/* LIST */}
         <div className="space-y-5">
           <AnimatePresence>
-            {filtered.map((t) => (
+            {filtered.map((trx) => (
               <motion.div
-                key={t.id}
+                key={trx.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
@@ -150,25 +152,24 @@ export default function VendorTransactionsHistory() {
                     {/* LEFT */}
                     <div className="flex items-center gap-4">
                       <div className="p-4 rounded-2xl bg-pink-50 shadow-sm">
-                        {getIcon(t.type)}
+                        {getIcon(trx.type)}
                       </div>
 
                       <div>
-                        <h2 className="text-base font-semibold text-gray-800">{t.description}</h2>
-                        <p className="text-sm text-gray-500 mt-1">{t.date}</p>
+                        <h2 className="text-base font-semibold text-gray-800">{trx.description}</h2>
+                        <p className="text-sm text-gray-500 mt-1">{trx.date}</p>
                       </div>
                     </div>
 
                     {/* RIGHT — AMOUNT */}
                     <div className="text-right">
                       <div
-                        className={`text-xl font-bold ${
-                          t.amount >= 0 ? "text-green-600" : "text-red-600"
-                        }`}
+                        className={`text-xl font-bold ${trx.amount >= 0 ? "text-green-600" : "text-red-600"
+                          }`}
                       >
-                        {t.amount >= 0 ? "+" : ""}€{t.amount.toFixed(2)}
+                        {trx.amount >= 0 ? "+" : ""}€{trx.amount.toFixed(2)}
                       </div>
-                      <p className="text-xs text-gray-400">ID: {t.id}</p>
+                      <p className="text-xs text-gray-400">{t("id")}: {trx.id}</p>
                     </div>
 
                   </CardContent>
@@ -179,7 +180,7 @@ export default function VendorTransactionsHistory() {
 
           {filtered.length === 0 && (
             <div className="text-center py-20 text-gray-500 text-sm">
-              No transactions found.
+              {t("no_transactions_found")}
             </div>
           )}
         </div>
@@ -188,16 +189,16 @@ export default function VendorTransactionsHistory() {
         <Card className="rounded-3xl bg-white border shadow-md mt-10">
           <CardContent className="p-6 space-y-3">
             <h2 className="font-bold text-lg flex items-center gap-2">
-              <Wallet className="text-gray-700" /> Summary
+              <Wallet className="text-gray-700" /> {t("summary")}
             </h2>
 
             <Separator />
 
             <ul className="text-sm text-gray-600 space-y-2">
-              <li>• Positive values = revenue from orders</li>
-              <li>• Negative values = fees, adjustments, or refunds</li>
-              <li>• Payouts follow weekly SEPA cycle for Portugal</li>
-              <li>• Refunds may take 24–48 hours to reflect</li>
+              <li>• {t("positive_values_revenue_from_orders")}</li>
+              <li>• {t("negative_values_fees_adjustments_refunds")}</li>
+              <li>• {t("weekly_sepa_cycle_portugal")}</li>
+              <li>• {t("refunds_may_take_24_48_hours")}</li>
             </ul>
           </CardContent>
         </Card>

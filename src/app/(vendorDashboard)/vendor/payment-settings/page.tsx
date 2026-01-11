@@ -17,11 +17,13 @@ import {
   Lock,
   Info,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 
 
 export default function VendorPaymentSettings() {
+  const { t } = useTranslation();
   const [iban, setIban] = useState("PT50 0002 0123 5678 9011 22");
   const [holder, setHolder] = useState("Deligo Vendor");
   const [bank, setBank] = useState("Caixa Geral de Depósitos");
@@ -33,10 +35,10 @@ export default function VendorPaymentSettings() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Payment Settings
+              {t("payment_settings")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Configure bank account, payout method & security
+              {t("configure_bank_account_payout_method_security")}
             </p>
           </div>
         </div>
@@ -46,26 +48,26 @@ export default function VendorPaymentSettings() {
           <CardContent className="p-6 space-y-6">
             <div className="flex items-center gap-2 mb-3">
               <Wallet className="text-gray-700" />
-              <h2 className="font-bold text-lg">Bank Account</h2>
+              <h2 className="font-bold text-lg">{t("bank_account")}</h2>
             </div>
 
             <Separator />
 
             {/* IBAN */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">IBAN</label>
+              <label className="text-sm font-medium text-gray-700">{t("iban")}</label>
               <Input value={iban} onChange={(e) => setIban(e.target.value)} className="bg-white" />
             </div>
 
             {/* ACCOUNT HOLDER */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Account Holder Name</label>
+              <label className="text-sm font-medium text-gray-700">{t("account_holder_name")}</label>
               <Input value={holder} onChange={(e) => setHolder(e.target.value)} className="bg-white" />
             </div>
 
             {/* BANK NAME */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Bank Name</label>
+              <label className="text-sm font-medium text-gray-700">{t("bank_name")}</label>
               <Input value={bank} onChange={(e) => setBank(e.target.value)} className="bg-white" />
             </div>
 
@@ -73,7 +75,7 @@ export default function VendorPaymentSettings() {
               className="mt-4 text-white"
               style={{ background: PRIMARY }}
             >
-              <Save size={16} className="mr-2" /> Save Changes
+              <Save size={16} className="mr-2" /> {t("save_changes")}
             </Button>
           </CardContent>
         </Card>
@@ -83,7 +85,7 @@ export default function VendorPaymentSettings() {
           <CardContent className="p-6 space-y-6">
             <div className="flex items-center gap-2 mb-3">
               <Banknote className="text-gray-700" />
-              <h2 className="font-bold text-lg">Payout Method</h2>
+              <h2 className="font-bold text-lg">{t("payout_method")}</h2>
             </div>
 
             <Separator />
@@ -93,21 +95,21 @@ export default function VendorPaymentSettings() {
                 <SelectValue placeholder="Choose" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="weekly">Weekly (Every Monday)</SelectItem>
-                <SelectItem value="biweekly">Bi‑Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
+                <SelectItem value="weekly">{t("weekly_every_monday")}</SelectItem>
+                <SelectItem value="biweekly">{t("bi_weekly")}</SelectItem>
+                <SelectItem value="monthly">{t("monthly")}</SelectItem>
               </SelectContent>
             </Select>
 
             <div className="text-xs text-gray-500 mt-1">
-              Payments follow SEPA rules for Portugal.
+              {t("payments_follow_sepa_rules")}
             </div>
 
             <Button
               className="mt-4 text-white"
               style={{ background: PRIMARY }}
             >
-              <Save size={16} className="mr-2" /> Save Payout Method
+              <Save size={16} className="mr-2" /> {t("save_payout_method")}
             </Button>
           </CardContent>
         </Card>
@@ -117,37 +119,36 @@ export default function VendorPaymentSettings() {
           <CardContent className="p-6 space-y-6">
             <div className="flex items-center gap-2 mb-3">
               <Lock className="text-gray-700" />
-              <h2 className="font-bold text-lg">Security & Verification</h2>
+              <h2 className="font-bold text-lg">{t("security_and_verification")}</h2>
             </div>
 
             <Separator />
 
             <p className="text-sm text-gray-600 leading-relaxed">
-              For your safety, payout changes require identity confirmation. This helps prevent
-              unauthorized access and protects your earnings.
+              {t("for_your_safety_payout_changes_require_identity_confirmation")}
             </p>
 
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="text-white" style={{ background: PRIMARY }}>
-                  <ShieldCheck size={16} className="mr-2" /> Verify Identity
+                  <ShieldCheck size={16} className="mr-2" /> {t("verify_identity")}
                 </Button>
               </DialogTrigger>
 
               <DialogContent className="rounded-3xl">
                 <DialogHeader>
-                  <DialogTitle className="text-lg">Identity Verification</DialogTitle>
+                  <DialogTitle className="text-lg">{t("identity_verification")}</DialogTitle>
                 </DialogHeader>
 
                 <p className="text-sm text-gray-600 mt-2">
-                  Upload document for payout security verification.
+                  {t("upload_document_for_payout_security_verification")}
                 </p>
 
                 <Input type="file" className="mt-3" />
 
                 <DialogFooter>
                   <Button className="text-white mt-4" style={{ background: PRIMARY }}>
-                    Submit
+                    {t("submit")}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -160,16 +161,16 @@ export default function VendorPaymentSettings() {
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <Info className="text-gray-700" />
-              <h2 className="font-bold text-lg">Portugal Payout Guidelines</h2>
+              <h2 className="font-bold text-lg">{t("portugal_payout_guidelines")}</h2>
             </div>
 
             <Separator />
 
             <ul className="text-sm text-gray-600 space-y-2">
-              <li>• SEPA payouts take 24–48 hours.</li>
-              <li>• IBAN must be a valid Portuguese or EU bank account.</li>
-              <li>• Minimum payout threshold: €20.</li>
-              <li>• Identity verification required for bank changes.</li>
+              <li>• {t("sepa_payouts_take_24_48_hours")}</li>
+              <li>• {t("iban_must_be_a_valid_portuguese_or_eu_bank_account")}</li>
+              <li>• {t("minimum_payout_threshold_euro_20")}</li>
+              <li>• {t("identity_verification_required_for_bank_changes")}</li>
             </ul>
           </CardContent>
         </Card>

@@ -811,6 +811,85 @@ export const en = {
     add_addon: "Add Add-On",
     edit: "Edit",
 
+    // payouts page
+    vendor_payouts: "Vendor Payouts",
+    earnings_balance_payout: "Earnings balance and payout history",
+    export_csv: "Export CSV",
+    available_balance: "Available Balance",
+    weekly_payout_every_monday: "Weekly payout every Monday",
+    payout_completed: "Payout Completed",
+    processing: "Processing",
+    all: "All",
+    no_payouts_found: "No payouts found",
+    portugal_payment_rules: "Portugal Payment Rules",
+    automatic_weekly_payout: "Automatic weekly SEPA payout every Monday.",
+    iva_handled_per_portuguese_tax: "IVA (VAT) handled per Portuguese tax rules and already applied where required.",
+    minimum_payout_threshold: "Minimum payout threshold:",
+    euro_20: "€20.",
+    balances_below_roll_next_cycle: "Balances below this will roll to next cycle.",
+    typical_bank_transfer_time: "Typical bank transfer time:",
+    hours_24_48: "24–48 hours",
+    instant_payouts_fees_may_apply: "For instant payouts (if enabled), fees may apply — check Finance settings.",
+    payouts_sent_to_registered_iban: "Payouts are sent to your registered IBAN. Update bank details in Settings > Finance.",
+
+    // earnings-summary page
+    performance_overview: "Performance overview — revenue, orders and trends",
+    range: "Range",
+    export_report: "Export Report",
+    total_earnings: "Total Earnings",
+    since_joining_the_platform: "Since joining the platform",
+    this_week: "This Week",
+    vs_last_week: "vs Last Week",
+    last_week: "Last Week",
+    reference: "Reference",
+    weekly_earnings_overview: "Weekly earnings overview",
+    total_this_week: "Total This Week",
+    order_metrics: "Order Metrics",
+    avg_order_value: "Avg. Order Value",
+    total_revenue: "Total Revenue",
+
+
+    // payment-settings page
+    configure_bank_account_payout_method_security: "Configure bank account, payout method & security",
+    bank_account: "Bank Account",
+    account_holder_name: "Account Holder Name",
+    bank_name: "Bank Name",
+    save_changes: "Save Changes",
+    payout_method: "Payout Method",
+    weekly_every_monday: "Weekly (Every Monday)",
+    bi_monthly: "Bi‑Weekly",
+    monthly: "Monthly",
+    payments_follow_sepa_rules: "Payments follow SEPA rules for Portugal.",
+    save_payout_method: "Save Payout Method",
+    security_and_verification: "Security & Verification",
+    for_your_safety_payout_changes_require_identity_confirmation: "For your safety, payout changes require identity confirmation. This helps prevent unauthorized access and protects your earnings.",
+    verify_identity: "Verify Identity",
+    identity_verification: "Identity Verification",
+    upload_document_for_payout_security_verification: "Upload document for payout security verification.",
+    submit: "Submit",
+    portugal_payout_guidelines: "Portugal Payout Guidelines",
+    sepa_payouts_take_24_48_hours: "SEPA payouts take 24–48 hours.",
+    iban_must_be_a_valid_portuguese_or_eu_bank_account: "IBAN must be a valid Portuguese or EU bank account.",
+    minimum_payout_threshold_euro_20: "Minimum payout threshold: €20.",
+    identity_verification_required_for_bank_changes: "Identity verification required for bank changes.",
+
+
+    // transaction-history page
+    full_breakdown_of_earnings_payouts_fees: "Full breakdown of earnings, payouts, fees & adjustments",
+    search_transactions: "Search transactions...",
+    fees: "Fees",
+    refunds: "Refunds",
+    id: "ID",
+    no_transactions_found: "No transactions found.",
+    summary: "Summary",
+    positive_values_revenue_from_orders: "Positive values = revenue from orders",
+    negative_values_fees_adjustments_refunds: "Negative values = fees, adjustments, or refunds",
+    weekly_sepa_cycle_portugal: "Payouts follow weekly SEPA cycle for Portugal",
+    refunds_may_take_24_48_hours: "Refunds may take 24–48 hours to reflect",
+
+
+
+
 
 
 
