@@ -887,8 +887,71 @@ export const en = {
     weekly_sepa_cycle_portugal: "Payouts follow weekly SEPA cycle for Portugal",
     refunds_may_take_24_48_hours: "Refunds may take 24–48 hours to reflect",
 
+    // sales-analytics page
+    deep_insights_revenue_best_selling_items_performance_trends: "Deep insights into revenue, best-selling items & performance trends",
+    total_sales: "Total Sales",
+    last_7_days: "Last 7 days",
+    best_performing_day: "Best Performing Day",
+    slowest_day: "Slowest Day",
+    weekly_sales_trend: "Weekly Sales Trend",
+    top_selling_items: "Top Selling Items",
+    sold: "sold",
+    data_based_on_last_7_days: "Data based on last 7 days | Updated automatically",
 
 
+    // customer-insights page
+    deep_customer_analytics: "Deep customer analytics — demographics, behavior, retention & sentiment",
+    total_customers: "Total Customers",
+    returning: "Returning",
+    top_city: "Top City",
+    avg_repeat: "Avg. Repeat",
+    demographics: "Demographics",
+    live: "Live",
+    of_orders: "of orders",
+    customer_value: "Customer Value",
+    top_segments: "Top Segments",
+    avg_order: "Avg. Order",
+    retention_trend: "Retention Trend",
+    d_7: "7D",
+    peak_order_times: "Peak Order Times (Heatmap)",
+    local_time: "Local Time",
+    actionable_insights: "Actionable Insights",
+    ai_suggest: "AI Suggest",
+    promote_popular_items: "Promote popular items in Lisbon during Friday evening (18:00–22:00) to increase conversion.",
+    target_top_customers_with_exclusive: "Target top 5% customers with an exclusive coupon — they have high LTV.",
+    address_cold_food_feedback: 'Address "cold food" feedback: check packaging for orders above 5km distance.',
+    run_campaign_slow_days: "Run a campaign for slow days (Mon–Wed) offering bundle discounts.",
+    create_campaign: "Create Campaign",
+    export_segment: "Export Segment",
+
+
+    // order-trends page
+    trend_analysis_orders_over_time: "Trend analysis of orders over time — peaks, categories & volume",
+    export_trends: "Export Trends",
+    last_14_days_order_trend: "Last 14 Days Order Trend",
+    vs_last_14_days: "vs Last 14 Days",
+    daily_order_volume: "Daily Order Volume",
+    peak_ordering_times: "Peak Ordering Times",
+    category_growth: "Category Growth",
+    ai_order_trend_insights: "AI Order Trend Insights",
+    promote_pizza_category_weekends: "Promote pizza category on weekends — strongest upward trend.",
+    boost_ad_budget_around_7pm: "Boost ad budget around 7 PM — highest order spike.",
+    offer_combo_deals_on_slow_days: "Offer combo deals on slow days (Tue–Thu) to increase conversions.",
+    introduce_new_drinks: "Introduce new drinks — category gaining stable weekly growth.",
+    export_data: "Export Data",
+
+
+    // top-performing-items page
+    best_performing_menu_items: "Best performing menu items — sales, ratings & growth",
+    export: "Export",
+    total_items_sold: "Total Items Sold (7 days)",
+    updated_hourly: "Updated hourly",
+    ai_insights: "AI Insights",
+    chicken_burger_outperforming: "Chicken Burger is outperforming all categories — increase visibility on home page.",
+    fresh_orange_fastest_growth: "Fresh Orange Juice shows fastest growth — add combo deals with burgers.",
+    greek_salad_sales_dropped: "Greek Salad sales dropped — consider refreshing photo or making it a featured item.",
+    pizza_stable_demand: "Pizza category has stable demand — promote during weekends for higher boost.",
+    create_promo: "Create Promo",
 
 
 

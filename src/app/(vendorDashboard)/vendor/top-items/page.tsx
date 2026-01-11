@@ -14,6 +14,7 @@ import {
   ChartBarStacked,
   TrendingDown,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -56,6 +57,8 @@ const TOP_ITEMS = [
 ];
 
 export default function VendorTopItemsPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1100px] mx-auto space-y-10">
@@ -63,15 +66,15 @@ export default function VendorTopItemsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Top Selling Items
+              {t("top_selling_items")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm">
-              Best-performing menu items — sales, rating & growth
+              {t("best_performing_menu_items")}
             </p>
           </div>
 
           <Button style={{ background: PRIMARY }} className="text-white">
-            Export
+            {t("export")}
           </Button>
         </div>
 
@@ -79,12 +82,12 @@ export default function VendorTopItemsPage() {
         <Card style={{ background: GRADIENT }} className="rounded-3xl border shadow-md">
           <CardContent className="p-6 flex justify-between items-center">
             <div>
-              <p className="text-gray-600 text-sm">Total Items Sold (7 days)</p>
+              <p className="text-gray-600 text-sm">{t("total_items_sold")}</p>
               <h2 className="text-4xl font-extrabold mt-1" style={{ color: PRIMARY }}>
-                {TOP_ITEMS.reduce((a, b) => a + b.sold, 0)} items
+                {TOP_ITEMS.reduce((a, b) => a + b.sold, 0)} {t("items")}
               </h2>
               <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                <ChartBarStacked size={14} /> Updated hourly
+                <ChartBarStacked size={14} /> {t("updated_hourly")}
               </p>
             </div>
             <BarChart3 size={48} className="text-pink-600" />
@@ -113,7 +116,7 @@ export default function VendorTopItemsPage() {
                       <h2 className="text-xl font-bold text-gray-800">{item.name}</h2>
 
                       <div className="flex items-center gap-3 text-sm mt-1 text-gray-600">
-                        <span>{item.sold} sold</span>
+                        <span>{item.sold} {t("sold")}</span>
                         <span className="flex items-center gap-1">
                           <Star size={14} className="text-yellow-500" />
                           {item.rating}
@@ -147,21 +150,21 @@ export default function VendorTopItemsPage() {
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <Flame className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Insights</h2>
+              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
             </div>
 
             <Separator />
 
             <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
-              <li>Chicken Burger is outperforming all categories — increase visibility on home page.</li>
-              <li>Fresh Orange Juice shows fastest growth — add combo deals with burgers.</li>
-              <li>Greek Salad sales dropped — consider refreshing photo or making it a featured item.</li>
-              <li>Pizza category has stable demand — promote during weekends for higher boost.</li>
+              <li>{t("chicken_burger_outperforming")}</li>
+              <li>{t("fresh_orange_fastest_growth")}</li>
+              <li>{t("greek_salad_sales_dropped")}</li>
+              <li>{t("pizza_stable_demand")}</li>
             </ul>
 
             <div className="flex gap-3 pt-2">
-              <Button className="text-white" style={{ background: PRIMARY }}>Create Promo</Button>
-              <Button variant="outline">Export Data</Button>
+              <Button className="text-white" style={{ background: PRIMARY }}>{t("create_promo")}</Button>
+              <Button variant="outline">{t("export_data")}</Button>
             </div>
           </CardContent>
         </Card>

@@ -15,6 +15,7 @@ import {
   ArrowDownRight,
   Flame,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -36,6 +37,7 @@ const CATEGORY_TRENDS = [
 ];
 
 export default function VendorOrderTrends() {
+  const { t } = useTranslation();
   const maxOrders = Math.max(...DAILY_ORDERS);
 
   return (
@@ -46,14 +48,14 @@ export default function VendorOrderTrends() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Order Trends
+              {t("order_trends")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm">
-              Trend analysis of orders over time — peaks, categories & volume
+              {t("trend_analysis_orders_over_time")}
             </p>
           </div>
           <Button className="text-white" style={{ background: PRIMARY }}>
-            Export Trends
+            {t("export_trends")}
           </Button>
         </div>
 
@@ -61,12 +63,12 @@ export default function VendorOrderTrends() {
         <Card style={{ background: GRADIENT }} className="rounded-3xl border shadow-md">
           <CardContent className="p-6 flex justify-between items-center">
             <div>
-              <p className="text-gray-600 text-sm">Last 14 Days Order Trend</p>
+              <p className="text-gray-600 text-sm">{t("last_14_days_order_trend")}</p>
               <h2 className="text-4xl font-extrabold mt-1" style={{ color: PRIMARY }}>
-                {DAILY_ORDERS.reduce((a, b) => a + b, 0)} orders
+                {DAILY_ORDERS.reduce((a, b) => a + b, 0)} {t("orders")}
               </h2>
               <p className="text-xs text-gray-500 mt-2 flex items-center gap-2">
-                <TrendingUp className="text-green-600" size={16} /> +12% vs last 14 days
+                <TrendingUp className="text-green-600" size={16} /> +12% {t("vs_last_14_days")}
               </p>
             </div>
             <Activity size={48} className="text-pink-600" />
@@ -78,7 +80,7 @@ export default function VendorOrderTrends() {
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-5">
               <LineChart className="text-gray-700" />
-              <h2 className="font-bold text-lg">Daily Order Volume</h2>
+              <h2 className="font-bold text-lg">{t("daily_order_volume")}</h2>
             </div>
 
             <div className="flex items-end gap-4 h-56">
@@ -106,16 +108,16 @@ export default function VendorOrderTrends() {
           <CardContent className="p-6 space-y-5">
             <div className="flex items-center gap-2">
               <Clock className="text-gray-700" />
-              <h2 className="font-bold text-lg">Peak Ordering Times</h2>
+              <h2 className="font-bold text-lg">{t("peak_ordering_times")}</h2>
             </div>
 
             <Separator />
 
             <div className="space-y-4">
-              {PEAK_TIMES.map((t, i) => (
+              {PEAK_TIMES.map((trx, i) => (
                 <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl shadow-inner">
-                  <span className="text-gray-800 font-medium">{t.hour}</span>
-                  <span className="text-pink-600 font-bold">{t.orders} orders</span>
+                  <span className="text-gray-800 font-medium">{trx.hour}</span>
+                  <span className="text-pink-600 font-bold">{trx.orders} {t("orders")}</span>
                 </div>
               ))}
             </div>
@@ -127,7 +129,7 @@ export default function VendorOrderTrends() {
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-5">
               <BarChart3 className="text-gray-700" />
-              <h2 className="font-bold text-lg">Category Growth</h2>
+              <h2 className="font-bold text-lg">{t("category_growth")}</h2>
             </div>
 
             <div className="space-y-4">
@@ -164,19 +166,19 @@ export default function VendorOrderTrends() {
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <Flame className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Order Trend Insights</h2>
+              <h2 className="font-bold text-lg">{t("ai_order_trend_insights")}</h2>
             </div>
 
             <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
-              <li>Promote pizza category on weekends — strongest upward trend.</li>
-              <li>Boost ad budget around 7 PM — highest order spike.</li>
-              <li>Offer combo deals on slow days (Tue–Thu) to increase conversions.</li>
-              <li>Introduce new drinks — category gaining stable weekly growth.</li>
+              <li>{t("promote_pizza_category_weekends")}</li>
+              <li>{t("boost_ad_budget_around_7pm")}</li>
+              <li>{t("offer_combo_deals_on_slow_days")}</li>
+              <li>{t("introduce_new_drinks")}</li>
             </ul>
 
             <div className="flex gap-3 pt-3">
-              <Button className="text-white" style={{ background: PRIMARY }}>Create Campaign</Button>
-              <Button variant="outline">Export Data</Button>
+              <Button className="text-white" style={{ background: PRIMARY }}>{t("create_campaign")}</Button>
+              <Button variant="outline">{t("export_data")}</Button>
             </div>
           </CardContent>
         </Card>
