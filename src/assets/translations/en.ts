@@ -954,6 +954,41 @@ export const en = {
     create_promo: "Create Promo",
 
 
+    // customer-reviews page
+    real_feedback_from_glovo_customers: "Real feedback from your Glovo customers",
+    average_rating: "Average Rating",
+    based_on_last: "based on last",
+    reviews_sm: "reviews",
+    positive: "Positive",
+    negative: "Negative",
+    liked: "Liked",
+    not_great: "Not Great",
+    no_reviews_found: "No reviews found.",
+    fast_delivery_comments_increased: "Fast delivery comments increased — strong delivery performance.",
+    negatie_comments_mostly_delays: "Negative comments mostly about delays & cold food — optimize prep time.",
+    most_positive_reviews_mention: "Most positive reviews mention rider friendliness — keep consistency.",
+    weekend_orders_show_rating_dip: "Weekend orders show a rating dip — consider peak-hour staffing boost.",
+
+
+    // rating-summary page
+    customer_satisfaction_overview: "Customer satisfaction overview + advanced analytics",
+    overall_rating: "Overall Rating",
+    neutral: "Neutral",
+    rating_breakdown: "Rating Breakdown",
+    stars: "Stars",
+    rating_trend_30_day: "30-Day Rating Trend",
+    category_ratings: "Category Ratings",
+    food_quality: "Food Quality",
+    packaging: "Packaging",
+    delivery_speed: "Delivery Speed",
+    rider_behaviour: "Rider Behaviour",
+    delivery_speed_ratings_improved: "Delivery speed ratings improved by 12% in the last week.",
+    negative_reviews_mostly_happed_after: "Negative reviews mostly happen after 10 PM — staffing issue possible.",
+    food_quality_strong_weekends: "Food quality strong on weekends — consider weekday promotion.",
+    packaging_complaints_decreased_after: "Packaging complaints decreased after recent update — keep consistency.",
+    improve_performance: "Improve Performance",
+
+
 
 
 

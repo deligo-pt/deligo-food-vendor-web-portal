@@ -11,6 +11,7 @@ import {
   Frown,
   Gauge,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -20,6 +21,8 @@ const STAR_DIST = [42, 31, 18, 7, 2];
 const SENTIMENT = [62, 24, 14]; // positive, neutral, negative
 
 export default function VendorRatingSummary() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1100px] mx-auto space-y-12">
@@ -28,15 +31,15 @@ export default function VendorRatingSummary() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Rating Summary
+              {t("rating_summary")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm">
-              Customer satisfaction overview + advanced analytics
+              {t("customer_satisfaction_overview")}
             </p>
           </div>
 
           <Button className="text-white" style={{ background: PRIMARY }}>
-            Export
+            {t("export")}
           </Button>
         </div>
 
@@ -44,7 +47,7 @@ export default function VendorRatingSummary() {
         <Card className="rounded-3xl bg-white shadow-xl border">
           <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-10">
             <div className="text-center md:text-left">
-              <p className="text-gray-500 text-sm">Overall Rating</p>
+              <p className="text-gray-500 text-sm">{t("overall_rating")}</p>
               <h2 className="text-7xl font-extrabold text-gray-900">4.3</h2>
               <div className="flex items-center gap-1 mt-2 justify-center md:justify-start">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -55,7 +58,7 @@ export default function VendorRatingSummary() {
                   />
                 ))}
               </div>
-              <p className="text-xs text-gray-400 mt-2">Based on last 200 reviews</p>
+              <p className="text-xs text-gray-400 mt-2">{t("based_on_last")} 200 {t("reviews")}</p>
             </div>
 
             {/* Sentiment Circles */}
@@ -65,7 +68,7 @@ export default function VendorRatingSummary() {
                 <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center border-4 border-green-400">
                   <Smile className="text-green-600" size={32} />
                 </div>
-                <p className="text-sm font-semibold mt-2">{SENTIMENT[0]}% Positive</p>
+                <p className="text-sm font-semibold mt-2">{SENTIMENT[0]}% {t("positive")}</p>
               </div>
 
               {/* Neutral */}
@@ -73,7 +76,7 @@ export default function VendorRatingSummary() {
                 <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center border-4 border-amber-400">
                   <Meh className="text-amber-600" size={32} />
                 </div>
-                <p className="text-sm font-semibold mt-2">{SENTIMENT[1]}% Neutral</p>
+                <p className="text-sm font-semibold mt-2">{SENTIMENT[1]}% {t("neutral")}</p>
               </div>
 
               {/* Negative */}
@@ -81,7 +84,7 @@ export default function VendorRatingSummary() {
                 <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center border-4 border-red-400">
                   <Frown className="text-red-600" size={32} />
                 </div>
-                <p className="text-sm font-semibold mt-2">{SENTIMENT[2]}% Negative</p>
+                <p className="text-sm font-semibold mt-2">{SENTIMENT[2]}% {t("negative")}</p>
               </div>
             </div>
           </CardContent>
@@ -90,12 +93,12 @@ export default function VendorRatingSummary() {
         {/* STAR DISTRIBUTION */}
         <Card className="rounded-3xl bg-white border shadow-md">
           <CardContent className="p-6 space-y-4">
-            <h2 className="font-bold text-lg">Rating Breakdown</h2>
+            <h2 className="font-bold text-lg">{t("rating_breakdown")}</h2>
             <Separator />
 
             {STAR_DIST.map((val, idx) => (
               <div key={idx} className="flex items-center gap-3">
-                <span className="w-14 text-sm font-semibold">{5 - idx} Stars</span>
+                <span className="w-14 text-sm font-semibold">{5 - idx} {t("stars")}</span>
                 <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
@@ -114,7 +117,7 @@ export default function VendorRatingSummary() {
         {/* 30 DAY TREND */}
         <Card className="rounded-3xl bg-white border shadow-md">
           <CardContent className="p-6">
-            <h2 className="font-bold text-lg mb-3">30-Day Rating Trend</h2>
+            <h2 className="font-bold text-lg mb-3">{t("rating_trend_30_day")}</h2>
             <Separator className="mb-4" />
 
             {/* Fake animated trend graph */}
@@ -135,10 +138,10 @@ export default function VendorRatingSummary() {
         {/* CATEGORY RATINGS */}
         <Card className="rounded-3xl bg-white border shadow-md">
           <CardContent className="p-6 space-y-5">
-            <h2 className="font-bold text-lg">Category Ratings</h2>
+            <h2 className="font-bold text-lg">{t("category_ratings")}</h2>
             <Separator />
 
-            {["Food Quality", "Packaging", "Delivery Speed", "Rider Behavior"].map(
+            {[t("food_quality"), t("packaging"), t("delivery_speed"), t("rider_behaviour")].map(
               (cat, i) => (
                 <div key={i} className="flex justify-between items-center">
                   <span className="font-medium text-gray-700">{cat}</span>
@@ -162,21 +165,21 @@ export default function VendorRatingSummary() {
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <Gauge className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Insights</h2>
+              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
             </div>
 
             <Separator />
 
             <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
-              <li>Delivery speed ratings improved by 12% in the last week.</li>
-              <li>Negative reviews mostly happen after 10 PM — staffing issue possible.</li>
-              <li>Food quality strong on weekends — consider weekday promotion.</li>
-              <li>Packaging complaints decreased after recent update — keep consistency.</li>
+              <li>{t("delivery_speed_ratings_improved")}</li>
+              <li>{t("negative_reviews_mostly_happed_after")}</li>
+              <li>{t("food_quality_strong_weekends")}</li>
+              <li>{t("packaging_complaints_decreased_after")}</li>
             </ul>
 
             <div className="pt-2">
               <Button style={{ background: PRIMARY }} className="text-white">
-                Improve Performance
+                {t("improve_performance")}
               </Button>
             </div>
           </CardContent>

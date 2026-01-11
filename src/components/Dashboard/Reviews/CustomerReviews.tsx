@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TReview } from "@/src/types/review.type";
 import { AnimatePresence, motion } from "framer-motion";
@@ -70,17 +71,16 @@ interface IProps {
 }
 
 export default function CustomerReviews({ reviewsResult }: IProps) {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState("all");
 
   const filtered = REVIEWS.filter((r) =>
     filter === "all"
       ? true
       : filter === "positive"
-      ? r.rating >= 4
-      : r.rating <= 3
+        ? r.rating >= 4
+        : r.rating <= 3
   );
-
-  console.log(reviewsResult);
 
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
@@ -91,10 +91,10 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Customer Reviews
+              {t("customer_reviews")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm">
-              Real feedback from your Glovo customers
+              {t("real_feedback_from_glovo_customers")}
             </p>
           </div>
 
@@ -102,7 +102,7 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
             className="flex items-center gap-2 text-white"
             style={{ background: PRIMARY }}
           >
-            <Filter size={18} /> Export
+            <Filter size={18} /> {t("export")}
           </Button>
         </div>
 
@@ -115,13 +115,13 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
         >
           <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Average Rating</p>
+              <p className="text-gray-600 text-sm">{t("average_rating")}</p>
               <div className="flex items-end gap-2 mt-1">
                 <h2 className="text-5xl font-extrabold text-gray-900">4.3</h2>
                 <span className="text-gray-500">/5</span>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Based on last 200 reviews
+                {t("based_on_last")} 200 {t('reviews_sm')}
               </p>
             </div>
 
@@ -143,19 +143,19 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
             variant={filter === "all" ? "default" : "outline"}
             onClick={() => setFilter("all")}
           >
-            All
+            {t("all")}
           </Button>
           <Button
             variant={filter === "positive" ? "default" : "outline"}
             onClick={() => setFilter("positive")}
           >
-            Positive
+            {t("positive")}
           </Button>
           <Button
             variant={filter === "negative" ? "default" : "outline"}
             onClick={() => setFilter("negative")}
           >
-            Negative
+            {t("negative")}
           </Button>
         </div>
 
@@ -214,11 +214,11 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
                       <div className="flex items-center gap-3 mt-3">
                         {rev.liked ? (
                           <Badge className="bg-green-100 text-green-700 flex gap-1">
-                            <ThumbsUp size={14} /> Liked
+                            <ThumbsUp size={14} /> {t("liked")}
                           </Badge>
                         ) : (
                           <Badge className="bg-red-100 text-red-700 flex gap-1">
-                            <ThumbsDown size={14} /> Not great
+                            <ThumbsDown size={14} /> {t("not_great")}
                           </Badge>
                         )}
                       </div>
@@ -231,7 +231,7 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
 
           {filtered.length === 0 && (
             <p className="text-center text-gray-500 py-10 text-sm">
-              No reviews found.
+              {t("no_reviews_found")}
             </p>
           )}
         </div>
@@ -243,26 +243,23 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <MessageSquare className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Insights</h2>
+              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
             </div>
 
             <Separator />
 
             <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
               <li>
-                Fast delivery comments increased — strong delivery performance.
+                {t("fast_delivery_comments_increased")}
               </li>
               <li>
-                Negative comments mostly about delays & cold food — optimize
-                prep time.
+                {t("negatie_comments_mostly_delays")}
               </li>
               <li>
-                Most positive reviews mention rider friendliness — keep
-                consistency.
+                {t("most_positive_reviews_mention")}
               </li>
               <li>
-                Weekend orders show a rating dip — consider peak-hour staffing
-                boost.
+                {t("weekend_orders_show_rating_dip")}
               </li>
             </ul>
           </CardContent>
