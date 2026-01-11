@@ -18,6 +18,7 @@ import { TMeta } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF2F8";
@@ -28,13 +29,14 @@ interface IProps {
   addOnsResult: { data: TAddonGroup[]; meta?: TMeta };
 }
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-];
-
 export default function AddOns({ addOnsResult }: IProps) {
+  const { t } = useTranslation();
   const router = useRouter();
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+  ];
   const [deleteOptionInfo, setDeleteOptionInfo] = useState<{
     groupId: string;
     optionId: string;
@@ -71,7 +73,7 @@ export default function AddOns({ addOnsResult }: IProps) {
               className="text-4xl font-extrabold tracking-tight"
               style={{ color: PRIMARY }}
             >
-              Addons & Extras
+              {t("add_ons_extras")}
             </h1>
           </div>
 
@@ -81,7 +83,7 @@ export default function AddOns({ addOnsResult }: IProps) {
             className="flex items-center gap-2"
             style={{ background: PRIMARY }}
           >
-            <Plus size={18} /> Add Group
+            <Plus size={18} /> {t("add_group")}
           </Button>
           <CreateOrEditAddOnsGroup
             open={openCreateForm}
@@ -101,7 +103,7 @@ export default function AddOns({ addOnsResult }: IProps) {
                 animate={{ opacity: 1 }}
                 className="py-12 text-center text-gray-500"
               >
-                No orders match your query.
+                {t("no_orders_match_query")}
               </motion.div>
             )}
 
@@ -125,11 +127,11 @@ export default function AddOns({ addOnsResult }: IProps) {
                         <h2 className="text-xl font-bold">{group.title}</h2>
 
                         <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <span>Min:</span>
+                          <span>{t("min")}:</span>
                           <span className="font-medium text-gray-800">
                             {group.minSelectable}
                           </span>{" "}
-                          ● <span>Max:</span>
+                          ● <span>{t("max")}:</span>
                           <span className="font-medium text-gray-800">
                             {group.maxSelectable}
                           </span>
@@ -153,7 +155,7 @@ export default function AddOns({ addOnsResult }: IProps) {
                           className="flex items-center gap-1"
                           onClick={() => setSelectedGroupForAddOption(group)}
                         >
-                          <Plus size={16} /> Add Addon
+                          <Plus size={16} /> {t("add_addon")}
                         </Button>
 
                         {/* EDIT */}
@@ -163,7 +165,7 @@ export default function AddOns({ addOnsResult }: IProps) {
                           size="sm"
                           className="flex items-center gap-1"
                         >
-                          <Edit size={16} /> Edit
+                          <Edit size={16} /> {t("edit")}
                         </Button>
 
                         {/* DELETE */}
