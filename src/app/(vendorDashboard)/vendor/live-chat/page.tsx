@@ -1,3 +1,5 @@
+// export const dynamic = "force-dynamic";
+
 import { serverRequest } from "@/lib/serverFetch";
 import LiveChat from "@/src/components/Dashboard/Support/LiveChat";
 import { TMeta, TResponse } from "@/src/types";
