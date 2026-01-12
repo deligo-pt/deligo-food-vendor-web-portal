@@ -1073,11 +1073,45 @@ export const en = {
 
     // coupon analytics page
     performance_insights_all_active_past_coupon: "Performance insights for all active & past coupons",
-    usage : "Usage",
-    top_items_influenced : "Top items influenced",
-    revenue_impact : "Revenue Impact",
-    no_analytics_found : "No analytics found to show!"
+    usage: "Usage",
+    top_items_influenced: "Top items influenced",
+    revenue_impact: "Revenue Impact",
+    no_analytics_found: "No analytics found to show!",
 
+
+    // all-staff
+    manage_all_staff_members: "Manage all staff members for your restaurant",
+    search_staff_by_name_or_role: "Search staff by name or role...",
+    full_name: "Full Name",
+    manager: "Manager",
+    chef: "Chef",
+    staff: "Staff",
+    email_address: "Email Address",
+    phone_number: "Phone Number",
+    add_staff: "Add Staff",
+    remove: "Remove",
+    no_staff_found: "No staff found.",
+
+    // roles and permission page
+    viewer: "Viewer",
+    roles_and_permissions: "Roles & Permissions",
+    control_what_each_staff_member: "Control what each staff member can access in your vendor panel",
+    set_access_controls: "Set access controls",
+    ai_recommendation: "AI Recommendation",
+    managers_should_have_full_analytics: "Managers should have full analytics + finance access.",
+    chefs_should_only_access_menu: "Chefs should only access menu & order management.",
+    viewer_role_is_ideal_temporary: "Viewer role is ideal for temporary staff or auditors.",
+    only_trusted_staff_should_access: "Only trusted staff should have access to payout settings.",
+    apply_best_practise_setup: "Apply Best Practice Setup",
+
+
+    // add-staff page
+    add_new_team_members_assign_role_permissions: "Add new team members and assign their role & permissions",
+    personal_information: "Personal Information",
+    select_role: "Select Role",
+    role_badge_preview: "Role Badge Preview",
+    notes_optional: "Notes (Optional)",
+    additional_notes_about_staff_member: "Additional notes about the staff member...",
 
 
 

@@ -7,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { UserPlus, ShieldCheck, ChefHat, ClipboardList,  Eye } from "lucide-react";
+import { UserPlus, ShieldCheck, ChefHat, ClipboardList, Eye } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 
 export default function VendorAddStaff() {
+  const { t } = useTranslation();
   const [staff, setStaff] = useState({ name: "", role: "Staff", email: "", phone: "", notes: "" });
 
   const handleSubmit = () => {
@@ -27,21 +29,21 @@ export default function VendorAddStaff() {
         {/* HEADER */}
         <div className="flex items-center gap-3">
           <UserPlus size={32} className="text-pink-600" />
-          <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>Add Staff</h1>
+          <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>{t("add_staff")}</h1>
         </div>
-        <p className="text-gray-600 text-sm -mt-4">Add new team members and assign their role & permissions</p>
+        <p className="text-gray-600 text-sm -mt-4">{t("add_new_team_members_assign_role_permissions")}</p>
 
         {/* FORM CARD */}
         <Card className="rounded-3xl bg-white border shadow-lg">
           <CardContent className="p-6 space-y-8">
             {/* Personal Info */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">Personal Information</h2>
+              <h2 className="text-xl font-bold">{t("personal_information")}</h2>
               <Separator />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Input
-                  placeholder="Full Name"
+                  placeholder={t("full_name")}
                   value={staff.name}
                   onChange={(e) => setStaff({ ...staff, name: e.target.value })}
                   className="h-12"
@@ -52,25 +54,25 @@ export default function VendorAddStaff() {
                   onValueChange={(v) => setStaff({ ...staff, role: v })}
                 >
                   <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select Role" />
+                    <SelectValue placeholder={t("select_role")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Manager">Manager</SelectItem>
-                    <SelectItem value="Chef">Chef</SelectItem>
-                    <SelectItem value="Staff">Staff</SelectItem>
-                    <SelectItem value="Viewer">Viewer</SelectItem>
+                    <SelectItem value="Manager">{t("manager")}</SelectItem>
+                    <SelectItem value="Chef">{t("chef")}</SelectItem>
+                    <SelectItem value="Staff">{t("staff")}</SelectItem>
+                    <SelectItem value="Viewer">{t("viewer")}</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Input
-                  placeholder="Email Address"
+                  placeholder={t("email_address")}
                   value={staff.email}
                   onChange={(e) => setStaff({ ...staff, email: e.target.value })}
                   className="h-12"
                 />
 
                 <Input
-                  placeholder="Phone Number"
+                  placeholder={t("phone_number")}
                   value={staff.phone}
                   onChange={(e) => setStaff({ ...staff, phone: e.target.value })}
                   className="h-12"
@@ -80,7 +82,7 @@ export default function VendorAddStaff() {
 
             {/* Role Preview */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">Role Badge Preview</h2>
+              <h2 className="text-xl font-bold">{t("role_badge_preview")}</h2>
               <Separator />
 
               <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl">
@@ -95,11 +97,11 @@ export default function VendorAddStaff() {
 
             {/* Notes */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">Notes (Optional)</h2>
+              <h2 className="text-xl font-bold">{t("notes_optional")}</h2>
               <Separator />
 
               <Textarea
-                placeholder="Additional notes about the staff member..."
+                placeholder={t("additional_notes_about_staff_member")}
                 value={staff.notes}
                 onChange={(e) => setStaff({ ...staff, notes: e.target.value })}
                 className="text-base"
@@ -109,13 +111,15 @@ export default function VendorAddStaff() {
 
             {/* Save */}
             <div className="flex justify-end gap-4 pt-4">
-              <Button variant="outline" className="h-12 px-6 text-base">Cancel</Button>
+              <Button variant="outline" className="h-12 px-6 text-base">
+                {t("cancel")}
+              </Button>
               <Button
                 className="h-12 px-6 text-base text-white"
                 style={{ background: PRIMARY }}
                 onClick={handleSubmit}
               >
-                Add Staff
+                {t("add_staff")}
               </Button>
             </div>
           </CardContent>
