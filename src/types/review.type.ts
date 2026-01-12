@@ -1,17 +1,37 @@
+import { TCustomer } from "@/src/types/customer.type";
+
+export type TReviewType = "DELIVERY_PARTNER" | "PRODUCT" | "VENDOR";
+
+export type TRefModel = "Customer" | "Vendor" | "DeliveryPartner" | "Product";
+
+export type TSubReviews = {
+  foodQuality?: number;
+  packaging?: number;
+  deliverySpeed?: number;
+  riderBehavior?: number;
+};
+
+export type TReviewSentiment = "POSITIVE" | "NEUTRAL" | "NEGATIVE";
+
 export type TReview = {
-  _id?: string;
-  ratingType: "DELIVERY_PARTNER" | "PRODUCT" | "FLEET_MANAGER" | "VENDOR";
+  _id: string;
+  ratingType: TReviewType;
   rating: number;
-  review?: string;
+  sentiment: TReviewSentiment;
+  review: string;
 
-  reviewerId: string;
+  reviewerId: TCustomer;
+  reviewerModel: TRefModel;
 
-  deliveryPartnerId?: string;
-  productId?: string;
-  fleetManagerId?: string;
-  vendorId?: string;
+  targetId: { name: string; _id: string };
+  targetModel: TRefModel;
 
-  orderId?: string;
+  orderId: string;
+  productId: string;
+
+  subRatings: TSubReviews;
+
+  tags: string[];
   createdAt: Date;
   updatedAt: Date;
 };

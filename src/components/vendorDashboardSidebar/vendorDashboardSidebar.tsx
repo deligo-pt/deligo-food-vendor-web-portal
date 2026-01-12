@@ -162,6 +162,7 @@ const MENU = [
     icon: <MessageCircle size={18} />,
     items: [
       { name: "Chat with Support", path: "/vendor/chat-support" },
+      { name: "Live Chat", path: "/vendor/live-chat" },
       { name: "Help Articles", path: "/vendor/help" },
       { name: "Report an Issue", path: "/vendor/report" },
     ],
