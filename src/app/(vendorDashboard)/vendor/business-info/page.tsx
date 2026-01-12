@@ -17,12 +17,14 @@ import {
   Save,
   Globe,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0px 6px 20px rgba(0,0,0,0.06)";
 
 export default function BusinessInfoPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     businessName: "Deligo Vendor",
     address: "Rua Central 120, Lisbon, Portugal",
@@ -42,10 +44,10 @@ export default function BusinessInfoPage() {
         {/* HEADER */}
         <div>
           <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-            Business Information
+            {t("business_information")}
           </h1>
           <p className="text-gray-600 text-sm mt-1">
-            Manage your restaurant profile, branding & public information.
+            {t("manage_restaurant_profile_branding")}
           </p>
         </div>
 
@@ -56,7 +58,7 @@ export default function BusinessInfoPage() {
             {/* BUSINESS NAME */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <label className="font-semibold flex items-center gap-2 mb-1 text-gray-800">
-                <Building size={20} /> Business Name
+                <Building size={20} /> {t("business_name")}
               </label>
               <Input
                 className="h-12"
@@ -70,7 +72,7 @@ export default function BusinessInfoPage() {
             {/* ADDRESS */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <label className="font-semibold flex items-center gap-2 mb-1 text-gray-800">
-                <MapPin size={20} /> Address
+                <MapPin size={20} /> {t("address")}
               </label>
               <Input
                 className="h-12"
@@ -83,7 +85,7 @@ export default function BusinessInfoPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <label className="font-semibold flex items-center gap-2 mb-1 text-gray-800">
-                  <Phone size={20} /> Phone Number
+                  <Phone size={20} /> {t("phone_number")}
                 </label>
                 <Input
                   className="h-12"
@@ -94,7 +96,7 @@ export default function BusinessInfoPage() {
 
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <label className="font-semibold flex items-center gap-2 mb-1 text-gray-800">
-                  <Mail size={20} /> Email
+                  <Mail size={20} /> {t("email")}
                 </label>
                 <Input
                   className="h-12"
@@ -107,7 +109,7 @@ export default function BusinessInfoPage() {
             {/* WEBSITE */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <label className="font-semibold flex items-center gap-2 mb-1 text-gray-800">
-                <Globe size={20} /> Website (Optional)
+                <Globe size={20} /> {t("website_optional")}
               </label>
               <Input
                 className="h-12"
@@ -121,7 +123,7 @@ export default function BusinessInfoPage() {
             {/* ABOUT BUSINESS */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <label className="font-semibold flex items-center gap-2 mb-1 text-gray-800">
-                About Business
+                {t("about_business")}
               </label>
               <Textarea
                 className="min-h-[120px]"
@@ -133,7 +135,7 @@ export default function BusinessInfoPage() {
             {/* OPENING HOURS */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <label className="font-semibold flex items-center gap-2 mb-1 text-gray-800">
-                <Clock size={20} /> Opening Hours
+                <Clock size={20} /> {t("opening_hours")}
               </label>
               <Input
                 className="h-12"
@@ -148,7 +150,7 @@ export default function BusinessInfoPage() {
                 className="text-white h-12 px-6 flex items-center gap-2"
                 style={{ background: PRIMARY }}
               >
-                <Save size={18} /> Save Changes
+                <Save size={18} /> {t("save_changes")}
               </Button>
             </div>
           </CardContent>

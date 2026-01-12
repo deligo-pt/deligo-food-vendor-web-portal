@@ -16,6 +16,7 @@ import {
   Info,
   CheckCircle,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -58,6 +59,7 @@ const STATIC_NOTIFICATIONS = [
 ];
 
 export default function VendorNotificationsPage() {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState(STATIC_NOTIFICATIONS);
   const [emailEnabled, setEmailEnabled] = useState(true);
   const [pushEnabled, setPushEnabled] = useState(true);
@@ -72,10 +74,10 @@ export default function VendorNotificationsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Notifications
+              {t("notifications")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Manage alerts, system updates & notification preferences
+              {t("manage_alerts_system_updates")}
             </p>
           </div>
 
@@ -84,7 +86,7 @@ export default function VendorNotificationsPage() {
             style={{ background: PRIMARY }}
             onClick={clearAll}
           >
-            Clear All
+            {t("clear_all")}
           </Button>
         </div>
 
@@ -120,7 +122,7 @@ export default function VendorNotificationsPage() {
           </AnimatePresence>
 
           {notifications.length === 0 && (
-            <p className="text-center text-gray-500 py-10">No notifications available.</p>
+            <p className="text-center text-gray-500 py-10">{t("no_notifications_available")}</p>
           )}
         </div>
 
@@ -128,7 +130,7 @@ export default function VendorNotificationsPage() {
         <Card className="rounded-3xl bg-white border shadow-md" style={{ boxShadow: SHADOW }}>
           <CardContent className="p-6 space-y-6">
             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <Bell size={20} /> Notification Settings
+              <Bell size={20} /> {t("notification_settings")}
             </h2>
             <Separator />
 
@@ -137,8 +139,8 @@ export default function VendorNotificationsPage() {
               <div className="flex items-center gap-3">
                 <Mail size={20} className="text-gray-700" />
                 <div>
-                  <h3 className="font-semibold text-gray-800">Email Alerts</h3>
-                  <p className="text-xs text-gray-500">Get order & payout updates via email</p>
+                  <h3 className="font-semibold text-gray-800">{t("email_alerts")}</h3>
+                  <p className="text-xs text-gray-500">{t("get_order_payout_updates_via_email")}</p>
                 </div>
               </div>
               <Switch checked={emailEnabled} onCheckedChange={setEmailEnabled} />
@@ -149,8 +151,8 @@ export default function VendorNotificationsPage() {
               <div className="flex items-center gap-3">
                 <BellRing size={20} className="text-gray-700" />
                 <div>
-                  <h3 className="font-semibold text-gray-800">Push Notifications</h3>
-                  <p className="text-xs text-gray-500">Instant alerts for new orders & reviews</p>
+                  <h3 className="font-semibold text-gray-800">{t("push_notifications")}</h3>
+                  <p className="text-xs text-gray-500">{t("instant_alerts_for_orders_reviews")}</p>
                 </div>
               </div>
               <Switch checked={pushEnabled} onCheckedChange={setPushEnabled} />
@@ -158,7 +160,7 @@ export default function VendorNotificationsPage() {
 
             <div className="pt-2 flex justify-end">
               <Button className="text-white h-12 px-6" style={{ background: PRIMARY }}>
-                Save Preferences
+                {t("save_preferences")}
               </Button>
             </div>
           </CardContent>

@@ -1178,4 +1178,87 @@ export const en = {
     view_full_customer_breakdown: "View Full Customer Breakdown",
 
 
+    // business info
+    business_information: "Business Information",
+    manage_restaurant_profile_branding: "Manage your restaurant profile, branding & public information.",
+    business_name: "Business Name",
+    address: "Address",
+    email: "Email",
+    website_optional: "Website (Optional)",
+    about_business: "About Business",
+    opening_hours: "Opening Hours",
+
+    // notifications page
+    manage_alerts_system_updates: "Manage alerts, system updates & notification preferences",
+    no_notifications_available: "No notifications available.",
+    notification_settings: "Notification Settings",
+    email_alerts: "Email Alerts",
+    get_order_payout_updates_via_email: "Get order & payout updates via email",
+    push_notifications: "Push Notifications",
+    instant_alerts_for_orders_reviews: "Instant alerts for new orders & reviews",
+    save_preferences: "Save Preferences",
+
+
+    // change password
+    update_account_password_securely: "Update your account password securely.",
+    password_updated_successfully: "Password updated successfully.",
+    current_password: "Current Password",
+    enter_current_password: "Enter current password",
+    new_password: "New Password",
+    enter_new_password: "Enter new password",
+    confirm_password: "Confirm Password",
+    re_enter_new_password: "Re-enter new password",
+    update_password: "Update Password",
+
+
+    // theme settings page
+    theme_settings_advanced: "Theme Settings — Advanced",
+    full_customization_brand_layout: "Full customization: brand, layout, preview, import/export.",
+    export_json: "Export JSON",
+    import_json: "Import JSON",
+    save_local: "Save (Local)",
+    load_local: "Load (Local)",
+    live_preview: "Live Preview",
+    layout: "Layout",
+    lisbon: "Lisbon",
+    open_now: "Open now",
+    action: "Action",
+    revenue: "Revenue",
+    avg_time: "Avg time",
+    toggle_dark: "Toggle Dark",
+    toggle_rounded: "Toggle Rounded",
+    mobile_preview: "Mobile Preview",
+    simulated_phone: "Simulated phone",
+    dark_mode: "Dark Mode",
+    rounded_ui: "Rounded UI",
+    brand_color: "Brand Color",
+    font: "Font",
+    button_style: "Button Style",
+    preview_below: "Preview below",
+    radius: "Radius",
+    padding: "Padding",
+    shadow: "Shadow",
+    sample_button: "Sample Button",
+    layout_presets: "Layout Presets",
+    choose: "Choose",
+    standard_balanced_cards: "Standard — Balanced cards & spacing",
+    compact_denser_info: "Compact — Denser info (more items per view)",
+    split_view_multi_column: "Split View — Multi-column dashboard",
+    branding: "Branding",
+    logo_cover: "Logo & Cover",
+    logo: "Logo",
+    no_logo: "No logo",
+    uplaod: "Upload",
+    cover_banner: "Cover / Banner",
+    no_cover: "No cover",
+    upload: "Upload",
+    dashboard_background: "Dashboard Background",
+    none: "None",
+    save_apply_demo: "Save & Apply (demo)",
+
+
+
+
+
+
 };
