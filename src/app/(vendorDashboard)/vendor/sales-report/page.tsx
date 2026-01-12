@@ -16,6 +16,7 @@ import {
   PieChart,
   Euro,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -35,6 +36,7 @@ const DAILY = [12, 16, 10, 22, 28, 24, 30];
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function VendorSalesReport() {
+  const { t } = useTranslation();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
@@ -46,13 +48,13 @@ export default function VendorSalesReport() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Sales Report
+              {t("sales_report")}
             </h1>
-            <p className="text-gray-600 text-sm mt-1">Detailed revenue & performance analytics</p>
+            <p className="text-gray-600 text-sm mt-1">{t("detailed_revenue_performance")}</p>
           </div>
 
           <Button className="text-white flex items-center gap-2" style={{ background: PRIMARY }}>
-            <Download size={18} /> Export CSV
+            <Download size={18} /> {t("export_csv")}
           </Button>
         </div>
 
@@ -60,15 +62,19 @@ export default function VendorSalesReport() {
         <Card className="rounded-3xl bg-white border shadow-md">
           <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
             <div>
-              <label className="text-sm font-medium text-gray-700">From</label>
+              <label className="text-sm font-medium text-gray-700">
+                {t("from")}
+              </label>
               <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-12 mt-1" />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">To</label>
+              <label className="text-sm font-medium text-gray-700">
+                {t("to")}
+              </label>
               <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-12 mt-1" />
             </div>
             <Button className="h-12 text-white" style={{ background: PRIMARY }}>
-              <Calendar size={18} /> Apply Filter
+              <Calendar size={18} /> {t("apply_filter")}
             </Button>
           </CardContent>
         </Card>
@@ -76,19 +82,19 @@ export default function VendorSalesReport() {
         {/* TOP SUMMARY */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[{
-            label: "Total Sales",
+            label: t("total_sales"),
             value: `€${REPORT.totalSales.toLocaleString()}`,
             icon: <Euro size={26} className="text-pink-600" />
-          },{
-            label: "Total Orders",
+          }, {
+            label: t("total_orders"),
             value: REPORT.totalOrders,
             icon: <ShoppingBag size={26} className="text-blue-600" />
-          },{
-            label: "Avg Order Value",
+          }, {
+            label: t("avg_order_value"),
             value: `€${REPORT.avgOrderValue}`,
             icon: <PieChart size={26} className="text-green-600" />
-          },{
-            label: "Top Category",
+          }, {
+            label: t(""),
             value: REPORT.topCategory,
             icon: <BarChart3 size={26} className="text-amber-600" />
           }].map((item, idx) => (
@@ -110,7 +116,7 @@ export default function VendorSalesReport() {
         <Card className="rounded-3xl bg-white border shadow-md" style={{ height: "300px" }}>
           <CardContent className="h-full p-6 flex flex-col justify-between">
             <h2 className="text-xl font-bold flex items-center gap-2 text-gray-800">
-              <BarChart3 /> Weekly Sales Overview
+              <BarChart3 /> {t("weekly_sales_overview")}
             </h2>
 
             {/* SIMPLE BAR CHART */}
@@ -132,20 +138,20 @@ export default function VendorSalesReport() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="rounded-3xl bg-white border shadow-md p-6">
             <h2 className="text-xl font-bold flex items-center gap-2 text-green-700">
-              <TrendingUp /> Growth Insight
+              <TrendingUp /> {t("growth_insight")}
             </h2>
             <Separator className="my-4" />
             <p className="text-3xl font-bold text-green-600">+{REPORT.growth}%</p>
-            <p className="text-gray-600 mt-2 text-sm">Your restaurant sales increased this period.</p>
+            <p className="text-gray-600 mt-2 text-sm">{t("restaurant_sales_increased_period")}</p>
           </Card>
 
           <Card className="rounded-3xl bg-white border shadow-md p-6">
             <h2 className="text-xl font-bold flex items-center gap-2 text-red-700">
-              <TrendingDown /> Decline Insight
+              <TrendingDown /> {t("decline_insight")}
             </h2>
             <Separator className="my-4" />
             <p className="text-3xl font-bold text-red-600">{REPORT.decline}%</p>
-            <p className="text-gray-600 mt-2 text-sm">Certain items performed lower than usual.</p>
+            <p className="text-gray-600 mt-2 text-sm">{t("certain_items_performed_lower_usual")}</p>
           </Card>
         </div>
 
@@ -153,19 +159,19 @@ export default function VendorSalesReport() {
         <Card className="rounded-3xl bg-white border shadow-md">
           <CardContent className="p-6 space-y-3">
             <h2 className="font-bold text-lg flex items-center gap-2">
-              <BarChart3 className="text-gray-800" /> AI Sales Insights
+              <BarChart3 className="text-gray-800" /> {t("ai_sales_insights")}
             </h2>
             <Separator />
 
             <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
-              <li>Burger category drove most evening orders.</li>
-              <li>Friday & Saturday show highest peak in weekly revenue.</li>
-              <li>Average order value increased due to combo offers.</li>
-              <li>Decline in drinks suggests increasing stock or improving visibility.</li>
+              <li>{t("burger_category_drove_most")}</li>
+              <li>{t("friday_saturday_show_highest")}</li>
+              <li>{t("average_order_value_increased_due")}</li>
+              <li>{t("decline_drinks_suggests_icreasing")}</li>
             </ul>
 
             <Button className="text-white mt-2" style={{ background: PRIMARY }}>
-              View Full Sales Breakdown
+              {t("view_full_sales_breakdown")}
             </Button>
           </CardContent>
         </Card>

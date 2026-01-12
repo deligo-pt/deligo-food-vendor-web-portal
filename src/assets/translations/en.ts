@@ -1114,7 +1114,68 @@ export const en = {
     additional_notes_about_staff_member: "Additional notes about the staff member...",
 
 
+    // sales-report page
+    detailed_revenue_performance: "Detailed revenue & performance analytics",
+    from: "From",
+    to: "To",
+    apply_filter: "Apply Filter",
+    top_category: "Top Category",
+    weekly_sales_overview: "Weekly Sales Overview",
+    growth_insight: "Growth Insight",
+    restaurant_sales_increased_period: "Your restaurant sales increased this period.",
+    decline_insight: "Decline Insight",
+    certain_items_performed_lower_usual: "Certain items performed lower than usual.",
+    ai_sales_insights: "AI Sales Insights",
+    burger_category_drove_most: "Burger category drove most evening orders.",
+    friday_saturday_show_highest: "Friday & Saturday show highest peak in weekly revenue.",
+    average_order_value_increased_due: "Average order value increased due to combo offers.",
+    decline_drinks_suggests_icreasing: "Decline in drinks suggests increasing stock or improving visibility.",
+    view_full_sales_breakdown: "View Full Sales Breakdown",
 
+
+
+    // tax-report page
+    tax_report_iva_breakdown: "Tax Report (IVA Breakdown)",
+    portugal_compliant_iva_calculation: "Portugal-compliant IVA calculation report for vendors",
+    export_tax_report: "Export Tax Report",
+    apply: "Apply",
+    commission_charged: "Commission Charged",
+    vendor_iva: "Vendor IVA (6%)",
+    platform_iva: "Platform IVA (23%)",
+    net_payout_after_taxes: "Net Payout After Taxes",
+    this_is_final_payout_applying: "This is the final payout after applying platform commission & IVA.",
+    detailed_breakdown: "Detailed Breakdown",
+    vendor_collects_revenue: "Vendor collects revenue and pays",
+    iva_6_perc: "6% IVA",
+    on_food_sales: "on food sales.",
+    platform_commission_has: "Platform commission has its own",
+    iva_23_perc: "23% IVA",
+    portugal_law: "(Portugal law)",
+    net_payout_automatically_excludes: "Net payout automatically excludes IVA obligations.",
+    commission_is_calculated_before: "Commission is calculated before VAT deduction.",
+    ai_tax_insights: "AI Tax Insights",
+    your_iva_consistant_portuguese: "Your IVA % is consistent with Portuguese restaurant tax rules.",
+    commission_iva_slightly_increased: "Commission IVA slightly increased due to higher weekend sales.",
+    avoid_running_too_many_discounts: "Avoid running too many discounts — reduces net taxable revenue.",
+    higher_order_volume_lower: "Higher order volume = lower per-order tax pressure.",
+    view_full_iva_breakdown: "View Full IVA Breakdown",
+
+
+    // customer report page
+    see_customer_trends_spending_behaviour: "See customer trends, spending behaviour & loyalty",
+    avg_rating: "Avg Rating",
+    highest_spender: "Highest Spender",
+    most_orders: "Most Orders",
+    search_customer: "Search customer...",
+    total_spent: "total spent",
+    last_order: "Last order",
+    no_customers_found: "No customers found.",
+    ai_customer_insights: "AI Customer Insights",
+    customers_with_orders_per_month: "Customers with 5+ orders per month are most loyal.",
+    top_spenders_usually_order: "Top spenders usually order in evenings (6pm–10pm).",
+    high_rated_customers_reorder: "High-rated customers reorder when offered 10% discount.",
+    weekend_offers_boost_returning: "Weekend offers boost returning customers by 18%.",
+    view_full_customer_breakdown: "View Full Customer Breakdown",
 
 
 };

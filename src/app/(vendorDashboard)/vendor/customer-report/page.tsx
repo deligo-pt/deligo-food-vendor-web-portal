@@ -20,6 +20,7 @@ import {
   Clock3,
   Download,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -62,6 +63,7 @@ const CUSTOMERS = [
 ];
 
 export default function CustomerReportPage() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
 
   const filtered = CUSTOMERS.filter((c) =>
@@ -79,36 +81,36 @@ export default function CustomerReportPage() {
               className="text-4xl font-extrabold tracking-tight"
               style={{ color: PRIMARY }}
             >
-              Customer Report
+              {t("customer_report")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              See customer trends, spending behaviour & loyalty
+              {t("see_customer_trends_spending_behaviour")}
             </p>
           </div>
 
           <Button className="flex items-center gap-2 text-white" style={{ background: PRIMARY }}>
-            <Download size={18} /> Export CSV
+            <Download size={18} /> {t("export_csv")}
           </Button>
         </div>
 
         {/* OVERVIEW CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[{
-            label: "Total Customers",
+            label: t("total_customers"),
             value: CUSTOMERS.length,
             icon: <Users size={28} className="text-pink-600" />,
-          },{
-            label: "Avg Rating",
+          }, {
+            label: t("avg_rating"),
             value: (
               CUSTOMERS.reduce((a, b) => a + b.rating, 0) / CUSTOMERS.length
             ).toFixed(1),
             icon: <Star size={28} className="text-yellow-500" />,
-          },{
-            label: "Highest Spender",
+          }, {
+            label: t("highest_spender"),
             value: CUSTOMERS.sort((a, b) => b.totalSpent - a.totalSpent)[0].name,
             icon: <Euro size={28} className="text-green-600" />,
-          },{
-            label: "Most Orders",
+          }, {
+            label: t("most_orders"),
             value: CUSTOMERS.sort((a, b) => b.orders - a.orders)[0].name,
             icon: <BarChart3 size={28} className="text-blue-600" />,
           }].map((d, idx) => (
@@ -138,7 +140,7 @@ export default function CustomerReportPage() {
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-3 text-gray-400" size={18} />
           <Input
-            placeholder="Search customer..."
+            placeholder={t("search_customer")}
             className="pl-10 h-12"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -165,13 +167,13 @@ export default function CustomerReportPage() {
                       <h3 className="text-xl font-bold">{c.name}</h3>
 
                       <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
-                        <UserRound size={14} /> {c.orders} orders
+                        <UserRound size={14} /> {c.orders} {t("orders")}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center gap-1">
-                        <Euro size={14} /> €{c.totalSpent.toFixed(2)} total spent
+                        <Euro size={14} /> €{c.totalSpent.toFixed(2)} {t("total_spent")}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center gap-1">
-                        <Clock3 size={14} /> Last order: {c.lastOrder}
+                        <Clock3 size={14} /> {t("last_order")}: {c.lastOrder}
                       </p>
                     </div>
                   </div>
@@ -187,7 +189,7 @@ export default function CustomerReportPage() {
           ))}
 
           {filtered.length === 0 && (
-            <p className="text-center text-gray-500 py-10">No customers found.</p>
+            <p className="text-center text-gray-500 py-10">{t("no_customers_found")}</p>
           )}
         </div>
 
@@ -195,19 +197,19 @@ export default function CustomerReportPage() {
         <Card className="rounded-3xl bg-white border shadow-md">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800">
-              <Users size={20} /> AI Customer Insights
+              <Users size={20} /> {t("ai_customer_insights")}
             </h2>
             <Separator />
 
             <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
-              <li>Customers with 5+ orders per month are most loyal.</li>
-              <li>Top spenders usually order in evenings (6pm–10pm).</li>
-              <li>High-rated customers reorder when offered 10% discount.</li>
-              <li>Weekend offers boost returning customers by 18%.</li>
+              <li>{t("customers_with_orders_per_month")}</li>
+              <li>{t("top_spenders_usually_order")}</li>
+              <li>{t("high_rated_customers_reorder")}</li>
+              <li>{t("weekend_offers_boost_returning")}</li>
             </ul>
 
             <Button className="text-white" style={{ background: PRIMARY }}>
-              View Full Customer Breakdown
+              {t("view_full_customer_breakdown")}
             </Button>
           </CardContent>
         </Card>
