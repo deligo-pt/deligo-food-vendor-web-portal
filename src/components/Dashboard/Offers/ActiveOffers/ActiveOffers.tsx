@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import EditOffer from "@/src/components/Dashboard/Offers/ActiveOffers/EditOffer";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import DeleteModal from "@/src/components/Modals/DeleteModal";
+import { useTranslation } from "@/src/hooks/use-translation";
 import {
   deleteOfferReq,
   toggleOfferStatusReq,
@@ -32,15 +33,17 @@ interface IProps {
   title: string;
 }
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-];
 
 export default function ActiveOffers({ offersResult, title }: IProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [editOffer, setEditOffer] = useState<TOffer | null>(null);
   const [deleteId, setDeleteId] = useState<string>("");
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+  ];
 
   const toggleStatus = async (offerId: string) => {
     const toastId = toast.loading("Updating offer status...");
@@ -77,6 +80,8 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
     });
   };
 
+  const title_lowercase = title.toLowerCase();
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1100px] mx-auto space-y-12">
@@ -84,10 +89,10 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              {title} Offers
+              {t(title_lowercase)} {t("offers")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Boost sales with special discounts & promotions
+              {t("boost_sales_special_discounts")}
             </p>
           </div>
 
@@ -96,7 +101,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
               className="text-white flex items-center gap-2"
               style={{ background: PRIMARY }}
             >
-              <Plus size={18} /> Create Offer
+              <Plus size={18} /> {t("create_offer")}
             </Button>
           </Link>
         </div>
@@ -133,12 +138,12 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
                         <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
                           <Badge variant="outline">
-                            Code: {offer.code || "N/A"}
+                            {t("code")}: {offer.code || "N/A"}
                           </Badge>
                         </div>
 
                         <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
-                          <CalendarClock size={14} /> Valid till:{" "}
+                          <CalendarClock size={14} /> {t("valid_till")}:{" "}
                           {format(offer.endDate, "dd MMM, yyyy")}
                         </div>
                         {/* {offer.offerType === "BOGO" && (
@@ -151,7 +156,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
                     {/* RIGHT */}
                     <div className="text-right md:min-w-[200px]">
-                      <p className="text-sm text-gray-500">Total Used</p>
+                      <p className="text-sm text-gray-500">{t("total_used")}</p>
                       <p className="text-3xl font-bold text-gray-900">
                         {offer.usageCount}
                       </p>
@@ -170,10 +175,10 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                         {offer.offerType === "PERCENT"
                           ? `${offer.discountValue}% Off`
                           : offer.offerType === "FLAT"
-                          ? `€ ${offer.discountValue} Off`
-                          : offer.offerType === "BOGO"
-                          ? `Buy ${offer.bogo?.buyQty} Get ${offer.bogo?.getQty}`
-                          : ""}
+                            ? `€ ${offer.discountValue} Off`
+                            : offer.offerType === "BOGO"
+                              ? `Buy ${offer.bogo?.buyQty} Get ${offer.bogo?.getQty}`
+                              : ""}
                       </p>
                     </div>
                   </div>
@@ -194,14 +199,14 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                       size="sm"
                       onClick={() => setEditOffer(offer)}
                     >
-                      Edit
+                      {t("edit")}
                     </Button>
                     <Button
                       onClick={() => setDeleteId(offer._id)}
                       variant="destructive"
                       size="sm"
                     >
-                      Delete
+                      {t("delete")}
                     </Button>
                   </div>
                 </CardContent>
@@ -210,7 +215,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
           ))}
 
           {offersResult?.meta?.total === 0 && (
-            <p className="text-center text-gray-500 py-10">No offers found.</p>
+            <p className="text-center text-gray-500 py-10">{t("no_offers_found")}</p>
           )}
         </div>
 

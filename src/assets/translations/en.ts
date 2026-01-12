@@ -618,7 +618,7 @@ export const en = {
     stock_alerts: "Stock Alerts",
     suppliers: "Suppliers",
     offers_coupons: "Offers & Coupons",
-    all_offer: "All Offers",
+    all_offers: "All Offers",
     active_offers: "Active Offers",
     inactive_offers: "Inactive Offers",
     create_new_offer: "Create New Offer",
@@ -1032,6 +1032,51 @@ export const en = {
     mozzarella_stock_issues_linked: "Mozzarella stock issues linked to supplier delays — consider backup vendor.",
     weekend_deliveries_show_slower: "Weekend deliveries show slower response — plan bulk orders Friday morning.",
     optimize_supplier_management: "Optimize Supplier Management",
+
+
+    // offers pages
+    // -> title's
+    active: "Active",
+    inactive: "Inactive",
+    // -> content's
+    offers: "Offers",
+    boost_sales_special_discounts: "Boost sales with special discounts & promotions",
+    create_offer: "Create Offer",
+    code: "Code",
+    valid_till: "Valid till",
+    total_used: "Total Used",
+    no_offers_found: "No offers found.",
+
+
+    // create new offer page
+    add_promotion_boost_restaurant: "Add a promotion to boost your restaurant's sales",
+    offer_details: "Offer Details",
+    offer_title_20_perc_off: "Offer Title (e.g., 20% OFF on Burgers)",
+    offer_description: "Offer Description",
+    offer_type: "Offer Type",
+    select_type: "Select type",
+    percentage_discount: "Percentage Discount",
+    flat_amount_off: "Flat Amount OFF",
+    buy_1_get_1: "Buy 1 Get 1",
+    discount_perc_20: "Discount % (e.g., 20)",
+    flat_discount: "Flat Discount (€)",
+    choose_an_item: "Choose an Item",
+    buy_quantity: "Buy Quantity (e.g., 2)",
+    get_quantity: "Get Quantity (e.g., 1)",
+    validity: "Validity",
+    start_date: "Start Date",
+    end_date: "End Date",
+    minimum_order_amount: "Minimum Order Amount (€)",
+    promo_code: "Promo Code",
+    enter_promo_code: "Enter promo code",
+
+
+    // coupon analytics page
+    performance_insights_all_active_past_coupon: "Performance insights for all active & past coupons",
+    usage : "Usage",
+    top_items_influenced : "Top items influenced",
+    revenue_impact : "Revenue Impact",
+    no_analytics_found : "No analytics found to show!"
 
 
 

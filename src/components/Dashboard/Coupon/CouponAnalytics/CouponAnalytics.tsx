@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TCouponAnalytics } from "@/src/types/coupon.type";
 import { motion } from "framer-motion";
 import { ArrowDownLeft, ArrowUpRight, Flame, Percent } from "lucide-react";
@@ -23,6 +24,8 @@ interface IProps {
 }
 
 export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1200px] mx-auto space-y-12">
@@ -30,10 +33,10 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Coupon Analytics
+              {t("coupon_analytics")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Performance insights for all active & past coupons
+              {t("performance_insights_all_active_past_coupon")}
             </p>
           </div>
 
@@ -48,14 +51,14 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
           style={{ height: "280px" }}
         >
           <CardContent className="flex items-center justify-center h-full text-gray-500">
-            <ResponsiveContainer width="100%" height="100%">
+            {couponsAnalyticsResult?.coupons?.length > 0 ? <ResponsiveContainer width="100%" height="100%">
               <BarChart data={couponsAnalyticsResult?.monthlyAnalysis}>
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip cursor={{ display: "none" }} />
                 <Bar dataKey="revenue" fill="#8884d8" name="Revenue" />
               </BarChart>
-            </ResponsiveContainer>
+            </ResponsiveContainer> : <p className="text-center text-gray-500 py-10">{t("no_analytics_found")}</p>}
           </CardContent>
         </Card>
 
@@ -87,7 +90,7 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
 
                       <div className="flex items-center gap-3 text-sm mt-2 text-gray-600">
                         <Badge variant="outline">
-                          Usage: {c.totalCustomerUsage}
+                          {t("usage")}: {c.totalCustomerUsage}
                         </Badge>
                         {/* <span className="flex items-center gap-1 text-green-600 font-semibold">
                           <TrendingUp size={16} /> {c.}% boost
@@ -96,7 +99,7 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
 
                       <div className="mt-3">
                         <p className="text-sm text-gray-500">
-                          Top items influenced:
+                          {t("top_items_influenced")}:
                         </p>
                         <ul className="text-sm list-disc pl-5 text-gray-700">
                           {c.topItemsInfluenced.map((i, k) => (
@@ -109,7 +112,7 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
 
                   {/* RIGHT */}
                   <div className="text-right md:min-w-[220px]">
-                    <p className="text-sm text-gray-500">Revenue Impact</p>
+                    <p className="text-sm text-gray-500">{t("revenue_impact")}</p>
 
                     {c.revenueImpact >= 0 ? (
                       <p className="text-3xl font-bold text-green-600 flex items-center justify-end gap-1">
