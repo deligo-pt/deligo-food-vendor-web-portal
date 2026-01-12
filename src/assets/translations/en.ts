@@ -989,6 +989,51 @@ export const en = {
     improve_performance: "Improve Performance",
 
 
+    // ingredients page
+    manage_all_ingredients_menu: "Manage all ingredients your menu items depend on",
+    add_ingredients: "Add Ingredient",
+    search_ingredients: "Search ingredients...",
+    available: "available",
+    low_stock: "Low Stock",
+    no_ingredients_found: "No ingredients found.",
+    tomatoes_mozzarella_cheese: "Tomatoes and Mozzarella Cheese expected to run out today.",
+    chicken_most_used_ingredients: "Chicken is the most used ingredient — keep backup stock.",
+    burger_buns_out_of_stock: "Burger buns out of stock — affects 4 top-selling items.",
+    increasing_salad_sales: "Increasing salad sales — ensure lettuce freshness.",
+    optimize_inventory: "Optimize Inventory",
+
+
+    // stock-alert page
+    real_time_ingredient_alerts_based_on_order: "Real-time ingredient alerts based on order consumption",
+    refresh: "Refresh",
+    live_monitoring_enabled: "Live monitoring enabled",
+    tracking_orders_consumption_real_time: "Tracking orders + consumption in real-time",
+    used_today: "Used today",
+    units: "units",
+    critical: "Critical",
+    stable: "Stable",
+    burger_buns_out_stock_affects: "Burger buns out of stock — affects 4 top-selling items.",
+    mozzarella_likely_run_out_within: "Mozzarella likely to run out within 4 hours based on usage.",
+    tomatoes_shortage_expected_due_to: "Tomatoes shortage expected due to weekend spikes.",
+    chicken_stable_consumption: "Chicken stable but consumption increasing +18% this week.",
+    optimize_stock: "Optimize Stock",
+
+
+    // suppliers
+    manage_suppliers_powering_restaurant: "Manage suppliers powering your restaurant's inventory",
+    add_supplier: "Add Supplier",
+    search_suppliers: "Search suppliers...",
+    excellent: "Excellent",
+    good: "Good",
+    average: "Average",
+    last_delivery: "Last delivery",
+    no_suppliers_found: "No suppliers found.",
+    freshfarm_is_most_reliable_supplier: "FreshFarm is your most reliable supplier — 98% on-time delivery rate.",
+    mozzarella_stock_issues_linked: "Mozzarella stock issues linked to supplier delays — consider backup vendor.",
+    weekend_deliveries_show_slower: "Weekend deliveries show slower response — plan bulk orders Friday morning.",
+    optimize_supplier_management: "Optimize Supplier Management",
+
+
 
 
 

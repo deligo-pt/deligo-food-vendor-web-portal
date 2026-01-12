@@ -23,6 +23,7 @@ import {
   Clock,
   AlertTriangle,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -60,6 +61,7 @@ const STATIC_SUPPLIERS = [
 ];
 
 export default function VendorSuppliersPage() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const filtered = STATIC_SUPPLIERS.filter((s) =>
     s.name.toLowerCase().includes(query.toLowerCase())
@@ -73,21 +75,21 @@ export default function VendorSuppliersPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Suppliers
+              {t("suppliers")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Manage suppliers powering your restaurant&apos;s inventory
+              {t("manage_suppliers_powering_restaurant")}
             </p>
           </div>
 
           <Button className="text-white flex items-center gap-2" style={{ background: PRIMARY }}>
-            <Plus size={18} /> Add Supplier
+            <Plus size={18} /> {t("add_supplier")}
           </Button>
         </div>
 
         {/* SEARCH */}
         <Input
-          placeholder="Search suppliers..."
+          placeholder={t("search_suppliers")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="max-w-sm"
@@ -138,22 +140,22 @@ export default function VendorSuppliersPage() {
                   <div className="text-right md:min-w-[200px]">
                     {sup.reliability === "excellent" && (
                       <Badge className="bg-green-100 text-green-700 flex gap-1 justify-center">
-                        <CheckCircle size={14} /> Excellent
+                        <CheckCircle size={14} /> {t("excellent")}
                       </Badge>
                     )}
                     {sup.reliability === "good" && (
                       <Badge className="bg-amber-100 text-amber-700 flex gap-1 justify-center">
-                        <Clock size={14} /> Good
+                        <Clock size={14} /> {t("good")}
                       </Badge>
                     )}
                     {sup.reliability === "average" && (
                       <Badge className="bg-red-100 text-red-700 flex gap-1 justify-center">
-                        <AlertTriangle size={14} /> Average
+                        <AlertTriangle size={14} /> {t("average")}
                       </Badge>
                     )}
 
                     <p className="mt-3 text-sm text-gray-600 flex items-center gap-1 justify-end">
-                      <Truck size={14} /> Last delivery: {sup.lastDelivery}
+                      <Truck size={14} /> {t("last_delivery")}: {sup.lastDelivery}
                     </p>
                   </div>
                 </CardContent>
@@ -162,7 +164,7 @@ export default function VendorSuppliersPage() {
           ))}
 
           {filtered.length === 0 && (
-            <p className="text-center text-gray-500 py-10">No suppliers found.</p>
+            <p className="text-center text-gray-500 py-10">{t("no_suppliers_found")}</p>
           )}
         </div>
 
@@ -171,19 +173,19 @@ export default function VendorSuppliersPage() {
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <Truck className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Insights</h2>
+              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
             </div>
             <Separator />
 
             <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
-              <li>FreshFarm is your most reliable supplier — 98% on-time delivery rate.</li>
-              <li>Mozzarella stock issues linked to supplier delays — consider backup vendor.</li>
-              <li>Weekend deliveries show slower response — plan bulk orders Friday morning.</li>
+              <li>{t("freshfarm_is_most_reliable_supplier")}</li>
+              <li>{t("mozzarella_stock_issues_linked")}</li>
+              <li>{t("weekend_deliveries_show_slower")}</li>
             </ul>
 
             <div className="pt-2">
               <Button className="text-white" style={{ background: PRIMARY }}>
-                Optimize Supplier Management
+                {t("optimize_supplier_management")}
               </Button>
             </div>
           </CardContent>

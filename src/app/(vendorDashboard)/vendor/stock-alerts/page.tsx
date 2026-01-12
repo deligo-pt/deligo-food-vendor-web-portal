@@ -13,6 +13,7 @@ import {
   Clock,
   Package,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -51,6 +52,8 @@ const ALERTS = [
 ];
 
 export default function VendorStockAlerts() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1100px] mx-auto space-y-10">
@@ -58,15 +61,15 @@ export default function VendorStockAlerts() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Stock Alerts
+              {t("stock_alerts")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm">
-              Real-time ingredient alerts based on order consumption
+              {t("real_time_ingredient_alerts_based_on_order")}
             </p>
           </div>
 
           <Button className="text-white flex items-center gap-2" style={{ background: PRIMARY }}>
-            <Bell size={18} /> Refresh
+            <Bell size={18} /> {t("refresh")}
           </Button>
         </div>
 
@@ -75,8 +78,8 @@ export default function VendorStockAlerts() {
           <CardContent className="p-6 flex items-center gap-4">
             <Loader2 size={32} className="animate-spin text-pink-600" />
             <div>
-              <p className="font-semibold text-gray-800">Live monitoring enabled</p>
-              <p className="text-sm text-gray-500">Tracking orders + consumption in real-time</p>
+              <p className="font-semibold text-gray-800">{t("live_monitoring_enabled")}</p>
+              <p className="text-sm text-gray-500">{t("tracking_orders_consumption_real_time")}</p>
             </div>
           </CardContent>
         </Card>
@@ -100,22 +103,22 @@ export default function VendorStockAlerts() {
 
                     <div>
                       <h2 className="text-xl font-bold text-gray-800">{alert.name}</h2>
-                      <p className="text-sm text-gray-600">Used today: {alert.usedToday} units</p>
+                      <p className="text-sm text-gray-600">{t("used_today")}: {alert.usedToday} {t("units")}</p>
 
                       <div className="mt-2">
                         {alert.level === "critical" && (
                           <Badge className="bg-red-100 text-red-700 flex gap-1">
-                            <AlertTriangle size={14} /> Critical — Out of Stock
+                            <AlertTriangle size={14} /> {t("critical")} — {t("out_of_stock")}
                           </Badge>
                         )}
                         {alert.level === "low" && (
                           <Badge className="bg-amber-100 text-amber-700 flex gap-1">
-                            <AlertTriangle size={14} /> Low Stock
+                            <AlertTriangle size={14} /> {t("low_stock")}
                           </Badge>
                         )}
                         {alert.level === "warning" && (
                           <Badge className="bg-green-100 text-green-700 flex gap-1">
-                            <CheckCircle size={14} /> Stable
+                            <CheckCircle size={14} /> {t("stable")}
                           </Badge>
                         )}
                       </div>
@@ -125,7 +128,7 @@ export default function VendorStockAlerts() {
                   {/* RIGHT */}
                   <div className="text-right">
                     <p className="text-2xl font-extrabold text-gray-900">{alert.remaining}</p>
-                    <p className="text-xs text-gray-500">remaining</p>
+                    <p className="text-xs text-gray-500">{t("remaining")}</p>
                     <p className="text-sm mt-2 text-gray-700 flex items-center gap-1 justify-end">
                       <Clock size={14} /> {alert.eta}
                     </p>
@@ -141,21 +144,21 @@ export default function VendorStockAlerts() {
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <AlertTriangle className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Insights</h2>
+              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
             </div>
 
             <Separator />
 
             <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
-              <li>Burger buns out of stock — affects 4 top-selling items.</li>
-              <li>Mozzarella likely to run out within 4 hours based on usage.</li>
-              <li>Tomatoes shortage expected due to weekend spikes.</li>
-              <li>Chicken stable but consumption increasing +18% this week.</li>
+              <li>{t("burger_buns_out_stock_affects")}</li>
+              <li>{t("mozzarella_likely_run_out_within")}</li>
+              <li>{t("tomatoes_shortage_expected_due_to")}</li>
+              <li>{t("chicken_stable_consumption")}</li>
             </ul>
 
             <div className="pt-2">
               <Button style={{ background: PRIMARY }} className="text-white">
-                Optimize Stock
+                {t("optimize_stock")}
               </Button>
             </div>
           </CardContent>
