@@ -12,6 +12,7 @@ import { TConversation, TMessage } from "@/src/types/chat.type";
 import { getCookie } from "@/src/utils/cookies";
 import { format } from "date-fns";
 import { Bot, Clock, PhoneCall, Send } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 interface IProps {
   initialConversation: TConversation;
@@ -26,6 +27,7 @@ export default function VendorChatSupport({
   initialConversation: conversation,
   initialMessagesData,
 }: IProps) {
+  const { t } = useTranslation();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [messages, setMessages] = useState<TMessage[]>(
     initialMessagesData?.data || []
@@ -122,10 +124,10 @@ export default function VendorChatSupport({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Chat Support
+              {t("chat_support")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Get help from our support team in real‑time.
+              {t("get_help_from_support_team")}
             </p>
           </div>
 
@@ -144,9 +146,9 @@ export default function VendorChatSupport({
                   <Bot className="text-pink-700" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-lg">Deligo Support</h2>
+                  <h2 className="font-bold text-lg">{t("deligo_support")}</h2>
                   <p className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock size={12} /> Active now
+                    <Clock size={12} /> {t("active_now")}
                   </p>
                 </div>
               </div>
@@ -160,18 +162,16 @@ export default function VendorChatSupport({
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`flex ${
-                    msg.senderRole === "VENDOR"
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
+                  className={`flex ${msg.senderRole === "VENDOR"
+                    ? "justify-end"
+                    : "justify-start"
+                    }`}
                 >
                   <div
-                    className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
-                      msg.senderRole === "VENDOR"
-                        ? "bg-[" + PRIMARY + "] text-white rounded-br-none"
-                        : "bg-white rounded-bl-none border"
-                    }`}
+                    className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${msg.senderRole === "VENDOR"
+                      ? "bg-[" + PRIMARY + "] text-white rounded-br-none"
+                      : "bg-white rounded-bl-none border"
+                      }`}
                   >
                     <div className="text-sm leading-relaxed">{msg.message}</div>
                     <p className="text-[10px] opacity-70 mt-1">
@@ -187,7 +187,7 @@ export default function VendorChatSupport({
             {/* INPUT */}
             <div className="p-4 flex items-center gap-3">
               <Input
-                placeholder="Type your message…"
+                placeholder={t("type_your_message")}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 onKeyUp={(e) => {
@@ -203,7 +203,7 @@ export default function VendorChatSupport({
                 className="flex items-center gap-1 text-white"
                 style={{ background: PRIMARY }}
               >
-                <Send size={16} /> Send
+                <Send size={16} /> {t("send")}
               </Button>
             </div>
           </CardContent>
