@@ -61,7 +61,9 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
         if (decoded.role === "VENDOR") {
           setCookie("accessToken", result.data.accessToken, 7);
           setCookie("refreshToken", result.data.refreshToken, 365);
-          toast.success("Login successful!", { id: toastId });
+          toast.success(result?.message || "Login successful!", {
+            id: toastId,
+          });
 
           // get and save fcm token
           setTimeout(() => {
