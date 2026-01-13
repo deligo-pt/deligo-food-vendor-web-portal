@@ -1391,8 +1391,4 @@ export const en = {
     account_created: "Account Created",
     two_factor_auth: "Two-Factor Auth",
 
-
-
-
-
 };
