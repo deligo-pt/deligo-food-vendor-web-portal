@@ -147,6 +147,7 @@ export const getNavItems = (t: TFunction) => {
             items: [
                 { name: t("chat_with_support"), path: "/vendor/chat-support" },
                 { name: t("help_articles"), path: "/vendor/help" },
+                { name: t("live_chat"), path: "/vendor/live-chat" },
                 { name: t("report_an_issue"), path: "/vendor/report" },
             ],
         },

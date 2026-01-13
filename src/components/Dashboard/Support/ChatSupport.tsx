@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -33,15 +34,14 @@ export default function VendorChatSupport({
     initialMessagesData?.data || []
   );
   const [text, setText] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState(conversation.status);
   const accessToken = getCookie("accessToken");
 
   const { sendMessage } = useChatSocket({
-    // const { sendMessage, closeConversation } = useChatSocket({
     room: conversation.room,
     token: accessToken as string,
     onMessage: (msg) => setMessages((prev) => [...prev, msg]),
+    onTyping: (data) => {},
     onClosed: () => setStatus("CLOSED"),
     onError: (msg) => alert(msg),
   });
@@ -52,66 +52,6 @@ export default function VendorChatSupport({
     sendMessage(text);
     setText("");
   };
-
-  // const handleSendMessage = () => {
-  //   if (!text.trim()) return;
-
-  //   // const newMsg = { from: "vendor", text, time: "Just now" };
-  //   // setMessages((prev) => [...prev, newMsg]);
-  //   // setText("");
-
-  //   if (!text.trim()) return;
-  //   socketRef.current?.emit("message", text);
-  //   // setMessages((prev) => [
-  //   //   ...prev,
-  //   //   { from: "vendor", text, time: "Just now" },
-  //   // ]);
-
-  //   setText("");
-
-  //   // Auto bot reply
-  //   setTimeout(() => {
-  //     setMessages((prev) => [
-  //       ...prev,
-  //       {
-  //         from: "support",
-  //         text: "Thank you, we’re reviewing your message.",
-  //         time: "Now",
-  //       },
-  //     ]);
-  //   }, 1000);
-  // };
-
-  //  useChatSocket({
-  //     room: conversation.room,
-  //     onMessage: (msg) =>
-  //       setMessages((prev) => [...prev, msg]),
-  //     onClose: () =>
-  //       setConversation((c) => ({ ...c, status: "CLOSED" })),
-  //   });
-
-  // connect to room with socket.io-client
-  // useEffect(() => {
-  //   const accessToken = getCookie("accessToken");
-  //   const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
-  //     reconnectionDelayMax: 10000,
-  //     auth: {
-  //       token: accessToken,
-  //     },
-  //   });
-  //   socketRef.current = socket;
-  //   socket.on("message", (msg) => {
-  //     setMessages((prev) => [...prev, msg]);
-  //   });
-
-  //   socket.on("disconnect", () => {
-  //     console.log("Socket disconnected");
-  //   });
-
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });

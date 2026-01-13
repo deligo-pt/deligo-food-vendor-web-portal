@@ -1,190 +1,40 @@
-"use client";
+export const dynamic = "force-dynamic";
 
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import {
-  Star,
-  Smile,
-  Meh,
-  Frown,
-  Gauge,
-} from "lucide-react";
-import { useTranslation } from "@/src/hooks/use-translation";
+import { serverRequest } from "@/lib/serverFetch";
+import RatingSummary from "@/src/components/Dashboard/Reviews/RatingSummary";
+import { TResponse } from "@/src/types";
+import { TRatingSummary } from "@/src/types/review.type";
 
-const PRIMARY = "#DC3173";
-const BG = "#FFF1F7";
+type IProps = {
+  searchParams?: Promise<Record<string, string | undefined>>;
+};
 
-// Mock ratings
-const STAR_DIST = [42, 31, 18, 7, 2];
-const SENTIMENT = [62, 24, 14]; // positive, neutral, negative
+export default async function RatingSummaryPage({ searchParams }: IProps) {
+  const queries = (await searchParams) || {};
+  const limit = Number(queries?.limit || 10);
+  const page = Number(queries.page || 1);
+  const sentiment = queries.sentiment || "";
 
-export default function VendorRatingSummary() {
-  const { t } = useTranslation();
+  const query = {
+    limit,
+    page,
+    sortBy: "-createdAt",
+    ...(sentiment ? { sentiment } : {}),
+  };
 
-  return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[1100px] mx-auto space-y-12">
+  let initialData: TRatingSummary = {} as TRatingSummary;
 
-        {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              {t("rating_summary")}
-            </h1>
-            <p className="text-gray-600 mt-1 text-sm">
-              {t("customer_satisfaction_overview")}
-            </p>
-          </div>
+  try {
+    const result = (await serverRequest.get("/ratings/get-rating-summary", {
+      params: query,
+    })) as unknown as TResponse<TRatingSummary>;
 
-          <Button className="text-white" style={{ background: PRIMARY }}>
-            {t("export")}
-          </Button>
-        </div>
+    if (result?.success) {
+      initialData = result.data;
+    }
+  } catch (err) {
+    console.error("Server fetch error:", err);
+  }
 
-        {/* MAIN RATING BLOCK */}
-        <Card className="rounded-3xl bg-white shadow-xl border">
-          <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-10">
-            <div className="text-center md:text-left">
-              <p className="text-gray-500 text-sm">{t("overall_rating")}</p>
-              <h2 className="text-7xl font-extrabold text-gray-900">4.3</h2>
-              <div className="flex items-center gap-1 mt-2 justify-center md:justify-start">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Star
-                    key={i}
-                    size={26}
-                    className={i <= 4 ? "text-yellow-400" : "text-gray-300"}
-                  />
-                ))}
-              </div>
-              <p className="text-xs text-gray-400 mt-2">{t("based_on_last")} 200 {t("reviews")}</p>
-            </div>
-
-            {/* Sentiment Circles */}
-            <div className="flex gap-6">
-              {/* Positive */}
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center border-4 border-green-400">
-                  <Smile className="text-green-600" size={32} />
-                </div>
-                <p className="text-sm font-semibold mt-2">{SENTIMENT[0]}% {t("positive")}</p>
-              </div>
-
-              {/* Neutral */}
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center border-4 border-amber-400">
-                  <Meh className="text-amber-600" size={32} />
-                </div>
-                <p className="text-sm font-semibold mt-2">{SENTIMENT[1]}% {t("neutral")}</p>
-              </div>
-
-              {/* Negative */}
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center border-4 border-red-400">
-                  <Frown className="text-red-600" size={32} />
-                </div>
-                <p className="text-sm font-semibold mt-2">{SENTIMENT[2]}% {t("negative")}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* STAR DISTRIBUTION */}
-        <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6 space-y-4">
-            <h2 className="font-bold text-lg">{t("rating_breakdown")}</h2>
-            <Separator />
-
-            {STAR_DIST.map((val, idx) => (
-              <div key={idx} className="flex items-center gap-3">
-                <span className="w-14 text-sm font-semibold">{5 - idx} {t("stars")}</span>
-                <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${val}%` }}
-                    transition={{ duration: 0.7, delay: idx * 0.1 }}
-                    style={{ background: PRIMARY }}
-                    className="h-full rounded-full"
-                  />
-                </div>
-                <span className="w-10 text-sm text-gray-600">{val}%</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* 30 DAY TREND */}
-        <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6">
-            <h2 className="font-bold text-lg mb-3">{t("rating_trend_30_day")}</h2>
-            <Separator className="mb-4" />
-
-            {/* Fake animated trend graph */}
-            <div className="relative h-40 w-full">
-              <svg className="absolute inset-0 w-full h-full">
-                <polyline
-                  fill="none"
-                  stroke={PRIMARY}
-                  strokeWidth="4"
-                  points="0,120 80,90 160,95 240,70 320,110 400,80 480,85 560,60 640,100"
-                  className="opacity-70"
-                />
-              </svg>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* CATEGORY RATINGS */}
-        <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6 space-y-5">
-            <h2 className="font-bold text-lg">{t("category_ratings")}</h2>
-            <Separator />
-
-            {[t("food_quality"), t("packaging"), t("delivery_speed"), t("rider_behaviour")].map(
-              (cat, i) => (
-                <div key={i} className="flex justify-between items-center">
-                  <span className="font-medium text-gray-700">{cat}</span>
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <Star
-                        key={s}
-                        size={18}
-                        className={s <= 4 - (i === 2 ? 1 : 0) ? "text-yellow-400" : "text-gray-300"}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )
-            )}
-          </CardContent>
-        </Card>
-
-        {/* AI INSIGHTS */}
-        <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6 space-y-3">
-            <div className="flex items-center gap-2">
-              <Gauge className="text-gray-800" />
-              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
-            </div>
-
-            <Separator />
-
-            <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
-              <li>{t("delivery_speed_ratings_improved")}</li>
-              <li>{t("negative_reviews_mostly_happed_after")}</li>
-              <li>{t("food_quality_strong_weekends")}</li>
-              <li>{t("packaging_complaints_decreased_after")}</li>
-            </ul>
-
-            <div className="pt-2">
-              <Button style={{ background: PRIMARY }} className="text-white">
-                {t("improve_performance")}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+  return <RatingSummary summaryResult={initialData} />;
 }

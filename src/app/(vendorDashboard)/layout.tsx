@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { serverRequest } from "@/lib/serverFetch";
 import NotificationToast from "@/src/components/NotificationToast/NotificationToast";
 import DesktopSidebar from "@/src/components/vendorDashboardSidebar/DesktopSidebar";

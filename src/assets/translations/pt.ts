@@ -1029,7 +1029,7 @@ export const pt = {
     real_feedback_from_glovo_customers:
         "Feedback real dos seus clientes Glovo",
     average_rating: "Classificação Média",
-    based_on_last: "com base nas últimas",
+    based_on: "com base em",
     reviews_sm: "avaliações",
     positive: "Positivas",
     negative: "Negativas",
@@ -1055,10 +1055,6 @@ export const pt = {
     stars: "Estrelas",
     rating_trend_30_day: "Tendência de Avaliação (30 Dias)",
     category_ratings: "Avaliações por Categoria",
-    food_quality: "Qualidade da Comida",
-    packaging: "Embalagem",
-    delivery_speed: "Velocidade de Entrega",
-    rider_behaviour: "Comportamento do Estafeta",
     delivery_speed_ratings_improved:
         "As avaliações de velocidade de entrega melhoraram 12% na última semana.",
     negative_reviews_mostly_happed_after:
