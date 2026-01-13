@@ -35,3 +35,38 @@ export type TReview = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type TSentimentPercentages = {
+  positive: number;
+  neutral: number;
+  negative: number;
+};
+
+export type TStarPercentages = {
+  five: number;
+  four: number;
+  three: number;
+  two: number;
+  one: number;
+};
+
+export type TCategoryRatings = {
+  foodQuality: number;
+  packaging: number;
+  deliverySpeed: number;
+  riderBehavior: number;
+};
+
+export type TChart = { date: string; avgRatings: number };
+
+export type TRatingSummary = {
+  summary: {
+    avgRating: number;
+    totalRatings: number;
+    sentimentPercentages: TSentimentPercentages;
+    starPercentages: TStarPercentages;
+    categoryRatings: TCategoryRatings;
+  };
+
+  chart: TChart[];
+};

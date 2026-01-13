@@ -4,6 +4,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import CustomerReviews from "@/src/components/Dashboard/Reviews/CustomerReviews";
 import { TMeta, TResponse } from "@/src/types";
 import { TReview } from "@/src/types/review.type";
+import { TVendor } from "@/src/types/vendor.type";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -23,11 +24,12 @@ export default async function CustomerReviewsPage({ searchParams }: IProps) {
   };
 
   const initialData: { data: TReview[]; meta?: TMeta } = { data: [] };
+  const vendorRating = { average: 0, totalReviews: 0 };
 
   try {
     const result = (await serverRequest.get("/ratings/get-all-ratings", {
       params: query,
-    })) as unknown as TResponse<TReview[]>;
+    })) as TResponse<TReview[]>;
 
     if (result?.success) {
       initialData.data = result.data || [];
@@ -37,5 +39,18 @@ export default async function CustomerReviewsPage({ searchParams }: IProps) {
     console.error("Server fetch error:", err);
   }
 
-  return <CustomerReviews reviewsResult={initialData} />;
+  try {
+    const result = (await serverRequest.get("/profile")) as TResponse<TVendor>;
+
+    if (result?.success) {
+      vendorRating.average = result.data?.rating?.average || 0;
+      vendorRating.totalReviews = result.data?.rating?.totalReviews || 0;
+    }
+  } catch (err) {
+    console.error("Server fetch error:", err);
+  }
+
+  return (
+    <CustomerReviews reviewsResult={initialData} vendorRating={vendorRating} />
+  );
 }

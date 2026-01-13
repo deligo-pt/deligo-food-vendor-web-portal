@@ -7,7 +7,7 @@ import { TMeta } from "@/src/types";
 import { TReview, TReviewSentiment } from "@/src/types/review.type";
 import { formatDistanceToNow } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { Clock, Filter, Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Clock, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const PRIMARY = "#DC3173";
@@ -16,9 +16,13 @@ const SHADOW = "0 6px 20px rgba(0,0,0,0.06)";
 
 interface IProps {
   reviewsResult: { data: TReview[]; meta?: TMeta };
+  vendorRating: { average: number; totalReviews: number };
 }
 
-export default function CustomerReviews({ reviewsResult }: IProps) {
+export default function CustomerReviews({
+  reviewsResult,
+  vendorRating,
+}: IProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -52,12 +56,12 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
             </p>
           </div>
 
-          <Button
+          {/* <Button
             className="flex items-center gap-2 text-white"
             style={{ background: PRIMARY }}
           >
             <Filter size={18} /> Export
-          </Button>
+          </Button> */}
         </div>
 
         {/* --------------------------------------------------------- */}
@@ -71,11 +75,13 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
             <div>
               <p className="text-gray-600 text-sm">Average Rating</p>
               <div className="flex items-end gap-2 mt-1">
-                <h2 className="text-5xl font-extrabold text-gray-900">4.3</h2>
+                <h2 className="text-5xl font-extrabold text-gray-900">
+                  {vendorRating.average}
+                </h2>
                 <span className="text-gray-500">/5</span>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Based on last 200 reviews
+                Based on {vendorRating.totalReviews} reviews
               </p>
             </div>
 
@@ -84,7 +90,11 @@ export default function CustomerReviews({ reviewsResult }: IProps) {
                 <Star
                   key={i}
                   size={26}
-                  className={i <= 4 ? "text-yellow-400" : "text-gray-300"}
+                  className={
+                    i <= vendorRating.average
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                  }
                 />
               ))}
             </div>
