@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -33,6 +34,7 @@ const SHADOW = "0px 8px 24px rgba(0,0,0,0.06)";
 type ChangePasswordData = z.infer<typeof changePasswordValidation>;
 
 export default function ChangePassword() {
+  const { t } = useTranslation();
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -95,10 +97,10 @@ export default function ChangePassword() {
                 className="text-4xl font-extrabold"
                 style={{ color: PRIMARY }}
               >
-                Change Password
+                {t("change_password")}
               </h1>
               <p className="text-gray-600 mt-1 text-sm">
-                Update your account password securely.
+                {t("update_account_password_securely")}
               </p>
             </div>
           </div>
@@ -106,7 +108,7 @@ export default function ChangePassword() {
           {/* SUCCESS MESSAGE */}
           {success && (
             <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700">
-              <CheckCircle /> Password updated successfully.
+              <CheckCircle /> {t("password_updated_successfully")}
             </div>
           )}
 
@@ -123,13 +125,13 @@ export default function ChangePassword() {
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className="font-semibold text-gray-700">
-                      Current Password
+                      {t("current_password")}
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showOld ? "text" : "password"}
-                          placeholder="Enter current password"
+                          placeholder={t("enter_current_password")}
                           className={cn(
                             "h-12 rounded-xl pr-10",
                             fieldState.invalid ? "border-destructive" : ""
@@ -157,13 +159,13 @@ export default function ChangePassword() {
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className="font-semibold text-gray-700">
-                      New Password
+                      {t("new_password")}
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showNew ? "text" : "password"}
-                          placeholder="Enter new password"
+                          placeholder={t("enter_new_password")}
                           className={cn(
                             "h-12 rounded-xl pr-10",
                             fieldState.invalid ? "border-destructive" : ""
@@ -191,13 +193,13 @@ export default function ChangePassword() {
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className="font-semibold text-gray-700">
-                      Confirm Password
+                      {t("confirm_password")}
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           type={showConfirm ? "text" : "password"}
-                          placeholder="Re-enter new password"
+                          placeholder={t("re_enter_new_password")}
                           className={cn(
                             "h-12 rounded-xl pr-10",
                             fieldState.invalid ? "border-destructive" : ""
@@ -229,9 +231,9 @@ export default function ChangePassword() {
                 <Button
                   className="h-12 px-6 text-white rounded-xl"
                   style={{ background: PRIMARY }}
-                  // onClick={updatePassword}
+                // onClick={updatePassword}
                 >
-                  Update Password
+                  {t("update_password")}
                 </Button>
               </div>
             </CardContent>

@@ -7,6 +7,7 @@ import CancelOrderModal from "@/src/components/Dashboard/Orders/OrderCancelModal
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import { ORDER_STATUS } from "@/src/consts/order.const";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { updateOrderStatusReq } from "@/src/services/dashboard/order/order";
 import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
@@ -26,14 +27,16 @@ interface IProps {
 
 const DELIGO = "#DC3173";
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-];
 
 export default function PreparingOrders({ ordersResult }: IProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [cancelId, setCancelId] = useState<string | null>(null);
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+  ];
 
   // status updates
   const updateStatus = async (
@@ -80,11 +83,10 @@ export default function PreparingOrders({ ordersResult }: IProps) {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-extrabold" style={{ color: DELIGO }}>
-              Preparing Orders
+              {t("preparing_orders")}
             </h1>
             <p className="text-sm text-gray-600 mt-1">
-              Manage orders currently in kitchen — progress, assign riders &
-              mark ready.
+              {t("manage_orders_in_kitchen")}
             </p>
           </div>
         </div>
@@ -99,7 +101,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                   className="w-3 h-3 rounded-full"
                   style={{ background: DELIGO }}
                 />
-                Preparing ({ordersResult?.meta?.total})
+                {t("preparing")} ({ordersResult?.meta?.total})
               </CardTitle>
             </CardHeader>
 
@@ -113,7 +115,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                       animate={{ opacity: 1 }}
                       className="py-12 text-center text-gray-500"
                     >
-                      No orders match your query.
+                      {t("no_orders_match_query")}
                     </motion.div>
                   )}
                   {ordersResult?.data?.map((order) => (
@@ -184,7 +186,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                             <span className="flex items-center gap-1 text-gray-600">
                               <User size={14} />{" "}
                               {order.deliveryPartnerId?.name?.firstName &&
-                              order.deliveryPartnerId?.name?.lastName
+                                order.deliveryPartnerId?.name?.lastName
                                 ? `${order.deliveryPartnerId?.name?.firstName} ${order.deliveryPartnerId?.name?.lastName}`
                                 : "Unassigned"}
                             </span>
@@ -204,7 +206,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                             onClick={() => markReady(order.orderId)}
                             style={{ background: DELIGO, color: "#fff" }}
                           >
-                            Mark Ready
+                            {t("mark_ready")}
                           </Button>
                         </div>
 
@@ -214,12 +216,12 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                             variant="outline"
                             onClick={() => cancelOrder(order.orderId)}
                           >
-                            Cancel
+                            {t("cancel")}
                           </Button>
                           <Sheet>
                             <SheetTrigger asChild>
                               <Button size="sm" variant="ghost">
-                                Details
+                                {t("details")}
                               </Button>
                             </SheetTrigger>
                             <SheetContent
@@ -289,6 +291,8 @@ function OrderSheetContent({
   onReady?: () => void;
   onCancel?: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4">
       <div>
@@ -301,7 +305,7 @@ function OrderSheetContent({
       </div>
 
       <div>
-        <h4 className="font-semibold">Items</h4>
+        <h4 className="font-semibold">{t("items")}</h4>
         <ul className="mt-2 space-y-2">
           {order.items.map((it, i) => (
             <li
@@ -309,14 +313,14 @@ function OrderSheetContent({
               className="flex justify-between items-center p-3 rounded-md bg-gray-50"
             >
               <div>{it.productId?.name}</div>
-              <div className="text-sm text-gray-600">Qty {it.quantity}</div>
+              <div className="text-sm text-gray-600">{t("qty")} {it.quantity}</div>
             </li>
           ))}
         </ul>
       </div>
 
       <div>
-        <h4 className="font-semibold">Delivery</h4>
+        <h4 className="font-semibold">{t("delivery")}</h4>
         <div className="text-sm text-gray-600 flex items-center gap-2 mt-1">
           <MapPin size={14} /> {order.pickupAddress?.street},{" "}
           {order.pickupAddress?.postalCode}, {order.pickupAddress?.city},{" "}
@@ -331,7 +335,7 @@ function OrderSheetContent({
             className="flex-1"
             onClick={() => onReady && onReady()}
           >
-            Mark Ready
+            {t("mark_ready")}
           </Button>
         </div>
         <Button
@@ -339,7 +343,7 @@ function OrderSheetContent({
           className="w-full"
           onClick={() => onCancel && onCancel()}
         >
-          Cancel Order
+          {t("cancel_order")}
         </Button>
       </div>
     </div>

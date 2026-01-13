@@ -1,3 +1,4 @@
+import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -13,6 +14,7 @@ interface IProps {
 }
 
 export default function ProfileDoc({ documents }: IProps) {
+  const { t } = useTranslation();
   const docsArr = Object.keys(documents || {}).filter(
     (key) => !!documents?.[key as keyof IDocs]
   );
@@ -27,11 +29,11 @@ export default function ProfileDoc({ documents }: IProps) {
           }}
         >
           <p className="text-sm text-gray-500 mb-2">
-            {doc === "idProof" && "ID Proof"}
-            {doc === "businessLicenseDoc" && "Business License"}
-            {doc === "taxDoc" && "Tax Document"}
-            {doc === "storePhoto" && "Store Photo"}
-            {doc === "menuUpload" && "Menu / Brochure"}
+            {doc === "idProof" && t("id_proof")}
+            {doc === "businessLicenseDoc" && t("business_license")}
+            {doc === "taxDoc" && t("tax_document")}
+            {doc === "storePhoto" && t("store_photo")}
+            {doc === "menuUpload" && t("menu_brochure")}
           </p>
           {documents?.[doc as keyof IDocs]?.toLowerCase()?.endsWith(".pdf") ? (
             <iframe
@@ -63,7 +65,7 @@ export default function ProfileDoc({ documents }: IProps) {
               scale: 0.95,
             }}
           >
-            View
+            {t("view")}
           </motion.a>
         </motion.div>
       ))}

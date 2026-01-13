@@ -6,6 +6,7 @@ import RecentOrders from "@/src/components/Dashboard/Dashboard/RecentOrders";
 import StatCard from "@/src/components/Dashboard/Dashboard/StatCard";
 import StatusCard from "@/src/components/Dashboard/Dashboard/StatusCard";
 import TopProducts from "@/src/components/Dashboard/Dashboard/TopProducts";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TAnalytics } from "@/src/types/analytics.type";
 import { motion } from "framer-motion";
 import {
@@ -24,6 +25,8 @@ interface IProps {
 }
 
 const Dashboard = ({ vendorName, analyticsData }: IProps) => {
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-7xl mx-auto">
       <DashboardHeader vendorName={vendorName} />
@@ -43,23 +46,23 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
         }}
       >
         <StatCard
-          title="Total Items"
+          title={t("total_items")}
           value={analyticsData?.products?.total?.toLocaleString() || "0"}
-          description="Total listed products"
+          description={t("total_listed_products")}
           icon={<StoreIcon />}
           color="#DC3173"
         />
         <StatCard
-          title="Active Products"
+          title={t("active_products")}
           value={analyticsData?.products?.active?.toLocaleString() || "0"}
-          description="Items for sale"
+          description={t("items_for_sale")}
           icon={<TruckIcon />}
           color="#DC3173"
         />
         <StatCard
-          title="Inactive Products"
+          title={t("inactive_products")}
           value={analyticsData?.products?.inactive?.toLocaleString() || "0"}
-          description="Items not for sale"
+          description={t("items_not_for_sale")}
           icon={<UsersIcon />}
           color="#DC3173"
         />
@@ -80,25 +83,25 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
         }}
       >
         <StatusCard
-          title="Total Orders"
+          title={t("total_orders")}
           value={analyticsData?.orders?.total?.toLocaleString() || "0"}
           icon={<ShoppingBagIcon />}
           color="#DC3173"
         />
         <StatusCard
-          title="Pending Orders"
+          title={t("pending_orders")}
           value={analyticsData?.orders?.pending?.toLocaleString() || "0"}
           icon={<TrendingUpIcon />}
           color="#DC3173"
         />
         <StatusCard
-          title="Completed Orders"
+          title={t("completed_orders")}
           value={analyticsData?.orders?.completed?.toLocaleString() || "0"}
           icon={<CheckCircleIcon />}
           color="#DC3173"
         />
         <StatusCard
-          title="Cancelled Orders"
+          title={t("cancelled_orders")}
           value={analyticsData?.orders?.cancelled?.toLocaleString() || "0"}
           icon={<XCircleIcon />}
           color="#DC3173"

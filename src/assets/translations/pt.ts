@@ -591,4 +591,1055 @@ export const pt = {
     footerCopyright: "DeliGo — Impulsionado com",
     footerCopyrightEfficiency: "Eficiência",
 
+
+    // vendor dashboard
+    // sorting
+    newest_first: "Mais recentes primeiro",
+    oldest_first: "Mais antigos primeiro",
+    name_a_to_z: "Nome (A–Z)",
+    name_z_to_a: "Nome (Z–A)",
+    price_high_to_low: "Preço (do mais alto para o mais baixo)",
+    price_low_to_high: "Preço (do mais baixo para o mais alto)",
+    highest_rated: "Melhor avaliação",
+    lowest_rated: "Pior avaliação",
+
+    // -> sidebar
+    dashboard: "Painel",
+    orders: "Pedidos",
+    new_orders: "Novos Pedidos",
+    preparing: "Em Preparação",
+    ready_for_pickup: "Pronto para Recolha",
+    ongoing_deliveries: "Entregas em Curso",
+    completed: "Concluídos",
+    cancelled: "Cancelados",
+
+    menu_items: "Menu & Itens",
+    all_items: "Todos os Itens",
+    categories: "Categorias",
+    add_new_item: "Adicionar Novo Item",
+    stock_management: "Gestão de Stock",
+    add_ons: "Extras",
+
+    payments_earnings: "Pagamentos & Ganhos",
+    payouts: "Pagamentos",
+    earnings_summary: "Resumo de Ganhos",
+    payment_settings: "Configurações de Pagamento",
+    transaction_history: "Histórico de Transações",
+
+    analytics_insights: "Análises & Insights",
+    sales_analytics: "Análise de Vendas",
+    customer_insights: "Insights de Clientes",
+    order_trends: "Tendências de Pedidos",
+    top_performing_items: "Itens com Melhor Desempenho",
+
+    reviews_ratings: "Avaliações & Classificações",
+    customer_reviews: "Avaliações de Clientes",
+    rating_summary: "Resumo de Avaliações",
+
+    inventory: "Inventário",
+    ingredients: "Ingredientes",
+    stock_alerts: "Alertas de Stock",
+    suppliers: "Fornecedores",
+
+    offers_coupons: "Ofertas & Cupões",
+    all_offers: "Todas as Ofertas",
+    active_offers: "Ofertas Ativas",
+    inactive_offers: "Ofertas Inativas",
+    create_new_offer: "Criar Nova Oferta",
+    coupon_analytics: "Análise de Cupões",
+
+    staff_management: "Gestão de Equipa",
+    all_staff: "Toda a Equipa",
+    roles_permissions: "Funções & Permissões",
+    add_new_staff: "Adicionar Novo Funcionário",
+
+    reports: "Relatórios",
+    sales_report: "Relatório de Vendas",
+    tax_report: "Relatório Fiscal",
+    customer_report: "Relatório de Clientes",
+
+    settings: "Configurações",
+    business_info: "Informações do Negócio",
+    notifications: "Notificações",
+    change_password: "Alterar Palavra-passe",
+    theme_branding: "Tema & Identidade Visual",
+
+    support_center: "Centro de Suporte",
+    chat_with_support: "Chat com o Suporte",
+    help_articles: "Artigos de Ajuda",
+    report_an_issue: "Reportar um Problema",
+    sos_emergency: "SOS / Emergência",
+    contact_support: "Contactar Suporte",
+    safety_guidelines: "Diretrizes de Segurança",
+
+    // dashboard page
+    hello: "Olá",
+    welcomeDashboard: "Bem-vindo ao painel geral da sua plataforma de entregas",
+    total_items: "Total de Itens",
+    total_listed_products: "Total de produtos listados",
+    active_products: "Produtos Ativos",
+    items_for_sale: "Itens à venda",
+    inactive_products: "Produtos Inativos",
+    items_not_for_sale: "Itens fora de venda",
+
+    total_orders: "Total de Pedidos",
+    pending_orders: "Pedidos Pendentes",
+    completed_orders: "Pedidos Concluídos",
+    cancelled_orders: "Pedidos Cancelados",
+
+    popular_categories: "Categorias Populares",
+    no_popular_categories: "Nenhuma categoria popular encontrada",
+
+    recent_orders: "Pedidos Recentes",
+    no_recent_orders: "Nenhum pedido recente encontrado",
+    view_all_orders: "Ver Todos os Pedidos",
+
+    top_rated_items: "Itens Mais Bem Avaliados",
+    no_top_rated_items: "Nenhum item bem avaliado encontrado",
+
+    // -> status
+    pending: "Pendente",
+    accepted: "Aceite",
+    rejected: "Rejeitado",
+    dispatching: "Em Expedição",
+    awaiting_partner: "A aguardar estafeta",
+    assigned: "Atribuído",
+    reassignment_needed: "Reatribuição Necessária",
+    picked_up: "Recolhido",
+    on_the_way: "A Caminho",
+    delivered: "Entregue",
+
+
+    // new orders page
+    vendor_new_orders: "Vendedor — Novos Pedidos",
+    live_orders: "Pedidos em Tempo Real",
+    no_orders_match_query: "Nenhum pedido corresponde à sua pesquisa.",
+    click_assign_delivery_partner: "Clique para atribuir um estafeta.",
+    accept: "Aceitar",
+    reject: "Rejeitar",
+    prepare: "Preparar",
+    mark_ready: "Marcar como Pronto",
+    view: "Ver",
+    items: "Itens",
+    qty: "Qtd",
+    delivery: "Entrega",
+
+    // preparing order page
+    preparing_orders: "Pedidos em Preparação",
+    manage_orders_in_kitchen: "Gerir pedidos atualmente na cozinha — progresso, atribuir estafetas e marcar como prontos.",
+    details: "Detalhes",
+    cancel_order: "Cancelar Pedido",
+
+    // ready for pickup page
+    vendor: "Vendedor",
+
+    // ongoing deliveries page
+    track_your_live_orders: "Acompanhe os seus pedidos em tempo real — localização do estafeta, ETA e estado da entrega.",
+    rider_id: "ID do Estafeta",
+    call_rider: "Ligar ao Estafeta",
+
+    // completed orders page
+    fully_delivered_orders_with_earnings_rider_data: "Pedidos totalmente entregues com ganhos e dados do estafeta.",
+    delivered_at: "Entregue em",
+    payment: "Pagamento",
+    payment_method: "Método de Pagamento",
+    select_payment_method: "Selecionar Método de Pagamento",
+
+    // cancelled orders page
+    see_all_orders_were_cancelled: "Ver todos os pedidos cancelados — motivo, pagamento e dados do cliente.",
+    reason: "Motivo",
+    cancelled_at: "Cancelado em",
+
+    // all-items page
+    food_items: "Itens Alimentares",
+    manage_your_restaurants_food_delivery_items: "Gerir o catálogo de entregas do seu restaurante",
+    filters: "Filtros",
+    clear_all: "Limpar Tudo",
+    availability_status: "Estado de Disponibilidade",
+    in_stock: "Em Stock",
+    out_of_stock: "Esgotado",
+    limited: "Limitado",
+    cancel: "Cancelar",
+    apply_filters: "Aplicar Filtros",
+    showing: "A mostrar",
+    of: "de",
+    no_items_found: "Nenhum item encontrado",
+    no_items_match_current_filters: "Nenhum item corresponde aos filtros atuais. Tente ajustar a pesquisa ou os filtros.",
+    clear_all_filters: "Limpar todos os filtros",
+
+    // categories page
+    these_are_platform_managed_categories: "Estas são categorias geridas pela plataforma. Os vendedores não podem criar ou editar categorias.",
+    platform: "Plataforma",
+    no_categories_found: "Nenhuma categoria encontrada",
+
+    // add-new-item page
+    fill_the_details_to_add_new_food_item: "Preencha os dados para adicionar um novo item alimentar ao seu menu.",
+    basic_information: "Informações Básicas",
+    product_name: "Nome do Produto",
+    brand: "Marca",
+    description: "Descrição",
+    product_category: "Categoria do Produto",
+    tags: "Etiquetas",
+    product_images: "Imagens do Produto",
+
+    // -> image uploader
+    drag_drop_product_images: "Arraste e largue as imagens do produto aqui",
+    or_click: "ou clique para procurar ficheiros",
+    png_jpg_svg: "PNG, JPG, SVG até 5MB",
+    select_files: "Selecionar Ficheiros",
+    uploaded_images: "Imagens Carregadas",
+    main_image: "Imagem Principal",
+
+    pricing_information: "Informações de Preço",
+    price_E: "Preço (€)",
+    discount_2: "Desconto (%)",
+    tax_2: "Imposto (%)",
+    original_price: "Preço Original",
+    discount: "Desconto",
+    tax: "Imposto",
+    final_price: "Preço Final",
+
+    add_ons_and_variants: "Extras & Variantes",
+    variations: "Variações",
+    name: "Nome",
+    options: "Opções",
+    label: "Etiqueta",
+    price: "Preço",
+    add_option: "Adicionar Opção",
+    add_variation: "Adicionar Variação",
+
+    stock_information: "Informações de Stock",
+    quantity: "Quantidade",
+    unit: "Unidade",
+    kilogram: "Quilograma (kg)",
+    gram: "Grama (g)",
+    liter: "Litro (L)",
+    milliliter: "Mililitro (ml)",
+    pieces: "Unidades (pcs)",
+    others: "Outros",
+
+    product_attributes: "Atributos do Produto",
+    organic: "Biológico",
+    weight: "Peso",
+    packaging_type: "Tipo de Embalagem",
+    plastic_bag: "Saco de Plástico",
+    paper_bag: "Saco de Papel",
+    box: "Caixa",
+    tin: "Lata",
+    bottle: "Garrafa",
+
+    storage_temperature: "Temperatura de Armazenamento",
+    room_temperature: "Temperatura Ambiente",
+    refrigerated: "Refrigerado",
+    frozen: "Congelado",
+    cool_and_dry: "Fresco e Seco",
+
+    meta_information: "Informações Meta",
+    featured_product: "Produto em Destaque",
+    available_for_pre_order: "Disponível para Pré-Encomenda",
+
+    previous: "Anterior",
+    save_product: "Guardar Produto",
+    next: "Seguinte",
+
+    // -> tabs
+    basic_info: "Informações Básicas",
+    images: "Imagens",
+    pricing: "Preços",
+    stock: "Stock",
+    attributes: "Atributos",
+    meta: "Meta",
+
+
+    // stock-management page
+    update_product_stock_in_real_time: "Atualizar o stock dos produtos em tempo real —",
+    no_products_found: "Nenhum produto encontrado.",
+
+    // add-ons page
+    add_ons_extras: "Extras & Complementos",
+    add_group: "Adicionar Grupo",
+    min: "Mín",
+    max: "Máx",
+    add_addon: "Adicionar Extra",
+    edit: "Editar",
+
+    // payouts page
+    vendor_payouts: "Pagamentos ao Vendedor",
+    earnings_balance_payout: "Saldo de ganhos e histórico de pagamentos",
+    export_csv: "Exportar CSV",
+    available_balance: "Saldo Disponível",
+    weekly_payout_every_monday: "Pagamento semanal todas as segundas-feiras",
+    payout_completed: "Pagamento Concluído",
+    processing: "Em Processamento",
+    all: "Todos",
+    no_payouts_found: "Nenhum pagamento encontrado",
+
+    portugal_payment_rules: "Regras de Pagamento em Portugal",
+    automatic_weekly_payout: "Pagamento automático semanal via SEPA todas as segundas-feiras.",
+    iva_handled_per_portuguese_tax: "IVA tratado de acordo com as regras fiscais portuguesas e já aplicado quando necessário.",
+    minimum_payout_threshold: "Valor mínimo de pagamento:",
+    euro_20: "€20.",
+    balances_below_roll_next_cycle: "Saldos inferiores serão transferidos para o próximo ciclo.",
+    typical_bank_transfer_time: "Tempo típico de transferência bancária:",
+    hours_24_48: "24–48 horas",
+    instant_payouts_fees_may_apply: "Para pagamentos instantâneos (se ativados), podem aplicar-se taxas — ver Definições Financeiras.",
+    payouts_sent_to_registered_iban: "Os pagamentos são enviados para o IBAN registado. Atualize os dados bancários em Definições > Finanças.",
+
+    // earnings-summary page
+    performance_overview: "Visão geral de desempenho — receitas, pedidos e tendências",
+    range: "Período",
+    export_report: "Exportar Relatório",
+    total_earnings: "Ganhos Totais",
+    since_joining_the_platform: "Desde que aderiu à plataforma",
+    this_week: "Esta Semana",
+    vs_last_week: "vs Semana Anterior",
+    last_week: "Semana Anterior",
+    reference: "Referência",
+    weekly_earnings_overview: "Visão geral dos ganhos semanais",
+    total_this_week: "Total desta Semana",
+    order_metrics: "Métricas de Pedidos",
+    avg_order_value: "Valor Médio por Pedido",
+    total_revenue: "Receita Total",
+
+    // payment-settings page
+    configure_bank_account_payout_method_security: "Configurar conta bancária, método de pagamento e segurança",
+    bank_account: "Conta Bancária",
+    account_holder_name: "Nome do Titular da Conta",
+    bank_name: "Nome do Banco",
+    save_changes: "Guardar Alterações",
+    payout_method: "Método de Pagamento",
+    weekly_every_monday: "Semanal (todas as segundas-feiras)",
+    bi_monthly: "Quinzenal",
+    monthly: "Mensal",
+    payments_follow_sepa_rules: "Os pagamentos seguem as regras SEPA em Portugal.",
+    save_payout_method: "Guardar Método de Pagamento",
+
+    security_and_verification: "Segurança e Verificação",
+    for_your_safety_payout_changes_require_identity_confirmation:
+        "Para sua segurança, alterações nos pagamentos exigem confirmação de identidade. Isto ajuda a prevenir acessos não autorizados e protege os seus ganhos.",
+    verify_identity: "Verificar Identidade",
+    identity_verification: "Verificação de Identidade",
+    upload_document_for_payout_security_verification: "Carregue um documento para verificação de segurança dos pagamentos.",
+    submit: "Submeter",
+
+    portugal_payout_guidelines: "Diretrizes de Pagamento em Portugal",
+    sepa_payouts_take_24_48_hours: "Pagamentos SEPA demoram 24–48 horas.",
+    iban_must_be_a_valid_portuguese_or_eu_bank_account: "O IBAN deve ser uma conta bancária válida em Portugal ou na UE.",
+    minimum_payout_threshold_euro_20: "Valor mínimo de pagamento: €20.",
+    identity_verification_required_for_bank_changes: "É necessária verificação de identidade para alterações bancárias.",
+
+    // transaction-history page
+    full_breakdown_of_earnings_payouts_fees:
+        "Detalhamento completo de ganhos, pagamentos, taxas e ajustes",
+    search_transactions: "Pesquisar transações...",
+    fees: "Taxas",
+    refunds: "Reembolsos",
+    id: "ID",
+    no_transactions_found: "Nenhuma transação encontrada.",
+    summary: "Resumo",
+    positive_values_revenue_from_orders: "Valores positivos = receita proveniente de pedidos",
+    negative_values_fees_adjustments_refunds: "Valores negativos = taxas, ajustes ou reembolsos",
+    weekly_sepa_cycle_portugal: "Os pagamentos seguem o ciclo semanal SEPA em Portugal",
+    refunds_may_take_24_48_hours: "Os reembolsos podem demorar 24–48 horas a refletir",
+
+    // sales-analytics page
+    deep_insights_revenue_best_selling_items_performance_trends:
+        "Análises detalhadas sobre receitas, itens mais vendidos e tendências de desempenho",
+    total_sales: "Vendas Totais",
+    last_7_days: "Últimos 7 dias",
+    best_performing_day: "Melhor Dia de Vendas",
+    slowest_day: "Dia Mais Fraco",
+    weekly_sales_trend: "Tendência Semanal de Vendas",
+    top_selling_items: "Itens Mais Vendidos",
+    sold: "vendidos",
+    data_based_on_last_7_days: "Dados baseados nos últimos 7 dias | Atualizado automaticamente",
+
+
+    // customer-insights page
+    deep_customer_analytics:
+        "Análises profundas de clientes — demografia, comportamento, retenção e sentimento",
+    total_customers: "Total de Clientes",
+    returning: "Recorrentes",
+    top_city: "Cidade Principal",
+    avg_repeat: "Repetição Média",
+    demographics: "Demografia",
+    live: "Em direto",
+    of_orders: "dos pedidos",
+    customer_value: "Valor do Cliente",
+    top_segments: "Principais Segmentos",
+    avg_order: "Pedido Médio",
+    retention_trend: "Tendência de Retenção",
+    d_7: "7D",
+    peak_order_times: "Horários de Pico de Pedidos (Mapa de Calor)",
+    local_time: "Hora Local",
+    actionable_insights: "Insights Acionáveis",
+    ai_suggest: "Sugestão por IA",
+    promote_popular_items:
+        "Promover itens populares em Lisboa durante a noite de sexta-feira (18:00–22:00) para aumentar a conversão.",
+    target_top_customers_with_exclusive:
+        "Direcionar os 5% principais clientes com um cupão exclusivo — apresentam elevado LTV.",
+    address_cold_food_feedback:
+        'Resolver feedback de “comida fria”: verificar embalagem para pedidos acima de 5 km.',
+    run_campaign_slow_days:
+        "Criar campanha para dias mais fracos (Seg–Qua) com descontos em packs.",
+    create_campaign: "Criar Campanha",
+    export_segment: "Exportar Segmento",
+
+
+    // order-trends page
+    trend_analysis_orders_over_time:
+        "Análise de tendências de pedidos ao longo do tempo — picos, categorias e volume",
+    export_trends: "Exportar Tendências",
+    last_14_days_order_trend: "Tendência de Pedidos — Últimos 14 Dias",
+    vs_last_14_days: "vs Últimos 14 Dias",
+    daily_order_volume: "Volume Diário de Pedidos",
+    peak_ordering_times: "Horários de Maior Procura",
+    category_growth: "Crescimento por Categoria",
+    ai_order_trend_insights: "Insights de Tendência de Pedidos (IA)",
+    promote_pizza_category_weekends:
+        "Promover a categoria de pizza aos fins de semana — tendência ascendente mais forte.",
+    boost_ad_budget_around_7pm:
+        "Aumentar orçamento de anúncios por volta das 19h — maior pico de pedidos.",
+    offer_combo_deals_on_slow_days:
+        "Oferecer combos em dias mais fracos (Ter–Qui) para aumentar conversões.",
+    introduce_new_drinks:
+        "Introduzir novas bebidas — categoria com crescimento semanal estável.",
+    export_data: "Exportar Dados",
+
+
+    // top-performing-items page
+    best_performing_menu_items:
+        "Itens do menu com melhor desempenho — vendas, avaliações e crescimento",
+    export: "Exportar",
+    total_items_sold: "Total de Itens Vendidos (7 dias)",
+    updated_hourly: "Atualizado de hora a hora",
+    ai_insights: "Insights por IA",
+    chicken_burger_outperforming:
+        "O Hambúrguer de Frango supera todas as categorias — aumentar visibilidade na página inicial.",
+    fresh_orange_fastest_growth:
+        "Sumo de Laranja Natural apresenta o crescimento mais rápido — criar combos com hambúrgueres.",
+    greek_salad_sales_dropped:
+        "As vendas da Salada Grega diminuíram — considerar atualizar a imagem ou destacá-la.",
+    pizza_stable_demand:
+        "A categoria Pizza tem procura estável — promover aos fins de semana para maior impacto.",
+    create_promo: "Criar Promoção",
+
+
+    // customer-reviews page
+    real_feedback_from_glovo_customers:
+        "Feedback real dos seus clientes Glovo",
+    average_rating: "Classificação Média",
+    based_on: "com base em",
+    reviews_sm: "avaliações",
+    positive: "Positivas",
+    negative: "Negativas",
+    liked: "Gostaram",
+    not_great: "Pouco Satisfatório",
+    no_reviews_found: "Nenhuma avaliação encontrada.",
+    fast_delivery_comments_increased:
+        "Comentários sobre entregas rápidas aumentaram — forte desempenho logístico.",
+    negatie_comments_mostly_delays:
+        "Comentários negativos sobretudo sobre atrasos e comida fria — otimizar tempo de preparação.",
+    most_positive_reviews_mention:
+        "A maioria das avaliações positivas menciona simpatia do estafeta — manter consistência.",
+    weekend_orders_show_rating_dip:
+        "Pedidos ao fim de semana mostram queda na avaliação — reforçar equipa em horas de pico.",
+
+
+    // rating-summary page
+    customer_satisfaction_overview:
+        "Visão geral da satisfação do cliente + análises avançadas",
+    overall_rating: "Classificação Geral",
+    neutral: "Neutras",
+    rating_breakdown: "Distribuição de Avaliações",
+    stars: "Estrelas",
+    rating_trend_30_day: "Tendência de Avaliação (30 Dias)",
+    category_ratings: "Avaliações por Categoria",
+    delivery_speed_ratings_improved:
+        "As avaliações de velocidade de entrega melhoraram 12% na última semana.",
+    negative_reviews_mostly_happed_after:
+        "As avaliações negativas ocorrem maioritariamente após as 22h — possível problema de staffing.",
+    food_quality_strong_weekends:
+        "Qualidade da comida forte aos fins de semana — considerar promoção em dias úteis.",
+    packaging_complaints_decreased_after:
+        "As reclamações sobre embalagens diminuíram após a atualização recente — manter padrão.",
+    improve_performance: "Melhorar Desempenho",
+
+
+    // ingredients page
+    manage_all_ingredients_menu:
+        "Gerir todos os ingredientes dos itens do seu menu",
+    add_ingredients: "Adicionar Ingrediente",
+    search_ingredients: "Pesquisar ingredientes...",
+    available: "disponível",
+    low_stock: "Stock Baixo",
+    no_ingredients_found: "Nenhum ingrediente encontrado.",
+    tomatoes_mozzarella_cheese:
+        "Tomates e queijo mozzarella devem esgotar hoje.",
+    chicken_most_used_ingredients:
+        "Frango é o ingrediente mais utilizado — manter stock de reserva.",
+    burger_buns_out_of_stock:
+        "Pães de hambúrguer esgotados — afeta 4 itens mais vendidos.",
+    increasing_salad_sales:
+        "Aumento nas vendas de saladas — garantir frescura da alface.",
+    optimize_inventory: "Otimizar Inventário",
+
+
+
+    // stock-alert page
+    real_time_ingredient_alerts_based_on_order:
+        "Alertas de ingredientes em tempo real com base no consumo dos pedidos",
+    refresh: "Atualizar",
+    live_monitoring_enabled: "Monitorização em tempo real ativa",
+    tracking_orders_consumption_real_time:
+        "A acompanhar pedidos e consumo em tempo real",
+    used_today: "Usado hoje",
+    units: "unidades",
+    critical: "Crítico",
+    stable: "Estável",
+    burger_buns_out_stock_affects:
+        "Pães de hambúrguer esgotados — afeta 4 itens mais vendidos.",
+    mozzarella_likely_run_out_within:
+        "A mozzarella deverá esgotar dentro de 4 horas com base na utilização.",
+    tomatoes_shortage_expected_due_to:
+        "Prevista escassez de tomates devido a picos ao fim de semana.",
+    chicken_stable_consumption:
+        "Frango estável, mas o consumo aumentou 18% esta semana.",
+    optimize_stock: "Otimizar Stock",
+
+
+    // suppliers
+    manage_suppliers_powering_restaurant:
+        "Gerir os fornecedores que sustentam o inventário do seu restaurante",
+    add_supplier: "Adicionar Fornecedor",
+    search_suppliers: "Pesquisar fornecedores...",
+    excellent: "Excelente",
+    good: "Bom",
+    average: "Médio",
+    last_delivery: "Última entrega",
+    no_suppliers_found: "Nenhum fornecedor encontrado.",
+    freshfarm_is_most_reliable_supplier:
+        "A FreshFarm é o seu fornecedor mais fiável — 98% de entregas pontuais.",
+    mozzarella_stock_issues_linked:
+        "Problemas de stock de mozzarella associados a atrasos do fornecedor — considerar fornecedor alternativo.",
+    weekend_deliveries_show_slower:
+        "As entregas ao fim de semana são mais lentas — planear encomendas em volume na sexta-feira de manhã.",
+    optimize_supplier_management: "Otimizar Gestão de Fornecedores",
+
+
+    // offers pages
+    // -> title's
+    active: "Ativas",
+    inactive: "Inativas",
+    // -> content's
+    offers: "Ofertas",
+    boost_sales_special_discounts:
+        "Aumente as vendas com descontos e promoções especiais",
+    create_offer: "Criar Oferta",
+    code: "Código",
+    valid_till: "Válido até",
+    total_used: "Total Utilizado",
+    no_offers_found: "Nenhuma oferta encontrada.",
+
+
+    // create new offer page
+    add_promotion_boost_restaurant:
+        "Adicionar uma promoção para impulsionar as vendas do seu restaurante",
+    offer_details: "Detalhes da Oferta",
+    offer_title_20_perc_off:
+        "Título da Oferta (ex.: 20% OFF em Hambúrgueres)",
+    offer_description: "Descrição da Oferta",
+    offer_type: "Tipo de Oferta",
+    select_type: "Selecionar tipo",
+    percentage_discount: "Desconto Percentual",
+    flat_amount_off: "Desconto Fixo",
+    buy_1_get_1: "Compre 1 Leve 1",
+    discount_perc_20: "Desconto % (ex.: 20)",
+    flat_discount: "Desconto Fixo (€)",
+    choose_an_item: "Escolher um Item",
+    buy_quantity: "Quantidade a Comprar (ex.: 2)",
+    get_quantity: "Quantidade a Receber (ex.: 1)",
+    validity: "Validade",
+    start_date: "Data de Início",
+    end_date: "Data de Fim",
+    minimum_order_amount: "Valor Mínimo do Pedido (€)",
+    promo_code: "Código Promocional",
+    enter_promo_code: "Introduzir código promocional",
+
+
+    // coupon analytics page
+    performance_insights_all_active_past_coupon:
+        "Insights de desempenho de todos os cupões ativos e anteriores",
+    usage: "Utilização",
+    top_items_influenced: "Itens mais influenciados",
+    revenue_impact: "Impacto na Receita",
+    no_analytics_found: "Nenhuma análise disponível para mostrar!",
+
+
+    // all-staff
+    manage_all_staff_members:
+        "Gerir todos os membros da equipa do seu restaurante",
+    search_staff_by_name_or_role:
+        "Pesquisar colaboradores por nome ou função...",
+    full_name: "Nome Completo",
+    manager: "Gerente",
+    chef: "Cozinheiro",
+    staff: "Funcionário",
+    email_address: "Endereço de Email",
+    phone_number: "Número de Telemóvel",
+    add_staff: "Adicionar Funcionário",
+    remove: "Remover",
+    no_staff_found: "Nenhum funcionário encontrado.",
+
+
+    // roles and permission page
+    viewer: "Visualizador",
+    roles_and_permissions: "Funções e Permissões",
+    control_what_each_staff_member:
+        "Controlar o que cada membro da equipa pode aceder no painel do vendedor",
+    set_access_controls: "Definir Controlos de Acesso",
+    ai_recommendation: "Recomendação por IA",
+    managers_should_have_full_analytics:
+        "Os gerentes devem ter acesso total a análises e finanças.",
+    chefs_should_only_access_menu:
+        "Os cozinheiros devem aceder apenas ao menu e à gestão de pedidos.",
+    viewer_role_is_ideal_temporary:
+        "A função de visualizador é ideal para pessoal temporário ou auditores.",
+    only_trusted_staff_should_access:
+        "Apenas pessoal de confiança deve ter acesso às definições de pagamentos.",
+    apply_best_practise_setup: "Aplicar Configuração de Boas Práticas",
+
+
+    // add-staff page
+    add_new_team_members_assign_role_permissions:
+        "Adicionar novos membros da equipa e atribuir funções e permissões",
+    personal_information: "Informação Pessoal",
+    select_role: "Selecionar Função",
+    role_badge_preview: "Pré-visualização do Distintivo da Função",
+    notes_optional: "Notas (Opcional)",
+    additional_notes_about_staff_member:
+        "Notas adicionais sobre o membro da equipa...",
+
+
+    // sales-report page
+    detailed_revenue_performance:
+        "Análises detalhadas de receita e desempenho",
+    from: "De",
+    to: "Até",
+    apply_filter: "Aplicar Filtro",
+    top_category: "Categoria Principal",
+    weekly_sales_overview: "Visão Geral das Vendas Semanais",
+    growth_insight: "Insight de Crescimento",
+    restaurant_sales_increased_period:
+        "As vendas do seu restaurante aumentaram neste período.",
+    decline_insight: "Insight de Queda",
+    certain_items_performed_lower_usual:
+        "Alguns itens tiveram um desempenho inferior ao habitual.",
+    ai_sales_insights: "Insights de Vendas por IA",
+    burger_category_drove_most:
+        "A categoria de hambúrgueres gerou a maioria dos pedidos à noite.",
+    friday_saturday_show_highest:
+        "Sexta-feira e sábado apresentam o pico mais alto de receita semanal.",
+    average_order_value_increased_due:
+        "O valor médio por pedido aumentou devido às ofertas de combos.",
+    decline_drinks_suggests_icreasing:
+        "A queda nas bebidas sugere aumento de stock ou melhoria de visibilidade.",
+    view_full_sales_breakdown:
+        "Ver Análise Completa de Vendas",
+
+
+    // tax-report page
+    tax_report_iva_breakdown:
+        "Relatório Fiscal (Detalhe de IVA)",
+    portugal_compliant_iva_calculation:
+        "Relatório de cálculo de IVA em conformidade com a legislação portuguesa",
+    export_tax_report: "Exportar Relatório Fiscal",
+    apply: "Aplicar",
+    commission_charged: "Comissão Aplicada",
+    vendor_iva: "IVA do Vendedor (6%)",
+    platform_iva: "IVA da Plataforma (23%)",
+    net_payout_after_taxes:
+        "Pagamento Líquido Após Impostos",
+    this_is_final_payout_applying:
+        "Este é o pagamento final após aplicação da comissão da plataforma e IVA.",
+    detailed_breakdown: "Detalhe Completo",
+    vendor_collects_revenue:
+        "O vendedor recolhe a receita e paga",
+    iva_6_perc: "IVA de 6%",
+    on_food_sales: "sobre as vendas de alimentos.",
+    platform_commission_has:
+        "A comissão da plataforma tem o seu próprio",
+    iva_23_perc: "IVA de 23%",
+    portugal_law: "(lei portuguesa)",
+    net_payout_automatically_excludes:
+        "O pagamento líquido exclui automaticamente as obrigações de IVA.",
+    commission_is_calculated_before:
+        "A comissão é calculada antes da dedução do IVA.",
+    ai_tax_insights: "Insights Fiscais por IA",
+    your_iva_consistant_portuguese:
+        "A sua taxa de IVA está em conformidade com as regras fiscais portuguesas para restauração.",
+    commission_iva_slightly_increased:
+        "O IVA da comissão aumentou ligeiramente devido ao maior volume de vendas ao fim de semana.",
+    avoid_running_too_many_discounts:
+        "Evite aplicar demasiados descontos — reduz a receita líquida tributável.",
+    higher_order_volume_lower:
+        "Maior volume de pedidos = menor pressão fiscal por pedido.",
+    view_full_iva_breakdown:
+        "Ver Detalhe Completo do IVA",
+
+
+    // customer report page
+    see_customer_trends_spending_behaviour:
+        "Visualizar tendências de clientes, comportamento de gastos e fidelização",
+    avg_rating: "Avaliação Média",
+    highest_spender: "Maior Gastador",
+    most_orders: "Mais Pedidos",
+    search_customer: "Pesquisar cliente...",
+    total_spent: "total gasto",
+    last_order: "Último pedido",
+    no_customers_found: "Nenhum cliente encontrado.",
+    ai_customer_insights: "Insights de Clientes por IA",
+    customers_with_orders_per_month:
+        "Clientes com mais de 5 pedidos por mês são os mais fiéis.",
+    top_spenders_usually_order:
+        "Os maiores gastadores costumam encomendar à noite (18h–22h).",
+    high_rated_customers_reorder:
+        "Clientes bem avaliados voltam a encomendar quando recebem desconto de 10%.",
+    weekend_offers_boost_returning:
+        "Ofertas ao fim de semana aumentam clientes recorrentes em 18%.",
+    view_full_customer_breakdown:
+        "Ver Análise Completa de Clientes",
+
+
+    // business info
+    business_information: "Informações do Negócio",
+    manage_restaurant_profile_branding:
+        "Gerir o perfil do restaurante, branding e informações públicas.",
+    business_name: "Nome do Negócio",
+    address: "Morada",
+    email: "Email",
+    website_optional: "Website (Opcional)",
+    about_business: "Sobre o Negócio",
+    opening_hours: "Horário de Funcionamento",
+
+
+    // notifications page
+    manage_alerts_system_updates:
+        "Gerir alertas, atualizações do sistema e preferências de notificações",
+    no_notifications_available:
+        "Nenhuma notificação disponível.",
+    notification_settings:
+        "Definições de Notificações",
+    email_alerts: "Alertas por Email",
+    get_order_payout_updates_via_email:
+        "Receber atualizações de pedidos e pagamentos por email",
+    push_notifications: "Notificações Push",
+    instant_alerts_for_orders_reviews:
+        "Alertas instantâneos para novos pedidos e avaliações",
+    save_preferences: "Guardar Preferências",
+
+
+    // change password
+    update_account_password_securely:
+        "Atualize a palavra-passe da sua conta de forma segura.",
+    password_updated_successfully:
+        "Palavra-passe atualizada com sucesso.",
+    current_password: "Palavra-passe Atual",
+    enter_current_password:
+        "Introduza a palavra-passe atual",
+    new_password: "Nova Palavra-passe",
+    enter_new_password:
+        "Introduza a nova palavra-passe",
+    confirm_password:
+        "Confirmar Palavra-passe",
+    re_enter_new_password:
+        "Reintroduza a nova palavra-passe",
+    update_password:
+        "Atualizar Palavra-passe",
+
+
+    // theme settings page
+    theme_settings_advanced:
+        "Definições de Tema — Avançado",
+    full_customization_brand_layout:
+        "Personalização completa: marca, layout, pré-visualização, importação/exportação.",
+    export_json: "Exportar JSON",
+    import_json: "Importar JSON",
+    save_local: "Guardar (Local)",
+    load_local: "Carregar (Local)",
+    live_preview: "Pré-visualização em Tempo Real",
+    layout: "Layout",
+    lisbon: "Lisboa",
+    open_now: "Aberto agora",
+    action: "Ação",
+    revenue: "Receita",
+    avg_time: "Tempo médio",
+    toggle_dark: "Alternar Modo Escuro",
+    toggle_rounded: "Alternar Cantos Arredondados",
+    mobile_preview: "Pré-visualização Mobile",
+    simulated_phone: "Telefone simulado",
+    dark_mode: "Modo Escuro",
+    rounded_ui: "Interface Arredondada",
+    brand_color: "Cor da Marca",
+    font: "Fonte",
+    button_style: "Estilo do Botão",
+    preview_below: "Pré-visualização abaixo",
+    radius: "Raio",
+    padding: "Espaçamento",
+    shadow: "Sombra",
+    sample_button: "Botão de Exemplo",
+    layout_presets: "Predefinições de Layout",
+    choose: "Escolher",
+    standard_balanced_cards:
+        "Padrão — Cartões e espaçamento equilibrados",
+    compact_denser_info:
+        "Compacto — Informação mais densa (mais itens por vista)",
+    split_view_multi_column:
+        "Vista Dividida — Painel multi-coluna",
+    branding: "Branding",
+    logo_cover: "Logótipo e Capa",
+    logo: "Logótipo",
+    no_logo: "Sem logótipo",
+    uplaod: "Carregar",
+    cover_banner: "Capa / Banner",
+    no_cover: "Sem capa",
+    upload: "Carregar",
+    dashboard_background:
+        "Fundo do Painel",
+    none: "Nenhum",
+    save_apply_demo:
+        "Guardar e Aplicar (demo)",
+
+
+    // chat-support
+    chat_support: "Chat de Suporte",
+    get_help_from_support_team:
+        "Obtenha ajuda da nossa equipa de suporte em tempo real.",
+    deligo_support: "Suporte Deligo",
+    active_now: "Ativo agora",
+    type_your_message:
+        "Escreva a sua mensagem…",
+    send: "Enviar",
+
+
+    // help
+    help_center: "Centro de Ajuda",
+    find_answers_guides_support:
+        "Encontre respostas, guias e suporte para a sua conta de vendedor Deligo.",
+    search_for_help:
+        "Pesquisar ajuda…",
+    vendor_guidebook:
+        "Guia do Vendedor",
+    learn_how_to_use_deligo:
+        "Aprenda a utilizar o Deligo como um profissional.",
+    policies_and_safety:
+        "Políticas e Segurança",
+    rules_for_safe_platform:
+        "Regras para uma utilização segura da plataforma.",
+    email_support:
+        "Suporte por Email",
+    live_chat: "Chat ao Vivo",
+    chat_with_support_team:
+        "Converse com a nossa equipa de suporte.",
+    frequently_asked_questions:
+        "Perguntas Frequentes",
+    faq_q_1:
+        "Como posso gerir os meus pedidos?",
+    faq_a_1:
+        "Vá a Pedidos → Gerir Pedidos para aceitar, preparar e concluir pedidos.",
+    faq_q_2:
+        "Como posso atualizar as informações do meu negócio?",
+    faq_a_2:
+        "Navegue até Definições → Informações do Negócio para atualizar os dados da loja.",
+    faq_q_3:
+        "Como são processados os pagamentos?",
+    faq_a_3:
+        "Os pagamentos são processados automaticamente todas as segundas-feiras via SEPA.",
+    faq_q_4:
+        "Como posso alterar as definições de tema?",
+    faq_a_4:
+        "Vá a Definições de Tema para personalizar cores da marca, modo escuro e muito mais.",
+    no_results_found:
+        "Nenhum resultado encontrado.",
+    need_more_help:
+        "Precisa de mais ajuda?",
+    our_support_team_available:
+        "A nossa equipa de suporte está disponível 7 dias por semana para o ajudar com a sua conta de vendedor.",
+
+    // report an issue page
+    found_problem_submit_report_directly:
+        "Encontrou um problema? Submeta um relatório diretamente à equipa administrativa da Deligo.",
+    your_issue_submitted_successfully:
+        "O seu problema foi submetido com sucesso. A nossa equipa de suporte irá contactá-lo em breve.",
+    issue_type: "Tipo de Problema",
+    choose_issue_type: "Escolher tipo de problema",
+    order_issue: "Problema com Pedido",
+    payout_earnings_issue: "Problema de Pagamento / Ganhos",
+    menu_items_issue: "Problema de Menu / Itens",
+    ui_dashboard_bug: "Erro na Interface / Painel",
+    delivery_partner_problem: "Problema com Parceiro de Entrega",
+    other: "Outro",
+    your_email: "O Seu Email",
+    enter_your_email_address:
+        "Introduza o seu endereço de email",
+    describe_the_issue:
+        "Descrever o Problema",
+    write_detailed_description:
+        "Escreva uma descrição detalhada do problema…",
+    attach_screenshot:
+        "Anexar Captura de Ecrã (opcional)",
+    no_file_chosen:
+        "Nenhum ficheiro selecionado",
+    submit_report:
+        "Submeter Relatório",
+    need_immediate_support:
+        "Precisa de Suporte Imediato?",
+    contact_support_team_via_live_chat:
+        "Contacte a nossa equipa de suporte via chat ao vivo ou email para assistência mais rápida.",
+    open_live_chat:
+        "Abrir Chat ao Vivo",
+
+
+    // contact-support
+    reach_out_deligo_support_team:
+        "Entre em contacto com a equipa de suporte da Deligo — estamos disponíveis 7 dias por semana.",
+    your_message_has_been_delivered:
+        "A sua mensagem foi enviada. A nossa equipa de suporte irá responder em breve.",
+    call_us:
+        "Ligue-nos",
+    mon_sun_9am_10pm:
+        "Seg–Dom · 9h – 22h",
+    auto_response_24_7:
+        "Resposta automática 24/7",
+    instant_support:
+        "Suporte imediato",
+    start_chat:
+        "Iniciar Chat",
+    send_us_message:
+        "Enviar-nos uma Mensagem",
+    your_name:
+        "O Seu Nome",
+    enter_your_name:
+        "Introduza o seu nome",
+    enter_your_email:
+        "Introduza o seu email",
+    message:
+        "Mensagem",
+    describe_issue_question:
+        "Descreva o seu problema ou questão…",
+    send_message:
+        "Enviar Mensagem",
+    support_availability:
+        "Disponibilidade de Suporte",
+    dedicated_support_agents_available:
+        "Os nossos agentes de suporte dedicados estão disponíveis 7 dias por semana para ajudar com pedidos, pagamentos, menus e problemas do sistema.",
+    response_time:
+        "Tempo de resposta: 2–30 minutos",
+    deligo_portugal_office:
+        "Escritório Deligo Portugal",
+    portugal:
+        "Portugal",
+
+
+    // safety guidelines page
+    safety_compliance:
+        "Segurança e Conformidade",
+    ensure_restaurant_meets:
+        "Certifique-se de que o seu restaurante cumpre as normas de segurança, higiene e manuseamento alimentar da Deligo.",
+    compliance_status:
+        "Estado de Conformidade",
+    verified:
+        "Verificado",
+    account_status:
+        "Estado da Conta",
+    up_to_date:
+        "Atualizado",
+    documents:
+        "Documentos",
+    hygine_rating:
+        "Classificação de Higiene",
+    food_handling_policies:
+        "Políticas de Manuseamento Alimentar",
+    store_food_items_correct_temperatures:
+        "Armazenar alimentos às temperaturas corretas",
+    use_sealed_containers:
+        "Utilizar recipientes selados para entregas",
+    follow_portugal_haccp_guidelines:
+        "Cumprir as diretrizes HACCP em Portugal",
+    keep_work_surfaces_sanitized:
+        "Manter as superfícies de trabalho higienizadas regularmente",
+    staff_safety_training:
+        "Formação de Segurança da Equipa",
+    mandatory_hygine_training:
+        "Formação obrigatória em higiene para toda a equipa de cozinha",
+    gloves_and_masks_required:
+        "Luvas e máscaras obrigatórias durante a preparação de alimentos",
+    delivery_handoff_must_contact_safe:
+        "Entrega deve ser feita de forma segura e sem contacto",
+    maintain_clean_uniform:
+        "Manter uma aparência limpa e uniforme",
+    data_privacy_security:
+        "Privacidade e Segurança de Dados",
+    customer_data_must_shared:
+        "Os dados dos clientes NÃO devem ser partilhados",
+    payment_data_encrypted:
+        "Os dados de pagamento são encriptados (conforme PSD2)",
+    reporting_suspicious_activities:
+        "É obrigatório reportar atividades suspeitas",
+    delivery_safety:
+        "Segurança na Entrega",
+    verify_rider_identity:
+        "Verificar a identidade do estafeta antes da entrega",
+    ensure_package_sealed:
+        "Garantir que a embalagem está devidamente selada",
+    use_tamper_proof_bags:
+        "Utilizar sacos invioláveis",
+    check_correct_rider_assignment:
+        "Confirmar a atribuição correta do estafeta",
+    need_help_safety_compliance:
+        "Precisa de ajuda com segurança e conformidade?",
+    support_team_guide_through:
+        "A nossa equipa de suporte pode orientá-lo sobre as regras de segurança para restaurantes em Portugal.",
+    contact_safety_support:
+        "Contactar Suporte de Segurança",
+
+
+    // profile page
+    reviews:
+        "avaliações",
+    days_active:
+        "dias ativo",
+    business_type:
+        "Tipo de Negócio",
+    license_mumber:
+        "Número de Licença",
+    nif:
+        "NIF",
+    number_of_branches:
+        "Número de Filiais",
+    closing_hours:
+        "Horário de Encerramento",
+    business_location:
+        "Localização do Negócio",
+    swift_code:
+        "Código SWIFT",
+    id_proof:
+        "Documento de Identificação",
+    business_license:
+        "Licença Comercial",
+    tax_document:
+        "Documento Fiscal",
+    store_photo:
+        "Fotografia da Loja",
+    menu_brochure:
+        "Menu / Brochura",
+    account_activity:
+        "Atividade da Conta",
+    last_login:
+        "Último Acesso",
+    account_created:
+        "Conta Criada em",
+    two_factor_auth:
+        "Autenticação de Dois Fatores",
+
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ImageIcon, UploadIcon, XIcon } from "lucide-react";
 import Image from "next/image";
@@ -13,6 +14,7 @@ interface IProps {
 }
 
 export function ImageUpload({ images, setImages }: IProps) {
+  const { t } = useTranslation();
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -88,11 +90,10 @@ export function ImageUpload({ images, setImages }: IProps) {
     <div className="space-y-4">
       <div
         onDragEnter={handleDrag}
-        className={`border-2 border-dashed rounded-lg p-8 text-center ${
-          dragActive
+        className={`border-2 border-dashed rounded-lg p-8 text-center ${dragActive
             ? "border-[#DC3173] bg-pink-50"
             : "border-gray-300 hover:border-gray-400"
-        } transition-colors duration-200`}
+          } transition-colors duration-200`}
       >
         {dragActive && (
           <div
@@ -114,10 +115,10 @@ export function ImageUpload({ images, setImages }: IProps) {
         >
           <ImageIcon className="h-12 w-12 text-gray-400 mb-3" />
           <p className="text-lg font-medium text-gray-700">
-            Drag & drop product images here
+            {t("drag_drop_product_images")}
           </p>
-          <p className="text-sm text-gray-500 mt-1">or click to browse files</p>
-          <p className="text-xs text-gray-400 mt-2">PNG, JPG, GIF up to 5MB</p>
+          <p className="text-sm text-gray-500 mt-1">{t("or_click")}</p>
+          <p className="text-xs text-gray-400 mt-2">{t("png_jpg_svg")}</p>
           <label className="mt-4">
             <motion.span
               whileHover={{
@@ -129,7 +130,7 @@ export function ImageUpload({ images, setImages }: IProps) {
               className="inline-flex items-center px-4 py-2 bg-[#DC3173] text-white rounded-md cursor-pointer hover:bg-[#B02458] transition-colors"
             >
               <UploadIcon className="h-4 w-4 mr-2" />
-              Select Files
+              {t("select_files")}
             </motion.span>
             <input
               ref={inputRef}
@@ -158,7 +159,7 @@ export function ImageUpload({ images, setImages }: IProps) {
       {images.length > 0 && (
         <div>
           <h3 className="text-sm font-medium text-gray-700 mb-2">
-            Uploaded Images ({images.length}/5)
+            {t("uploaded_images")} ({images.length}/5)
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <AnimatePresence>
@@ -200,7 +201,7 @@ export function ImageUpload({ images, setImages }: IProps) {
                   </motion.button>
                   {index === 0 && (
                     <div className="absolute bottom-0 left-0 right-0 bg-[#DC3173] text-white text-xs py-1 text-center rounded-b-lg">
-                      Main Image
+                      {t("main_image")}
                     </div>
                   )}
                 </motion.div>

@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
 import { Input } from "@/src/components/ui/input";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TBusinessCategory } from "@/src/types/category.type";
@@ -49,37 +50,6 @@ import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const tabs = [
-  {
-    name: "Basic Info",
-    icon: <PackageIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Images",
-    icon: <ImageIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Pricing",
-    icon: <TagIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Add-ons and Variants",
-    icon: <LayersIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Stock",
-    icon: <PackageIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Attributes",
-    icon: <InfoIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Meta",
-    icon: <StarIcon className="h-5 w-5" />,
-  },
-];
-
 type FormData = z.infer<typeof productValidation>;
 
 export function ProductForm({
@@ -89,10 +59,43 @@ export function ProductForm({
   productCategories: TBusinessCategory[];
   addonGroupsData: TAddonGroup[];
 }) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   const [options, setOptions] = useState<{ label: string; price: number }[]>(
     []
   );
+
+  const tabs = [
+    {
+      name: t("basic_info"),
+      icon: <PackageIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("images"),
+      icon: <ImageIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("pricing"),
+      icon: <TagIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("add_ons_and_variants"),
+      icon: <LayersIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("stock"),
+      icon: <PackageIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("attributes"),
+      icon: <InfoIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("meta"),
+      icon: <StarIcon className="h-5 w-5" />,
+    },
+  ];
+
   const [option, setOption] = useState<{ label: string; price: string }>({
     label: "",
     price: "",
@@ -284,9 +287,9 @@ export function ProductForm({
         className="bg-white shadow-xl rounded-2xl overflow-hidden"
       >
         <div className="px-6 py-8 bg-linear-to-r from-[#DC3173] to-[#FF6B98] text-white">
-          <h1 className="text-3xl font-bold">Add New Item</h1>
+          <h1 className="text-3xl font-bold">{t("add_new_item")}</h1>
           <p className="mt-2 text-pink-100">
-            Fill in the details to add a new food item to your menu.
+            {t("fill_the_details_to_add_new_food_item")}
           </p>
         </div>
         <div className="flex flex-col md:flex-row">
@@ -303,11 +306,10 @@ export function ProductForm({
                     scale: 0.98,
                   }}
                   onClick={() => setActiveTab(index)}
-                  className={`w-full flex items-center space-x-2 px-4 py-3 rounded-lg text-left ${
-                    activeTab === index
-                      ? "bg-[#DC3173] text-white"
-                      : "hover:bg-gray-100 text-gray-700"
-                  }`}
+                  className={`w-full flex items-center space-x-2 px-4 py-3 rounded-lg text-left ${activeTab === index
+                    ? "bg-[#DC3173] text-white"
+                    : "hover:bg-gray-100 text-gray-700"
+                    }`}
                 >
                   <div className="w-5 h-5">{tab.icon}</div>
                   <span>{tab.name}</span>
@@ -337,7 +339,7 @@ export function ProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Basic Information
+                      {t("basic_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <FormField
@@ -349,7 +351,7 @@ export function ProductForm({
                               htmlFor="name"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Product Name
+                              {t("product_name")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -370,7 +372,7 @@ export function ProductForm({
                               htmlFor="brand"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Brand
+                              {t("brand")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -392,7 +394,7 @@ export function ProductForm({
                             htmlFor="description"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Description
+                            {t("description")}
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -415,7 +417,7 @@ export function ProductForm({
                             htmlFor="category"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Product Category
+                            {t("product_category")}
                           </FormLabel>
                           <FormControl>
                             <Select
@@ -450,7 +452,7 @@ export function ProductForm({
                     />
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Tags
+                        {t("tags")}
                       </label>
                       {watchTags?.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-1">
@@ -528,7 +530,7 @@ export function ProductForm({
                     className="space-y-6 mb-0"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Product Images
+                      {t("product_images")}
                     </h2>
                     <ImageUpload images={images} setImages={setImages} />
                   </motion.div>
@@ -548,7 +550,7 @@ export function ProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Pricing Information
+                      {t("pricing_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <FormField
@@ -560,7 +562,7 @@ export function ProductForm({
                               htmlFor="price"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Price (€)
+                              {t("price_E")} (€)
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -587,7 +589,7 @@ export function ProductForm({
                               htmlFor="discount"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Discount (%)
+                              {t("discount_2")} (%)
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -615,7 +617,7 @@ export function ProductForm({
                               htmlFor="tax"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Tax (%)
+                              {t("tax_2")} (%)
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -638,12 +640,12 @@ export function ProductForm({
                     {watchPrice > 0 && watchDiscount >= 0 && (
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between">
-                          <span className="text-gray-700">Original Price:</span>
+                          <span className="text-gray-700">{t("original_price")}:</span>
                           <span className="font-medium">€ {watchPrice}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-700">
-                            Discount ({watchDiscount}%):
+                            {t("discount")} ({watchDiscount}%):
                           </span>
                           <span className="font-medium text-red-500">
                             - €{" "}
@@ -652,7 +654,7 @@ export function ProductForm({
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-700">
-                            Tax ({watchTax}%):
+                            {t("tax")} ({watchTax}%):
                           </span>
                           <span className="font-medium">
                             + €{" "}
@@ -665,7 +667,7 @@ export function ProductForm({
                           </span>
                         </div>
                         <div className="border-t mt-2 pt-2 flex justify-between">
-                          <span className="font-semibold">Final Price:</span>
+                          <span className="font-semibold">{t("final_price")}:</span>
                           <span className="font-bold text-[#DC3173]">
                             €{" "}
                             {(
@@ -694,11 +696,11 @@ export function ProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Add-Ons & Variants
+                      {t("add_ons_and_variants")}
                     </h2>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Add-Ons
+                        {t("add_ons")}
                       </label>
                       {watchAddons?.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-1">
@@ -767,7 +769,7 @@ export function ProductForm({
                     </div>
 
                     <div className="space-y-2 ">
-                      <label className="block mb-1">Variations</label>
+                      <label className="block mb-1">{t("variations")}</label>
                       <div>
                         {watchVariations?.length > 0 &&
                           watchVariations?.map((variation, i) => (
@@ -775,9 +777,9 @@ export function ProductForm({
                               key={i}
                               className="relative p-4 border rounded-md bg-gray-50 mb-4"
                             >
-                              <div>Name: {variation.name}</div>
+                              <div>{t("name")}: {variation.name}</div>
                               <div className="flex flex-wrap gap-2 items-center">
-                                Options:{" "}
+                                {t("options")}:{" "}
                                 {variation.options?.map((option, i2) => (
                                   <div
                                     key={i2}
@@ -802,7 +804,7 @@ export function ProductForm({
                       </div>
                       <div className="border rounded-md p-4 bg-gray-50 space-y-2">
                         <div>
-                          <Label className="text-gray-700 mb-1">Name</Label>
+                          <Label className="text-gray-700 mb-1">{t("name")}</Label>
                           <Input
                             type="text"
                             value={variationName}
@@ -810,7 +812,7 @@ export function ProductForm({
                             placeholder="Add a variation name"
                           />
                         </div>
-                        <Label className="text-gray-700">Options</Label>
+                        <Label className="text-gray-700">{t("options")}</Label>
                         {options?.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-1">
                             {options?.map((option) => (
@@ -833,7 +835,7 @@ export function ProductForm({
                         )}
                         <div className="border border-dashed rounded-md p-4 bg-gray-100 space-y-2">
                           <div>
-                            <Label className="text-gray-700 mb-1">Label</Label>
+                            <Label className="text-gray-700 mb-1">{t("label")}</Label>
                             <Input
                               type="text"
                               value={option.label}
@@ -844,7 +846,7 @@ export function ProductForm({
                             />
                           </div>
                           <div>
-                            <Label className="text-gray-700 mb-1">Price</Label>
+                            <Label className="text-gray-700 mb-1">{t("price")}</Label>
                             <Input
                               type="number"
                               min={0}
@@ -867,7 +869,7 @@ export function ProductForm({
                               size="sm"
                               className="bg-[#DC3173] hover:bg-[#DC3173]/90"
                             >
-                              Add Option
+                              {t("add_option")}
                             </Button>
                           </div>
                         </div>
@@ -878,7 +880,7 @@ export function ProductForm({
                             size="sm"
                             className="bg-[#DC3173] hover:bg-[#DC3173]/90"
                           >
-                            Add Variation
+                            {t("add_variation")}
                           </Button>
                         </div>
                       </div>
@@ -900,7 +902,7 @@ export function ProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Stock Information
+                      {t("stock_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <FormField
@@ -912,7 +914,7 @@ export function ProductForm({
                               htmlFor="quantity"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Quantity
+                              {t("quantity")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -939,7 +941,7 @@ export function ProductForm({
                               htmlFor="unit"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Unit
+                              {t("unit")}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -958,17 +960,17 @@ export function ProductForm({
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="kg">
-                                    Kilogram (kg)
+                                    {t("kilogram")}
                                   </SelectItem>
-                                  <SelectItem value="g">Gram (g)</SelectItem>
-                                  <SelectItem value="l">Liter (l)</SelectItem>
+                                  <SelectItem value="g">{t("gram")}</SelectItem>
+                                  <SelectItem value="l">{t("liter")}</SelectItem>
                                   <SelectItem value="ml">
-                                    Milliliter (ml)
+                                    {t("milliliter")}
                                   </SelectItem>
                                   <SelectItem value="pcs">
-                                    Pieces (pcs)
+                                    {t("pieces")}
                                   </SelectItem>
-                                  <SelectItem value="others">Others</SelectItem>
+                                  <SelectItem value="others">{t("others")}</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -985,7 +987,7 @@ export function ProductForm({
                               htmlFor="availabilityStatus"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Availability Status
+                              {t("availability_status")}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -1004,13 +1006,13 @@ export function ProductForm({
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="In Stock">
-                                    In Stock
+                                    {t("in_stock")}
                                   </SelectItem>
                                   <SelectItem value="Out of Stock">
-                                    Out of Stock
+                                    {t("out_of_stock")}
                                   </SelectItem>
                                   <SelectItem value="Limited">
-                                    Limited Stock
+                                    {t("limited")}
                                   </SelectItem>
                                 </SelectContent>
                               </Select>
@@ -1037,7 +1039,7 @@ export function ProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Product Attributes
+                      {t("product_attributes")}
                     </h2>
                     <FormField
                       control={form.control}
@@ -1058,7 +1060,7 @@ export function ProductForm({
                                   }
                                   className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                 />
-                                Organic
+                                {t("organic")}
                               </FormLabel>
                             </div>
                           </FormControl>
@@ -1076,7 +1078,7 @@ export function ProductForm({
                               htmlFor="weight"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Weight
+                              {t("weight")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -1103,7 +1105,7 @@ export function ProductForm({
                               htmlFor="packagingType"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Packaging Type
+                              {t("packaging_type")}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -1122,15 +1124,15 @@ export function ProductForm({
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="Plastic Bag">
-                                    Plastic Bag
+                                    {t("plastic_bag")}
                                   </SelectItem>
                                   <SelectItem value="Paper Bag">
-                                    Paper Bag
+                                    {t("paper_bag")}
                                   </SelectItem>
-                                  <SelectItem value="Box">Box</SelectItem>
-                                  <SelectItem value="Tin">Tin</SelectItem>
-                                  <SelectItem value="Bottle">Bottle</SelectItem>
-                                  <SelectItem value="Others">Others</SelectItem>
+                                  <SelectItem value="Box">{t("box")}</SelectItem>
+                                  <SelectItem value="Tin">{t("tin")}</SelectItem>
+                                  <SelectItem value="Bottle">{t("bottle")}</SelectItem>
+                                  <SelectItem value="Others">{t("others")}</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1147,7 +1149,7 @@ export function ProductForm({
                               htmlFor="storageTemperature"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Storage Temperature
+                              {t("storage_temperature")}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -1166,16 +1168,16 @@ export function ProductForm({
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="Room temperature">
-                                    Room temperature
+                                    {t("room_temperature")}
                                   </SelectItem>
                                   <SelectItem value="Refrigerated">
-                                    Refrigerated
+                                    {t("refrigerated")}
                                   </SelectItem>
-                                  <SelectItem value="Frozen">Frozen</SelectItem>
+                                  <SelectItem value="Frozen">{t("frozen")}</SelectItem>
                                   <SelectItem value="Cool and dry">
-                                    Cool and dry
+                                    {t("cool_and_dry")}
                                   </SelectItem>
-                                  <SelectItem value="Others">Others</SelectItem>
+                                  <SelectItem value="Others">{t("others")}</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1201,7 +1203,7 @@ export function ProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Meta Information
+                      {t("meta_information")}
                     </h2>
                     <div className="space-y-4">
                       <FormField
@@ -1223,7 +1225,7 @@ export function ProductForm({
                                     }
                                     className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                   />
-                                  Featured Product
+                                  {t("featured_product")}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -1250,7 +1252,7 @@ export function ProductForm({
                                     }
                                     className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                   />
-                                  Available for Pre-Order
+                                  {t("available_for_pre_order")}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -1272,14 +1274,13 @@ export function ProductForm({
                     type="button"
                     onClick={() => activeTab > 0 && setActiveTab(activeTab - 1)}
                     disabled={activeTab === 0}
-                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${
-                      activeTab === 0
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                    }`}
+                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${activeTab === 0
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                      }`}
                   >
                     <ChevronLeftIcon className="h-4 w-4" />
-                    <span>Previous</span>
+                    <span>{t("previous")}</span>
                   </motion.button>
                   {activeTab === 6 && (
                     <motion.button
@@ -1293,7 +1294,7 @@ export function ProductForm({
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2 shadow-lg shadow-pink-200/50"
                     >
                       <SaveIcon className="h-5 w-5" />
-                      <span>Save Product</span>
+                      <span>{t("save_product")}</span>
                     </motion.button>
                   )}
                   {activeTab < 6 && (
@@ -1310,7 +1311,7 @@ export function ProductForm({
                       }
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2"
                     >
-                      <span>Next</span>
+                      <span>{t("next")}</span>
                       <ChevronRightIcon className="h-4 w-4" />
                     </motion.button>
                   )}

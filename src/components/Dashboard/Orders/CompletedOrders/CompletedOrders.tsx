@@ -11,6 +11,7 @@ import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
 import { CheckCircle, Clock, MapPin } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 interface IProps {
   ordersResult: {
@@ -26,35 +27,38 @@ const PRIMARY = "#DC3173"; // brand
 const BG = "#FFF5FA"; // soft background
 const SHADOW = "0px 4px 24px rgba(0,0,0,0.07)"; // premium shadow
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-];
-
-const filterOptions = [
-  {
-    label: "Payment Method",
-    key: "payment",
-    placeholder: "Select Payment Method",
-    type: "select",
-    items: [
-      {
-        label: "All",
-        value: "all",
-      },
-      {
-        label: "Card",
-        value: "CARD",
-      },
-      {
-        label: "Mobile",
-        value: "MOBILE",
-      },
-    ],
-  },
-];
 
 export default function CompletedOrders({ ordersResult }: IProps) {
+  const { t } = useTranslation();
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+  ];
+
+  const filterOptions = [
+    {
+      label: t("payment_method"),
+      key: "payment",
+      placeholder: t("select_payment_method"),
+      type: "select",
+      items: [
+        {
+          label: "All",
+          value: "all",
+        },
+        {
+          label: "Card",
+          value: "CARD",
+        },
+        {
+          label: "Mobile",
+          value: "MOBILE",
+        },
+      ],
+    },
+  ];
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[900px] mx-auto space-y-8">
@@ -64,10 +68,10 @@ export default function CompletedOrders({ ordersResult }: IProps) {
             className="text-4xl font-extrabold tracking-tight"
             style={{ color: PRIMARY }}
           >
-            Completed Orders
+            {t("completed_orders")}
           </h1>
           <p className="text-gray-600 text-sm">
-            Fully delivered orders with earnings & rider data.
+            {t("fully_delivered_orders_with_earnings_rider_data")}
           </p>
         </div>
 
@@ -90,7 +94,7 @@ export default function CompletedOrders({ ordersResult }: IProps) {
                 animate={{ opacity: 1 }}
                 className="py-12 text-center text-gray-500"
               >
-                No orders match your query.
+                {t("no_orders_match_query")}
               </motion.div>
             )}
             {ordersResult?.data?.map((o) => (
@@ -122,7 +126,7 @@ export default function CompletedOrders({ ordersResult }: IProps) {
                         </p>
 
                         <div className="flex items-center gap-1 text-gray-500 text-sm mt-2">
-                          <Clock size={14} /> Delivered at{" "}
+                          <Clock size={14} /> {t("delivered_at")}{" "}
                           {format(o.deliveredAt as Date, "hh:mm a; dd/MM/yyyy")}
                         </div>
                       </div>
@@ -135,7 +139,7 @@ export default function CompletedOrders({ ordersResult }: IProps) {
                             color: PRIMARY,
                           }}
                         >
-                          Completed
+                          {t("completed")}
                         </div>
                         <div className="text-2xl font-bold mt-2">
                           {o.totalPrice?.toFixed(2)}€
@@ -152,7 +156,7 @@ export default function CompletedOrders({ ordersResult }: IProps) {
                           i < o.items.length - 1 && "mb-1.5"
                         )}
                       >
-                        Items: {item.productId?.name} x {item.quantity}
+                        {t("items")}: {item.productId?.name} x {item.quantity}
                       </div>
                     ))}
 
@@ -190,7 +194,7 @@ export default function CompletedOrders({ ordersResult }: IProps) {
                       </div>
 
                       <div className="text-sm text-gray-600">
-                        Payment:{" "}
+                        {t("payment")}:{" "}
                         <span className="font-semibold uppercase text-gray-900">
                           {o.paymentMethod}
                         </span>

@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TProductCategory } from "@/src/types/category.type";
 import { motion } from "framer-motion";
@@ -15,13 +16,6 @@ interface IProps {
   categoriesResult: { data: TProductCategory[]; meta?: TMeta };
 }
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-  { label: "Name (A-Z)", value: "name" },
-  { label: "Name (Z-A)", value: "-name" },
-];
-
 const icons = {
   0: { icon: <Utensils />, color: "#FFE1E9" },
   1: { icon: <Apple />, color: "#FFF4D5" },
@@ -32,6 +26,15 @@ const icons = {
 };
 
 export default function Categories({ categoriesResult }: IProps) {
+  const { t } = useTranslation();
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+    { label: t("name_a_to_z"), value: "name" },
+    { label: t("name_z_to_a"), value: "-name" },
+  ];
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[900px] mx-auto space-y-8">
@@ -41,11 +44,10 @@ export default function Categories({ categoriesResult }: IProps) {
             className="text-4xl font-extrabold tracking-tight"
             style={{ color: PRIMARY }}
           >
-            Categories
+            {t("categories")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm">
-            These are platform-managed categories. Vendors cannot create or edit
-            categories.
+            {t("these_are_platform_managed_categories")}
           </p>
         </div>
 
@@ -90,7 +92,7 @@ export default function Categories({ categoriesResult }: IProps) {
                     color: PRIMARY,
                   }}
                 >
-                  Platform
+                  {t("platform")}
                 </div>
               </CardContent>
             </Card>
@@ -100,7 +102,7 @@ export default function Categories({ categoriesResult }: IProps) {
         {/* NO RESULTS */}
         {categoriesResult?.data?.length === 0 && (
           <div className="text-center text-gray-500 py-10">
-            No categories found.
+            {t("no_categories_found")}
           </div>
         )}
 

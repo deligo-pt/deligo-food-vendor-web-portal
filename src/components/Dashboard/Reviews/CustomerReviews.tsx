@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TReview, TReviewSentiment } from "@/src/types/review.type";
 import { formatDistanceToNow } from "date-fns";
@@ -25,6 +26,7 @@ export default function CustomerReviews({
 }: IProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const sentimentParam = (searchParams.get("sentiment") || "ALL") as
     | TReviewSentiment
@@ -49,10 +51,10 @@ export default function CustomerReviews({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Customer Reviews
+              {t("customer_reviews")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm">
-              Real feedback from your Glovo customers
+              {t("real_feedback_from_glovo_customers")}
             </p>
           </div>
 
@@ -73,7 +75,7 @@ export default function CustomerReviews({
         >
           <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Average Rating</p>
+              <p className="text-gray-600 text-sm">{t("average_rating")}</p>
               <div className="flex items-end gap-2 mt-1">
                 <h2 className="text-5xl font-extrabold text-gray-900">
                   {vendorRating.average}
@@ -81,7 +83,7 @@ export default function CustomerReviews({
                 <span className="text-gray-500">/5</span>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Based on {vendorRating.totalReviews} reviews
+                {t("based_on")} {vendorRating.totalReviews} {t('reviews_sm')}
               </p>
             </div>
 
@@ -108,21 +110,21 @@ export default function CustomerReviews({
             onClick={() => filterReviews("ALL")}
             className={sentimentParam === "ALL" ? "bg-[#DC3173]" : ""}
           >
-            All
+            {t("all")}
           </Button>
           <Button
             variant={sentimentParam === "POSITIVE" ? "default" : "outline"}
             onClick={() => filterReviews("POSITIVE")}
             className={sentimentParam === "POSITIVE" ? "bg-[#DC3173]" : ""}
           >
-            Positive
+            {t("positive")}
           </Button>
           <Button
             variant={sentimentParam === "NEGATIVE" ? "default" : "outline"}
             onClick={() => filterReviews("NEGATIVE")}
             className={sentimentParam === "NEGATIVE" ? "bg-[#DC3173]" : ""}
           >
-            Negative
+            {t("negative")}
           </Button>
           <Button
             variant={sentimentParam === "NEUTRAL" ? "default" : "outline"}
@@ -193,7 +195,7 @@ export default function CustomerReviews({
                       <div className="flex items-center gap-3 mt-3">
                         {rev.rating > 3 ? (
                           <Badge className="bg-green-100 text-green-700 flex gap-1">
-                            <ThumbsUp size={14} /> Liked
+                            <ThumbsUp size={14} /> {t("liked")}
                           </Badge>
                         ) : rev.rating === 3 ? (
                           <Badge className="bg-yellow-100 text-yellow-700 flex gap-1">
@@ -201,7 +203,7 @@ export default function CustomerReviews({
                           </Badge>
                         ) : (
                           <Badge className="bg-red-100 text-red-700 flex gap-1">
-                            <ThumbsDown size={14} /> Not great
+                            <ThumbsDown size={14} /> {t("not_great")}
                           </Badge>
                         )}
                       </div>
@@ -214,7 +216,7 @@ export default function CustomerReviews({
 
           {reviewsResult?.meta?.total === 0 && (
             <p className="text-center text-gray-500 py-10 text-sm">
-              No reviews found.
+              {t("no_reviews_found")}
             </p>
           )}
         </div>
@@ -226,26 +228,23 @@ export default function CustomerReviews({
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <MessageSquare className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Insights</h2>
+              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
             </div>
 
             <Separator />
 
             <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
               <li>
-                Fast delivery comments increased — strong delivery performance.
+                {t("fast_delivery_comments_increased")}
               </li>
               <li>
-                Negative comments mostly about delays & cold food — optimize
-                prep time.
+                {t("negatie_comments_mostly_delays")}
               </li>
               <li>
-                Most positive reviews mention rider friendliness — keep
-                consistency.
+                {t("most_positive_reviews_mention")}
               </li>
               <li>
-                Weekend orders show a rating dip — consider peak-hour staffing
-                boost.
+                {t("weekend_orders_show_rating_dip")}
               </li>
             </ul>
           </CardContent>

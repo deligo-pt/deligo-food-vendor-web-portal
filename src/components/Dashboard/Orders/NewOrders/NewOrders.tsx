@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import { ORDER_STATUS } from "@/src/consts/order.const";
+import { useTranslation } from "@/src/hooks/use-translation";
 import {
   orderDispatchReq,
   updateOrderStatusReq,
@@ -35,14 +36,15 @@ interface IProps {
   };
 }
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-];
 
 export default function NewOrders({ ordersResult }: IProps) {
   const router = useRouter();
+  const { t } = useTranslation();
 
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+  ];
   // status updates
   const updateStatus = async (
     id: string,
@@ -93,7 +95,7 @@ export default function NewOrders({ ordersResult }: IProps) {
         router.refresh();
         toast.success(
           result.message ||
-            "Order broadcasted to delivery partners successfully!",
+          "Order broadcasted to delivery partners successfully!",
           {
             id: toastId,
           }
@@ -110,7 +112,7 @@ export default function NewOrders({ ordersResult }: IProps) {
       console.log(error);
       toast.error(
         error?.response?.data?.message ||
-          "Order broadcast to delivery partners failed",
+        "Order broadcast to delivery partners failed",
         {
           id: toastId,
         }
@@ -132,7 +134,7 @@ export default function NewOrders({ ordersResult }: IProps) {
               backgroundImage: `linear-gradient(90deg, ${PRIMARY}, #ff5fa2)`,
             }}
           >
-            Vendor — New Orders
+            {t("vendor_new_orders")}
           </h1>
         </motion.div>
 
@@ -149,7 +151,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                   className="w-3 h-3 rounded-full animate-pulse"
                   style={{ background: PRIMARY }}
                 />
-                Live Orders
+                {t("live_orders")}
               </CardTitle>
             </CardHeader>
 
@@ -161,7 +163,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                     animate={{ opacity: 1 }}
                     className="py-12 text-center text-gray-500"
                   >
-                    No orders match your query.
+                    {t("no_orders_match_query")}
                   </motion.div>
                 )}
 
@@ -230,14 +232,14 @@ export default function NewOrders({ ordersResult }: IProps) {
 
                         <div className="flex items-center gap-2 mt-3">
                           {order.orderStatus === ORDER_STATUS.ACCEPTED ||
-                          order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
-                          order.orderStatus ===
+                            order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
+                            order.orderStatus ===
                             ORDER_STATUS.REASSIGNMENT_NEEDED ? (
                             <span
                               onClick={() => broadcastOrder(order.orderId)}
                               className="bg-yellow-500 px-2 py-1 text-xs rounded-md inline-flex font-medium"
                             >
-                              Click to assign delivery partner
+                              {t("click_assign_delivery_partner")}
                             </span>
                           ) : (
                             <>
@@ -248,14 +250,14 @@ export default function NewOrders({ ordersResult }: IProps) {
                                     onClick={() => accept(order.orderId)}
                                     className="bg-[#DC3173] hover:bg-[#DC3173]/90"
                                   >
-                                    Accept
+                                    {t("accept")}
                                   </Button>
                                   <Button
                                     size="sm"
                                     onClick={() => reject(order.orderId)}
                                     className="bg-yellow-500 hover:bg-yellow-500/90"
                                   >
-                                    Reject
+                                    {t("reject")}
                                   </Button>
                                 </>
                               )}
@@ -265,7 +267,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                                   onClick={() => startPreparing(order.orderId)}
                                   className="bg-sky-500 hover:bg-sky-600"
                                 >
-                                  Prepare
+                                  {t("prepare")}
                                 </Button>
                               )}
                               {order.orderStatus === ORDER_STATUS.PREPARING && (
@@ -274,7 +276,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                                   onClick={() => markReady(order.orderId)}
                                   className="bg-green-500 hover:bg-green-600"
                                 >
-                                  Mark Ready
+                                  {t("mark_ready")}
                                 </Button>
                               )}
                             </>
@@ -287,7 +289,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                                 size="sm"
                                 className="flex items-center gap-1"
                               >
-                                View <ChevronRight size={14} />
+                                {t("view")} <ChevronRight size={14} />
                               </Button>
                             </SheetTrigger>
                             <SheetContent
@@ -385,13 +387,13 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
     >;
     label: string;
   }[] = [
-    { key: "PENDING", label: "New" },
-    { key: "ACCEPTED", label: "Accepted" },
-    { key: "ASSIGNED", label: "Assigned" },
-    { key: "PREPARING", label: "Preparing" },
-    { key: "READY_FOR_PICKUP", label: "Ready" },
-    // { key: "REJECTED", label: "Rejected" },
-  ];
+      { key: "PENDING", label: "New" },
+      { key: "ACCEPTED", label: "Accepted" },
+      { key: "ASSIGNED", label: "Assigned" },
+      { key: "PREPARING", label: "Preparing" },
+      { key: "READY_FOR_PICKUP", label: "Ready" },
+      // { key: "REJECTED", label: "Rejected" },
+    ];
   const active = steps.findIndex((s) => s.key === status);
 
   return (
@@ -405,18 +407,17 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
               animate={
                 isActive
                   ? {
-                      scale: 1.05,
-                      opacity: 1,
-                      boxShadow: `0 6px 18px ${PRIMARY}33`,
-                    }
+                    scale: 1.05,
+                    opacity: 1,
+                    boxShadow: `0 6px 18px ${PRIMARY}33`,
+                  }
                   : { scale: 1, opacity: 0.6 }
               }
               transition={{ type: "spring", stiffness: 160, damping: 16 }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
-                isActive
-                  ? "bg-[--primary] text-white"
-                  : "bg-white border border-pink-100 text-rose-500"
-              }`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${isActive
+                ? "bg-[--primary] text-white"
+                : "bg-white border border-pink-100 text-rose-500"
+                }`}
               style={isActive ? { background: PRIMARY, color: "#fff" } : {}}
             >
               {i + 1}
@@ -424,9 +425,8 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
 
             {i < steps.length - 1 && (
               <div
-                className={`h-0.5 w-8 ${
-                  i < active ? "bg-[--primary]" : "bg-pink-100"
-                }`}
+                className={`h-0.5 w-8 ${i < active ? "bg-[--primary]" : "bg-pink-100"
+                  }`}
                 style={i < active ? { background: PRIMARY } : undefined}
               />
             )}
@@ -453,6 +453,7 @@ function OrderDetails({
   onReady?: () => void;
   onBroadcastOrder?: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
       <div>
@@ -477,7 +478,7 @@ function OrderDetails({
       </div>
 
       <div>
-        <h3 className="font-semibold">Items</h3>
+        <h3 className="font-semibold">{t("items")}</h3>
         <ul className="mt-2 space-y-2">
           {order.items.map((it, idx) => (
             <li
@@ -485,14 +486,14 @@ function OrderDetails({
               className="flex items-center justify-between p-3 rounded-md bg-gray-50"
             >
               <div className="font-medium">{it.productId?.name}</div>
-              <div className="text-sm text-gray-600">Qty {it.quantity}</div>
+              <div className="text-sm text-gray-600">{t("qty")} {it.quantity}</div>
             </li>
           ))}
         </ul>
       </div>
 
       <div>
-        <h3 className="font-semibold">Delivery</h3>
+        <h3 className="font-semibold">{t("delivery")}</h3>
         <p className="text-sm text-gray-600 mt-1 flex items-center gap-2">
           <MapPin size={14} /> {order.deliveryAddress?.street},{" "}
           {order.deliveryAddress?.postalCode}, {order.deliveryAddress?.city},{" "}
@@ -502,13 +503,13 @@ function OrderDetails({
 
       <div className="flex items-center gap-2 justify-end">
         {order.orderStatus === ORDER_STATUS.ACCEPTED ||
-        order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
-        order.orderStatus === ORDER_STATUS.REASSIGNMENT_NEEDED ? (
+          order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
+          order.orderStatus === ORDER_STATUS.REASSIGNMENT_NEEDED ? (
           <span
             onClick={() => onBroadcastOrder && onBroadcastOrder()}
             className="bg-yellow-500 px-2 py-1 text-xs rounded-md inline-flex font-medium"
           >
-            Click to assign delivery partner
+            {t("click_assign_delivery_partner")}
           </span>
         ) : (
           <>
@@ -519,14 +520,14 @@ function OrderDetails({
                   onClick={() => onAccept && onAccept()}
                   className="bg-[#DC3173] hover:bg-[#DC3173]/90"
                 >
-                  Accept
+                  {t("accept")}
                 </Button>
                 <Button
                   size="sm"
                   onClick={() => onReject && onReject()}
                   className="bg-yellow-500 hover:bg-yellow-500/90"
                 >
-                  Reject
+                  {t("reject")}
                 </Button>
               </>
             )}
@@ -536,7 +537,7 @@ function OrderDetails({
                 onClick={() => onStart && onStart()}
                 className="bg-sky-500 hover:bg-sky-600"
               >
-                Prepare
+                {t("prepare")}
               </Button>
             )}
             {order.orderStatus === ORDER_STATUS.PREPARING && (
@@ -545,7 +546,7 @@ function OrderDetails({
                 onClick={() => onReady && onReady()}
                 className="bg-green-500 hover:bg-green-600"
               >
-                Mark Ready
+                {t("mark_ready")}
               </Button>
             )}
           </>

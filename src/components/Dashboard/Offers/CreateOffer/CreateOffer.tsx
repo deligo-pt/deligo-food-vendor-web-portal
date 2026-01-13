@@ -21,6 +21,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { createOffer } from "@/src/services/dashboard/offers/offers";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
@@ -42,6 +43,7 @@ interface IProps {
 }
 
 export default function VendorCreateOffer({ itemsResult }: IProps) {
+  const { t } = useTranslation();
   const form = useForm<TOfferForm>({
     resolver: zodResolver(offerValidation),
     defaultValues: {
@@ -74,12 +76,12 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       isAutoApply: false,
       ...(data.offerType === "BOGO"
         ? {
-            bogo: {
-              buyQty: data.buyQty as number,
-              getQty: data.getQty as number,
-              itemId: data.itemId as string,
-            },
-          }
+          bogo: {
+            buyQty: data.buyQty as number,
+            getQty: data.getQty as number,
+            itemId: data.itemId as string,
+          },
+        }
         : {}),
     };
 
@@ -110,10 +112,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[900px] mx-auto space-y-10">
         <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-          Create New Offer
+          {t("create_new_offer")}
         </h1>
         <p className="text-gray-600 text-sm">
-          Add a promotion to boost your restaurant&apos;s sales
+          {t("add_promotion_boost_restaurant")}
         </p>
 
         <Card className="rounded-3xl bg-white border shadow-lg">
@@ -125,7 +127,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                 className="p-6 space-y-8"
               >
                 <div className="space-y-4">
-                  <h2 className="font-bold text-lg">Offer Details</h2>
+                  <h2 className="font-bold text-lg">{t("offer_details")}</h2>
                   <Separator />
 
                   <FormField
@@ -135,7 +137,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       <FormItem>
                         <FormControl>
                           <Input
-                            placeholder="Offer Title (e.g., 20% OFF on Burgers)"
+                            placeholder={t("offer_title_20_perc_off")}
                             className="h-12 text-base"
                             {...field}
                           />
@@ -152,7 +154,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       <FormItem>
                         <FormControl>
                           <Textarea
-                            placeholder="Offer Description"
+                            placeholder={t("offer_description")}
                             className="text-base"
                             rows={4}
                             {...field}
@@ -171,7 +173,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <div className="space-y-2">
                             <FormLabel className="font-medium text-sm text-gray-700">
-                              Offer Type
+                              {t("offer_type")}
                             </FormLabel>
                             <Select
                               onValueChange={field.onChange}
@@ -183,17 +185,17 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                   fieldState.invalid ? "border-destructive" : ""
                                 )}
                               >
-                                <SelectValue placeholder="Select type" />
+                                <SelectValue placeholder={t("select_type")} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="PERCENT">
-                                  Percentage Discount
+                                  {t("percentage_discount")}
                                 </SelectItem>
                                 <SelectItem value="FLAT">
-                                  Flat Amount OFF
+                                  {t("flat_amount_off")}
                                 </SelectItem>
                                 <SelectItem value="BOGO">
-                                  Buy 1 Get 1
+                                  {t("buy_1_get_1")}
                                 </SelectItem>
                               </SelectContent>
                             </Select>
@@ -213,7 +215,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormItem>
                           <FormControl>
                             <Input
-                              placeholder="Discount % (e.g., 20)"
+                              placeholder={t("discount_perc_20")}
                               type="number"
                               min={0}
                               max={100}
@@ -239,7 +241,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormItem>
                           <FormControl>
                             <Input
-                              placeholder="Flat Discount (€)"
+                              placeholder={t("flat_discount")}
                               type="number"
                               min={0}
                               max={100}
@@ -270,7 +272,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                 value={field.value}
                               >
                                 <SelectTrigger className="w-full h-12">
-                                  <SelectValue placeholder="Choose an Item" />
+                                  <SelectValue placeholder={t("choose_an_item")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {itemsResult?.data.map((item: TProduct) => (
@@ -299,7 +301,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormItem>
                           <FormControl>
                             <Input
-                              placeholder="Buy Quantity (e.g., 2)"
+                              placeholder={t("buy_quantity")}
                               type="number"
                               min={1}
                               className="h-12 text-base"
@@ -324,7 +326,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormItem>
                           <FormControl>
                             <Input
-                              placeholder="Get Quantity (e.g., 1)"
+                              placeholder={t("get_quantity")}
                               type="number"
                               min={1}
                               className="h-12 text-base"
@@ -344,7 +346,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
                 {/* VALIDITY */}
                 <div className="space-y-4">
-                  <h2 className="font-bold text-lg">Validity</h2>
+                  <h2 className="font-bold text-lg">{t("validity")}</h2>
                   <Separator />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -356,7 +358,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           <FormControl>
                             <div className="space-y-2">
                               <FormLabel className="font-medium text-sm text-gray-700">
-                                Start Date
+                                {t("start_date")}
                               </FormLabel>
                               <Input
                                 type="date"
@@ -380,7 +382,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           <FormControl>
                             <div className="space-y-2">
                               <FormLabel className="font-medium text-sm text-gray-700">
-                                End Date
+                                {t("end_date")}
                               </FormLabel>
                               <Input
                                 type="date"
@@ -406,7 +408,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <div className="space-y-2">
                             <FormLabel className="font-medium text-sm text-gray-700">
-                              Minimum Order Amount (€)
+                              {t("minimum_order_amount")}
                             </FormLabel>
                             <Input
                               type="number"
@@ -456,7 +458,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
                 {/* PROMO CODE */}
                 <div className="space-y-4">
-                  <h2 className="font-bold text-lg">Promo Code</h2>
+                  <h2 className="font-bold text-lg">{t("promo_code")}</h2>
                   <Separator />
                   <FormField
                     control={form.control}
@@ -466,7 +468,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <Input
                             // placeholder="Enter promo code (optional)"
-                            placeholder="Enter promo code"
+                            placeholder={t("enter_promo_code")}
                             className="h-12 text-base uppercase"
                             {...field}
                             onChange={(e) =>
@@ -483,13 +485,13 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                 {/* ACTION */}
                 <div className="pt-4 flex justify-end gap-4">
                   <Button variant="outline" className="h-12 px-6 text-base">
-                    Cancel
+                    {t("cancel")}
                   </Button>
                   <Button
                     className="h-12 px-6 text-base text-white"
                     style={{ background: PRIMARY }}
                   >
-                    Create Offer
+                    {t("create_offer")}
                   </Button>
                 </div>
               </form>

@@ -17,12 +17,14 @@ import {
   Send,
   Headphones,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0px 8px 24px rgba(0,0,0,0.06)";
 
 export default function VendorReportIssuePage() {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
 
   const [issueType, setIssueType] = useState("");
@@ -42,10 +44,10 @@ export default function VendorReportIssuePage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Report an Issue
+              {t("report_an_issue")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm">
-              Found a problem? Submit a report directly to the Deligo admin team.
+              {t("found_problem_submit_report_directly")}
             </p>
           </div>
           <AlertTriangle size={42} className="text-pink-600" />
@@ -59,7 +61,7 @@ export default function VendorReportIssuePage() {
             className="p-5 bg-green-50 text-green-700 rounded-xl border border-green-200 flex items-center gap-3"
           >
             <CheckCircle className="text-green-600" />
-            <p>Your issue has been submitted successfully. Our support team will contact you soon.</p>
+            <p>{t("your_issue_submitted_successfully")}</p>
           </motion.div>
         )}
 
@@ -72,27 +74,27 @@ export default function VendorReportIssuePage() {
 
             {/* SELECT ISSUE TYPE */}
             <div className="space-y-2">
-              <label className="font-semibold text-gray-700">Issue Type</label>
+              <label className="font-semibold text-gray-700">{t("issue_type")}</label>
               <Select onValueChange={setIssueType}>
                 <SelectTrigger className="h-12 rounded-xl bg-white border">
-                  <SelectValue placeholder="Choose issue type" />
+                  <SelectValue placeholder={t("choose_issue_type")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="order">Order Issue</SelectItem>
-                  <SelectItem value="payout">Payout / Earnings Issue</SelectItem>
-                  <SelectItem value="menu">Menu / Items Issue</SelectItem>
-                  <SelectItem value="ui">UI / Dashboard Bug</SelectItem>
-                  <SelectItem value="delivery">Delivery Partner Problem</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="order">{t("order_issue")}</SelectItem>
+                  <SelectItem value="payout">{t("payout_earnings_issue")}</SelectItem>
+                  <SelectItem value="menu">{t("menu_items_issue")}</SelectItem>
+                  <SelectItem value="ui">{t("ui_dashboard_bug")}</SelectItem>
+                  <SelectItem value="delivery">{t("delivery_partner_problem")}</SelectItem>
+                  <SelectItem value="other">{t("other")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* EMAIL */}
             <div className="space-y-2">
-              <label className="font-semibold text-gray-700">Your Email</label>
+              <label className="font-semibold text-gray-700">{t("your_email")}</label>
               <Input
-                placeholder="Enter your email address"
+                placeholder={t("enter_your_email_address")}
                 className="h-12 rounded-xl"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -101,9 +103,9 @@ export default function VendorReportIssuePage() {
 
             {/* DESCRIPTION */}
             <div className="space-y-2">
-              <label className="font-semibold text-gray-700">Describe the Issue</label>
+              <label className="font-semibold text-gray-700">{t("describe_the_issue")}</label>
               <Textarea
-                placeholder="Write a detailed description of the problem…"
+                placeholder={t("write_detailed_description")}
                 className="min-h-[140px] rounded-xl"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -112,12 +114,12 @@ export default function VendorReportIssuePage() {
 
             {/* UPLOAD SCREENSHOT */}
             <div className="space-y-2">
-              <label className="font-semibold text-gray-700">Attach Screenshot (optional)</label>
+              <label className="font-semibold text-gray-700">{t("attach_screenshot")}</label>
               <div className="p-4 border rounded-xl bg-gray-50 flex items-center justify-between">
-                <span className="text-sm text-gray-600">No file chosen</span>
+                <span className="text-sm text-gray-600">{t("no_file_chosen")}</span>
                 <Button variant="outline" className="flex items-center gap-2">
                   <Upload size={16} />
-                  Upload
+                  {t("upload")}
                 </Button>
               </div>
             </div>
@@ -131,7 +133,7 @@ export default function VendorReportIssuePage() {
                 className="text-white h-12 px-6 flex items-center gap-2 rounded-xl"
                 style={{ background: PRIMARY }}
               >
-                Submit Report <Send size={18} />
+                {t("submit_report")} <Send size={18} />
               </Button>
             </div>
 
@@ -142,15 +144,15 @@ export default function VendorReportIssuePage() {
         <Card className="rounded-3xl bg-white border shadow-md" style={{ boxShadow: SHADOW }}>
           <CardContent className="p-6 flex flex-col items-center gap-3 text-center">
             <Headphones size={40} className="text-pink-600" />
-            <h2 className="font-bold text-xl">Need Immediate Support?</h2>
+            <h2 className="font-bold text-xl">{t("need_immediate_support")}</h2>
             <p className="text-sm text-gray-600 max-w-[400px]">
-              Contact our support team via live chat or email for faster assistance.
+              {t("contact_support_team_via_live_chat")}
             </p>
             <Button
               className="h-11 px-6 text-white rounded-xl"
               style={{ background: PRIMARY }}
             >
-              Open Live Chat
+              {t("open_live_chat")}
             </Button>
           </CardContent>
         </Card>

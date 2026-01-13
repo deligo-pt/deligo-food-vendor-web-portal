@@ -17,30 +17,32 @@ import {
   ArrowRight,
   ShieldCheck,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0 8px 24px rgba(0,0,0,0.06)";
 
 export default function VendorHelpPage() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
 
   const FAQ = [
     {
-      q: "How do I manage my orders?",
-      a: "Go to Orders → Manage Orders to accept, prepare and complete orders.",
+      q: t("faq_q_1"),
+      a: t("faq_a_1"),
     },
     {
-      q: "How can I update my business information?",
-      a: "Navigate to Settings → Business Info to update store details.",
+      q: t("faq_q_2"),
+      a: t("faq_a_2"),
     },
     {
-      q: "How are payouts processed?",
-      a: "Payouts are automatically processed every Monday via SEPA.",
+      q: t("faq_q_3"),
+      a: t("faq_a_3"),
     },
     {
-      q: "How do I change my theme settings?",
-      a: "Go to Theme Settings to customize brand colors, dark mode and more.",
+      q: t("faq_q_4"),
+      a: t("faq_a_4"),
     },
   ];
 
@@ -56,10 +58,10 @@ export default function VendorHelpPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Help Center
+              {t("help_center")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Find answers, guides and support for your Deligo vendor account.
+              {t("find_answers_guides_support")}
             </p>
           </div>
           <HelpCircle size={40} className="text-pink-600" />
@@ -69,7 +71,7 @@ export default function VendorHelpPage() {
         <div className="relative">
           <Search className="absolute left-3 top-3 text-gray-500" size={18} />
           <Input
-            placeholder="Search for help…"
+            placeholder={t("search_for_help")}
             className="pl-10 h-12 rounded-2xl border"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -82,8 +84,8 @@ export default function VendorHelpPage() {
             <CardContent className="p-6 flex items-center gap-4">
               <BookOpen className="text-pink-600" size={34} />
               <div>
-                <h3 className="font-bold text-lg">Vendor Guidebook</h3>
-                <p className="text-sm text-gray-600">Learn how to use Deligo like a pro.</p>
+                <h3 className="font-bold text-lg">{t("vendor_guidebook")}</h3>
+                <p className="text-sm text-gray-600">{t("learn_how_to_use_deligo")}</p>
               </div>
             </CardContent>
           </Card>
@@ -92,8 +94,8 @@ export default function VendorHelpPage() {
             <CardContent className="p-6 flex items-center gap-4">
               <ShieldCheck className="text-green-600" size={34} />
               <div>
-                <h3 className="font-bold text-lg">Policies & Safety</h3>
-                <p className="text-sm text-gray-600">Rules for safe platform usage.</p>
+                <h3 className="font-bold text-lg">{t("policies_and_safety")}</h3>
+                <p className="text-sm text-gray-600">{t("rules_for_safe_platform")}</p>
               </div>
             </CardContent>
           </Card>
@@ -102,7 +104,7 @@ export default function VendorHelpPage() {
             <CardContent className="p-6 flex items-center gap-4">
               <Mail className="text-blue-600" size={34} />
               <div>
-                <h3 className="font-bold text-lg">Email Support</h3>
+                <h3 className="font-bold text-lg">{t("email_support")}</h3>
                 <p className="text-sm text-gray-600">support@deligo.pt</p>
               </div>
             </CardContent>
@@ -112,8 +114,8 @@ export default function VendorHelpPage() {
             <CardContent className="p-6 flex items-center gap-4">
               <MessageCircle className="text-purple-600" size={34} />
               <div>
-                <h3 className="font-bold text-lg">Live Chat</h3>
-                <p className="text-sm text-gray-600">Chat with our support team.</p>
+                <h3 className="font-bold text-lg">{t("live_chat")}</h3>
+                <p className="text-sm text-gray-600">{t("chat_with_support_team")}</p>
               </div>
             </CardContent>
           </Card>
@@ -123,7 +125,7 @@ export default function VendorHelpPage() {
 
         {/* FAQ */}
         <h2 className="text-2xl font-bold" style={{ color: PRIMARY }}>
-          Frequently Asked Questions
+          {t("frequently_asked_questions")}
         </h2>
 
         <div className="space-y-4">
@@ -146,7 +148,7 @@ export default function VendorHelpPage() {
           ))}
 
           {filtered.length === 0 && (
-            <p className="text-gray-500 text-sm">No results found.</p>
+            <p className="text-gray-500 text-sm">{t("no_results_found")}</p>
           )}
         </div>
 
@@ -154,12 +156,12 @@ export default function VendorHelpPage() {
         <Card className="rounded-3xl bg-white border shadow-md" style={{ boxShadow: SHADOW }}>
           <CardContent className="p-7 flex flex-col items-center text-center gap-3">
             <PhoneCall size={40} className="text-pink-600" />
-            <h2 className="font-bold text-xl">Need more help?</h2>
+            <h2 className="font-bold text-xl">{t("need_more_help")}</h2>
             <p className="text-sm text-gray-600 max-w-[400px]">
-              Our support team is available 7 days a week to assist you with your vendor account.
+              {t("our_support_team_available")}
             </p>
             <Button style={{ background: PRIMARY }} className="text-white flex items-center gap-2 mt-3">
-              Contact Support <ArrowRight size={16} />
+              {t("contact_support")} <ArrowRight size={16} />
             </Button>
           </CardContent>
         </Card>

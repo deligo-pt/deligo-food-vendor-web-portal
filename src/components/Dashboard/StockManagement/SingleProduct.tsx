@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDebounce } from "@/src/hooks/use-debounce";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { updateStock } from "@/src/services/products/manageStock";
 import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
@@ -16,27 +17,28 @@ import { useEffect, useState, useTransition } from "react";
 
 const PRIMARY = "#DC3173";
 
-const getStockStatus = (stock: number) => {
-  if (stock === 0)
-    return {
-      text: "Out of Stock",
-      color: "#DC2626",
-      icon: <XCircle size={16} />,
-    };
-  if (stock < 10)
-    return {
-      text: "Limited",
-      color: "#EA580C",
-      icon: <AlertTriangle size={16} />,
-    };
-  return {
-    text: "In Stock",
-    color: PRIMARY,
-    icon: <CheckCircle size={16} />,
-  };
-};
-
 export default function SingleProduct({ p }: { p: TProduct }) {
+  const { t } = useTranslation();
+
+  const getStockStatus = (stock: number) => {
+    if (stock === 0)
+      return {
+        text: t("out_of_stock"),
+        color: "#DC2626",
+        icon: <XCircle size={16} />,
+      };
+    if (stock < 10)
+      return {
+        text: t("limited"),
+        color: "#EA580C",
+        icon: <AlertTriangle size={16} />,
+      };
+    return {
+      text: t("in_stock"),
+      color: PRIMARY,
+      icon: <CheckCircle size={16} />,
+    };
+  };
   const [stock, setStock] = useState(p?.stock?.quantity);
   const debouncedValue = useDebounce(String(stock), 1000);
   const [isPending, startTransition] = useTransition();
@@ -124,7 +126,7 @@ export default function SingleProduct({ p }: { p: TProduct }) {
           <div className="p-5 border-l flex flex-col items-center justify-center gap-4 bg-white/40 backdrop-blur-sm">
             {/* STOCK NUMBER */}
             <div className="text-center">
-              <div className="text-xs text-gray-500">Stock</div>
+              <div className="text-xs text-gray-500">{t("stock")}</div>
               <div className="text-4xl font-bold text-gray-800">{stock}</div>
             </div>
 

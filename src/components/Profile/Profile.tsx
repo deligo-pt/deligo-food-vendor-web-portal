@@ -5,6 +5,7 @@ import { ProfileInfoRow } from "@/src/components/Profile/ProfileInfoRow";
 import ProfilePhotoUpload from "@/src/components/Profile/ProfilePhotoUpload";
 import { ProfileSection } from "@/src/components/Profile/ProfileSection";
 import { USER_STATUS } from "@/src/consts/user.const";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TVendor } from "@/src/types/vendor.type";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -33,6 +34,7 @@ import {
 } from "lucide-react";
 
 export default function Profile({ vendor }: { vendor: TVendor }) {
+  const { t } = useTranslation();
   const getStatusColor = (status: keyof typeof USER_STATUS) => {
     const colors = {
       APPROVED: "bg-green-100 text-green-700 border-green-200",
@@ -45,7 +47,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
 
   const accountAge = Math.floor(
     (new Date().getTime() - new Date(vendor.createdAt).getTime()) /
-      (1000 * 60 * 60 * 24)
+    (1000 * 60 * 60 * 24)
   );
 
   return (
@@ -119,7 +121,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 {vendor.isEmailVerified && (
                   <div className="flex items-center gap-1 text-[#DC3173]">
                     <ShieldCheckIcon className="w-4 h-4" />
-                    <span className="text-sm font-medium">Verified</span>
+                    <span className="text-sm font-medium">{t("verified")}</span>
                   </div>
                 )}
               </div>
@@ -135,7 +137,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                       </span>
                     </div>
                     <span className="text-sm text-gray-500">
-                      ({vendor.rating.totalReviews} reviews)
+                      ({vendor.rating.totalReviews} {t("reviews")})
                     </span>
                   </div>
                 )}
@@ -145,7 +147,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                     <span className="text-lg font-bold text-gray-900">
                       {vendor.totalOrders}
                     </span>
-                    <span className="text-sm text-gray-500">orders</span>
+                    <span className="text-sm text-gray-500">{t("orders")}</span>
                   </div>
                 ) : (
                   ""
@@ -155,7 +157,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                   <span className="text-lg font-bold text-gray-900">
                     {accountAge}
                   </span>
-                  <span className="text-sm text-gray-500">days active</span>
+                  <span className="text-sm text-gray-500">{t("days_active")}</span>
                 </div>
               </div>
             </div>
@@ -166,18 +168,18 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Personal Information */}
           <ProfileSection
-            title="Personal Information"
+            title={t("personal_information")}
             icon={UserIcon}
             delay={0.1}
           >
             <div className="space-y-1">
               <ProfileInfoRow
-                label="Phone Number"
+                label={t("phone_number")}
                 value={vendor.contactNumber}
                 icon={PhoneIcon}
               />
               <ProfileInfoRow
-                label="Email"
+                label={t("email")}
                 value={vendor.email}
                 icon={MailIcon}
               />
@@ -186,49 +188,49 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
 
           {/* Business Details */}
           <ProfileSection
-            title="Business Details"
+            title={t("businessDetails")}
             icon={BuildingIcon}
             delay={0.15}
           >
             <div className="space-y-1">
               <ProfileInfoRow
-                label="Business Name"
+                label={t("business_name")}
                 value={vendor.businessDetails?.businessName}
                 icon={BriefcaseIcon}
               />
               <ProfileInfoRow
-                label="Business Type"
+                label={t("business_type")}
                 value={vendor.businessDetails?.businessType}
                 icon={Building2Icon}
               />
               <ProfileInfoRow
-                label="License Number"
+                label={t("license_mumber")}
                 value={vendor.businessDetails?.businessLicenseNumber}
                 icon={HashIcon}
               />
               <ProfileInfoRow
-                label="NIF"
+                label={t("nif")}
                 value={vendor.businessDetails?.NIF}
                 icon={BuildingIcon}
               />
               <ProfileInfoRow
-                label="Number of Branches"
+                label={t("number_of_branches")}
                 value={vendor.businessDetails?.totalBranches}
                 icon={NetworkIcon}
               />
               <ProfileInfoRow
-                label="Opening Hours"
+                label={t("opening_hours")}
                 value={vendor.businessDetails?.openingHours}
                 icon={DoorOpenIcon}
               />
               <ProfileInfoRow
-                label="Closing Hours"
+                label={t("closing_hours")}
                 value={vendor.businessDetails?.closingHours}
                 icon={DoorClosedIcon}
               />
               {vendor.businessDetails?.closingDays && (
                 <ProfileInfoRow
-                  label="Closing Days"
+                  label={t("closingDays")}
                   value={vendor.businessDetails.closingDays.join(", ")}
                   icon={CalendarDaysIcon}
                 />
@@ -238,28 +240,28 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
 
           {/* Business Location */}
           <ProfileSection
-            title="Business Location"
+            title={t("business_location")}
             icon={MapPinIcon}
             delay={0.2}
           >
             <div className="space-y-1">
               <ProfileInfoRow
-                label="Street Address"
+                label={t("streetAddress")}
                 value={`${vendor.businessLocation?.street}`}
                 icon={MapIcon}
               />
               <ProfileInfoRow
-                label="City"
+                label={t("city")}
                 value={vendor.businessLocation?.city}
                 icon={Building2Icon}
               />
               <ProfileInfoRow
-                label="Postal Code"
+                label={t("postalCode")}
                 value={vendor.businessLocation?.postalCode}
                 icon={HashIcon}
               />
               <ProfileInfoRow
-                label="Country"
+                label={t("country")}
                 value={vendor.businessLocation?.country}
                 icon={GlobeIcon}
               />
@@ -268,28 +270,28 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
 
           {/* Bank Details */}
           <ProfileSection
-            title="Bank Details"
+            title={t("bankDetails")}
             icon={CreditCardIcon}
             delay={0.25}
           >
             <div className="space-y-1">
               <ProfileInfoRow
-                label="Bank Name"
+                label={t("bankName")}
                 value={vendor.bankDetails?.bankName}
                 icon={Building2Icon}
               />
               <ProfileInfoRow
-                label="Account Holder"
+                label={t("accountHolder")}
                 value={vendor.bankDetails?.accountHolderName}
                 icon={UserIcon}
               />
               <ProfileInfoRow
-                label="IBAN"
+                label={t("iban")}
                 value={vendor.bankDetails?.iban.replace(/(.{4})/g, "$1 ")}
                 icon={CreditCardIcon}
               />
               <ProfileInfoRow
-                label="SWIFT Code"
+                label={t("swift_code")}
                 value={vendor.bankDetails?.swiftCode}
                 icon={HashIcon}
               />
@@ -297,20 +299,20 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
           </ProfileSection>
 
           {/* Documents */}
-          <ProfileSection title="Documents" icon={FileTextIcon} delay={0.3}>
+          <ProfileSection title={t("documents")} icon={FileTextIcon} delay={0.3}>
             <ProfileDoc documents={vendor?.documents} />
           </ProfileSection>
 
           {/* Activity */}
           <ProfileSection
-            title="Account Activity"
+            title={t("account_activity")}
             icon={ClockIcon}
             delay={0.35}
           >
             <div className="space-y-1">
               {vendor.lastLoginAt && (
                 <ProfileInfoRow
-                  label="Last Login"
+                  label={t("last_login")}
                   value={format(
                     vendor.lastLoginAt,
                     "hh:mm aa, do MMM yyyy"
@@ -319,12 +321,12 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 />
               )}
               <ProfileInfoRow
-                label="Account Created"
+                label={t("account_created")}
                 value={format(vendor.createdAt, "do MMM yyyy")}
                 icon={CalendarIcon}
               />
               <ProfileInfoRow
-                label="Two-Factor Auth"
+                label={t("two_factor_auth")}
                 value={vendor.twoFactorEnabled ? "Enabled" : "Disabled"}
                 icon={ShieldCheckIcon}
               />

@@ -8,12 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { ShieldCheck, ChefHat, Users, Eye, ClipboardList } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0 6px 20px rgba(0,0,0,0.06)";
-
-const ROLES = ["Manager", "Chef", "Staff", "Viewer"] as const;
 
 /* -------------------------------------------
    STRICTLY TYPED PERMISSIONS OBJECT
@@ -55,9 +54,11 @@ type Role = keyof Permissions;
 type PermissionKey<R extends Role> = keyof Permissions[R];
 
 export default function VendorRolesPermissions() {
+  const { t } = useTranslation();
   const [permissions, setPermissions] =
     useState<Permissions>(initialPermissions);
 
+  const ROLES = [t("manager"), t("chef"), t("staff"), t("viewer")] as const;
   /* -------------------------------------------
      FULLY TYPED toggle FUNCTION
   ------------------------------------------- */
@@ -80,10 +81,10 @@ export default function VendorRolesPermissions() {
         {/* HEADER */}
         <div>
           <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-            Roles & Permissions
+            {t("roles_and_permissions")}
           </h1>
           <p className="text-gray-600 text-sm mt-1">
-            Control what each staff member can access in your vendor panel
+            {t("set_access_controls")}
           </p>
         </div>
 
@@ -114,7 +115,7 @@ export default function VendorRolesPermissions() {
                       <h2 className="text-2xl font-bold text-gray-800">
                         {role}
                       </h2>
-                      <p className="text-sm text-gray-600">Set access controls</p>
+                      <p className="text-sm text-gray-600">{t("set_access_controls")}</p>
                     </div>
                   </div>
 
@@ -145,7 +146,7 @@ export default function VendorRolesPermissions() {
                     className="w-full text-white mt-4"
                     style={{ background: PRIMARY }}
                   >
-                    Save Changes
+                    {t("save_changes")}
                   </Button>
                 </CardContent>
               </Card>
@@ -158,19 +159,19 @@ export default function VendorRolesPermissions() {
           <CardContent className="p-6 space-y-3">
             <div className="flex items-center gap-2">
               <Users className="text-gray-800" />
-              <h2 className="font-bold text-lg">AI Recommendations</h2>
+              <h2 className="font-bold text-lg">{t("ai_recommendation")}</h2>
             </div>
             <Separator />
 
             <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
-              <li>Managers should have full analytics + finance access.</li>
-              <li>Chefs should only access menu & order management.</li>
-              <li>Viewer role is ideal for temporary staff or auditors.</li>
-              <li>Only trusted staff should have access to payout settings.</li>
+              <li>{t("managers_should_have_full_analytics")}</li>
+              <li>{t("chefs_should_only_access_menu")}</li>
+              <li>{t("viewer_role_is_ideal_temporary")}</li>
+              <li>{t("only_trusted_staff_should_access")}</li>
             </ul>
 
             <Button className="text-white" style={{ background: PRIMARY }}>
-              Apply Best Practice Setup
+              {t("apply_best_practise_setup")}
             </Button>
           </CardContent>
         </Card>

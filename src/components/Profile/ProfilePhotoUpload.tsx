@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import { uploadProfilePhoto } from "@/src/services/dashboard/profile/uploadProfilePhoto";
 import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
@@ -20,6 +21,7 @@ interface IProps {
 }
 
 export default function ProfilePhotoUpload({ currentPhoto }: IProps) {
+  const { t } = useTranslation();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
@@ -181,9 +183,9 @@ export default function ProfilePhotoUpload({ currentPhoto }: IProps) {
           whileTap={{
             scale: 0.95,
           }}
-          // disabled={isUploading}
+        // disabled={isUploading}
         >
-          <span>Upload</span>
+          <span>{t("upload")}</span>
           <UploadIcon className="w-4 h-4" />
         </motion.button>
       ) : (

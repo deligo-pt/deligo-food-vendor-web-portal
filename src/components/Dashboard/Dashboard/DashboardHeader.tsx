@@ -1,8 +1,11 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 
 const DashboardHeader = ({ vendorName }: { vendorName: string }) => {
+  const { t } = useTranslation();
+
   return (
     <motion.div
       initial={{
@@ -18,10 +21,10 @@ const DashboardHeader = ({ vendorName }: { vendorName: string }) => {
       }}
     >
       <h1 className="text-3xl font-bold">
-        Hello, <span className="text-[#DC3173]">{vendorName}</span>
+        {t("hello")}, <span className="text-[#DC3173]">{vendorName}</span>
       </h1>
       <p className="text-gray-500 mt-1">
-        Welcome to your food delivery dashboard overview
+        {t("welcomeDashboard")}
       </p>
     </motion.div>
   );

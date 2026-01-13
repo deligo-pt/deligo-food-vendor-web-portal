@@ -19,6 +19,7 @@ import {
   ChefHat,
   ClipboardList,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -50,6 +51,7 @@ const STATIC_STAFF = [
 ];
 
 export default function VendorAllStaffPage() {
+  const { t } = useTranslation();
   const [staff, setStaff] = useState(STATIC_STAFF);
   const [query, setQuery] = useState("");
 
@@ -75,15 +77,15 @@ export default function VendorAllStaffPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              All Staff
+              {t("all_staff")}
             </h1>
-            <p className="text-gray-600 text-sm mt-1">Manage all staff members for your restaurant</p>
+            <p className="text-gray-600 text-sm mt-1">{t("manage_all_staff_members")}</p>
           </div>
         </div>
 
         {/* SEARCH */}
         <Input
-          placeholder="Search staff by name or role..."
+          placeholder={t("search_staff_by_name_or_role")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="max-w-sm"
@@ -92,12 +94,12 @@ export default function VendorAllStaffPage() {
         {/* ADD STAFF FORM */}
         <Card className="rounded-3xl bg-white border shadow-md">
           <CardContent className="p-6 space-y-5">
-            <h2 className="text-xl font-bold flex items-center gap-2"><UserPlus size={20} /> Add New Staff</h2>
+            <h2 className="text-xl font-bold flex items-center gap-2"><UserPlus size={20} /> {t("add_new_staff")}</h2>
             <Separator />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                placeholder="Full Name"
+                placeholder={t("full_name")}
                 value={newStaff.name}
                 onChange={(e) => setNewStaff({ ...newStaff, name: e.target.value })}
                 className="h-12"
@@ -111,21 +113,21 @@ export default function VendorAllStaffPage() {
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Manager">Manager</SelectItem>
-                  <SelectItem value="Chef">Chef</SelectItem>
-                  <SelectItem value="Staff">Staff</SelectItem>
+                  <SelectItem value="Manager">{t("manager")}</SelectItem>
+                  <SelectItem value="Chef">{t("chef")}</SelectItem>
+                  <SelectItem value="Staff">{t("staff")}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Input
-                placeholder="Email Address"
+                placeholder={t("email_address")}
                 value={newStaff.email}
                 onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
                 className="h-12"
               />
 
               <Input
-                placeholder="Phone Number"
+                placeholder={t("phone_number")}
                 value={newStaff.phone}
                 onChange={(e) => setNewStaff({ ...newStaff, phone: e.target.value })}
                 className="h-12"
@@ -137,7 +139,7 @@ export default function VendorAllStaffPage() {
               style={{ background: PRIMARY }}
               onClick={addStaff}
             >
-              Add Staff
+              {t("add_staff")}
             </Button>
           </CardContent>
         </Card>
@@ -166,9 +168,9 @@ export default function VendorAllStaffPage() {
                         <h2 className="text-2xl font-bold text-gray-800">{s.name}</h2>
 
                         <p className="flex items-center gap-2 mt-1 text-sm text-gray-700">
-                          {s.role === "Manager" && <ShieldCheck size={16} className="text-green-600" />} 
-                          {s.role === "Chef" && <ChefHat size={16} className="text-amber-600" />} 
-                          {s.role === "Staff" && <ClipboardList size={16} className="text-blue-600" />} 
+                          {s.role === "Manager" && <ShieldCheck size={16} className="text-green-600" />}
+                          {s.role === "Chef" && <ChefHat size={16} className="text-amber-600" />}
+                          {s.role === "Staff" && <ClipboardList size={16} className="text-blue-600" />}
                           {s.role}
                         </p>
 
@@ -182,10 +184,10 @@ export default function VendorAllStaffPage() {
                     {/* RIGHT */}
                     <div className="text-right md:min-w-[200px] space-y-3">
                       <Button variant="outline" className="w-full flex items-center gap-2 justify-center">
-                        <Edit size={16} /> Edit
+                        <Edit size={16} /> {t("edit")}
                       </Button>
                       <Button variant="destructive" className="w-full flex items-center gap-2 justify-center">
-                        <Trash2 size={16} /> Remove
+                        <Trash2 size={16} /> {t("remove")}
                       </Button>
                     </div>
 
@@ -197,7 +199,7 @@ export default function VendorAllStaffPage() {
         </div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-gray-500 py-10">No staff found.</p>
+          <p className="text-center text-gray-500 py-10">{t("no_staff_found")}</p>
         )}
 
       </div>

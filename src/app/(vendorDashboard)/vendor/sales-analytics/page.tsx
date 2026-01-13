@@ -17,6 +17,7 @@ import {
   BarChartHorizontal,
   ChartLine,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const GRADIENT = "linear-gradient(135deg, #FFE0ED, #FFFFFF)";
@@ -48,6 +49,7 @@ const TOP_ITEMS = [
 ];
 
 export default function VendorSalesAnalyticsPage() {
+  const { t } = useTranslation();
   const maxValue = Math.max(...WEEKLY_SALES.map((d) => d.value));
 
   return (
@@ -57,15 +59,15 @@ export default function VendorSalesAnalyticsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Sales Analytics
+              {t("sales_analytics")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Deep insights into revenue, best-selling items & performance trends
+              {t("deep_insights_revenue_best_selling_items_performance_trends")}
             </p>
           </div>
 
           <Button style={{ background: PRIMARY }} className="text-white flex items-center gap-2">
-            <ChartLine size={18} /> Export Report
+            <ChartLine size={18} /> {t("export_report")}
           </Button>
         </div>
 
@@ -74,11 +76,11 @@ export default function VendorSalesAnalyticsPage() {
           <Card style={{ background: GRADIENT, boxShadow: SHADOW }} className="rounded-3xl border">
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">Total Sales</p>
+                <p className="text-gray-600 text-sm">{t("total_sales")}</p>
                 <h2 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
                   €{SALES_OVERVIEW.totalSales.toFixed(2)}
                 </h2>
-                <p className="text-xs text-gray-500 mt-2">Last 7 days</p>
+                <p className="text-xs text-gray-500 mt-2">{t("last_7_days")}</p>
               </div>
               <TrendingUp size={42} className="text-green-600" />
             </CardContent>
@@ -87,7 +89,7 @@ export default function VendorSalesAnalyticsPage() {
           <Card className="rounded-3xl bg-white border shadow-md">
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">Best Performing Day</p>
+                <p className="text-gray-600 text-sm">{t("best_performing_day")}</p>
                 <h2 className="text-3xl font-bold">{SALES_OVERVIEW.bestDay}</h2>
               </div>
               <ArrowUpRight size={42} className="text-green-600" />
@@ -97,7 +99,7 @@ export default function VendorSalesAnalyticsPage() {
           <Card className="rounded-3xl bg-white border shadow-md">
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">Slowest Day</p>
+                <p className="text-gray-600 text-sm">{t("slowest_day")}</p>
                 <h2 className="text-3xl font-bold">{SALES_OVERVIEW.worstDay}</h2>
               </div>
               <ArrowDownRight size={42} className="text-red-600" />
@@ -110,7 +112,7 @@ export default function VendorSalesAnalyticsPage() {
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-5">
               <LineChart className="text-gray-600" />
-              <h2 className="font-bold text-lg">Weekly Sales Trend</h2>
+              <h2 className="font-bold text-lg">{t("weekly_sales_trend")}</h2>
             </div>
 
             <div className="flex items-end gap-4 h-52">
@@ -138,7 +140,7 @@ export default function VendorSalesAnalyticsPage() {
           <CardContent className="p-6 space-y-6">
             <div className="flex items-center gap-2">
               <BarChartHorizontal className="text-gray-700" />
-              <h2 className="font-bold text-lg">Top Selling Items</h2>
+              <h2 className="font-bold text-lg">{t("top_selling_items")}</h2>
             </div>
 
             <Separator />
@@ -147,7 +149,7 @@ export default function VendorSalesAnalyticsPage() {
               {TOP_ITEMS.map((item, index) => (
                 <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl shadow-inner">
                   <span className="text-gray-800 font-medium">{item.name}</span>
-                  <span className="text-pink-600 font-bold">{item.sales} sold</span>
+                  <span className="text-pink-600 font-bold">{item.sales} {t("sold")}</span>
                 </div>
               ))}
             </div>
@@ -156,7 +158,7 @@ export default function VendorSalesAnalyticsPage() {
 
         {/* FOOTNOTE */}
         <p className="text-center text-xs text-gray-500 pt-6">
-          Data based on last 7 days | Updated automatically 
+          {t("data_based_on_last_7_days")}
         </p>
       </div>
     </div>

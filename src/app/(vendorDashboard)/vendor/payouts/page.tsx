@@ -23,6 +23,7 @@ import {
   TrendingUp,
   CalendarClock,
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const GRADIENT = "linear-gradient(135deg, #FFD4E7, #FFFFFF)";
@@ -57,6 +58,7 @@ const PAYOUTS = [
 ];
 
 export default function VendorPayoutsPagePremium() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<string>("all");
 
   const filteredPayouts = PAYOUTS.filter((p) =>
@@ -77,13 +79,13 @@ export default function VendorPayoutsPagePremium() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight" style={{ color: PRIMARY }}>
-              Vendor Payouts
+              {t("vendor_payouts")}
             </h1>
-            <p className="text-gray-600 mt-1 text-sm">Earnings, balance & payout history</p>
+            <p className="text-gray-600 mt-1 text-sm">{t("earnings_balance_payout")}</p>
           </div>
 
           <Button className="flex items-center gap-2 text-white" style={{ background: PRIMARY }}>
-            <Download size={18} /> Export CSV
+            <Download size={18} /> {t("export_csv")}
           </Button>
         </div>
 
@@ -97,12 +99,12 @@ export default function VendorPayoutsPagePremium() {
           >
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">Available Balance</p>
+                <p className="text-gray-600 text-sm">{t("available_balance")}</p>
                 <h2 className="text-4xl font-extrabold mt-1" style={{ color: PRIMARY }}>
                   €247.40
                 </h2>
                 <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                  <CalendarClock size={14} /> Weekly payout every Monday
+                  <CalendarClock size={14} /> {t("weekly_payout_every_monday")}
                 </p>
               </div>
               <div className="p-4 rounded-2xl bg-white shadow-inner">
@@ -115,7 +117,7 @@ export default function VendorPayoutsPagePremium() {
           <Card className="rounded-3xl bg-white border shadow-md">
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">Payouts Completed</p>
+                <p className="text-gray-600 text-sm">{t("payout_completed")}</p>
                 <h2 className="text-3xl font-bold mt-1">€212.60</h2>
               </div>
               <TrendingUp className="text-green-600" size={36} />
@@ -126,7 +128,7 @@ export default function VendorPayoutsPagePremium() {
           <Card className="rounded-3xl bg-white border shadow-md">
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-gray-600 text-sm">Processing</p>
+                <p className="text-gray-600 text-sm">{t("processing")}</p>
                 <h2 className="text-3xl font-bold mt-1">€42.80</h2>
               </div>
               <BarChart3 className="text-amber-600" size={36} />
@@ -141,9 +143,9 @@ export default function VendorPayoutsPagePremium() {
               <SelectValue placeholder="Filter" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="processing">Processing</SelectItem>
+              <SelectItem value="all">{t("all")}</SelectItem>
+              <SelectItem value="completed">{t("completed")}</SelectItem>
+              <SelectItem value="processing">{t("processing")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -193,7 +195,7 @@ export default function VendorPayoutsPagePremium() {
           </AnimatePresence>
 
           {filteredPayouts.length === 0 && (
-            <p className="text-center text-gray-500 py-10 text-sm">No payouts found.</p>
+            <p className="text-center text-gray-500 py-10 text-sm">{t("no_payouts_found")}</p>
           )}
         </div>
 
@@ -202,18 +204,18 @@ export default function VendorPayoutsPagePremium() {
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-3">
               <History size={18} className="text-gray-700" />
-              <h2 className="font-bold text-lg">Portugal Payment Rules</h2>
+              <h2 className="font-bold text-lg">{t("portugal_payment_rules")}</h2>
             </div>
 
             <Separator className="my-3" />
 
             <ul className="text-sm text-gray-600 space-y-2">
-              <li>• Automatic weekly SEPA payout every Monday.</li>
-              <li>• IVA (VAT) handled per Portuguese tax rules and already applied where required.</li>
-              <li>• Minimum payout threshold: <strong>€20</strong>. Balances below this will roll to next cycle.</li>
-              <li>• Typical bank transfer time: <strong>24–48 hours</strong>.</li>
-              <li>• For instant payouts (if enabled), fees may apply — check Finance settings.</li>
-              <li>• Payouts are sent to your registered IBAN. Update bank details in Settings  Finance.</li>
+              <li>• {t("automatic_weekly_payout")}.</li>
+              <li>• {t("iva_handled_per_portuguese_tax")}.</li>
+              <li>• {t("minimum_payout_threshold")}: <strong>{t("euro_20")}</strong>. {t("balances_below_roll_next_cycle")}.</li>
+              <li>• {t("typical_bank_transfer_time")}: <strong>{t("hours_24_48")}</strong>.</li>
+              <li>• {t("instant_payouts_fees_may_apply")}.</li>
+              <li>• {t("payouts_sent_to_registered_iban")}.</li>
             </ul>
           </CardContent>
         </Card>

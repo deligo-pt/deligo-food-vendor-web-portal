@@ -6,6 +6,7 @@ import SingleProduct from "@/src/components/Dashboard/StockManagement/SingleProd
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF2F8";
@@ -61,28 +62,30 @@ interface IProps {
   };
 }
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-  { label: "Name (A-Z)", value: "name" },
-  { label: "Name (Z-A)", value: "-name" },
-  { label: "Price (High to Low)", value: "-pricing.finalPrice" },
-  { label: "Price (low to High)", value: "pricing.finalPrice" },
-  { label: "Highest Rated", value: "-rating.average" },
-  { label: "lowest Rated", value: "rating.average" },
-];
-
 export default function Stocks({ productsResult }: IProps) {
+  const { t } = useTranslation();
+
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+    { label: t("name_a_to_z"), value: "name" },
+    { label: t("name_z_to_a"), value: "-name" },
+    { label: t("price_high_to_low"), value: "-pricing.finalPrice" },
+    { label: t("price_low_to_high"), value: "pricing.finalPrice" },
+    { label: t("highest_rated"), value: "-rating.average" },
+    { label: t("lowest_rated"), value: "rating.average" },
+  ];
+
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[900px] mx-auto space-y-8">
         {/* HEADER */}
         <header>
           <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-            Stock Management
+            {t("stock_management")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm">
-            Update product stock in real-time —
+            {t("update_product_stock_in_real_time")}
           </p>
         </header>
 
@@ -101,7 +104,7 @@ export default function Stocks({ productsResult }: IProps) {
         {/* NO RESULTS */}
         {productsResult?.data?.length === 0 && (
           <div className="text-center text-gray-500 py-12">
-            No products found.
+            {t("no_products_found")}
           </div>
         )}
       </div>

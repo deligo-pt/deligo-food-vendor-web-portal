@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import { ORDER_STATUS } from "@/src/consts/order.const";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
@@ -23,16 +24,18 @@ const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const CARD_BG = "#FFFFFF";
 
-const sortOptions = [
-  { label: "Newest First", value: "-createdAt" },
-  { label: "Oldest First", value: "createdAt" },
-];
 
 /* Format price */
 const formatPrice = (n: number) => `${n.toFixed(2)}€`;
 
 /* ---------------------- Page Component ---------------------- */
 export default function ReadyForPickupOrders({ ordersResult }: IProps) {
+  const { t } = useTranslation();
+  const sortOptions = [
+    { label: t("newest_first"), value: "-createdAt" },
+    { label: t("oldest_first"), value: "createdAt" },
+  ];
+
   return (
     <div style={{ background: BG }} className="min-h-screen p-6 md:p-10">
       <div className="max-w-[1000px] mx-auto space-y-6">
@@ -40,7 +43,7 @@ export default function ReadyForPickupOrders({ ordersResult }: IProps) {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Vendor — Ready for pickup
+              {t("vendor")} — {t("ready_for_pickup")}
             </h1>
           </div>
         </div>
@@ -56,7 +59,7 @@ export default function ReadyForPickupOrders({ ordersResult }: IProps) {
                 animate={{ opacity: 1 }}
                 className="py-12 text-center text-gray-500"
               >
-                No orders match your query.
+                {t("no_orders_match_query")}
               </motion.div>
             )}
             {ordersResult?.data?.map((order) => (
@@ -67,9 +70,8 @@ export default function ReadyForPickupOrders({ ordersResult }: IProps) {
                 exit={{ opacity: 0, y: 6 }}
               >
                 <Card
-                  className={`p-4 rounded-2xl shadow-md border ${
-                    order.flash ? "ring-4 ring-[rgba(220,49,115,0.14)]" : ""
-                  }`}
+                  className={`p-4 rounded-2xl shadow-md border ${order.flash ? "ring-4 ring-[rgba(220,49,115,0.14)]" : ""
+                    }`}
                   style={{ background: CARD_BG }}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -162,9 +164,8 @@ function StatusPill({
   const s = map[status];
   return (
     <div
-      className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2 ${
-        small ? "text-sm" : ""
-      }`}
+      className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2 ${small ? "text-sm" : ""
+        }`}
       style={{ background: s.bg, color: s.color }}
     >
       <span className="w-2 h-2 rounded-full" style={{ background: s.color }} />
