@@ -1316,6 +1316,61 @@ export const en = {
 
 
 
+    // contact-support
+    reach_out_deligo_support_team: "Reach out to the Deligo support team — we’re here 7 days a week.",
+    your_message_has_been_delivered: "Your message has been delivered. Our support team will respond soon.",
+    call_us: "Call Us",
+    mon_sun_9am_10pm: "Mon–Sun · 9am – 10pm",
+    auto_response_24_7: "24/7 Auto-response",
+    instant_support: "Instant support",
+    start_chat: "Start Chat",
+    send_us_message: "Send Us a Message",
+    your_name: "Your Name",
+    enter_your_name: "Enter your name",
+    enter_your_email: "Enter your email",
+    message: "Message",
+    describe_issue_question: "Describe your issue or question…",
+    send_message: "Send Message",
+    support_availability: "Support Availability",
+    dedicated_support_agents_available: "Our dedicated support agents are available 7 days a week to assist you with orders, payouts, menu issues and system problems.",
+    response_time: "Response time: 2–30 minutes",
+    deligo_portugal_office: "Deligo Portugal Office",
+    portugal: "Portugal",
+
+
+    // safety guidelines page
+    safety_compliance:"Safety & Compliance",
+    ensure_restaurant_meets:"Ensure your restaurant meets Deligo's safety, hygiene and food handling standards.",
+    compliance_status:"Your Compliance Status",
+    verified:"Verified",
+    account_status:"Account Status",
+    up_to_date:"Up to Date",
+    documents:"Documents",
+    hygine_rating:"Hygiene Rating",
+    food_handling_policies:"Food Handling Policies",
+    store_food_items_correct_temperatures:"Store food items at correct temperatures",
+    use_sealed_containers:"Use sealed containers for deliveries",
+    follow_portugal_haccp_guidelines:"Follow Portugal HACCP guidelines",
+    keep_work_surfaces_sanitized:"Keep work surfaces sanitized regularly",
+    staff_safety_training:"Staff Safety Training",
+    mandatory_hygine_training :"Mandatory hygiene training for all kitchen staff",
+    gloves_and_masks_required:"Gloves and masks required during food prep",
+    delivery_handoff_must_contact_safe:"Delivery handoff must be contact-safe",
+    maintain_clean_uniform:"Maintain a clean, uniform appearance",
+    data_privacy_security:"Data Privacy & Security",
+    customer_data_must_shared:"Customer data must NOT be shared",
+    payment_data_encrypted:"Payment data is encrypted (PSD2 compliant)",
+    reporting_suspicious_activities:"Reporting suspicious activities is mandatory",
+    delivery_safety:"Delivery Safety",
+    verify_rider_identity:"Verify rider identity before handover",
+    ensure_package_sealed:"Ensure package is sealed properly",
+    use_tamper_proof_bags:"Use tamper-proof bags",
+    check_correct_rider_assignment:"Check for correct rider assignment",
+    need_help_safety_compliance:"Need help with safety compliance?",
+    support_team_guide_through:"Our support team can guide you through Portugal's safety rules for restaurants.",
+    contact_safety_support:"Contact Safety Support",
+
+
 
 
 };

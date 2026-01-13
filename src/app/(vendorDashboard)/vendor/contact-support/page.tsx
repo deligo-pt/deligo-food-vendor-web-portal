@@ -20,12 +20,14 @@ import {
   Globe,
   ShieldAlert
 } from "lucide-react";
+import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 const SHADOW = "0 6px 20px rgba(0,0,0,0.06)";
 
 export default function VendorContactSupport() {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [msg, setMsg] = useState("");
   const [email, setEmail] = useState("");
@@ -44,10 +46,10 @@ export default function VendorContactSupport() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              Contact Support
+              {t("contact_support")}
             </h1>
             <p className="text-gray-600 text-sm mt-1">
-              Reach out to the Deligo support team — we’re here 7 days a week.
+              {t("reach_out_deligo_support_team")}
             </p>
           </div>
           <Headphones size={48} className="text-pink-600" />
@@ -61,7 +63,7 @@ export default function VendorContactSupport() {
             className="p-5 bg-green-50 text-green-700 rounded-xl border border-green-200 flex items-center gap-3"
           >
             <ShieldAlert className="text-green-600" />
-            <p>Your message has been delivered. Our support team will respond soon.</p>
+            <p>{t("your_message_has_been_delivered")}</p>
           </motion.div>
         )}
 
@@ -74,9 +76,9 @@ export default function VendorContactSupport() {
           >
             <CardContent className="p-6 text-center space-y-3">
               <PhoneCall size={36} className="mx-auto text-pink-600" />
-              <h3 className="font-bold text-lg text-gray-700">Call Us</h3>
+              <h3 className="font-bold text-lg text-gray-700">{t("call_us")}</h3>
               <p className="text-sm text-gray-600">+351 920 112 889</p>
-              <p className="text-xs text-gray-500">Mon–Sun · 9am – 10pm</p>
+              <p className="text-xs text-gray-500">{t("mon_sun_9am_10pm")}</p>
             </CardContent>
           </Card>
 
@@ -87,9 +89,9 @@ export default function VendorContactSupport() {
           >
             <CardContent className="p-6 text-center space-y-3">
               <Mail size={36} className="mx-auto text-blue-600" />
-              <h3 className="font-bold text-lg text-gray-700">Email Support</h3>
+              <h3 className="font-bold text-lg text-gray-700">{t("email_support")}</h3>
               <p className="text-sm text-gray-600">support@deligo.pt</p>
-              <p className="text-xs text-gray-500">24/7 Auto-response</p>
+              <p className="text-xs text-gray-500">{t("auto_response_24_7")}</p>
             </CardContent>
           </Card>
 
@@ -100,13 +102,13 @@ export default function VendorContactSupport() {
           >
             <CardContent className="p-6 text-center space-y-3">
               <MessageCircle size={36} className="mx-auto text-purple-600" />
-              <h3 className="font-bold text-lg text-gray-700">Live Chat</h3>
-              <p className="text-sm text-gray-600">Instant support</p>
+              <h3 className="font-bold text-lg text-gray-700">{t("live_chat")}</h3>
+              <p className="text-sm text-gray-600">{t("instant_support")}</p>
               <Button
                 className="mt-2 px-4 text-white"
                 style={{ background: PRIMARY }}
               >
-                Start Chat
+                {t("start_chat")}
               </Button>
             </CardContent>
           </Card>
@@ -121,15 +123,15 @@ export default function VendorContactSupport() {
         >
           <CardContent className="p-6 space-y-6">
             <h2 className="text-xl font-bold" style={{ color: PRIMARY }}>
-              Send Us a Message
+              {t("send_us_message")}
             </h2>
 
             {/* Name */}
             <div className="space-y-2">
-              <label className="font-semibold text-gray-700">Your Name</label>
+              <label className="font-semibold text-gray-700">{t("your_name")}</label>
               <Input
                 className="h-12 rounded-xl"
-                placeholder="Enter your name"
+                placeholder={t("enter_your_name")}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -137,10 +139,10 @@ export default function VendorContactSupport() {
 
             {/* Email */}
             <div className="space-y-2">
-              <label className="font-semibold text-gray-700">Email Address</label>
+              <label className="font-semibold text-gray-700">{t("email_address")}</label>
               <Input
                 className="h-12 rounded-xl"
-                placeholder="Enter your email"
+                placeholder={t("enter_your_email")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -148,10 +150,10 @@ export default function VendorContactSupport() {
 
             {/* Message */}
             <div className="space-y-2">
-              <label className="font-semibold text-gray-700">Message</label>
+              <label className="font-semibold text-gray-700">{t("message")}</label>
               <Textarea
                 className="min-h-[150px] rounded-xl"
-                placeholder="Describe your issue or question…"
+                placeholder={t("describe_issue_question")}
                 value={msg}
                 onChange={(e) => setMsg(e.target.value)}
               />
@@ -164,7 +166,7 @@ export default function VendorContactSupport() {
                 className="h-12 px-6 text-white rounded-xl flex items-center gap-2"
                 style={{ background: PRIMARY }}
               >
-                Send Message <Send size={18} />
+                {t("send_message")} <Send size={18} />
               </Button>
             </div>
           </CardContent>
@@ -177,11 +179,11 @@ export default function VendorContactSupport() {
         >
           <CardContent className="p-6 flex flex-col items-center text-center gap-3">
             <Clock size={40} className="text-pink-600" />
-            <h2 className="font-bold text-xl">Support Availability</h2>
+            <h2 className="font-bold text-xl">{t("support_availability")}</h2>
             <p className="text-sm text-gray-600 max-w-[400px]">
-              Our dedicated support agents are available 7 days a week to assist you with orders, payouts, menu issues and system problems.
+              {t("dedicated_support_agents_available")}
             </p>
-            <p className="text-xs text-gray-500">Response time: 2–30 minutes</p>
+            <p className="text-xs text-gray-500">{t("response_time")}</p>
           </CardContent>
         </Card>
 
@@ -193,8 +195,8 @@ export default function VendorContactSupport() {
           <CardContent className="p-6 flex items-center gap-4">
             <MapPin size={36} className="text-red-500" />
             <div>
-              <h3 className="font-semibold text-gray-700">Deligo Portugal Office</h3>
-              <p className="text-sm text-gray-600">Lisbon, Portugal</p>
+              <h3 className="font-semibold text-gray-700">{t("deligo_portugal_office")}</h3>
+              <p className="text-sm text-gray-600">{t("lisbon")}, {t("portugal")}</p>
             </div>
             <Globe className="ml-auto text-gray-400" />
           </CardContent>
