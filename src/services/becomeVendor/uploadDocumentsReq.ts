@@ -1,24 +1,20 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
+import { catchAsync } from "@/src/utils/catchAsync";
 
 export const uploadDocumentsReq = async (
   id: string,
   key: string,
   file: Blob
 ) => {
-  try {
+  return catchAsync<null>(async () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("data", JSON.stringify({ docImageTitle: key }));
 
-    const result = await serverRequest.patch(`/vendors/${id}/docImage`, {
+    return await serverRequest.patch(`/vendors/${id}/docImage`, {
       data: formData,
     });
-
-    return result;
-  } catch (err) {
-    console.error("Server fetch error:", err);
-    return false;
-  }
+  });
 };

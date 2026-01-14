@@ -11,10 +11,9 @@ import {
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { TResponse } from "@/src/types";
+import { resendOtpReq, verifyOtpReq } from "@/src/services/auth/auth";
 import { setCookie } from "@/src/utils/cookies";
 import { getAndSaveFcmToken } from "@/src/utils/fcmToken";
-import { postData } from "@/src/utils/requests";
 import { motion } from "framer-motion";
 import { Clock, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -58,72 +57,55 @@ export default function VerifyOtp({ email }: { email: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const finalOtp = otp.join("");
+
     if (finalOtp.length === 4) {
       const toastId = toast.loading("Verifying OTP...");
-      try {
-        const result = (await postData(
-          "/auth/verify-otp",
-          {
-            email,
-            otp: finalOtp,
-          }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        )) as unknown as TResponse<any>;
 
-        if (result.success) {
-          setCookie("accessToken", result.data.accessToken, 7);
-          setCookie("refreshToken", result.data.refreshToken, 365);
-          toast.success(result.message || "OTP verified successfully!", {
-            id: toastId,
-          });
+      const result = await verifyOtpReq({
+        email,
+        otp: finalOtp,
+      });
 
-          // get and save fcm token
-          getAndSaveFcmToken(result.data.accessToken);
+      if (result.success) {
+        setCookie("accessToken", result.data.accessToken, 7);
+        setCookie("refreshToken", result.data.refreshToken, 365);
 
-          router.push("/become-vendor/personal-details");
-          return;
-        }
-        toast.error(result.message, { id: toastId });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.message || "OTP verification failed",
-          {
-            id: toastId,
-          }
-        );
-        console.log(error);
+        toast.success(result.message || "OTP verified successfully!", {
+          id: toastId,
+        });
+
+        // get and save fcm token
+        getAndSaveFcmToken(result.data.accessToken);
+
+        router.push("/become-vendor/personal-details");
+        return;
       }
+
+      toast.error(result.message || "OTP verification failed", { id: toastId });
+      console.log(result);
     } else {
-      alert("Please enter a valid 4-digit OTP");
+      toast.error("Please enter a valid 4-digit OTP");
     }
   };
 
   const resendOtp = async () => {
     const toastId = toast.loading("Resending OTP...");
-    try {
-      const result = (await postData(
-        "/auth/resend-otp",
-        {
-          email,
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      )) as unknown as TResponse<any>;
 
-      if (result.success) {
-        setTimer(300);
-        console.log("OTP resent!");
-        toast.success("OTP resent successfully!", { id: toastId });
-        return;
-      }
-      toast.error(result.message, { id: toastId });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "OTP resend failed", {
+    const result = await resendOtpReq({
+      email,
+    });
+
+    if (result.success) {
+      setTimer(300);
+
+      toast.success(result.message || "OTP resent successfully!", {
         id: toastId,
       });
-      console.log(error);
+      return;
     }
+
+    toast.error(result.message || "OTP resend failed", { id: toastId });
+    console.log(result);
   };
 
   // Format time as MM:SS

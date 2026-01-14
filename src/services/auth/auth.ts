@@ -1,21 +1,28 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
-import { TResponse } from "@/src/types";
-import { TVendor } from "@/src/types/vendor.type";
+import { catchAsync } from "@/src/utils/catchAsync";
 
-export const updateVendorData = async (id: string, data: Partial<TVendor>) => {
-  try {
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(data));
+export const loginReq = async (data: { email: string; password: string }) => {
+  return catchAsync<{ accessToken: string; refreshToken: string }>(async () => {
+    return await serverRequest.post("/auth/login", {
+      data,
+    });
+  });
+};
 
-    const result = (await serverRequest.patch(`/vendors/${id}`, {
-      data: formData,
-    })) as TResponse<TVendor>;
+export const resendOtpReq = async (data: { email: string }) => {
+  return catchAsync<null>(async () => {
+    return await serverRequest.post("/auth/resend-otp", {
+      data,
+    });
+  });
+};
 
-    return result;
-  } catch (err) {
-    console.error("Server fetch error:", err);
-    return false;
-  }
+export const verifyOtpReq = async (data: { email: string; otp: string }) => {
+  return catchAsync<{ accessToken: string; refreshToken: string }>(async () => {
+    return await serverRequest.post("/auth/verify-otp", {
+      data,
+    });
+  });
 };

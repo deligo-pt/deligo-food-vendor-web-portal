@@ -23,12 +23,10 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { submitForApprovalReq } from "@/src/services/becomeVendor/become-vendor";
 import { uploadDocumentsReq } from "@/src/services/becomeVendor/uploadDocumentsReq";
 import { TResponse } from "@/src/types";
 import { DocKey, FilePreview } from "@/src/types/documents.type";
-import { getCookie } from "@/src/utils/cookies";
-import { updateData } from "@/src/utils/requests";
-import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -45,8 +43,10 @@ interface IDoc {
 
 export default function UploadDocuments({
   savedPreviews,
+  vendorId,
 }: {
   savedPreviews: Record<DocKey, FilePreview | null>;
+  vendorId: string;
 }) {
   const { t } = useTranslation();
   // store one preview per doc key
@@ -101,37 +101,30 @@ export default function UploadDocuments({
     const url = URL.createObjectURL(f);
 
     const toastId = toast.loading("Uploading...");
-    try {
-      const accessToken = getCookie("accessToken");
-      const decoded = jwtDecode(accessToken || "") as { id: string };
 
-      const result = (await uploadDocumentsReq(
-        decoded.id,
-        key,
-        f
-      )) as unknown as TResponse<any>;
+    const result = (await uploadDocumentsReq(
+      vendorId,
+      key,
+      f
+    )) as unknown as TResponse<any>;
 
-      if (result.success) {
-        toast.success("File uploaded successfully!", { id: toastId });
+    if (result.success) {
+      toast.success("File uploaded successfully!", { id: toastId });
 
-        // revoke previous url if present
-        const prev = previews[key];
-        if (prev && prev.url) URL.revokeObjectURL(prev.url);
+      // revoke previous url if present
+      const prev = previews[key];
+      if (prev && prev.url) URL.revokeObjectURL(prev.url);
 
-        setPreviews((p) => ({ ...p, [key]: { file: f, url, isImage } }));
+      setPreviews((p) => ({ ...p, [key]: { file: f, url, isImage } }));
 
-        if (inputsRef.current[key]) {
-          inputsRef.current[key]!.value = "";
-        }
-        return;
+      if (inputsRef.current[key]) {
+        inputsRef.current[key]!.value = "";
       }
-    } catch (error: any) {
-      console.log(error);
-      toast.error(error?.response?.data?.message || "File upload failed", {
-        id: toastId,
-      });
       return;
     }
+
+    toast.error(result.message || "File upload failed", { id: toastId });
+    console.log(result);
   };
 
   // Remove selected file for a doc (and revoke URL)
@@ -256,32 +249,22 @@ export default function UploadDocuments({
   // Continue button handler: stop confetti and close modal (later you can trigger API)
   const handleContinue = async () => {
     const toastId = toast.loading("Submitting...");
-    try {
-      const accessToken = getCookie("accessToken");
-      const decoded = jwtDecode(accessToken || "") as { id: string };
-      const result = (await updateData(
-        `/auth/${decoded.id}/submitForApproval`,
-        {},
-        {
-          headers: {
-            authorization: accessToken,
-          },
-        }
-      )) as unknown as TResponse<any>;
-      if (result.success) {
-        toast.success("Request submitted successfully!", {
-          id: toastId,
-        });
-        setConfettiRunning(true);
-        setShowModal(true);
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "Request submission failed",
-        { id: toastId }
-      );
-      console.log(error);
+
+    const result = await submitForApprovalReq(vendorId);
+
+    if (result.success) {
+      toast.success("Request submitted successfully!", {
+        id: toastId,
+      });
+      setConfettiRunning(true);
+      setShowModal(true);
+      return;
     }
+
+    toast.error(result.message || "Request submission failed", {
+      id: toastId,
+    });
+    console.log(result);
   };
 
   function getActualFileName(url: string): string {

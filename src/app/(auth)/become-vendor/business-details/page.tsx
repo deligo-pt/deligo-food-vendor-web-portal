@@ -8,7 +8,7 @@ import { cookies } from "next/headers";
 
 export default async function BusinessDetailsPage() {
   const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as { id: string };
+  const decoded = jwtDecode(accessToken) as { userId: string };
 
   let businessCategories: TBusinessCategory[] = [];
   let vendor = {} as TVendor;
@@ -27,7 +27,7 @@ export default async function BusinessDetailsPage() {
 
   try {
     const result = (await serverRequest.get(
-      `/vendors/${decoded.id}`
+      `/vendors/${decoded.userId}`
     )) as unknown as TResponse<TVendor>;
 
     if (result?.success) {

@@ -25,15 +25,12 @@ import {
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { updateVendorData } from "@/src/services/becomeVendor/updateVendorData";
-import { TResponse } from "@/src/types";
+import { updateVendorReq } from "@/src/services/becomeVendor/become-vendor";
 import { TBusinessCategory } from "@/src/types/category.type";
 import { TVendor } from "@/src/types/vendor.type";
-import { getCookie } from "@/src/utils/cookies";
 import { businessDetailsValidation } from "@/src/validations/become-vendor/business-details.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { jwtDecode } from "jwt-decode";
 import {
   ArrowLeftCircle,
   BadgeInfo,
@@ -89,43 +86,30 @@ export default function BusinessDetailsForm({
 
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
-    try {
-      const accessToken = getCookie("accessToken");
-      const decoded = jwtDecode(accessToken || "") as { id: string };
 
-      const businessDetails = {
-        businessDetails: {
-          ...data,
-          NIF: data.NIF.toUpperCase(),
-          businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
-          totalBranches: Number(data.branches),
-        },
-      };
+    const businessDetails = {
+      businessDetails: {
+        ...data,
+        NIF: data.NIF.toUpperCase(),
+        businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
+        totalBranches: Number(data.branches),
+      },
+    };
 
-      const result = (await updateVendorData(
-        decoded?.id,
-        businessDetails
-      )) as TResponse<TVendor>;
+    const result = await updateVendorReq(vendor?.userId, businessDetails);
 
-      if (result && result?.success) {
-        toast.success("Business details updated successfully!", {
-          id: toastId,
-        });
-        router.push("/become-vendor/business-location");
-        return;
-      } else {
-        toast.error(result?.message || "Business details update failed", {
-          id: toastId,
-        });
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "Business details update failed",
-        { id: toastId }
-      );
-      console.log(error);
+    if (result && result?.success) {
+      toast.success("Business details updated successfully!", {
+        id: toastId,
+      });
+      router.push("/become-vendor/business-location");
+      return;
     }
+
+    toast.error(result?.message || "Business details update failed", {
+      id: toastId,
+    });
+    console.log(result);
   };
 
   return (
@@ -386,10 +370,11 @@ export default function BusinessDetailsForm({
                                 );
                               }}
                               whileTap={{ scale: 0.95 }}
-                              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${field.value.includes(day)
-                                ? "bg-[#DC3173] text-white border-[#DC3173]"
-                                : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
-                                }`}
+                              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                                field.value.includes(day)
+                                  ? "bg-[#DC3173] text-white border-[#DC3173]"
+                                  : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
+                              }`}
                             >
                               {day}
                             </motion.button>

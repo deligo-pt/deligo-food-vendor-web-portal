@@ -11,10 +11,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { TResponse } from "@/src/types";
+import { loginReq } from "@/src/services/auth/auth";
 import { setCookie } from "@/src/utils/cookies";
 import { getAndSaveFcmToken } from "@/src/utils/fcmToken";
-import { postData } from "@/src/utils/requests";
 import { loginValidation } from "@/src/validations/auth/auth.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -46,56 +45,48 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Logging in...");
-    try {
-      const result = (await postData(
-        "/auth/login",
-        data
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      )) as unknown as TResponse<any>;
 
-      if (result?.success) {
-        const decoded = jwtDecode(result.data.accessToken) as {
-          role: string;
-          status: string;
-        };
-        if (decoded.role === "VENDOR") {
-          setCookie("accessToken", result.data.accessToken, 7);
-          setCookie("refreshToken", result.data.refreshToken, 365);
-          toast.success(result?.message || "Login successful!", {
-            id: toastId,
-          });
+    const result = await loginReq(data);
 
-          // get and save fcm token
-          setTimeout(() => {
-            getAndSaveFcmToken(result.data.accessToken);
-          }, 1000);
+    if (result?.success) {
+      const decoded = jwtDecode(result.data.accessToken) as {
+        role: string;
+        status: string;
+      };
+      if (decoded.role === "VENDOR") {
+        setCookie("accessToken", result.data.accessToken, 7);
+        setCookie("refreshToken", result.data.refreshToken, 365);
+        toast.success(result?.message || "Login successful!", {
+          id: toastId,
+        });
 
-          switch (decoded.status) {
-            case "PENDING":
-            case "SUBMITTED":
-            case "REJECTED":
-              router.push("/become-vendor/registration-status");
+        // get and save fcm token
+        setTimeout(() => {
+          getAndSaveFcmToken(result.data.accessToken);
+        }, 1000);
+
+        switch (decoded.status) {
+          case "PENDING":
+          case "SUBMITTED":
+          case "REJECTED":
+            router.push("/become-vendor/registration-status");
+            return;
+          case "APPROVED":
+            if (redirect) {
+              router.push(redirect);
               return;
-            case "APPROVED":
-              if (redirect) {
-                router.push(redirect);
-                return;
-              }
-              router.push("/vendor/dashboard");
-              return;
-          }
+            }
+            router.push("/vendor/dashboard");
+            return;
         }
-        toast.error("You are not a vendor", { id: toastId });
         return;
       }
-      toast.error(result.message, { id: toastId });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Login failed", {
-        id: toastId,
-      });
-      console.error("Error logging in:", error);
+      toast.error("You are not a vendor", { id: toastId });
+      return;
     }
+
+    toast.error(result.message || "Login failed", { id: toastId });
+    console.log(result);
   };
 
   return (

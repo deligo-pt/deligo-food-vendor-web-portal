@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 
 export default async function UploadDocumentPage() {
   const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as { id: string };
+  const decoded = jwtDecode(accessToken) as { userId: string };
 
   const savedPreviews: Record<DocKey, FilePreview | null> = {} as Record<
     DocKey,
@@ -14,7 +14,7 @@ export default async function UploadDocumentPage() {
   >;
 
   try {
-    const result = await serverRequest.get(`/vendors/${decoded.id}`);
+    const result = await serverRequest.get(`/vendors/${decoded.userId}`);
 
     if (result?.success) {
       if (result?.success) {
@@ -35,5 +35,7 @@ export default async function UploadDocumentPage() {
     console.error("Server fetch error:", err);
   }
 
-  return <UploadDocuments savedPreviews={savedPreviews} />;
+  return (
+    <UploadDocuments savedPreviews={savedPreviews} vendorId={decoded.userId} />
+  );
 }
