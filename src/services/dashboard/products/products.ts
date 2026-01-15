@@ -1,31 +1,72 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
-import { TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
+import { catchAsync } from "@/src/utils/catchAsync";
 
 export const getAllProductsReq = async ({ limit = 10 }) => {
-  try {
-    const result = (await serverRequest.get("/products", {
+  return catchAsync<TProduct[]>(async () => {
+    return await serverRequest.get("/products", {
       params: { limit },
-    })) as TResponse<TProduct[]>;
-    if (result.success) {
-      return {
-        success: true,
-        data: result.data,
-        message: result.message,
-        meta: result.meta,
-      };
-    }
+    });
+  });
+};
 
-    return { success: false, data: result.error, message: result.message };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    console.error("Server fetch error:", err);
-    return {
-      success: false,
-      data: err?.response?.data || err,
-      message: err?.response?.data?.message || "Products retrieve failed",
-    };
+export const createProductReq = async (
+  data: Partial<TProduct>,
+  images: { file: File | null; url: string }[]
+) => {
+  return catchAsync<TProduct>(async () => {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(data));
+
+    if (images.length > 0)
+      images.map((image) => formData.append("files", image.file as Blob));
+
+    return await serverRequest.post("/products/create-product", {
+      data: formData,
+    });
+  });
+};
+
+export const updateProductReq = async (
+  id: string,
+  data: Partial<TProduct>,
+  images: { file: File | null; url: string }[]
+) => {
+  return catchAsync<TProduct>(async () => {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(data));
+
+    if (images.length > 0)
+      images.map((image) => formData.append("files", image.file as Blob));
+
+    return await serverRequest.patch(`/products/${id}`, {
+      data: formData,
+    });
+  });
+};
+
+export const deleteProductReq = async (id: string) => {
+  return catchAsync<null>(async () => {
+    return await serverRequest.delete(`/products/soft-delete/${id}`);
+  });
+};
+
+export const updateStockReq = async (
+  id: string,
+  stock: {
+    quantity: number;
+    availabilityStatus: string;
   }
+) => {
+  return catchAsync<null>(async () => {
+    const updatedData = { stock };
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(updatedData));
+
+    return await serverRequest.patch(`/products/${id}`, {
+      data: formData,
+    });
+  });
 };

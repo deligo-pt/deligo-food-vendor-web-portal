@@ -22,7 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { createOffer } from "@/src/services/dashboard/offers/offers";
+import { createOfferReq } from "@/src/services/dashboard/offers/offers";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
@@ -76,36 +76,27 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       isAutoApply: false,
       ...(data.offerType === "BOGO"
         ? {
-          bogo: {
-            buyQty: data.buyQty as number,
-            getQty: data.getQty as number,
-            itemId: data.itemId as string,
-          },
-        }
+            bogo: {
+              buyQty: data.buyQty as number,
+              getQty: data.getQty as number,
+              itemId: data.itemId as string,
+            },
+          }
         : {}),
     };
 
-    try {
-      const result = await createOffer(offerData);
+    const result = await createOfferReq(offerData);
 
-      if (result.success) {
-        toast.success(result.message || "Offer created successfully!", {
-          id: toastId,
-        });
-        form.reset();
-        return;
-      }
-
-      toast.error(result.message || "Offer creation failed", { id: toastId });
-      console.log(result);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log(error.response);
-      toast.error(error?.response?.data?.message || "Password Update Failed", {
+    if (result.success) {
+      toast.success(result.message || "Offer created successfully!", {
         id: toastId,
       });
+      form.reset();
+      return;
     }
+
+    toast.error(result.message || "Offer creation failed", { id: toastId });
+    console.log(result);
   };
 
   return (
@@ -272,7 +263,9 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                 value={field.value}
                               >
                                 <SelectTrigger className="w-full h-12">
-                                  <SelectValue placeholder={t("choose_an_item")} />
+                                  <SelectValue
+                                    placeholder={t("choose_an_item")}
+                                  />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {itemsResult?.data.map((item: TProduct) => (

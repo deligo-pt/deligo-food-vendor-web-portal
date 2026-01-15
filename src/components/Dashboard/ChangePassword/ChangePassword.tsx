@@ -15,8 +15,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { changePasswordReq } from "@/src/services/dashboard/changePassword/changePassword";
-import { TResponse } from "@/src/types";
 import { removeCookie } from "@/src/utils/cookies";
 import { changePasswordValidation } from "@/src/validations/auth/change-password.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +25,6 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -52,34 +51,29 @@ export default function ChangePassword() {
   const onSubmit = async (data: ChangePasswordData) => {
     const toastId = toast.loading("Updating Password...");
 
-    try {
-      const changePasswordData = {
-        oldPassword: data.oldPassword,
-        newPassword: data.newPassword,
-      };
+    const changePasswordData = {
+      oldPassword: data.oldPassword,
+      newPassword: data.newPassword,
+    };
 
-      const result = (await changePasswordReq(
-        changePasswordData
-      )) as TResponse<null>;
+    const result = await changePasswordReq(changePasswordData);
 
-      if (result.success) {
-        toast.success("Password Updated Successfully!", { id: toastId });
+    if (result.success) {
+      toast.success("Password Updated Successfully!", { id: toastId });
 
-        setSuccess(true);
-        removeCookie("accessToken");
-        removeCookie("refreshToken");
+      setSuccess(true);
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
 
-        setTimeout(() => {
-          router.push("/login");
-        }, 500);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log(error.response);
-      toast.error(error?.response?.data?.message || "Password Update Failed", {
-        id: toastId,
-      });
+      setTimeout(() => {
+        router.push("/login");
+      }, 500);
+
+      return;
     }
+
+    toast.error(result.message || "Password Update Failed", { id: toastId });
+    console.log(result);
   };
 
   return (
@@ -231,7 +225,7 @@ export default function ChangePassword() {
                 <Button
                   className="h-12 px-6 text-white rounded-xl"
                   style={{ background: PRIMARY }}
-                // onClick={updatePassword}
+                  // onClick={updatePassword}
                 >
                   {t("update_password")}
                 </Button>

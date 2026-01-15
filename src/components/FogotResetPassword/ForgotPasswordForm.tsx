@@ -12,7 +12,6 @@ import {
 import ForgotResetPassword from "@/src/components/FogotResetPassword/ForgotResetPassword";
 import { Input } from "@/src/components/ui/input";
 import { forgotPasswordReq } from "@/src/services/forgotResetPassword/forgotResetPassword";
-import { TResponse } from "@/src/types";
 import { forgotPasswordValidation } from "@/src/validations/forgot-reset-password/forgot-reset-password.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -43,20 +42,19 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (data: ForgotPasswordForm) => {
     const toastId = toast.loading("Sending Recovery Email...");
 
-    try {
-      const result = (await forgotPasswordReq(data)) as TResponse<null>;
-      if (result.success) {
-        toast.success("Recovery Email Sent Successfully!", { id: toastId });
-        setIsSubmitted(true);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log(error);
-      toast.error(
-        error?.response?.data?.message || "Recovery Email Sending Failed",
-        { id: toastId }
-      );
+    const result = await forgotPasswordReq(data);
+    if (result.success) {
+      toast.success(result.message || "Recovery Email Sent Successfully!", {
+        id: toastId,
+      });
+      setIsSubmitted(true);
+      return;
     }
+
+    toast.error(result?.message || "Recovery Email Sending Failed", {
+      id: toastId,
+    });
+    console.log(result);
   };
 
   const containerVariants = {

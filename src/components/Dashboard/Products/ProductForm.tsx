@@ -23,12 +23,10 @@ import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { TResponse } from "@/src/types";
+import { createProductReq } from "@/src/services/dashboard/products/products";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TBusinessCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
-import { getCookie } from "@/src/utils/cookies";
-import { postData } from "@/src/utils/requests";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -214,60 +212,52 @@ export function ProductForm({
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Creating product...");
 
-    try {
-      const productData = {
-        name: data.name,
-        description: data.description,
-        category: data.category,
-        brand: data.brand,
-        pricing: {
-          price: data.price,
-          discount: data.discount,
-          tax: data.tax,
-          currency: "€",
-        },
-        stock: {
-          quantity: data.quantity,
-          unit: data.unit,
-          availabilityStatus: data.availabilityStatus,
-        },
-        tags: data.tags,
-        attributes: {
-          organic: data.organic,
-          weight: data.weight,
-          packagingType: data.packagingType,
-          storageTemperature: data.storageTemperature,
-        },
-        meta: {
-          isFeatured: data.isFeatured,
-          isAvailableForPreOrder: data.isAvailableForPreOrder,
-        },
-      };
+    const productData = {
+      name: data.name,
+      description: data.description,
+      category: data.category,
+      brand: data.brand,
+      pricing: {
+        price: data.price,
+        discount: data.discount,
+        tax: data.tax,
+        currency: "€",
+      },
+      stock: {
+        quantity: data.quantity,
+        unit: data.unit,
+        availabilityStatus: data.availabilityStatus,
+      },
+      tags: data.tags,
+      attributes: {
+        organic: data.organic,
+        weight: data.weight,
+        packagingType: data.packagingType,
+        storageTemperature: data.storageTemperature,
+      },
+      meta: {
+        isFeatured: data.isFeatured,
+        isAvailableForPreOrder: data.isAvailableForPreOrder,
+      },
+    };
 
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(productData));
-      images.map((image) => formData.append("files", image.file as Blob));
+    const result = await createProductReq(
+      productData as unknown as Partial<TProduct>,
+      images
+    );
 
-      const result = (await postData("/products/create-product", formData, {
-        headers: {
-          authorization: getCookie("accessToken"),
-          "Content-Type": "multipart/form-data",
-        },
-      })) as unknown as TResponse<TProduct>;
-
-      if (result.success) {
-        toast.success("Product created successfully!", { id: toastId });
-        form.reset();
-        setImages([]);
-        setActiveTab(0);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error?.response?.data?.message || "Product creation failed", {
+    if (result.success) {
+      toast.success(result.message || "Product created successfully!", {
         id: toastId,
       });
+      form.reset();
+      setImages([]);
+      setActiveTab(0);
+      return;
     }
+
+    toast.error(result.message || "Product creation failed", { id: toastId });
+    console.log(result);
   };
 
   return (
@@ -306,10 +296,11 @@ export function ProductForm({
                     scale: 0.98,
                   }}
                   onClick={() => setActiveTab(index)}
-                  className={`w-full flex items-center space-x-2 px-4 py-3 rounded-lg text-left ${activeTab === index
-                    ? "bg-[#DC3173] text-white"
-                    : "hover:bg-gray-100 text-gray-700"
-                    }`}
+                  className={`w-full flex items-center space-x-2 px-4 py-3 rounded-lg text-left ${
+                    activeTab === index
+                      ? "bg-[#DC3173] text-white"
+                      : "hover:bg-gray-100 text-gray-700"
+                  }`}
                 >
                   <div className="w-5 h-5">{tab.icon}</div>
                   <span>{tab.name}</span>
@@ -562,7 +553,7 @@ export function ProductForm({
                               htmlFor="price"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              {t("price_E")} (€)
+                              {t("price_E")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -589,7 +580,7 @@ export function ProductForm({
                               htmlFor="discount"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              {t("discount_2")} (%)
+                              {t("discount_2")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -617,7 +608,7 @@ export function ProductForm({
                               htmlFor="tax"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              {t("tax_2")} (%)
+                              {t("tax_2")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -640,7 +631,9 @@ export function ProductForm({
                     {watchPrice > 0 && watchDiscount >= 0 && (
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between">
-                          <span className="text-gray-700">{t("original_price")}:</span>
+                          <span className="text-gray-700">
+                            {t("original_price")}:
+                          </span>
                           <span className="font-medium">€ {watchPrice}</span>
                         </div>
                         <div className="flex justify-between">
@@ -667,7 +660,9 @@ export function ProductForm({
                           </span>
                         </div>
                         <div className="border-t mt-2 pt-2 flex justify-between">
-                          <span className="font-semibold">{t("final_price")}:</span>
+                          <span className="font-semibold">
+                            {t("final_price")}:
+                          </span>
                           <span className="font-bold text-[#DC3173]">
                             €{" "}
                             {(
@@ -777,7 +772,9 @@ export function ProductForm({
                               key={i}
                               className="relative p-4 border rounded-md bg-gray-50 mb-4"
                             >
-                              <div>{t("name")}: {variation.name}</div>
+                              <div>
+                                {t("name")}: {variation.name}
+                              </div>
                               <div className="flex flex-wrap gap-2 items-center">
                                 {t("options")}:{" "}
                                 {variation.options?.map((option, i2) => (
@@ -804,7 +801,9 @@ export function ProductForm({
                       </div>
                       <div className="border rounded-md p-4 bg-gray-50 space-y-2">
                         <div>
-                          <Label className="text-gray-700 mb-1">{t("name")}</Label>
+                          <Label className="text-gray-700 mb-1">
+                            {t("name")}
+                          </Label>
                           <Input
                             type="text"
                             value={variationName}
@@ -835,7 +834,9 @@ export function ProductForm({
                         )}
                         <div className="border border-dashed rounded-md p-4 bg-gray-100 space-y-2">
                           <div>
-                            <Label className="text-gray-700 mb-1">{t("label")}</Label>
+                            <Label className="text-gray-700 mb-1">
+                              {t("label")}
+                            </Label>
                             <Input
                               type="text"
                               value={option.label}
@@ -846,7 +847,9 @@ export function ProductForm({
                             />
                           </div>
                           <div>
-                            <Label className="text-gray-700 mb-1">{t("price")}</Label>
+                            <Label className="text-gray-700 mb-1">
+                              {t("price")}
+                            </Label>
                             <Input
                               type="number"
                               min={0}
@@ -963,14 +966,18 @@ export function ProductForm({
                                     {t("kilogram")}
                                   </SelectItem>
                                   <SelectItem value="g">{t("gram")}</SelectItem>
-                                  <SelectItem value="l">{t("liter")}</SelectItem>
+                                  <SelectItem value="l">
+                                    {t("liter")}
+                                  </SelectItem>
                                   <SelectItem value="ml">
                                     {t("milliliter")}
                                   </SelectItem>
                                   <SelectItem value="pcs">
                                     {t("pieces")}
                                   </SelectItem>
-                                  <SelectItem value="others">{t("others")}</SelectItem>
+                                  <SelectItem value="others">
+                                    {t("others")}
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1129,10 +1136,18 @@ export function ProductForm({
                                   <SelectItem value="Paper Bag">
                                     {t("paper_bag")}
                                   </SelectItem>
-                                  <SelectItem value="Box">{t("box")}</SelectItem>
-                                  <SelectItem value="Tin">{t("tin")}</SelectItem>
-                                  <SelectItem value="Bottle">{t("bottle")}</SelectItem>
-                                  <SelectItem value="Others">{t("others")}</SelectItem>
+                                  <SelectItem value="Box">
+                                    {t("box")}
+                                  </SelectItem>
+                                  <SelectItem value="Tin">
+                                    {t("tin")}
+                                  </SelectItem>
+                                  <SelectItem value="Bottle">
+                                    {t("bottle")}
+                                  </SelectItem>
+                                  <SelectItem value="Others">
+                                    {t("others")}
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1173,11 +1188,15 @@ export function ProductForm({
                                   <SelectItem value="Refrigerated">
                                     {t("refrigerated")}
                                   </SelectItem>
-                                  <SelectItem value="Frozen">{t("frozen")}</SelectItem>
+                                  <SelectItem value="Frozen">
+                                    {t("frozen")}
+                                  </SelectItem>
                                   <SelectItem value="Cool and dry">
                                     {t("cool_and_dry")}
                                   </SelectItem>
-                                  <SelectItem value="Others">{t("others")}</SelectItem>
+                                  <SelectItem value="Others">
+                                    {t("others")}
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1274,10 +1293,11 @@ export function ProductForm({
                     type="button"
                     onClick={() => activeTab > 0 && setActiveTab(activeTab - 1)}
                     disabled={activeTab === 0}
-                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${activeTab === 0
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                      }`}
+                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${
+                      activeTab === 0
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                    }`}
                   >
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>

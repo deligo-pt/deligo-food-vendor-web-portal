@@ -20,10 +20,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
 import { Input } from "@/src/components/ui/input";
-import { TResponse } from "@/src/types";
+import { updateProductReq } from "@/src/services/dashboard/products/products";
 import { TProduct } from "@/src/types/product.type";
-import { getCookie } from "@/src/utils/cookies";
-import { updateData } from "@/src/utils/requests";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -128,71 +126,53 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Updating product...");
 
-    try {
-      const productData = {
-        name: data.name,
-        description: data.description,
-        category: data.category,
-        brand: data.brand,
-        pricing: {
-          price: data.price,
-          discount: data.discount,
-          tax: data.tax,
-        },
-        stock: {
-          quantity: data.quantity,
-          unit: data.unit,
-          availabilityStatus: data.availabilityStatus,
-        },
-        tags: data.tags,
-        attributes: {
-          organic: data.organic,
-          weight: data.weight,
-          packagingType: data.packagingType,
-          storageTemperature: data.storageTemperature,
-        },
-        meta: {
-          isFeatured: data.isFeatured,
-          isAvailableForPreOrder: data.isAvailableForPreOrder,
-        },
-      };
+    const productData = {
+      name: data.name,
+      description: data.description,
+      category: data.category,
+      brand: data.brand,
+      pricing: {
+        price: data.price,
+        discount: data.discount,
+        tax: data.tax,
+      },
+      stock: {
+        quantity: data.quantity,
+        unit: data.unit,
+        availabilityStatus: data.availabilityStatus,
+      },
+      tags: data.tags,
+      attributes: {
+        organic: data.organic,
+        weight: data.weight,
+        packagingType: data.packagingType,
+        storageTemperature: data.storageTemperature,
+      },
+      meta: {
+        isFeatured: data.isFeatured,
+        isAvailableForPreOrder: data.isAvailableForPreOrder,
+      },
+    };
 
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(productData));
-      const filteredImages = images.filter((image) => !!image.file);
+    const filteredImages = images.filter((image) => !!image.file);
 
-      if (filteredImages?.length > 0) {
-        filteredImages?.map((image) =>
-          formData.append("files", image.file as Blob)
-        );
-      }
-      console.log(filteredImages);
+    const result = await updateProductReq(
+      prevData?.productId,
+      productData as unknown as Partial<TProduct>,
+      filteredImages
+    );
 
-      const result = (await updateData(
-        `/products/${prevData?.productId}`,
-        formData,
-        {
-          headers: {
-            authorization: getCookie("accessToken"),
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )) as unknown as TResponse<TProduct>;
-
-      if (result.success) {
-        toast.success("Product updated successfully!", { id: toastId });
-        form.reset();
-        setActiveTab(0);
-        refetch();
-        closeModal();
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error?.response?.data?.message || "Updating product failed", {
-        id: toastId,
-      });
+    if (result.success) {
+      toast.success("Product updated successfully!", { id: toastId });
+      form.reset();
+      setActiveTab(0);
+      refetch();
+      closeModal();
+      return;
     }
+
+    toast.error(result.message || "Product update failed", { id: toastId });
+    console.log(result);
   };
 
   return (

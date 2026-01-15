@@ -46,22 +46,21 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
       newPassword: data.password,
       token,
     };
-    try {
-      const result = (await resetPasswordReq(resetData)) as TResponse<null>;
-      if (result.success) {
-        toast.success("Password Reset Successfully!", { id: toastId });
-        setIsSubmitted(true);
-        setTimeout(() => {
-          router.push("/login");
-        }, 1000);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log(error);
-      toast.error(error?.response?.data?.message || "Password Reset Failed", {
+
+    const result = (await resetPasswordReq(resetData)) as TResponse<null>;
+    if (result.success) {
+      toast.success(result.message || "Password Reset Successfully!", {
         id: toastId,
       });
+      setIsSubmitted(true);
+      setTimeout(() => {
+        router.push("/login");
+      }, 1000);
+      return;
     }
+
+    toast.error(result.message || "Password Reset Failed", { id: toastId });
+    console.log(result);
   };
 
   const containerVariants = {

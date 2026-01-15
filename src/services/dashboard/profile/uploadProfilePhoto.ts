@@ -1,16 +1,15 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
-import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
+import { catchAsync } from "@/src/utils/catchAsync";
 
 export const uploadProfilePhoto = async (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const result = (await serverRequest.patch("/profile", {
-    data: formData,
-  })) as TResponse<TVendor>;
-
-  return result;
+  return catchAsync<TVendor>(async () => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return await serverRequest.patch("/profile", {
+      data: formData,
+    });
+  });
 };

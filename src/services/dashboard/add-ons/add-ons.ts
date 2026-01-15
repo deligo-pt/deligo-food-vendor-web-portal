@@ -1,105 +1,46 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
-import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
+import { catchAsync } from "@/src/utils/catchAsync";
 
-export const createAddOnsGroup = async (payload: Partial<TAddonGroup>) => {
-  try {
-    const result = (await serverRequest.post("/add-ons/create-group", {
-      data: payload,
-    })) as TResponse<TAddonGroup>;
-
-    if (result.success) {
-      return { success: true, data: result.data, message: result.message };
-    }
-    return { success: false, data: result.error, message: result.message };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.log(error);
-    return {
-      success: false,
-      data: error?.response?.data || null,
-      message:
-        error?.response?.data?.message || "Add-ons group creation failed",
-    };
-  }
+export const createAddOnsGroup = async (data: Partial<TAddonGroup>) => {
+  return catchAsync<TAddonGroup>(async () => {
+    return await serverRequest.post("/add-ons/create-group", {
+      data,
+    });
+  });
 };
 
 export const updateAddOnsGroup = async (
   id: string,
-  payload: Partial<TAddonGroup>
+  data: Partial<TAddonGroup>
 ) => {
-  try {
-    const result = (await serverRequest.patch(`/add-ons/${id}`, {
-      data: payload,
-    })) as TResponse<TAddonGroup>;
-
-    if (result.success) {
-      return { success: true, data: result.data, message: result.message };
-    }
-    return { success: false, data: result.error, message: result.message };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.log(error);
-    return {
-      success: false,
-      data: error?.response?.data || null,
-      message: error?.response?.data?.message || "Add-ons group update failed",
-    };
-  }
+  return catchAsync<TAddonGroup>(async () => {
+    return await serverRequest.patch(`/add-ons/${id}`, {
+      data,
+    });
+  });
 };
 
 export const addOptionInGroup = async (
   groupId: string,
   data: { name: string; price: number }
 ) => {
-  try {
-    const result = (await serverRequest.patch(
-      `/add-ons/${groupId}/add-option`,
-      {
-        data,
-      }
-    )) as TResponse<null>;
-
-    if (result.success) {
-      return { success: true, data: result.data, message: result.message };
-    }
-    return { success: false, data: result.error, message: result.message };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.log(error);
-    return {
-      success: false,
-      data: error?.response?.data || null,
-      message: error?.response?.data?.message || "Add-ons option add failed",
-    };
-  }
+  return catchAsync<null>(async () => {
+    return await serverRequest.patch(`/add-ons/${groupId}/add-option`, {
+      data,
+    });
+  });
 };
 
 export const deleteOptionFromGroup = async (
   groupId: string,
   optionId: string
 ) => {
-  try {
-    const result = (await serverRequest.delete(
-      `/add-ons/${groupId}/delete-option`,
-      {
-        data: { optionId },
-      }
-    )) as TResponse<null>;
-
-    if (result.success) {
-      return { success: true, data: result.data, message: result.message };
-    }
-    return { success: false, data: result.error, message: result.message };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.log(error);
-    return {
-      success: false,
-      data: error?.response?.data || null,
-      message: error?.response?.data?.message || "Add-ons option delete failed",
-    };
-  }
+  return catchAsync<null>(async () => {
+    return await serverRequest.delete(`/add-ons/${groupId}/delete-option`, {
+      data: { optionId },
+    });
+  });
 };

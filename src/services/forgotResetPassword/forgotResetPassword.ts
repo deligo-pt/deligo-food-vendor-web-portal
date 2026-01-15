@@ -1,14 +1,14 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
-import { TResponse } from "@/src/types";
+import { catchAsync } from "@/src/utils/catchAsync";
 
 export const forgotPasswordReq = async (data: { email: string }) => {
-  const result = (await serverRequest.post("auth/forgot-password", {
-    data,
-  })) as TResponse<null>;
-
-  return result;
+  return catchAsync<null>(async () => {
+    return await serverRequest.post("auth/forgot-password", {
+      data,
+    });
+  });
 };
 
 export const resetPasswordReq = async (data: {
@@ -16,9 +16,9 @@ export const resetPasswordReq = async (data: {
   newPassword: string;
   token: string;
 }) => {
-  const result = (await serverRequest.post("auth/reset-password", {
-    data,
-  })) as TResponse<null>;
-
-  return result;
+  return catchAsync<null>(async () => {
+    return await serverRequest.post("auth/reset-password", {
+      data,
+    });
+  });
 };

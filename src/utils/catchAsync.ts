@@ -13,6 +13,7 @@ export const catchAsync = async <T>(
         success: true,
         data: result.data,
         message: result.message || customSuccessMsg,
+        meta: result.meta,
       };
     }
 

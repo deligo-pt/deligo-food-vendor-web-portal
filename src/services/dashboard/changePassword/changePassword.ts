@@ -1,15 +1,15 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
-import { TResponse } from "@/src/types";
+import { catchAsync } from "@/src/utils/catchAsync";
 
 export const changePasswordReq = async (data: {
   oldPassword: string;
   newPassword: string;
 }) => {
-  const result = (await serverRequest.post("/auth/change-password", {
-    data,
-  })) as TResponse<null>;
-
-  return result;
+  return catchAsync<null>(async () => {
+    return await serverRequest.post("/auth/change-password", {
+      data,
+    });
+  });
 };

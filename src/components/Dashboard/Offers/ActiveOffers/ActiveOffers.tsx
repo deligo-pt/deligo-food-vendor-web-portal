@@ -33,7 +33,6 @@ interface IProps {
   title: string;
 }
 
-
 export default function ActiveOffers({ offersResult, title }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -60,6 +59,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
     toast.error(result.message || "Offer status update failed", {
       id: toastId,
     });
+    console.log(result);
   };
 
   const deleteOffer = async () => {
@@ -78,6 +78,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
     toast.error(result.message || "Offer deletion failed", {
       id: toastId,
     });
+    console.log(result);
   };
 
   const title_lowercase = title.toLowerCase();
@@ -175,10 +176,10 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                         {offer.offerType === "PERCENT"
                           ? `${offer.discountValue}% Off`
                           : offer.offerType === "FLAT"
-                            ? `€ ${offer.discountValue} Off`
-                            : offer.offerType === "BOGO"
-                              ? `Buy ${offer.bogo?.buyQty} Get ${offer.bogo?.getQty}`
-                              : ""}
+                          ? `€ ${offer.discountValue} Off`
+                          : offer.offerType === "BOGO"
+                          ? `Buy ${offer.bogo?.buyQty} Get ${offer.bogo?.getQty}`
+                          : ""}
                       </p>
                     </div>
                   </div>
@@ -201,13 +202,15 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                     >
                       {t("edit")}
                     </Button>
-                    <Button
-                      onClick={() => setDeleteId(offer._id)}
-                      variant="destructive"
-                      size="sm"
-                    >
-                      {t("delete")}
-                    </Button>
+                    {!offer.isActive && (
+                      <Button
+                        onClick={() => setDeleteId(offer._id)}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        {t("delete")}
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -215,7 +218,9 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
           ))}
 
           {offersResult?.meta?.total === 0 && (
-            <p className="text-center text-gray-500 py-10">{t("no_offers_found")}</p>
+            <p className="text-center text-gray-500 py-10">
+              {t("no_offers_found")}
+            </p>
           )}
         </div>
 

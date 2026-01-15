@@ -13,12 +13,12 @@ import CreateOrEditAddOnsGroup from "@/src/components/Dashboard/AddOns/CreateOrE
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import DeleteModal from "@/src/components/Modals/DeleteModal";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { deleteOptionFromGroup } from "@/src/services/dashboard/add-ons/add-ons";
 import { TMeta } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF2F8";
@@ -52,14 +52,21 @@ export default function AddOns({ addOnsResult }: IProps) {
   // const deleteGroup = (id: string) => {};
 
   const handleDeleteOption = async () => {
+    const toastId = toast.loading("Deleting option...");
+
     const { groupId, optionId } = deleteOptionInfo;
     const result = await deleteOptionFromGroup(groupId, optionId);
+
     if (result.success) {
+      toast.success(result.message || "Option deleted successfully!", {
+        id: toastId,
+      });
       router.refresh();
       setDeleteOptionInfo({ groupId: "", optionId: "" });
       return;
     }
-    toast.error(result.message || "Failed to delete option");
+
+    toast.error(result.message || "Failed to delete option", { id: toastId });
     console.log(result);
   };
 

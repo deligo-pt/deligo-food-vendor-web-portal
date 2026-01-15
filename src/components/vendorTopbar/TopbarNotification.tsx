@@ -32,13 +32,19 @@ export default function TopbarNotification() {
   };
 
   const markSingleAsRead = async (notification: TNotification) => {
-    await singleMarkReadReq(notification._id);
-    getNotifications({ limit: notificationsData?.meta?.limit || 10 });
+    const result = await singleMarkReadReq(notification._id);
+
+    if (result.success) {
+      getNotifications({ limit: notificationsData?.meta?.limit || 10 });
+    }
   };
 
   const markAllAsRead = async () => {
-    await allMarkReadReq();
-    getNotifications({ limit: notificationsData?.meta?.limit || 10 });
+    const result = await allMarkReadReq();
+
+    if (result.success) {
+      getNotifications({ limit: notificationsData?.meta?.limit || 10 });
+    }
   };
 
   useEffect(() => {

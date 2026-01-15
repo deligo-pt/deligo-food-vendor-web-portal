@@ -27,7 +27,6 @@ interface IProps {
 
 const DELIGO = "#DC3173";
 
-
 export default function PreparingOrders({ ordersResult }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -46,29 +45,20 @@ export default function PreparingOrders({ ordersResult }: IProps) {
   ) => {
     const toastId = toast.loading("Order status updating...");
 
-    try {
-      const result = await updateOrderStatusReq(id, status, reason);
+    const result = await updateOrderStatusReq(id, status, reason);
 
-      if (result?.success) {
-        router.refresh();
-        toast.success(result.message || "Order status updated successfully!", {
-          id: toastId,
-        });
-        return;
-      }
-      toast.error(result.message || "Order status update failed", {
+    if (result?.success) {
+      router.refresh();
+      toast.success(result.message || "Order status updated successfully!", {
         id: toastId,
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log(error);
-      toast.error(
-        error?.response?.data?.message || "Order status update failed",
-        {
-          id: toastId,
-        }
-      );
+      return;
     }
+
+    toast.error(result.message || "Order status update failed", {
+      id: toastId,
+    });
+    console.log(result);
   };
 
   // actions
@@ -186,7 +176,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
                             <span className="flex items-center gap-1 text-gray-600">
                               <User size={14} />{" "}
                               {order.deliveryPartnerId?.name?.firstName &&
-                                order.deliveryPartnerId?.name?.lastName
+                              order.deliveryPartnerId?.name?.lastName
                                 ? `${order.deliveryPartnerId?.name?.firstName} ${order.deliveryPartnerId?.name?.lastName}`
                                 : "Unassigned"}
                             </span>
@@ -313,7 +303,9 @@ function OrderSheetContent({
               className="flex justify-between items-center p-3 rounded-md bg-gray-50"
             >
               <div>{it.productId?.name}</div>
-              <div className="text-sm text-gray-600">{t("qty")} {it.quantity}</div>
+              <div className="text-sm text-gray-600">
+                {t("qty")} {it.quantity}
+              </div>
             </li>
           ))}
         </ul>

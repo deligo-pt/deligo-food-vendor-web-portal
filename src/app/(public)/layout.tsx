@@ -15,13 +15,14 @@ const PublicLayout = async ({ children }: { children: React.ReactNode }) => {
 
     if (decoded && decoded?.role === "VENDOR") {
       try {
-        const result = await serverRequest.get("profile");
+        const result = await serverRequest.get("/profile");
 
         if (result?.success) {
           vendorData = result?.data;
         }
-      } catch (err) {
-        console.error("Server fetch error:", err);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        console.error("Server fetch error:", err?.response?.data);
       }
     }
   }

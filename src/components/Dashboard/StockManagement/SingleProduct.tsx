@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDebounce } from "@/src/hooks/use-debounce";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { updateStock } from "@/src/services/products/manageStock";
+import { updateStockReq } from "@/src/services/dashboard/products/products";
 import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
 import {
@@ -50,7 +50,7 @@ export default function SingleProduct({ p }: { p: TProduct }) {
 
       startTransition(async () => {
         try {
-          await updateStock(p.productId, {
+          await updateStockReq(p.productId, {
             quantity: Number(debouncedValue),
             availabilityStatus: status.text,
           });

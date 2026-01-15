@@ -2,8 +2,6 @@
 
 import { useTranslation } from "@/src/hooks/use-translation";
 import { uploadProfilePhoto } from "@/src/services/dashboard/profile/uploadProfilePhoto";
-import { TResponse } from "@/src/types";
-import { TVendor } from "@/src/types/vendor.type";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   CameraIcon,
@@ -57,22 +55,16 @@ export default function ProfilePhotoUpload({ currentPhoto }: IProps) {
   const uploadFile = async () => {
     const toastId = toast.loading("Uploading file...");
 
-    try {
-      const result = (await uploadProfilePhoto(
-        imageFile as File
-      )) as TResponse<TVendor>;
+    const result = await uploadProfilePhoto(imageFile as File);
 
-      if (result.success) {
-        toast.success("File uploaded successfully", { id: toastId });
-        router.refresh();
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "File upload failed", {
-        id: toastId,
-      });
-      console.log(error);
+    if (result.success) {
+      toast.success("File uploaded successfully", { id: toastId });
+      router.refresh();
+      return;
     }
+
+    toast.error(result.message || "File upload failed", { id: toastId });
+    console.log(result);
   };
 
   return (
@@ -183,7 +175,7 @@ export default function ProfilePhotoUpload({ currentPhoto }: IProps) {
           whileTap={{
             scale: 0.95,
           }}
-        // disabled={isUploading}
+          // disabled={isUploading}
         >
           <span>{t("upload")}</span>
           <UploadIcon className="w-4 h-4" />

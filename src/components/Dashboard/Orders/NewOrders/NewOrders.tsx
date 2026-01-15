@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +35,6 @@ interface IProps {
   };
 }
 
-
 export default function NewOrders({ ordersResult }: IProps) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -52,31 +50,22 @@ export default function NewOrders({ ordersResult }: IProps) {
   ) => {
     const toastId = toast.loading("Order status updating...");
 
-    try {
-      const result = await updateOrderStatusReq(id, status);
+    const result = await updateOrderStatusReq(id, status);
 
-      if (result?.success) {
-        if (status === "ACCEPTED") {
-          await broadcastOrder(id);
-        }
-        router.refresh();
-        toast.success(result.message || "Order status updated successfully!", {
-          id: toastId,
-        });
-        return;
+    if (result?.success) {
+      if (status === "ACCEPTED") {
+        await broadcastOrder(id);
       }
-      toast.error(result.message || "Order status update failed", {
+      router.refresh();
+      toast.success(result.message || "Order status updated successfully!", {
         id: toastId,
       });
-    } catch (error: any) {
-      console.log(error);
-      toast.error(
-        error?.response?.data?.message || "Order status update failed",
-        {
-          id: toastId,
-        }
-      );
+      return;
     }
+    toast.error(result.message || "Order status update failed", {
+      id: toastId,
+    });
+    console.log(result);
   };
 
   const accept = (id: string) => updateStatus(id, "ACCEPTED");
@@ -88,36 +77,27 @@ export default function NewOrders({ ordersResult }: IProps) {
   const broadcastOrder = async (id: string) => {
     const toastId = toast.loading("Order broadcasting to delivery partners...");
 
-    try {
-      const result = await orderDispatchReq(id);
+    const result = await orderDispatchReq(id);
 
-      if (result?.success) {
-        router.refresh();
-        toast.success(
-          result.message ||
+    if (result?.success) {
+      router.refresh();
+      toast.success(
+        result.message ||
           "Order broadcasted to delivery partners successfully!",
-          {
-            id: toastId,
-          }
-        );
-        return;
-      }
-      toast.error(
-        result.message || "Order broadcast to delivery partners failed",
         {
           id: toastId,
         }
       );
-    } catch (error: any) {
-      console.log(error);
-      toast.error(
-        error?.response?.data?.message ||
-        "Order broadcast to delivery partners failed",
-        {
-          id: toastId,
-        }
-      );
+      return;
     }
+
+    toast.error(
+      result.message || "Order broadcast to delivery partners failed",
+      {
+        id: toastId,
+      }
+    );
+    console.log(result);
   };
 
   return (
@@ -232,8 +212,8 @@ export default function NewOrders({ ordersResult }: IProps) {
 
                         <div className="flex items-center gap-2 mt-3">
                           {order.orderStatus === ORDER_STATUS.ACCEPTED ||
-                            order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
-                            order.orderStatus ===
+                          order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
+                          order.orderStatus ===
                             ORDER_STATUS.REASSIGNMENT_NEEDED ? (
                             <span
                               onClick={() => broadcastOrder(order.orderId)}
@@ -387,13 +367,13 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
     >;
     label: string;
   }[] = [
-      { key: "PENDING", label: "New" },
-      { key: "ACCEPTED", label: "Accepted" },
-      { key: "ASSIGNED", label: "Assigned" },
-      { key: "PREPARING", label: "Preparing" },
-      { key: "READY_FOR_PICKUP", label: "Ready" },
-      // { key: "REJECTED", label: "Rejected" },
-    ];
+    { key: "PENDING", label: "New" },
+    { key: "ACCEPTED", label: "Accepted" },
+    { key: "ASSIGNED", label: "Assigned" },
+    { key: "PREPARING", label: "Preparing" },
+    { key: "READY_FOR_PICKUP", label: "Ready" },
+    // { key: "REJECTED", label: "Rejected" },
+  ];
   const active = steps.findIndex((s) => s.key === status);
 
   return (
@@ -407,17 +387,18 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
               animate={
                 isActive
                   ? {
-                    scale: 1.05,
-                    opacity: 1,
-                    boxShadow: `0 6px 18px ${PRIMARY}33`,
-                  }
+                      scale: 1.05,
+                      opacity: 1,
+                      boxShadow: `0 6px 18px ${PRIMARY}33`,
+                    }
                   : { scale: 1, opacity: 0.6 }
               }
               transition={{ type: "spring", stiffness: 160, damping: 16 }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${isActive
-                ? "bg-[--primary] text-white"
-                : "bg-white border border-pink-100 text-rose-500"
-                }`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
+                isActive
+                  ? "bg-[--primary] text-white"
+                  : "bg-white border border-pink-100 text-rose-500"
+              }`}
               style={isActive ? { background: PRIMARY, color: "#fff" } : {}}
             >
               {i + 1}
@@ -425,8 +406,9 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
 
             {i < steps.length - 1 && (
               <div
-                className={`h-0.5 w-8 ${i < active ? "bg-[--primary]" : "bg-pink-100"
-                  }`}
+                className={`h-0.5 w-8 ${
+                  i < active ? "bg-[--primary]" : "bg-pink-100"
+                }`}
                 style={i < active ? { background: PRIMARY } : undefined}
               />
             )}
@@ -486,7 +468,9 @@ function OrderDetails({
               className="flex items-center justify-between p-3 rounded-md bg-gray-50"
             >
               <div className="font-medium">{it.productId?.name}</div>
-              <div className="text-sm text-gray-600">{t("qty")} {it.quantity}</div>
+              <div className="text-sm text-gray-600">
+                {t("qty")} {it.quantity}
+              </div>
             </li>
           ))}
         </ul>
@@ -503,8 +487,8 @@ function OrderDetails({
 
       <div className="flex items-center gap-2 justify-end">
         {order.orderStatus === ORDER_STATUS.ACCEPTED ||
-          order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
-          order.orderStatus === ORDER_STATUS.REASSIGNMENT_NEEDED ? (
+        order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
+        order.orderStatus === ORDER_STATUS.REASSIGNMENT_NEEDED ? (
           <span
             onClick={() => onBroadcastOrder && onBroadcastOrder()}
             className="bg-yellow-500 px-2 py-1 text-xs rounded-md inline-flex font-medium"
