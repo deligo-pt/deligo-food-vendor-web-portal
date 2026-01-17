@@ -13,8 +13,9 @@ interface IProps {
 
 export default function ProductCard({ product, onEdit, onDelete }: IProps) {
   const statusColors = {
-    Active: "bg-green-100 text-green-800",
-    Inactive: "bg-gray-100 text-gray-800",
+    ACTIVE: "bg-green-100 text-green-800",
+    INACTIVE: "bg-gray-100 text-gray-800",
+    DELETED: "bg-red-100 text-red-800",
   };
 
   const availabilityColors = {
@@ -66,10 +67,10 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
         )}
         <div
           className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${
-            statusColors[product.meta.status]
+            statusColors[product.isDeleted ? "DELETED" : product.meta.status]
           }`}
         >
-          {product.meta.status}
+          {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
       </div>
       <div className="p-4">

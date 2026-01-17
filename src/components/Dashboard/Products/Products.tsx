@@ -110,7 +110,11 @@ export default function Products({
             {((initialData.meta?.page || 1) - 1) *
               (initialData.meta?.limit || 10) +
               1}
-            -{(initialData.meta?.page || 1) * (initialData.meta?.limit || 10)}{" "}
+            -{" "}
+            {Math.min(
+              (initialData.meta?.page || 1) * (initialData.meta?.limit || 10),
+              initialData.meta?.total || 0,
+            )}{" "}
             {t("of")} {initialData.meta?.total || 0} {t("items")}
           </p>
         </div>
@@ -151,6 +155,7 @@ export default function Products({
           </p>
         </motion.div>
       )}
+
       {!!initialData?.meta?.total && initialData?.meta?.total > 0 && (
         <div className="pb-4 my-3">
           <PaginationComponent totalPages={initialData?.meta?.totalPage || 0} />

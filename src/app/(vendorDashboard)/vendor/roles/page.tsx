@@ -1,14 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ShieldCheck, ChefHat, Users, Eye, ClipboardList } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { motion } from "framer-motion";
+import { ChefHat, ClipboardList, Eye, ShieldCheck, Users } from "lucide-react";
+import { useState } from "react";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -64,7 +63,7 @@ export default function VendorRolesPermissions() {
   ------------------------------------------- */
   const toggle = <R extends Role, K extends PermissionKey<R>>(
     role: R,
-    key: K
+    key: K,
   ) => {
     setPermissions((prev) => ({
       ...prev,
@@ -115,7 +114,9 @@ export default function VendorRolesPermissions() {
                       <h2 className="text-2xl font-bold text-gray-800">
                         {role}
                       </h2>
-                      <p className="text-sm text-gray-600">{t("set_access_controls")}</p>
+                      <p className="text-sm text-gray-600">
+                        {t("set_access_controls")}
+                      </p>
                     </div>
                   </div>
 
@@ -123,9 +124,11 @@ export default function VendorRolesPermissions() {
 
                   {/* PERMISSIONS */}
                   <div className="space-y-4">
-                    {(Object.keys(
-                      permissions[role]
-                    ) as PermissionKey<typeof role>[]).map((pKey) => (
+                    {(
+                      Object.keys(
+                        permissions[role as Role],
+                      ) as PermissionKey<Role>[]
+                    ).map((pKey) => (
                       <div
                         key={pKey}
                         className="flex items-center justify-between"
@@ -135,8 +138,8 @@ export default function VendorRolesPermissions() {
                         </span>
 
                         <Switch
-                          checked={permissions[role][pKey]}
-                          onCheckedChange={() => toggle(role, pKey)}
+                          checked={permissions[role as Role][pKey]}
+                          onCheckedChange={() => toggle(role as Role, pKey)}
                         />
                       </div>
                     ))}
