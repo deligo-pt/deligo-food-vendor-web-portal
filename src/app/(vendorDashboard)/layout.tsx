@@ -35,10 +35,10 @@ export default async function VendorLayout({
       {/* Mobile view: Sidebar on top, Topbar below */}
       <div className="flex flex-col md:hidden w-full">
         <div className="w-full">
-          <Sidebar />
+          <Sidebar vendor={vendorData} />
         </div>
         <div className="w-full sticky top-0 z-40">
-          <Topbar />
+          <Topbar vendor={vendorData} />
         </div>
         <main className="flex-1 p-4 overflow-y-auto">{children}</main>
         <NotificationToast />

@@ -1,33 +1,30 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-  X,
-} from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import Image from "next/image";
-import { useTranslation } from "@/src/hooks/use-translation";
+import TopbarIcons from "@/src/components/vendorTopbar/TopbarIcons";
 import { getNavItems } from "@/src/consts/navItems";
+import { useTranslation } from "@/src/hooks/use-translation";
+import { TVendor } from "@/src/types/vendor.type";
+import Image from "next/image";
 
 interface IProps {
   open?: boolean;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  vendor?: TVendor;
 }
 
 const PRIMARY = "#DC3173";
 
-export default function Sidebar({ open, setOpen }: IProps) {
+export default function Sidebar({ open, setOpen, vendor }: IProps) {
   const { t } = useTranslation();
   const navItems = getNavItems(t);
   const pathname = usePathname();
   const currentMenuId = navItems.find((menu) =>
-    menu.items?.some((item) => pathname.includes(item.path))
+    menu.items?.some((item) => pathname.includes(item.path)),
   )?.id;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
@@ -59,9 +56,12 @@ export default function Sidebar({ open, setOpen }: IProps) {
           </div>
           <h1 className="font-bold text-xl text-[#DC3173]">DeliGo</h1>
         </div>
-        <button onClick={() => setMobileOpen(true)}>
-          <Menu size={24} className="text-gray-700" />
-        </button>
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0 relative z-1001">
+          <TopbarIcons vendor={vendor} />
+          <button onClick={() => setMobileOpen(true)}>
+            <Menu size={24} className="text-gray-700" />
+          </button>
+        </div>
       </div>
 
       {/* Desktop Sidebar */}
@@ -113,10 +113,11 @@ export default function Sidebar({ open, setOpen }: IProps) {
               {menu.path ? (
                 <Link
                   href={menu.path}
-                  className={`flex items-center w-full justify-between p-2 rounded-lg transition-colors ${pathname === menu.path
-                    ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
-                    : "hover:bg-pink-100"
-                    }`}
+                  className={`flex items-center w-full justify-between p-2 rounded-lg transition-colors ${
+                    pathname === menu.path
+                      ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
+                      : "hover:bg-pink-100"
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="text-pink-600">{menu.icon}</div>
@@ -162,10 +163,11 @@ export default function Sidebar({ open, setOpen }: IProps) {
                           <Link
                             key={sub.name}
                             href={sub.path}
-                            className={`text-sm px-2 py-1 rounded-md transition-all duration-300 ${pathname === sub.path
-                              ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
-                              : "text-gray-600 hover:text-pink-600 hover:bg-pink-50"
-                              }`}
+                            className={`text-sm px-2 py-1 rounded-md transition-all duration-300 ${
+                              pathname === sub.path
+                                ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
+                                : "text-gray-600 hover:text-pink-600 hover:bg-pink-50"
+                            }`}
                           >
                             {sub.name}
                           </Link>
@@ -220,10 +222,11 @@ export default function Sidebar({ open, setOpen }: IProps) {
                     <Link
                       href={menu.path}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-2 py-2 ${pathname === menu.path
-                        ? "text-pink-700 font-semibold"
-                        : "text-gray-800 hover:text-pink-600"
-                        }`}
+                      className={`flex items-center gap-2 py-2 ${
+                        pathname === menu.path
+                          ? "text-pink-700 font-semibold"
+                          : "text-gray-800 hover:text-pink-600"
+                      }`}
                     >
                       <div className="text-pink-600">{menu.icon}</div>
                       <span>{menu.title}</span>
@@ -240,8 +243,9 @@ export default function Sidebar({ open, setOpen }: IProps) {
                         </div>
                         <ChevronDown
                           size={16}
-                          className={`transition-transform ${expanded[menu.id] ? "rotate-180" : ""
-                            }`}
+                          className={`transition-transform ${
+                            expanded[menu.id] ? "rotate-180" : ""
+                          }`}
                         />
                       </button>
 
@@ -258,10 +262,11 @@ export default function Sidebar({ open, setOpen }: IProps) {
                                 key={sub.name}
                                 href={sub.path}
                                 onClick={() => setMobileOpen(false)}
-                                className={`text-sm py-1 transition-all ${pathname === sub.path
-                                  ? "text-pink-700 font-semibold"
-                                  : "text-gray-600 hover:text-pink-600"
-                                  }`}
+                                className={`text-sm py-1 transition-all ${
+                                  pathname === sub.path
+                                    ? "text-pink-700 font-semibold"
+                                    : "text-gray-600 hover:text-pink-600"
+                                }`}
                               >
                                 {sub.name}
                               </Link>

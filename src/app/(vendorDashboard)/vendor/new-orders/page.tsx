@@ -5,13 +5,30 @@ import NewOrders from "@/src/components/Dashboard/Orders/NewOrders/NewOrders";
 import { TMeta, TResponse } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 
-export default async function NewOrdersPage() {
+type IProps = {
+  searchParams?: Promise<Record<string, string | undefined>>;
+};
+
+export default async function NewOrdersPage({ searchParams }: IProps) {
+  const queries = (await searchParams) || {};
+  const limit = Number(queries?.limit || 10);
+  const page = Number(queries.page || 1);
+  const searchTerm = queries.searchTerm || "";
+  const sortBy = queries.sortBy || "-createdAt";
+
+  const query = {
+    limit,
+    page,
+    sortBy,
+    ...(searchTerm ? { searchTerm: searchTerm } : {}),
+  };
+
   const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };
 
   try {
     const result = (await serverRequest.get("/orders", {
-      params: { isPaid: true },
-    })) as unknown as TResponse<TOrder[]>;
+      params: { ...query, isPaid: true },
+    })) as TResponse<TOrder[]>;
 
     if (result?.success) {
       initialData.data = result.data || [];

@@ -46,7 +46,7 @@ export default function NewOrders({ ordersResult }: IProps) {
   // status updates
   const updateStatus = async (
     id: string,
-    status: keyof typeof ORDER_STATUS
+    status: keyof typeof ORDER_STATUS,
   ) => {
     const toastId = toast.loading("Order status updating...");
 
@@ -86,7 +86,7 @@ export default function NewOrders({ ordersResult }: IProps) {
           "Order broadcasted to delivery partners successfully!",
         {
           id: toastId,
-        }
+        },
       );
       return;
     }
@@ -95,14 +95,14 @@ export default function NewOrders({ ordersResult }: IProps) {
       result.message || "Order broadcast to delivery partners failed",
       {
         id: toastId,
-      }
+      },
     );
     console.log(result);
   };
 
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG_SOFT }}>
-      <div className="max-w-[1400px] mx-auto space-y-6">
+      <div className="max-w-[1400px] w-full overflow-hidden mx-auto space-y-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -135,7 +135,7 @@ export default function NewOrders({ ordersResult }: IProps) {
               </CardTitle>
             </CardHeader>
 
-            <div className="h-[70vh] overflow-y-auto p-4 space-y-4">
+            <div className="h-[70vh] max-w-full overflow-x-auto overflow-y-auto p-4 space-y-4">
               <AnimatePresence>
                 {ordersResult?.data?.length === 0 && (
                   <motion.div
@@ -161,9 +161,9 @@ export default function NewOrders({ ordersResult }: IProps) {
                       borderColor: PINK_BORDER,
                     }}
                   >
-                    <div className="flex justify-between gap-4">
+                    <div className="lg:flex justify-between gap-4">
                       {/* Left info */}
-                      <div className="flex gap-4 overflow-hidden min-w-0">
+                      <div className="flex gap-4 min-w-0">
                         <div
                           className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm shrink-0"
                           style={{ background: PRIMARY + "22", color: PRIMARY }}
@@ -173,8 +173,8 @@ export default function NewOrders({ ordersResult }: IProps) {
                         </div>
 
                         <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-semibold text-gray-800 truncate">
+                          <div className="lg:flex items-center gap-2">
+                            <h3 className="text-lg font-semibold text-gray-800">
                               {order.customerId?.name?.firstName}{" "}
                               {order.customerId?.name?.lastName}
                             </h3>
@@ -186,29 +186,33 @@ export default function NewOrders({ ordersResult }: IProps) {
                             </span>
                           </div>
 
-                          <div className="mt-2 text-sm text-gray-700 leading-5 wrap-break-word">
+                          <div className="mt-2 text-sm text-gray-700 leading-5">
                             {order.items?.map((item, i) => (
-                              <span
-                                key={i}
-                                className="mr-2 inline-block truncate"
-                              >
+                              <span key={i} className="mr-2 inline-block">
                                 {item?.quantity}× {item.productId?.name}
                               </span>
                             ))}
                           </div>
 
-                          <p className="flex items-center gap-2 text-xs text-gray-500 mt-2 truncate">
-                            <MapPin size={12} /> {order.deliveryAddress?.street}
-                            , {order.deliveryAddress?.postalCode},{" "}
-                            {order.deliveryAddress?.city},{" "}
-                            {order.deliveryAddress?.state}
-                          </p>
+                          <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
+                            <div className="w-4">
+                              <MapPin size={12} />
+                            </div>{" "}
+                            <p className="">
+                              {order.deliveryAddress?.street},{" "}
+                              {order.deliveryAddress?.postalCode},{" "}
+                              {order.deliveryAddress?.city},{" "}
+                              {order.deliveryAddress?.state}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
                       {/* Right side: timeline + actions */}
-                      <div className="flex flex-col items-end justify-between min-w-[180px]">
-                        <StatusBadge status={order.orderStatus} />
+                      <div className="flex flex-col md:items-end justify-between min-w-[180px] mt-6 md:mt-0">
+                        <div className="w-fit">
+                          <StatusBadge status={order.orderStatus} />
+                        </div>
 
                         <div className="flex items-center gap-2 mt-3">
                           {order.orderStatus === ORDER_STATUS.ACCEPTED ||
@@ -291,7 +295,7 @@ export default function NewOrders({ ordersResult }: IProps) {
                         </div>
 
                         {/* Timeline compact below actions for small screens */}
-                        <div className="mt-3">
+                        <div className="mt-3 w-full">
                           <OrderTimeline status={order.orderStatus} />
                         </div>
                       </div>
@@ -394,7 +398,7 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
                   : { scale: 1, opacity: 0.6 }
               }
               transition={{ type: "spring", stiffness: 160, damping: 16 }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
+              className={`w-5 h-5 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
                 isActive
                   ? "bg-[--primary] text-white"
                   : "bg-white border border-pink-100 text-rose-500"
@@ -406,7 +410,7 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
 
             {i < steps.length - 1 && (
               <div
-                className={`h-0.5 w-8 ${
+                className={`h-[1px] md:h-0.5 w-4 md:w-8 ${
                   i < active ? "bg-[--primary]" : "bg-pink-100"
                 }`}
                 style={i < active ? { background: PRIMARY } : undefined}

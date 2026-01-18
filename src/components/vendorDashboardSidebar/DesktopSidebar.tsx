@@ -21,7 +21,7 @@ export default function DesktopSidebar({
       <div
         className={cn(
           "h-screen fixed top-0 left-0 z-50 bg-white border-r",
-          open ? "w-[280px]" : "w-20"
+          open ? "w-[280px]" : "w-20",
         )}
       >
         <Sidebar open={open} setOpen={setOpen} />
@@ -30,8 +30,8 @@ export default function DesktopSidebar({
       {/* Content area */}
       <div
         className={cn(
-          "flex-1 flex flex-col",
-          open ? "md:ml-[280px]" : "md:ml-20"
+          "flex-1 flex flex-col overflow-hidden",
+          open ? "md:ml-[280px]" : "md:ml-20",
         )}
       >
         {/* Topbar sticky */}
