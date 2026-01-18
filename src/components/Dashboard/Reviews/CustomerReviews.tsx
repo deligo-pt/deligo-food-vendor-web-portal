@@ -54,7 +54,7 @@ export default function CustomerReviews({
               {t("customer_reviews")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm">
-              {t("real_feedback_from_glovo_customers")}
+              {t("real_feedback_from_Your_customers")}
             </p>
           </div>
 
