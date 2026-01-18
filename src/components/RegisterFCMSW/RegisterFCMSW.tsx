@@ -10,7 +10,7 @@ export function RegisterFCMSW() {
       if (!reg) {
         navigator.serviceWorker
           .register("/firebase-messaging-sw.js")
-          .then(() => console.log("✅ FCM SW registered"))
+          .then(() => console.log("FCM SW registered"))
           .catch(console.error);
       }
     });

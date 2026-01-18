@@ -47,7 +47,7 @@ export default function VerifyOtp({ email }: { email: string }) {
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -75,7 +75,9 @@ export default function VerifyOtp({ email }: { email: string }) {
         });
 
         // get and save fcm token
-        getAndSaveFcmToken(result.data.accessToken);
+        setTimeout(() => {
+          getAndSaveFcmToken(result.data.accessToken);
+        }, 1000);
 
         router.push("/become-vendor/personal-details");
         return;
