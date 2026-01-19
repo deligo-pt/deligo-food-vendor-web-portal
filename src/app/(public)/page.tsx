@@ -4,10 +4,10 @@ import BenefitsSectionPremium from "@/src/components/Benefit/Benefit";
 import FAQSection from "@/src/components/FAQSection/FAQSection";
 import HeroSectionNextLevel from "@/src/components/Hero/hero";
 import JoinVendorCTA from "@/src/components/JoinVendorCTA/JoinVendorCTA";
-import KeyMetrics from "@/src/components/KeyMetrics/KeyMetrics";
-import PricingCommissionInteractive from "@/src/components/PricingCommission/PricingCommission";
-import VendorTestimonials from "@/src/components/VendorTestimonials/VendorTestimonials";
 import HowItWorksSection from "@/src/components/works/works";
+import ExploreFoodCategories from "@/src/components/ExploreFoodCategories/ExploreFoodCategories";
+import VendorDashboardPreview from "@/src/components/VendorDashboardPreview/VendorDashboardPreview";
+import SecurityTrustSection from "@/src/components/SecurityTrustSection/SecurityTrustSection";
 
 
 const PublicHomePage = () => {
@@ -17,10 +17,10 @@ const PublicHomePage = () => {
             <BenefitsSectionPremium />
             <HowItWorksSection />
             <AboutSection />
-            <VendorTestimonials />
-            <KeyMetrics />
+            <VendorDashboardPreview />
+            <ExploreFoodCategories/>
             <AboutCompany />
-            <PricingCommissionInteractive />
+            <SecurityTrustSection />
             <JoinVendorCTA />
             <FAQSection />
         </div>
