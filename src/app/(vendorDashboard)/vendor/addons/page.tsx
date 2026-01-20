@@ -4,6 +4,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import AddOns from "@/src/components/Dashboard/AddOns/AddOns";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
+import { TTax } from "@/src/types/tax.type";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -23,20 +24,29 @@ export default async function AddOnsPage({ searchParams }: IProps) {
     ...(searchTerm ? { searchTerm: searchTerm } : {}),
   };
 
-  const initialData: { data: TAddonGroup[]; meta?: TMeta } = { data: [] };
+  let taxData = [] as TTax[];
+  const addOnsData: { data: TAddonGroup[]; meta?: TMeta } = { data: [] };
 
   try {
-    const result = (await serverRequest.get("/add-ons", {
-      params: query,
-    })) as unknown as TResponse<{ data: TAddonGroup[]; meta?: TMeta }>;
+    const taxResult = (await serverRequest.get("/taxes")) as TResponse<{
+      data: TTax[];
+    }>;
 
-    if (result?.success) {
-      initialData.data = result.data?.data || [];
-      initialData.meta = result.data?.meta;
+    if (taxResult) {
+      taxData = taxResult.data?.data || [];
+    }
+
+    const addonsResult = (await serverRequest.get("/add-ons", {
+      params: query,
+    })) as TResponse<TAddonGroup[]>;
+
+    if (addonsResult?.success) {
+      addOnsData.data = addonsResult.data || [];
+      addOnsData.meta = addonsResult.meta;
     }
   } catch (err) {
     console.error("Server fetch error:", err);
   }
 
-  return <AddOns addOnsResult={initialData} />;
+  return <AddOns addOnsResult={addOnsData} taxes={taxData} />;
 }

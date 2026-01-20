@@ -12,13 +12,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 import { addOptionInGroup } from "@/src/services/dashboard/add-ons/add-ons";
 import { TAddonGroup } from "@/src/types/add-ons.type";
+import { TTax } from "@/src/types/tax.type";
 import { createAddonOptionValidationSchema } from "@/src/validations/addons/addOns.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -32,6 +41,7 @@ interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedGroup?: TAddonGroup;
+  taxes: TTax[];
 }
 
 type TAddonOptionForm = z.infer<typeof createAddonOptionValidationSchema>;
@@ -40,6 +50,7 @@ export default function AddOptionsForm({
   open,
   onOpenChange,
   selectedGroup,
+  taxes,
 }: IProps) {
   const router = useRouter();
   const form = useForm<TAddonOptionForm>({
@@ -47,6 +58,7 @@ export default function AddOptionsForm({
     values: {
       name: "",
       price: 0,
+      tax: "",
     },
   });
 
@@ -112,6 +124,35 @@ export default function AddOptionsForm({
                         field.onChange(parseFloat(e.target.value))
                       }
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tax"
+              render={({ field, fieldState }) => (
+                <FormItem className="gap-1">
+                  <FormLabel>Option Tax</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        className={cn(
+                          "w-full",
+                          fieldState.invalid ? "border-destructive" : "",
+                        )}
+                      >
+                        <SelectValue placeholder="Select Tax" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {taxes?.map((tax) => (
+                          <SelectItem key={tax._id} value={tax._id}>
+                            {tax.taxName} ({tax.taxRate}%)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

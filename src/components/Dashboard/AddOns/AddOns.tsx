@@ -17,6 +17,7 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { deleteOptionFromGroup } from "@/src/services/dashboard/add-ons/add-ons";
 import { TMeta } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
+import { TTax } from "@/src/types/tax.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -27,9 +28,10 @@ const SHADOW =
 
 interface IProps {
   addOnsResult: { data: TAddonGroup[]; meta?: TMeta };
+  taxes: TTax[];
 }
 
-export default function AddOns({ addOnsResult }: IProps) {
+export default function AddOns({ addOnsResult, taxes }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -95,6 +97,7 @@ export default function AddOns({ addOnsResult }: IProps) {
           <CreateOrEditAddOnsGroup
             open={openCreateForm}
             onOpenChange={(open) => !open && setOpenCreateForm(false)}
+            taxes={taxes}
           />
         </div>
 
@@ -210,6 +213,11 @@ export default function AddOns({ addOnsResult }: IProps) {
                               <span className="font-semibold text-gray-900">
                                 €{option.price.toFixed(2)}
                               </span>
+                              {option.tax && (
+                                <span className="text-xs text-slate-800">
+                                  (tax: {(option.tax as TTax)?.taxRate}%)
+                                </span>
+                              )}
                               <CheckCircle
                                 size={18}
                                 className="text-green-500 opacity-70"
@@ -265,6 +273,7 @@ export default function AddOns({ addOnsResult }: IProps) {
           !open && setSelectedGroupForAddOption(undefined)
         }
         selectedGroup={selectedGroupForAddOption}
+        taxes={taxes}
       />
 
       {/* Edit AddOns Group */}
@@ -272,6 +281,7 @@ export default function AddOns({ addOnsResult }: IProps) {
         open={!!selectedGroupForEdit}
         onOpenChange={(open) => !open && setSelectedGroupForEdit(undefined)}
         prevValues={selectedGroupForEdit}
+        taxes={taxes}
         actionType="edit"
       />
     </div>

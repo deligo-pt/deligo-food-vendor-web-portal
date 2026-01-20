@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { PlusIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 
 import {
   Form,
@@ -13,6 +13,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Sheet,
   SheetContent,
@@ -24,6 +31,7 @@ import {
   updateAddOnsGroup,
 } from "@/src/services/dashboard/add-ons/add-ons";
 import { TAddonGroup } from "@/src/types/add-ons.type";
+import { TTax } from "@/src/types/tax.type";
 import { createAddonGroupValidationSchema } from "@/src/validations/addons/addOns.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -40,6 +48,7 @@ interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   prevValues?: TAddonGroup;
+  taxes: TTax[];
   actionType?: "create" | "edit";
 }
 
@@ -47,6 +56,7 @@ export default function CreateOrEditAddOnsGroup({
   open,
   onOpenChange,
   prevValues,
+  taxes,
   actionType = "create",
 }: IProps) {
   const form = useForm<TAddonGroupForm>({
@@ -55,11 +65,17 @@ export default function CreateOrEditAddOnsGroup({
       title: prevValues?.title || "",
       minSelectable: prevValues?.minSelectable || 0,
       maxSelectable: prevValues?.maxSelectable || 1,
-      options: prevValues?.options || [],
+      options:
+        prevValues?.options?.map((option) => ({
+          name: option.name,
+          price: option.price,
+          tax: (option.tax as TTax)?._id,
+        })) || [],
     },
   });
   const [optionName, setOptionName] = useState("");
   const [optionPrice, setOptionPrice] = useState(0);
+  const [optionTax, setOptionTax] = useState("");
 
   const router = useRouter();
 
@@ -69,15 +85,21 @@ export default function CreateOrEditAddOnsGroup({
   });
 
   const addOption = () => {
-    if (optionPrice && optionPrice >= 0 && optionName.trim() !== "") {
+    if (
+      optionPrice &&
+      optionPrice >= 0 &&
+      optionName.trim() !== "" &&
+      optionTax !== ""
+    ) {
       const newOptions = [
         ...form?.getValues("options"),
-        { name: optionName, price: optionPrice },
+        { name: optionName, price: optionPrice, tax: optionTax },
       ];
       form.setValue("options", newOptions);
+      setOptionName("");
+      setOptionPrice(0);
+      setOptionTax("");
     }
-    setOptionName("");
-    setOptionPrice(0);
   };
 
   const removeOption = (optionToRemove: string) => {
@@ -206,7 +228,13 @@ export default function CreateOrEditAddOnsGroup({
                       className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
                     >
                       <span>{option.name}</span>
-                      <span className="ml-2">(€{option.price})</span>
+                      <span className="ml-2 text-xs text-slate-200">
+                        Price: (€{option.price})
+                        {option.tax
+                          ? `+ Tax: (
+                        ${taxes.find((t) => t._id === option.tax)?.taxRate}%)`
+                          : ""}
+                      </span>
                       <button
                         type="button"
                         onClick={() => removeOption(option.name)}
@@ -218,7 +246,7 @@ export default function CreateOrEditAddOnsGroup({
                   ))}
                 </div>
               )}
-              <div className="border rounded-md p-4 bg-gray-50 space-y-2">
+              <div className="border rounded-md p-4 bg-gray-50 space-y-3">
                 <FormField
                   control={form.control}
                   name="optionName"
@@ -250,35 +278,57 @@ export default function CreateOrEditAddOnsGroup({
                     <FormItem className="gap-1">
                       <FormLabel>Option Price</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <Input
-                            type="number"
-                            min="0"
-                            value={optionPrice}
-                            onChange={(e) =>
-                              setOptionPrice(Number(e.target.value))
-                            }
-                            placeholder="Option Price"
-                            onKeyUp={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                addOption();
-                              }
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={addOption}
-                            className="bg-[#DC3173] text-white px-4 py-2 rounded-r-md hover:bg-[#B02458] transition-colors absolute top-0 right-0 h-full"
-                          >
-                            <PlusIcon className="h-5 w-5" />
-                          </button>
-                        </div>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={optionPrice}
+                          onChange={(e) =>
+                            setOptionPrice(Number(e.target.value))
+                          }
+                          placeholder="Option Price"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="optionTax"
+                  render={() => (
+                    <FormItem className="gap-1">
+                      <FormLabel>Option Tax</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={optionTax}
+                          onValueChange={(val) => setOptionTax(val)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Tax" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {taxes?.map((tax) => (
+                              <SelectItem key={tax._id} value={tax._id}>
+                                {tax.taxName} ({tax.taxRate}%)
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="text-right">
+                  <Button
+                    size="sm"
+                    type="button"
+                    onClick={addOption}
+                    className="bg-[#DC3173] text-white px-4 py-2 rounded-md hover:bg-[#B02458] transition-colors"
+                  >
+                    Add Option
+                  </Button>
+                </div>
               </div>
             </div>
             <div className="mt-6">
