@@ -41,7 +41,7 @@ export default async function CompletedOrdersPage({ searchParams }: IProps) {
       initialData.meta = result.meta;
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return <CompletedOrders ordersResult={initialData} />;

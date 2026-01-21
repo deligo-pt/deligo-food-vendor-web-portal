@@ -35,7 +35,7 @@ export default async function CouponAnalyticsPage({ searchParams }: IProps) {
       initialData = result.data;
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return <CouponAnalytics couponsAnalyticsResult={initialData} />;

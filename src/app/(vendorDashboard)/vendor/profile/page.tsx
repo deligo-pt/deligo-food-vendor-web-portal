@@ -12,7 +12,7 @@ export default async function ProfilePage() {
       vendorData = result?.data;
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return <Profile vendor={vendorData} />;

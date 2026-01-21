@@ -1,3 +1,5 @@
+import { USER_ROLE, USER_STATUS } from "@/src/consts/user.const";
+
 export type TMeta = {
   page: number;
   limit: number;
@@ -12,4 +14,14 @@ export type TResponse<T> = {
   data: T;
   meta?: TMeta;
   error?: unknown;
+};
+
+export type TJwtPayload = {
+  userId: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  role: keyof typeof USER_ROLE;
+  status: keyof typeof USER_STATUS;
 };

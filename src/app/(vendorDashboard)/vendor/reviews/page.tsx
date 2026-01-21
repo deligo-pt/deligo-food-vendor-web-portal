@@ -36,7 +36,7 @@ export default async function CustomerReviewsPage({ searchParams }: IProps) {
       initialData.meta = result.meta;
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   try {
@@ -47,7 +47,7 @@ export default async function CustomerReviewsPage({ searchParams }: IProps) {
       vendorRating.totalReviews = result.data?.rating?.totalReviews || 0;
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return (

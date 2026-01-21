@@ -45,7 +45,7 @@ export default async function AddOnsPage({ searchParams }: IProps) {
       addOnsData.meta = addonsResult.meta;
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return <AddOns addOnsResult={addOnsData} taxes={taxData} />;

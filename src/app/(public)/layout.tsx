@@ -22,7 +22,7 @@ const PublicLayout = async ({ children }: { children: React.ReactNode }) => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
-        console.error("Server fetch error:", err?.response?.data);
+        console.log("Server fetch error:", err?.response?.data);
       }
     }
   }

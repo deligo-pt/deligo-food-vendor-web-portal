@@ -19,7 +19,7 @@ export default async function AddItemPage() {
       productCategoriesData = result?.data?.data || [];
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   try {
@@ -31,7 +31,7 @@ export default async function AddItemPage() {
       addonGroupsData = result?.data?.data || [];
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return (

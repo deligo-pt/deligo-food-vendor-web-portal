@@ -5,23 +5,21 @@ import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 
 export default async function DashboardPage() {
-  const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as {
-    name: { firstName: string; lastName: string };
-  };
-
   let analyticsData: TAnalytics = {} as TAnalytics;
+  let decoded = {} as { name: { firstName: string; lastName: string } };
 
   try {
     const result = await serverRequest.get(
-      "/analytics/vendor-dashboard-analytics"
+      "/analytics/vendor-dashboard-analytics",
     );
 
     if (result?.success) {
+      const accessToken = (await cookies()).get("accessToken")?.value || "";
       analyticsData = result?.data;
+      decoded = jwtDecode(accessToken);
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return (

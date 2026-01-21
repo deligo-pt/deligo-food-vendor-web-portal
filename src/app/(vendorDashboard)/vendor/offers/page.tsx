@@ -36,7 +36,7 @@ export default async function AllOffersPage({ searchParams }: IProps) {
       initialData.meta = result.data?.meta;
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return <ActiveOffers offersResult={initialData} title="All" />;

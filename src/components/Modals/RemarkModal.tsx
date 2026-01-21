@@ -39,7 +39,7 @@ const RemarkModal = ({
 
       onOpenChange(false);
     } catch (err) {
-      console.error(err);
+      console.log(err);
     } finally {
       setIsSubmitting(false);
     }

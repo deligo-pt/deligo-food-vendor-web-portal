@@ -27,7 +27,7 @@ export default async function VendorLayout({
       vendorData = result?.data;
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return (

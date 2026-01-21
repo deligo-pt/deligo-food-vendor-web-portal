@@ -32,7 +32,7 @@ export default async function UploadDocumentPage() {
       }
     }
   } catch (err) {
-    console.error("Server fetch error:", err);
+    console.log("Server fetch error:", err);
   }
 
   return (
