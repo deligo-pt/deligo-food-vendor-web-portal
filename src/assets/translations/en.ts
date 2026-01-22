@@ -57,6 +57,32 @@ export const en = {
     deliveryTitle: "We’re More Than a Delivery Platform",
     deliveryDesc: "Join a community-driven marketplace built on trust, technology, and transparency — designed for growth, powered by Portugal’s spirit.",
 
+    // vendor dashboard section
+    live_dashboard_preview: "Live Dashboard Preview",
+    your_vendor_dashboard: "Your Vendor Dashboard",
+    at_a_glance: "at a Glance",
+    clean_real_time_overview_built: "A clean, real-time overview built to help vendors manage orders, earnings and performance faster.",
+    dashboard_snapshot: "Dashboard Snapshot",
+    live_tracking_enabled: "Live Tracking Enabled",
+    quick_preview:"Quick preview",
+    stable:"Stable",
+    improving:"Improving",
+    faster:"Faster",
+
+    // explore food categories
+    explore_menu_categories:"Explore Menu Categories",
+    explore_food:"Explore Food",
+    categories:"Categories",
+    category_preview:"Category Preview",
+    nice:"Nice ✨",
+
+    // security trust section
+    security_and_trust:"Security & Trust",
+    built_for:"Built for",
+    secure_operations:"Secure Operations",
+    deligo_designed_security_first_principles:"DeliGo is designed with security-first principles to protect vendors, customers and every transaction across the platform.",
+    trusted_by_modern_platforms:"Trusted by modern platforms",
+    security_continuous_monitor_improve:"Security is continuous — we monitor, improve, and protect your business every day.",
 
     // vendor testimonial
     vendorTitle: "See How Local Businesses are Growing with Us",
@@ -596,7 +622,6 @@ export const en = {
     cancelled: "Cancelled",
     menu_items: "Menu & Items",
     all_items: "All Items",
-    categories: "Categories",
     add_new_item: "Add New Item",
     stock_management: "Stock Management",
     add_ons: "Add-Ons",
@@ -1008,7 +1033,6 @@ export const en = {
     used_today: "Used today",
     units: "units",
     critical: "Critical",
-    stable: "Stable",
     burger_buns_out_stock_affects: "Burger buns out of stock — affects 4 top-selling items.",
     mozzarella_likely_run_out_within: "Mozzarella likely to run out within 4 hours based on usage.",
     tomatoes_shortage_expected_due_to: "Tomatoes shortage expected due to weekend spikes.",

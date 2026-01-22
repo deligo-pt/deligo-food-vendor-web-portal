@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
+
 type TrustCard = {
   id: string;
   title: string;
@@ -81,12 +83,14 @@ const cards: TrustCard[] = [
 ];
 
 export default function SecurityTrustSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative w-full overflow-hidden py-16 sm:py-20">
       {/* ===== Premium Background ===== */}
       <div className="absolute inset-0 -z-10">
         {/* Dark base */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0B12] via-[#0E0A16] to-[#070B1D]" />
+        <div className="absolute inset-0 bg-linear-to-br from-[#0B0B12] via-[#0E0A16] to-[#070B1D]" />
 
         {/* Brand glow */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(220,49,115,0.45),transparent_55%),radial-gradient(circle_at_85%_70%,rgba(99,102,241,0.32),transparent_55%)]" />
@@ -113,19 +117,18 @@ export default function SecurityTrustSection() {
         <div className="mb-10 sm:mb-12 text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold tracking-wide text-white/90 shadow-[0_10px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl">
             <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-[#DC3173]" />
-            Security & Trust
+            {t("security_and_trust")}
           </div>
 
           <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Built for{" "}
-            <span className="bg-gradient-to-r from-[#DC3173] via-pink-200 to-indigo-200 bg-clip-text text-transparent">
-              Secure Operations
+            {t("built_for")}{" "}
+            <span className="bg-linear-to-r from-[#DC3173] via-pink-200 to-indigo-200 bg-clip-text text-transparent">
+              {t("secure_operations")}
             </span>
           </h2>
 
           <p className="mx-auto mt-3 max-w-2xl text-sm text-white/75 sm:text-base">
-            DeliGo is designed with security-first principles to protect vendors,
-            customers and every transaction across the platform.
+            {t("deligo_designed_security_first_principles")}
           </p>
         </div>
 
@@ -134,7 +137,7 @@ export default function SecurityTrustSection() {
           {cards.map((card, index) => (
             <div
               key={card.id}
-              className="group relative overflow-hidden rounded-[28px] border border-white/12 bg-white/[0.06] p-6 shadow-[0_22px_90px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:border-white/25"
+              className="group relative overflow-hidden rounded-[28px] border border-white/12 bg-white/6 p-6 shadow-[0_22px_90px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:border-white/25"
               style={{
                 animation: `fadeUp 650ms ease ${index * 80}ms both`,
               }}
@@ -165,11 +168,11 @@ export default function SecurityTrustSection() {
               </p>
 
               {/* Divider */}
-              <div className="relative mt-6 h-[1px] w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              <div className="relative mt-6 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
               {/* Bottom hint */}
               <p className="relative mt-4 text-xs font-medium text-white/60">
-                Trusted by modern platforms
+                {t("trusted_by_modern_platforms")}
               </p>
             </div>
           ))}
@@ -178,8 +181,7 @@ export default function SecurityTrustSection() {
         {/* Bottom note */}
         <div className="mt-10 text-center">
           <p className="text-xs text-white/65">
-            Security is continuous — we monitor, improve, and protect your
-            business every day.
+            {t("security_continuous_monitor_improve")}
           </p>
         </div>
       </div>

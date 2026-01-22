@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import Image from "next/image";
 
 type Category = {
@@ -60,11 +61,13 @@ const categories: Category[] = [
 ];
 
 export default function ExploreFoodCategories() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative w-full overflow-hidden py-16 sm:py-20">
       {/* ===== Animated Premium Background ===== */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0B12] via-[#140A16] to-[#070B1D]" />
+        <div className="absolute inset-0 bg-linear-to-br from-[#0B0B12] via-[#140A16] to-[#070B1D]" />
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(220,49,115,0.50),transparent_55%),radial-gradient(circle_at_85%_75%,rgba(99,102,241,0.35),transparent_55%),radial-gradient(circle_at_40%_90%,rgba(255,255,255,0.10),transparent_55%)]" />
 
@@ -89,13 +92,13 @@ export default function ExploreFoodCategories() {
         <div className="mb-10 sm:mb-12 text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold tracking-wide text-white/90 shadow-[0_10px_40px_rgba(0,0,0,0.3)] backdrop-blur-xl">
             <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-[#DC3173]" />
-            Explore Menu Categories
+            {t("explore_menu_categories")}
           </div>
 
           <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Explore Food{" "}
-            <span className="bg-gradient-to-r from-[#DC3173] via-pink-300 to-indigo-300 bg-clip-text text-transparent">
-              Categories
+            {t("explore_food")}{" "}
+            <span className="bg-linear-to-r from-[#DC3173] via-pink-300 to-indigo-300 bg-clip-text text-transparent">
+              {t("categories")}
             </span>
           </h2>
         </div>
@@ -106,7 +109,7 @@ export default function ExploreFoodCategories() {
             <button
               key={cat.id}
               type="button"
-              className="group relative overflow-hidden rounded-[28px] border border-white/12 bg-white/[0.06] text-left shadow-[0_25px_90px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:border-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC3173]/70"
+              className="group relative overflow-hidden rounded-[28px] border border-white/12 bg-white/6 text-left shadow-[0_25px_90px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:border-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC3173]/70"
               style={{ animation: `fadeUp 600ms ease ${index * 70}ms both` }}
             >
               {/* Glow hover */}
@@ -124,8 +127,8 @@ export default function ExploreFoodCategories() {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-[#DC3173]/30 via-transparent to-indigo-500/25" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/25 to-transparent" />
+                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-br from-[#DC3173]/30 via-transparent to-indigo-500/25" />
 
                 {cat.badge && (
                   <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/30 px-3 py-1 text-xs font-semibold text-white backdrop-blur-xl">
@@ -156,15 +159,15 @@ export default function ExploreFoodCategories() {
                 <h3 className="text-xl font-bold text-white">{cat.title}</h3>
                 <p className="mt-1 text-sm text-white/75">{cat.subtitle}</p>
 
-                <div className="mt-5 h-[1px] w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <div className="mt-5 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
                 <div className="mt-4 flex items-center justify-between">
                   <p className="text-xs font-medium text-white/70">
-                    Category Preview
+                    {t("category_preview")}
                   </p>
 
                   <span className="text-xs font-semibold text-[#DC3173] opacity-0 transition-all duration-300 group-hover:opacity-100">
-                    Nice ✨
+                    {t("nice")}
                   </span>
                 </div>
               </div>
