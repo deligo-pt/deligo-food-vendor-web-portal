@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/src/hooks/use-translation";
+
 type StatCard = {
   id: string;
   title: string;
@@ -60,21 +62,22 @@ function AccentDot({ accent }: { accent: StatCard["accent"] }) {
 }
 
 function TrendPill({ trend }: { trend: StatCard["trend"] }) {
+  const { t } = useTranslation();
+
   if (trend === "neutral") {
     return (
       <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-white/70">
-        Stable
+        {t("stable")}
       </span>
     );
   }
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-        trend === "up"
-          ? "border border-emerald-300/20 bg-emerald-400/10 text-emerald-200"
-          : "border border-amber-300/20 bg-amber-400/10 text-amber-200"
-      }`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${trend === "up"
+        ? "border border-emerald-300/20 bg-emerald-400/10 text-emerald-200"
+        : "border border-amber-300/20 bg-amber-400/10 text-amber-200"
+        }`}
     >
       {trend === "up" ? (
         <>
@@ -85,7 +88,7 @@ function TrendPill({ trend }: { trend: StatCard["trend"] }) {
           >
             <path d="M7 14l5-5 5 5H7z" />
           </svg>
-          Improving
+          {t("improving")}
         </>
       ) : (
         <>
@@ -96,7 +99,7 @@ function TrendPill({ trend }: { trend: StatCard["trend"] }) {
           >
             <path d="M7 10l5 5 5-5H7z" />
           </svg>
-          Faster
+          {t("faster")}
         </>
       )}
     </span>
@@ -104,11 +107,13 @@ function TrendPill({ trend }: { trend: StatCard["trend"] }) {
 }
 
 export default function VendorDashboardPreview() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative w-full overflow-hidden py-16 sm:py-20">
       {/* ===== Background (Premium dark + brand glow) ===== */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0B12] via-[#140A16] to-[#070B1D]" />
+        <div className="absolute inset-0 bg-linear-to-br from-[#0B0B12] via-[#140A16] to-[#070B1D]" />
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(220,49,115,0.50),transparent_55%),radial-gradient(circle_at_85%_75%,rgba(99,102,241,0.32),transparent_55%),radial-gradient(circle_at_40%_90%,rgba(255,255,255,0.10),transparent_55%)]" />
 
@@ -134,30 +139,29 @@ export default function VendorDashboardPreview() {
         <div className="mb-10 sm:mb-12 text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold tracking-wide text-white/90 shadow-[0_10px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl">
             <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-[#DC3173]" />
-            Live Dashboard Preview
+            {t("live_dashboard_preview")}
           </div>
 
           <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Your Vendor Dashboard{" "}
-            <span className="bg-gradient-to-r from-[#DC3173] via-pink-200 to-indigo-200 bg-clip-text text-transparent">
-              at a Glance
+            {t("your_vendor_dashboard")}{" "}
+            <span className="bg-linear-to-r from-[#DC3173] via-pink-200 to-indigo-200 bg-clip-text text-transparent">
+              {t("at_a_glance")}
             </span>
           </h2>
 
           <p className="mx-auto mt-3 max-w-2xl text-sm text-white/75 sm:text-base">
-            A clean, real-time overview built to help vendors manage orders,
-            earnings and performance faster.
+            {t("clean_real_time_overview_built")}
           </p>
         </div>
 
         {/* ===== Main Preview Card ===== */}
         <div
-          className="relative mx-auto overflow-hidden rounded-[34px] border border-white/12 bg-white/[0.06] p-6 shadow-[0_30px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-8"
+          className="relative mx-auto overflow-hidden rounded-[34px] border border-white/12 bg-white/6 p-6 shadow-[0_30px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-8"
           style={{ animation: "fadeUp 650ms ease both" }}
         >
           {/* Border glow */}
           <div className="pointer-events-none absolute inset-0 opacity-70">
-            <div className="absolute -inset-[2px] rounded-[36px] bg-[linear-gradient(120deg,rgba(220,49,115,0.45),rgba(99,102,241,0.25),rgba(255,255,255,0.08))] blur-xl" />
+            <div className="absolute -inset-0.5 rounded-[36px] bg-[linear-gradient(120deg,rgba(220,49,115,0.45),rgba(99,102,241,0.25),rgba(255,255,255,0.08))] blur-xl" />
           </div>
 
           <div className="relative">
@@ -165,14 +169,14 @@ export default function VendorDashboardPreview() {
             <div className="mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h3 className="text-lg font-bold text-white sm:text-xl">
-                  Dashboard Snapshot
+                  {t("dashboard_snapshot")}
                 </h3>
               </div>
 
               {/* Mini status */}
               <div className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/5 px-4 py-2 text-xs font-semibold text-white/85 backdrop-blur-xl">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-                Live Tracking Enabled
+                {t("live_tracking_enabled")}
               </div>
             </div>
 
@@ -182,7 +186,7 @@ export default function VendorDashboardPreview() {
                 <button
                   key={item.id}
                   type="button"
-                  className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/[0.05] p-5 text-left shadow-[0_20px_70px_rgba(0,0,0,0.30)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
+                  className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-5 text-left shadow-[0_20px_70px_rgba(0,0,0,0.30)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
                   style={{
                     animation: `fadeUp 650ms ease ${index * 80}ms both`,
                   }}
@@ -211,14 +215,14 @@ export default function VendorDashboardPreview() {
                   </div>
 
                   {/* tiny line */}
-                  <div className="relative mt-5 h-[1px] w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                  <div className="relative mt-5 h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
                   <div className="relative mt-4 flex items-center justify-between">
                     <span className="text-xs font-medium text-white/60">
-                      Quick preview
+                      {t("quick_preview")}
                     </span>
 
-  
+
                   </div>
                 </button>
               ))}
