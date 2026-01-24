@@ -57,6 +57,36 @@ export const pt = {
     deliveryDesc:
         "Junte-se a um mercado orientado pela comunidade, baseado na confiança, tecnologia e transparência — concebido para crescer, impulsionado pelo espírito de Portugal.",
 
+    // vendor dashboard section
+    live_dashboard_preview: "Pré-visualização do Dashboard em Tempo Real",
+    your_vendor_dashboard: "O Seu Dashboard de Vendedor",
+    at_a_glance: "num relance",
+    clean_real_time_overview_built:
+        "Uma visão clara e em tempo real, criada para ajudar os vendedores a gerir encomendas, ganhos e desempenho de forma mais rápida.",
+    dashboard_snapshot: "Resumo do Dashboard",
+    live_tracking_enabled: "Rastreamento em Tempo Real Ativado",
+    quick_preview: "Pré-visualização rápida",
+    stable: "Estável",
+    improving: "A melhorar",
+    faster: "Mais rápido",
+
+    // explore food categories
+    explore_menu_categories: "Explorar Categorias do Menu",
+    explore_food: "Explorar Comida",
+    categories: "Categorias",
+    category_preview: "Pré-visualização da Categoria",
+    nice: "Excelente ✨",
+
+    // security trust section
+    security_and_trust: "Segurança & Confiança",
+    built_for: "Criado para",
+    secure_operations: "Operações Seguras",
+    deligo_designed_security_first_principles:
+        "A DeliGo foi concebida com princípios de segurança em primeiro lugar para proteger vendedores, clientes e todas as transações na plataforma.",
+    trusted_by_modern_platforms: "Confiado por plataformas modernas",
+    security_continuous_monitor_improve:
+        "A segurança é contínua — monitorizamos, melhoramos e protegemos o seu negócio todos os dias.",
+
     // vendor testimonial
     vendorTitle: "Veja como os negócios locais estão a crescer connosco",
 
@@ -615,7 +645,6 @@ export const pt = {
 
     menu_items: "Menu & Itens",
     all_items: "Todos os Itens",
-    categories: "Categorias",
     add_new_item: "Adicionar Novo Item",
     stock_management: "Gestão de Stock",
     add_ons: "Extras",
@@ -1096,7 +1125,6 @@ export const pt = {
     used_today: "Usado hoje",
     units: "unidades",
     critical: "Crítico",
-    stable: "Estável",
     burger_buns_out_stock_affects:
         "Pães de hambúrguer esgotados — afeta 4 itens mais vendidos.",
     mozzarella_likely_run_out_within:
