@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import RemarkModal from "@/src/components/Modals/RemarkModal";
+import SOSModal from "@/src/components/Dashboard/SOS/SOSModal";
 import TopbarNotification from "@/src/components/vendorTopbar/TopbarNotification";
 import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
@@ -33,7 +33,6 @@ export default function TopbarIcons({ vendor }: IProps) {
   const { lang, setLang } = useStore();
   const [profileOpen, setProfileOpen] = useState(false);
   const [openSosModal, setOpenSosModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const logOut = () => {
@@ -157,14 +156,9 @@ export default function TopbarIcons({ vendor }: IProps) {
         </AnimatePresence>
       </div>
 
-      <RemarkModal
+      <SOSModal
         open={openSosModal}
-        onOpenChange={(open) => {
-          if (isSubmitting) return;
-          setOpenSosModal(open);
-        }}
-        userId={vendor?.userId || ""}
-        setIsSubmitting={setIsSubmitting}
+        onOpenChange={(open) => setOpenSosModal(open)}
       />
     </>
   );
