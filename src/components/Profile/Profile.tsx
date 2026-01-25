@@ -39,8 +39,8 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
     const colors = {
       APPROVED: "bg-green-100 text-green-700 border-green-200",
       SUBMITTED: "bg-gray-100 text-gray-700 border-gray-200",
-      REJECTED: "bg-red-100 text-red-700 border-red-200",
       PENDING: "bg-yellow-100 text-yellow-700 border-yellow-200",
+      [status]: "bg-red-100 text-red-700 border-red-200",
     };
     return colors[status];
   };
