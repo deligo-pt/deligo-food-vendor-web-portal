@@ -4,6 +4,12 @@ import { serverRequest } from "@/lib/serverFetch";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 
+export const getAddOnsGroupReq = async ({ limit = 10 }) => {
+  return catchAsync<TAddonGroup>(async () => {
+    return await serverRequest.get("/add-ons", { params: { limit } });
+  });
+};
+
 export const createAddOnsGroup = async (data: Partial<TAddonGroup>) => {
   return catchAsync<TAddonGroup>(async () => {
     return await serverRequest.post("/add-ons/create-group", {
@@ -14,7 +20,7 @@ export const createAddOnsGroup = async (data: Partial<TAddonGroup>) => {
 
 export const updateAddOnsGroup = async (
   id: string,
-  data: Partial<TAddonGroup>
+  data: Partial<TAddonGroup>,
 ) => {
   return catchAsync<TAddonGroup>(async () => {
     return await serverRequest.patch(`/add-ons/${id}`, {
@@ -25,7 +31,7 @@ export const updateAddOnsGroup = async (
 
 export const addOptionInGroup = async (
   groupId: string,
-  data: { name: string; price: number }
+  data: { name: string; price: number },
 ) => {
   return catchAsync<null>(async () => {
     return await serverRequest.patch(`/add-ons/${groupId}/add-option`, {
@@ -36,7 +42,7 @@ export const addOptionInGroup = async (
 
 export const deleteOptionFromGroup = async (
   groupId: string,
-  optionId: string
+  optionId: string,
 ) => {
   return catchAsync<null>(async () => {
     return await serverRequest.delete(`/add-ons/${groupId}/delete-option`, {

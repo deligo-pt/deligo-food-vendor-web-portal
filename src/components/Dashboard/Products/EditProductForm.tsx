@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -9,6 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -20,14 +22,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
 import { Input } from "@/src/components/ui/input";
-import { updateProductReq } from "@/src/services/dashboard/products/products";
+import { useTranslation } from "@/src/hooks/use-translation";
+import { getAddOnsGroupReq } from "@/src/services/dashboard/add-ons/add-ons";
+import { TMeta, TResponse } from "@/src/types";
+import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TProduct } from "@/src/types/product.type";
+import { catchAsync } from "@/src/utils/catchAsync";
+import { getCookie } from "@/src/utils/cookies";
+import { updateData } from "@/src/utils/requests";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
   ImageIcon,
   InfoIcon,
+  LayersIcon,
   PackageIcon,
   PlusIcon,
   SaveIcon,
@@ -35,7 +46,8 @@ import {
   TagIcon,
   XIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -52,6 +64,10 @@ const tabs = [
   {
     name: "Pricing",
     icon: <TagIcon className="h-5 w-5" />,
+  },
+  {
+    name: "Addons and Variants",
+    icon: <LayersIcon className="h-5 w-5" />,
   },
   {
     name: "Stock",
@@ -71,14 +87,27 @@ type FormData = z.infer<typeof productValidation>;
 
 interface IProps {
   prevData: TProduct;
-  refetch: () => void;
   closeModal: () => void;
 }
 
-export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
+export function EditProductForm({ prevData, closeModal }: IProps) {
+  const router = useRouter();
+  const { t } = useTranslation();
+  const [addonGroupsData, setAddonsGroupsData] = useState<{
+    data: TAddonGroup[];
+    meta?: TMeta;
+  }>({ data: [] });
   const [activeTab, setActiveTab] = useState(0);
+  const [options, setOptions] = useState<{ label: string; price: number }[]>(
+    [],
+  );
+  const [option, setOption] = useState<{ label: string; price: string }>({
+    label: "",
+    price: "",
+  });
+  const [variationName, setVariationName] = useState("");
   const [images, setImages] = useState<{ file: File | null; url: string }[]>(
-    prevData?.images?.map((img) => ({ file: null, url: img })) || []
+    prevData?.images?.map((img) => ({ file: null, url: img })) || [],
   );
   const [tag, setTag] = useState("");
   const form = useForm<FormData>({
@@ -91,6 +120,8 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
       price: prevData?.pricing?.price || 0,
       discount: prevData?.pricing?.discount || 0,
       tax: prevData?.pricing?.tax || 0,
+      addonGroups: prevData?.addonGroups || [],
+      variations: prevData?.variations || [],
       quantity: prevData?.stock?.quantity || 0,
       unit: prevData?.stock?.unit || "",
       availabilityStatus: prevData?.stock?.availabilityStatus || "",
@@ -105,9 +136,16 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
     },
   });
 
-  const [watchPrice, watchDiscount, watchTax, watchTags] = useWatch({
+  const [
+    watchPrice,
+    watchDiscount,
+    watchTax,
+    watchTags,
+    watchAddons,
+    watchVariations,
+  ] = useWatch({
     control: form.control,
-    name: ["price", "discount", "tax", "tags"],
+    name: ["price", "discount", "tax", "tags", "addonGroups", "variations"],
   });
 
   const addTag = () => {
@@ -121,6 +159,62 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
   const removeTag = (tagToRemove: string) => {
     const newTags = form?.getValues("tags")?.filter((t) => t !== tagToRemove);
     form.setValue("tags", newTags);
+  };
+
+  const addAddon = (id: string) => {
+    if (!form?.getValues("addonGroups")?.includes(id)) {
+      const newAddonGroups = [...form?.getValues("addonGroups"), id];
+      form.setValue("addonGroups", newAddonGroups);
+    }
+  };
+
+  const removeAddon = (idToRemove: string) => {
+    const newAddonGroups = form
+      ?.getValues("addonGroups")
+      ?.filter((id) => id !== idToRemove);
+    form.setValue("addonGroups", newAddonGroups);
+  };
+
+  const addOption = () => {
+    if (option.label && option.price) {
+      if (!options.find((opt) => opt.label === option.label)) {
+        setOptions((prev) => [
+          ...prev,
+          { label: option.label, price: Number(option.price) },
+        ]);
+        setOption({ label: "", price: "" });
+      }
+    } else {
+      toast.error("Option label and price are required");
+    }
+  };
+
+  const removeOption = (optionToRemove: string) => {
+    setOptions(
+      (prev) => prev.filter((opt) => opt.label !== optionToRemove) || [],
+    );
+  };
+
+  const addVariation = () => {
+    if (variationName && options.length > 0) {
+      if (!form.getValues("variations").find((v) => v.name === variationName)) {
+        form.setValue("variations", [
+          ...form.getValues("variations"),
+          { name: variationName, options: options },
+        ]);
+        setVariationName("");
+        setOptions([]);
+      }
+    } else {
+      toast.error("Variation name and options are required");
+    }
+  };
+
+  const removeVariation = (nameToRemove: string) => {
+    form.setValue(
+      "variations",
+      form.getValues("variations").filter((v) => v.name !== nameToRemove),
+    );
   };
 
   const onSubmit = async (data: FormData) => {
@@ -141,6 +235,8 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
         unit: data.unit,
         availabilityStatus: data.availabilityStatus,
       },
+      addonGroups: data.addonGroups,
+      variations: data.variations,
       tags: data.tags,
       attributes: {
         organic: data.organic,
@@ -156,17 +252,28 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
 
     const filteredImages = images.filter((image) => !!image.file);
 
-    const result = await updateProductReq(
-      prevData?.productId,
-      productData as unknown as Partial<TProduct>,
-      filteredImages
-    );
+    const result = await catchAsync<TProduct>(async () => {
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(productData));
+
+      if (filteredImages.length > 0)
+        filteredImages.map((image) =>
+          formData.append("files", image.file as Blob),
+        );
+
+      return (await updateData(`/products/${prevData?.productId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          authorization: `Bearer ${getCookie("accessToken")}`,
+        },
+      })) as unknown as TResponse<TProduct>;
+    });
 
     if (result.success) {
       toast.success("Product updated successfully!", { id: toastId });
       form.reset();
       setActiveTab(0);
-      refetch();
+      router.refresh();
       closeModal();
       return;
     }
@@ -174,6 +281,22 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
     toast.error(result.message || "Product update failed", { id: toastId });
     console.log(result);
   };
+
+  const getAddonsGroups = async ({ limit = 10 }) => {
+    const result = await catchAsync<TAddonGroup[]>(async () => {
+      return (await getAddOnsGroupReq({ limit })) as unknown as TResponse<
+        TAddonGroup[]
+      >;
+    });
+
+    if (result.success) {
+      setAddonsGroupsData(result.data);
+    }
+  };
+
+  useEffect(() => {
+    (() => getAddonsGroups({ limit: 10 }))();
+  }, []);
 
   return (
     <div className="">
@@ -334,7 +457,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                                   "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                   fieldState.invalid
                                     ? "border-destructive"
-                                    : "border-gray-300"
+                                    : "border-gray-300",
                                 )}
                               >
                                 <SelectValue placeholder="Select a category" />
@@ -586,8 +709,222 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                     )}
                   </motion.div>
                 )}
-                {/* Stock Tab */}
+                {/* Add-Ons & Variants Tab */}
                 {activeTab === 3 && (
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                    }}
+                    transition={{
+                      duration: 0.3,
+                    }}
+                    className="space-y-6"
+                  >
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      {t("add_ons_and_variants")}
+                    </h2>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t("add_ons")}
+                      </label>
+                      {watchAddons?.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-1">
+                          {watchAddons?.map((id) => (
+                            <motion.div
+                              key={id}
+                              initial={{
+                                scale: 0,
+                              }}
+                              animate={{
+                                scale: 1,
+                              }}
+                              className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
+                            >
+                              <span>
+                                {
+                                  addonGroupsData?.data?.find(
+                                    (group) => group._id === id,
+                                  )?.title
+                                }
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeAddon(id)}
+                                className="ml-2 text-white hover:text-[#CCC]"
+                              >
+                                <XIcon className="h-4 w-4" />
+                              </button>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                      <FormField
+                        control={form.control}
+                        name="addonGroups"
+                        render={({ fieldState }) => (
+                          <FormItem className="gap-1">
+                            <FormControl>
+                              <Select onValueChange={(val) => addAddon(val)}>
+                                <SelectTrigger
+                                  className={cn(
+                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
+                                    fieldState.invalid
+                                      ? "border-destructive"
+                                      : "border-gray-300",
+                                  )}
+                                >
+                                  <SelectValue placeholder="Choose Add-On" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {addonGroupsData?.data?.map((group) => (
+                                    <SelectItem
+                                      key={group._id}
+                                      value={group._id}
+                                    >
+                                      {group.title}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="space-y-2 ">
+                      <label className="block mb-1">{t("variations")}</label>
+                      <div>
+                        {watchVariations?.length > 0 &&
+                          watchVariations?.map((variation, i) => (
+                            <div
+                              key={i}
+                              className="relative p-4 border rounded-md bg-gray-50 mb-4"
+                            >
+                              <div>
+                                {t("name")}: {variation.name}
+                              </div>
+                              <div className="flex flex-wrap gap-2 items-center">
+                                {t("options")}:{" "}
+                                {variation.options?.map((option, i2) => (
+                                  <div
+                                    key={i2}
+                                    className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
+                                  >
+                                    <span>{option.label}</span>
+                                    <span className="ml-2">
+                                      (€{option.price})
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => removeVariation(variation.name)}
+                                className="ml-2 hover:text-[#333] absolute top-1 right-1"
+                              >
+                                <XIcon className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                      <div className="border rounded-md p-4 bg-gray-50 space-y-2">
+                        <div>
+                          <Label className="text-gray-700 mb-1">
+                            {t("name")}
+                          </Label>
+                          <Input
+                            type="text"
+                            value={variationName}
+                            onChange={(e) => setVariationName(e.target.value)}
+                            placeholder="Add a variation name"
+                          />
+                        </div>
+                        <Label className="text-gray-700">{t("options")}</Label>
+                        {options?.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-1">
+                            {options?.map((option) => (
+                              <div
+                                key={option.label}
+                                className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
+                              >
+                                <span>{option.label}</span>
+                                <span className="ml-2">(€{option.price})</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeOption(option.label)}
+                                  className="ml-2 text-white hover:text-[#CCC]"
+                                >
+                                  <XIcon className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <div className="border border-dashed rounded-md p-4 bg-gray-100 space-y-2">
+                          <div>
+                            <Label className="text-gray-700 mb-1">
+                              {t("label")}
+                            </Label>
+                            <Input
+                              type="text"
+                              value={option.label}
+                              onChange={(e) =>
+                                setOption({ ...option, label: e.target.value })
+                              }
+                              placeholder="Add an option label"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-700 mb-1">
+                              {t("price")}
+                            </Label>
+                            <Input
+                              type="number"
+                              min={0}
+                              value={option.price}
+                              onChange={(e) =>
+                                setOption({ ...option, price: e.target.value })
+                              }
+                              placeholder="Add an option price"
+                              onKeyUp={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                }
+                              }}
+                            />
+                          </div>
+                          <div className="text-right">
+                            <Button
+                              onClick={addOption}
+                              type="button"
+                              size="sm"
+                              className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                            >
+                              {t("add_option")}
+                            </Button>
+                          </div>
+                        </div>
+                        <div>
+                          <Button
+                            onClick={addVariation}
+                            type="button"
+                            size="sm"
+                            className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                          >
+                            {t("add_variation")}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+                {/* Stock Tab */}
+                {activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -652,7 +989,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Select a unit" />
@@ -697,7 +1034,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Select a unit" />
@@ -723,7 +1060,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                   </motion.div>
                 )}
                 {/* Attributes Tab */}
-                {activeTab === 4 && (
+                {activeTab === 5 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -815,7 +1152,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Select a packaging type" />
@@ -858,7 +1195,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Select room temperature" />
@@ -885,7 +1222,7 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                   </motion.div>
                 )}
                 {/* Meta Tab */}
-                {activeTab === 5 && (
+                {activeTab === 6 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -976,21 +1313,10 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                         : "bg-gray-200 hover:bg-gray-300 text-gray-800"
                     }`}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>Previous</span>
+                    <ChevronLeftIcon className="h-4 w-4" />
+                    <span>{t("previous")}</span>
                   </motion.button>
-                  {activeTab === tabs.length - 1 ? (
+                  {activeTab === 6 && (
                     <motion.button
                       whileHover={{
                         scale: 1.05,
@@ -1002,9 +1328,10 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2 shadow-lg shadow-pink-200/50"
                     >
                       <SaveIcon className="h-5 w-5" />
-                      <span>Save Product</span>
+                      <span>{t("save_product")}</span>
                     </motion.button>
-                  ) : (
+                  )}
+                  {activeTab < 6 && (
                     <motion.button
                       whileHover={{
                         scale: 1.02,
@@ -1014,24 +1341,12 @@ export function EditProductForm({ prevData, refetch, closeModal }: IProps) {
                       }}
                       type="button"
                       onClick={() =>
-                        activeTab < tabs.length - 1 &&
-                        setActiveTab(activeTab + 1)
+                        activeTab < 6 && setActiveTab(activeTab + 1)
                       }
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2"
                     >
-                      <span>Next</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <span>{t("next")}</span>
+                      <ChevronRightIcon className="h-4 w-4" />
                     </motion.button>
                   )}
                 </div>

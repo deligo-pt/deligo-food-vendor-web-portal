@@ -176,7 +176,6 @@ export default function Products({
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
-        refetch={() => {}}
       />
     </div>
   );

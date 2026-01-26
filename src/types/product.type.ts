@@ -1,3 +1,8 @@
+export type TVariations = {
+  name: string;
+  options: { label: string; price: number }[];
+};
+
 export type TProduct = {
   _id?: string;
   productId: string;
@@ -20,6 +25,9 @@ export type TProduct = {
     finalPrice: number;
     currency: string;
   };
+
+  variations: TVariations[];
+  addonGroups: string[];
 
   stock: {
     quantity: number;

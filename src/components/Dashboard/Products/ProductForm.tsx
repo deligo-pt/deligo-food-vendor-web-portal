@@ -23,10 +23,13 @@ import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { createProductReq } from "@/src/services/dashboard/products/products";
+import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TBusinessCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
+import { catchAsync } from "@/src/utils/catchAsync";
+import { getCookie } from "@/src/utils/cookies";
+import { postData } from "@/src/utils/requests";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -60,7 +63,7 @@ export function ProductForm({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   const [options, setOptions] = useState<{ label: string; price: number }[]>(
-    []
+    [],
   );
 
   const tabs = [
@@ -100,7 +103,7 @@ export function ProductForm({
   });
   const [variationName, setVariationName] = useState("");
   const [images, setImages] = useState<{ file: File | null; url: string }[]>(
-    []
+    [],
   );
   const [tag, setTag] = useState("");
   const form = useForm<FormData>({
@@ -183,7 +186,7 @@ export function ProductForm({
 
   const removeOption = (optionToRemove: string) => {
     setOptions(
-      (prev) => prev.filter((opt) => opt.label !== optionToRemove) || []
+      (prev) => prev.filter((opt) => opt.label !== optionToRemove) || [],
     );
   };
 
@@ -205,7 +208,7 @@ export function ProductForm({
   const removeVariation = (nameToRemove: string) => {
     form.setValue(
       "variations",
-      form.getValues("variations").filter((v) => v.name !== nameToRemove)
+      form.getValues("variations").filter((v) => v.name !== nameToRemove),
     );
   };
 
@@ -228,6 +231,8 @@ export function ProductForm({
         unit: data.unit,
         availabilityStatus: data.availabilityStatus,
       },
+      addonGroups: data.addonGroups,
+      variations: data.variations,
       tags: data.tags,
       attributes: {
         organic: data.organic,
@@ -241,10 +246,20 @@ export function ProductForm({
       },
     };
 
-    const result = await createProductReq(
-      productData as unknown as Partial<TProduct>,
-      images
-    );
+    const result = await catchAsync<TProduct>(async () => {
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(productData));
+
+      if (images.length > 0)
+        images.map((image) => formData.append("files", image.file as Blob));
+
+      return (await postData("/products/create-product", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          authorization: `Bearer ${getCookie("accessToken")}`,
+        },
+      })) as unknown as TResponse<TProduct>;
+    });
 
     if (result.success) {
       toast.success(result.message || "Product created successfully!", {
@@ -420,7 +435,7 @@ export function ProductForm({
                                   "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                   fieldState.invalid
                                     ? "border-destructive"
-                                    : "border-gray-300"
+                                    : "border-gray-300",
                                 )}
                               >
                                 <SelectValue placeholder="Select a category" />
@@ -713,7 +728,7 @@ export function ProductForm({
                               <span>
                                 {
                                   addonGroupsData?.find(
-                                    (group) => group._id === id
+                                    (group) => group._id === id,
                                   )?.title
                                 }
                               </span>
@@ -740,7 +755,7 @@ export function ProductForm({
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Choose Add-On" />
@@ -956,7 +971,7 @@ export function ProductForm({
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Select a unit" />
@@ -1006,7 +1021,7 @@ export function ProductForm({
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Select a unit" />
@@ -1124,7 +1139,7 @@ export function ProductForm({
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Select a packaging type" />
@@ -1176,7 +1191,7 @@ export function ProductForm({
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
                                     fieldState.invalid
                                       ? "border-destructive"
-                                      : "border-gray-300"
+                                      : "border-gray-300",
                                   )}
                                 >
                                   <SelectValue placeholder="Select room temperature" />

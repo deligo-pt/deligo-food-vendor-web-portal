@@ -12,15 +12,9 @@ interface IProps {
   open: boolean;
   onOpenChange: () => void;
   prevData: TProduct;
-  refetch: () => void;
 }
 
-const EditProductDialog = ({
-  open,
-  onOpenChange,
-  prevData,
-  refetch,
-}: IProps) => {
+const EditProductDialog = ({ open, onOpenChange, prevData }: IProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form>
@@ -29,11 +23,7 @@ const EditProductDialog = ({
             <DialogTitle />
             <DialogDescription />
           </DialogHeader>
-          <EditProductForm
-            prevData={prevData}
-            refetch={refetch}
-            closeModal={onOpenChange}
-          />
+          <EditProductForm prevData={prevData} closeModal={onOpenChange} />
         </DialogContent>
       </form>
     </Dialog>
