@@ -24,9 +24,13 @@ import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpl
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { getAddOnsGroupReq } from "@/src/services/dashboard/add-ons/add-ons";
+import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
+import { getAllTaxesReq } from "@/src/services/dashboard/taxes/taxes";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
+import { TProductCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
+import { TTax } from "@/src/types/tax.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 import { getCookie } from "@/src/utils/cookies";
 import { updateData } from "@/src/utils/requests";
@@ -90,26 +94,45 @@ interface IProps {
   closeModal: () => void;
 }
 
+interface IData<T> {
+  data: T[];
+  meta?: TMeta;
+}
+
 export function EditProductForm({ prevData, closeModal }: IProps) {
   const router = useRouter();
   const { t } = useTranslation();
-  const [addonGroupsData, setAddonsGroupsData] = useState<{
-    data: TAddonGroup[];
-    meta?: TMeta;
-  }>({ data: [] });
+
+  const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
+    data: [],
+  });
+  const [productCategoriesData, setProductCategoriesData] = useState<
+    IData<TProductCategory>
+  >({ data: [] });
+  const [taxesData, setTaxesData] = useState<IData<TTax>>({ data: [] });
+
   const [activeTab, setActiveTab] = useState(0);
-  const [options, setOptions] = useState<{ label: string; price: number }[]>(
-    [],
-  );
-  const [option, setOption] = useState<{ label: string; price: string }>({
+
+  const [options, setOptions] = useState<
+    { label: string; price: number; stockQuantity: number }[]
+  >([]);
+  const [option, setOption] = useState<{
+    label: string;
+    price: string;
+    stockQuantity: number;
+  }>({
     label: "",
     price: "",
+    stockQuantity: 0,
   });
+
   const [variationName, setVariationName] = useState("");
   const [images, setImages] = useState<{ file: File | null; url: string }[]>(
     prevData?.images?.map((img) => ({ file: null, url: img })) || [],
   );
+
   const [tag, setTag] = useState("");
+
   const form = useForm<FormData>({
     resolver: zodResolver(productValidation),
     defaultValues: {
@@ -119,7 +142,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
       brand: prevData?.brand || "",
       price: prevData?.pricing?.price || 0,
       discount: prevData?.pricing?.discount || 0,
-      tax: prevData?.pricing?.tax || 0,
+      taxId: prevData?.pricing?.taxId || "",
       addonGroups: prevData?.addonGroups || [],
       variations: prevData?.variations || [],
       quantity: prevData?.stock?.quantity || 0,
@@ -139,13 +162,13 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
   const [
     watchPrice,
     watchDiscount,
-    watchTax,
+    watchTaxId,
     watchTags,
     watchAddons,
     watchVariations,
   ] = useWatch({
     control: form.control,
-    name: ["price", "discount", "tax", "tags", "addonGroups", "variations"],
+    name: ["price", "discount", "taxId", "tags", "addonGroups", "variations"],
   });
 
   const addTag = () => {
@@ -180,9 +203,13 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
       if (!options.find((opt) => opt.label === option.label)) {
         setOptions((prev) => [
           ...prev,
-          { label: option.label, price: Number(option.price) },
+          {
+            label: option.label,
+            price: Number(option.price),
+            stockQuantity: option.stockQuantity,
+          },
         ]);
-        setOption({ label: "", price: "" });
+        setOption({ label: "", price: "", stockQuantity: 0 });
       }
     } else {
       toast.error("Option label and price are required");
@@ -228,7 +255,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
       pricing: {
         price: data.price,
         discount: data.discount,
-        tax: data.tax,
+        taxId: data.taxId,
       },
       stock: {
         quantity: data.quantity,
@@ -290,12 +317,42 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
     });
 
     if (result.success) {
-      setAddonsGroupsData(result.data);
+      setAddonsGroupsData({
+        data: result.data,
+        meta: result.meta,
+      });
+    }
+  };
+
+  const getProductCategories = async ({ limit = 10 }) => {
+    const result = await catchAsync<TProductCategory[]>(async () => {
+      return (await getAllProductCategoriesReq({
+        limit,
+      })) as unknown as TResponse<TProductCategory[]>;
+    });
+
+    if (result.success) {
+      console.log("categories", result.data);
+      setProductCategoriesData(result.data);
+    }
+  };
+
+  const getTaxes = async ({ limit = 10 }) => {
+    const result = await catchAsync<TProductCategory[]>(async () => {
+      return (await getAllTaxesReq({ limit })) as unknown as TResponse<
+        TProductCategory[]
+      >;
+    });
+
+    if (result.success) {
+      setTaxesData(result.data);
     }
   };
 
   useEffect(() => {
     (() => getAddonsGroups({ limit: 10 }))();
+    (() => getProductCategories({ limit: 10 }))();
+    (() => getTaxes({ limit: 10 }))();
   }, []);
 
   return (
@@ -463,13 +520,16 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                                 <SelectValue placeholder="Select a category" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="grocery">Grocery</SelectItem>
-                                <SelectItem value="beverages">
-                                  Beverages
-                                </SelectItem>
-                                <SelectItem value="snacks">Snacks</SelectItem>
-                                <SelectItem value="dairy">Dairy</SelectItem>
-                                <SelectItem value="bakery">Bakery</SelectItem>
+                                {productCategoriesData?.data?.map(
+                                  (category) => (
+                                    <SelectItem
+                                      key={category?._id}
+                                      value={category?._id}
+                                    >
+                                      {category?.name}
+                                    </SelectItem>
+                                  ),
+                                )}
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -638,7 +698,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                       />
                       <FormField
                         control={form.control}
-                        name="tax"
+                        name="taxId"
                         render={({ field }) => (
                           <FormItem className="gap-1">
                             <FormLabel
@@ -648,32 +708,40 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                               Tax (%)
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                max={100}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10">
+                                  <SelectValue placeholder="Select tax" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {taxesData?.data?.map((tax) => (
+                                    <SelectItem key={tax._id} value={tax._id}>
+                                      {tax.taxName}({}
+                                      {tax.taxRate}%)
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
+
                     {watchPrice > 0 && watchDiscount >= 0 && (
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between">
-                          <span className="text-gray-700">Original Price:</span>
+                          <span className="text-gray-700">
+                            {t("original_price")}:
+                          </span>
                           <span className="font-medium">€ {watchPrice}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-700">
-                            Discount ({watchDiscount}%):
+                            {t("discount")} ({watchDiscount}%):
                           </span>
                           <span className="font-medium text-red-500">
                             - €{" "}
@@ -682,26 +750,40 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-700">
-                            Tax ({watchTax}%):
+                            {t("tax")} (
+                            {
+                              taxesData?.data?.find(
+                                (tax) => tax._id === watchTaxId,
+                              )?.taxRate
+                            }
+                            %):
                           </span>
                           <span className="font-medium">
                             + €{" "}
                             {(
                               (watchPrice *
                                 (1 - watchDiscount / 100) *
-                                watchTax) /
+                                (taxesData?.data?.find(
+                                  (tax) => tax._id === watchTaxId,
+                                )?.taxRate || 0)) /
                               100
                             ).toFixed(2)}
                           </span>
                         </div>
                         <div className="border-t mt-2 pt-2 flex justify-between">
-                          <span className="font-semibold">Final Price:</span>
+                          <span className="font-semibold">
+                            {t("final_price")}:
+                          </span>
                           <span className="font-bold text-[#DC3173]">
                             €{" "}
                             {(
                               watchPrice *
                               (1 - watchDiscount / 100) *
-                              (1 + watchTax / 100)
+                              (1 +
+                                (taxesData?.data?.find(
+                                  (tax) => tax._id === watchTaxId,
+                                )?.taxRate || 0) /
+                                  100)
                             ).toFixed(2)}
                           </span>
                         </div>
@@ -1167,6 +1249,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                                   <SelectItem value="Box">Box</SelectItem>
                                   <SelectItem value="Tin">Tin</SelectItem>
                                   <SelectItem value="Bottle">Bottle</SelectItem>
+                                  <SelectItem value="Others">Others</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1211,6 +1294,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                                   <SelectItem value="Cool and dry">
                                     Cool and dry
                                   </SelectItem>
+                                  <SelectItem value="Others">Others</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>

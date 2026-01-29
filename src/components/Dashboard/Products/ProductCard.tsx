@@ -88,13 +88,12 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
             </span>
           </div>
         </div>
-        <div className="flex items-center text-sm text-gray-500 mb-2">
-          <Tag className="h-4 w-4 mr-1" />
-          <span>{product.category}</span>
-          {product.brand && (
-            <span className="ml-2 text-gray-400">| {product.brand}</span>
-          )}
-        </div>
+        {product.brand && (
+          <div className="flex items-center text-sm text-gray-500 mb-2">
+            <Tag className="h-4 w-4 mr-1" />
+            <span className="ml-2 text-gray-400">{product.brand}</span>
+          </div>
+        )}
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.description}
         </p>

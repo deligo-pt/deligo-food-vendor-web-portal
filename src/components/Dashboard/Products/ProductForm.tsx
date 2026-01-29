@@ -27,6 +27,7 @@ import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TBusinessCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
+import { TTax } from "@/src/types/tax.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 import { getCookie } from "@/src/utils/cookies";
 import { postData } from "@/src/utils/requests";
@@ -56,15 +57,17 @@ type FormData = z.infer<typeof productValidation>;
 export function ProductForm({
   productCategories,
   addonGroupsData,
+  taxesData,
 }: {
   productCategories: TBusinessCategory[];
   addonGroupsData: TAddonGroup[];
+  taxesData: TTax[];
 }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
-  const [options, setOptions] = useState<{ label: string; price: number }[]>(
-    [],
-  );
+  const [options, setOptions] = useState<
+    { label: string; price: number; stockQuantity: number }[]
+  >([]);
 
   const tabs = [
     {
@@ -97,9 +100,14 @@ export function ProductForm({
     },
   ];
 
-  const [option, setOption] = useState<{ label: string; price: string }>({
+  const [option, setOption] = useState<{
+    label: string;
+    price: string;
+    stockQuantity: number;
+  }>({
     label: "",
     price: "",
+    stockQuantity: 0,
   });
   const [variationName, setVariationName] = useState("");
   const [images, setImages] = useState<{ file: File | null; url: string }[]>(
@@ -115,7 +123,7 @@ export function ProductForm({
       brand: "",
       price: 0,
       discount: 0,
-      tax: 0,
+      taxId: "",
       quantity: 0,
       unit: "",
       availabilityStatus: "",
@@ -134,13 +142,13 @@ export function ProductForm({
   const [
     watchPrice,
     watchDiscount,
-    watchTax,
+    watchTaxId,
     watchTags,
     watchAddons,
     watchVariations,
   ] = useWatch({
     control: form.control,
-    name: ["price", "discount", "tax", "tags", "addonGroups", "variations"],
+    name: ["price", "discount", "taxId", "tags", "addonGroups", "variations"],
   });
 
   const addTag = () => {
@@ -175,9 +183,13 @@ export function ProductForm({
       if (!options.find((opt) => opt.label === option.label)) {
         setOptions((prev) => [
           ...prev,
-          { label: option.label, price: Number(option.price) },
+          {
+            label: option.label,
+            price: Number(option.price),
+            stockQuantity: option.stockQuantity,
+          },
         ]);
-        setOption({ label: "", price: "" });
+        setOption({ label: "", price: "", stockQuantity: 0 });
       }
     } else {
       toast.error("Option label and price are required");
@@ -223,7 +235,7 @@ export function ProductForm({
       pricing: {
         price: data.price,
         discount: data.discount,
-        tax: data.tax,
+        taxId: data.taxId,
         currency: "€",
       },
       stock: {
@@ -412,8 +424,6 @@ export function ProductForm({
                         </FormItem>
                       )}
                     />
-
-                    {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> */}
                     <FormField
                       control={form.control}
                       name="category"
@@ -444,7 +454,7 @@ export function ProductForm({
                                 {productCategories?.map((category) => (
                                   <SelectItem
                                     key={category?._id}
-                                    value={category?.name}
+                                    value={category?._id}
                                   >
                                     {category?.name}
                                   </SelectItem>
@@ -616,7 +626,7 @@ export function ProductForm({
                       />
                       <FormField
                         control={form.control}
-                        name="tax"
+                        name="taxId"
                         render={({ field }) => (
                           <FormItem className="gap-1">
                             <FormLabel
@@ -626,17 +636,22 @@ export function ProductForm({
                               {t("tax_2")}
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                max={100}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10">
+                                  <SelectValue placeholder="Select tax" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {taxesData?.map((tax) => (
+                                    <SelectItem key={tax._id} value={tax._id}>
+                                      {tax.taxName}({}
+                                      {tax.taxRate}%)
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -662,14 +677,20 @@ export function ProductForm({
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-700">
-                            {t("tax")} ({watchTax}%):
+                            {t("tax")} (
+                            {
+                              taxesData?.find((tax) => tax._id === watchTaxId)
+                                ?.taxRate
+                            }
+                            %):
                           </span>
                           <span className="font-medium">
                             + €{" "}
                             {(
                               (watchPrice *
-                                (1 - watchDiscount / 100) *
-                                watchTax) /
+                                (taxesData?.find(
+                                  (tax) => tax._id === watchTaxId,
+                                )?.taxRate || 0)) /
                               100
                             ).toFixed(2)}
                           </span>
@@ -682,8 +703,12 @@ export function ProductForm({
                             €{" "}
                             {(
                               watchPrice *
-                              (1 - watchDiscount / 100) *
-                              (1 + watchTax / 100)
+                              (1 -
+                                watchDiscount / 100 +
+                                (taxesData?.find(
+                                  (tax) => tax._id === watchTaxId,
+                                )?.taxRate || 0) /
+                                  100)
                             ).toFixed(2)}
                           </span>
                         </div>
@@ -873,6 +898,28 @@ export function ProductForm({
                                 setOption({ ...option, price: e.target.value })
                               }
                               placeholder="Add an option price"
+                              onKeyUp={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                }
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-gray-700 mb-1">
+                              Stock Quantity
+                            </Label>
+                            <Input
+                              type="number"
+                              min={0}
+                              value={option.stockQuantity}
+                              onChange={(e) =>
+                                setOption({
+                                  ...option,
+                                  stockQuantity: Number(e.target.value),
+                                })
+                              }
+                              placeholder="Add stock quantity"
                               onKeyUp={(e) => {
                                 if (e.key === "Enter") {
                                   e.preventDefault();

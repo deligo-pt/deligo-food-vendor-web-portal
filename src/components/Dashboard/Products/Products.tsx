@@ -9,16 +9,18 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { deleteProductReq } from "@/src/services/dashboard/products/products";
 import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
+import { TTax } from "@/src/types/tax.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function Products({
-  initialData,
-}: {
-  initialData: { data: TProduct[]; meta?: TMeta };
-}) {
+interface IProps {
+  productsData: { data: TProduct[]; meta?: TMeta };
+  taxesData: { data: TTax[]; meta?: TMeta };
+}
+
+export default function Products({ productsData, taxesData }: IProps) {
   const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
@@ -103,30 +105,30 @@ export default function Products({
       {/* Filters */}
       <AllFilters sortOptions={sortOptions} filterOptions={filterOptions} />
 
-      {initialData.data?.length > 0 && (
+      {productsData.data?.length > 0 && (
         <div className="flex justify-between items-center mb-4">
           <p className="text-sm text-gray-500">
             {t("showing")}{" "}
-            {((initialData.meta?.page || 1) - 1) *
-              (initialData.meta?.limit || 10) +
+            {((productsData.meta?.page || 1) - 1) *
+              (productsData.meta?.limit || 10) +
               1}
             -{" "}
             {Math.min(
-              (initialData.meta?.page || 1) * (initialData.meta?.limit || 10),
-              initialData.meta?.total || 0,
+              (productsData.meta?.page || 1) * (productsData.meta?.limit || 10),
+              productsData.meta?.total || 0,
             )}{" "}
-            {t("of")} {initialData.meta?.total || 0} {t("items")}
+            {t("of")} {productsData.meta?.total || 0} {t("items")}
           </p>
         </div>
       )}
 
-      {initialData?.data?.length > 0 ? (
+      {productsData?.data?.length > 0 ? (
         <motion.div
           layout
           className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
         >
           <AnimatePresence>
-            {initialData?.data?.map((product) => (
+            {productsData?.data?.map((product) => (
               <ProductCard
                 key={product.productId}
                 product={product}
@@ -156,9 +158,11 @@ export default function Products({
         </motion.div>
       )}
 
-      {!!initialData?.meta?.total && initialData?.meta?.total > 0 && (
+      {!!productsData?.meta?.total && productsData?.meta?.total > 0 && (
         <div className="pb-4 my-3">
-          <PaginationComponent totalPages={initialData?.meta?.totalPage || 0} />
+          <PaginationComponent
+            totalPages={productsData?.meta?.totalPage || 0}
+          />
         </div>
       )}
 
@@ -176,6 +180,7 @@ export default function Products({
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
+        taxesData={taxesData}
       />
     </div>
   );

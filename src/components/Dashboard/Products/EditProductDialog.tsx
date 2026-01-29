@@ -6,15 +6,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
+import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
+import { TTax } from "@/src/types/tax.type";
 
 interface IProps {
   open: boolean;
   onOpenChange: () => void;
   prevData: TProduct;
+  taxesData: { data: TTax[]; meta?: TMeta };
 }
 
-const EditProductDialog = ({ open, onOpenChange, prevData }: IProps) => {
+const EditProductDialog = ({
+  open,
+  onOpenChange,
+  prevData,
+  taxesData,
+}: IProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form>
@@ -23,7 +31,11 @@ const EditProductDialog = ({ open, onOpenChange, prevData }: IProps) => {
             <DialogTitle />
             <DialogDescription />
           </DialogHeader>
-          <EditProductForm prevData={prevData} closeModal={onOpenChange} />
+          <EditProductForm
+            prevData={prevData}
+            closeModal={onOpenChange}
+            taxesData={taxesData}
+          />
         </DialogContent>
       </form>
     </Dialog>

@@ -5,15 +5,17 @@ import { ProductForm } from "@/src/components/Dashboard/Products/ProductForm";
 import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TProductCategory } from "@/src/types/category.type";
+import { TTax } from "@/src/types/tax.type";
 
 export default async function AddItemPage() {
-  let productCategoriesData: TProductCategory[] = [] as TProductCategory[];
-  let addonGroupsData: TAddonGroup[] = [] as TAddonGroup[];
+  let productCategoriesData: TProductCategory[] = [];
+  let addonGroupsData: TAddonGroup[] = [];
+  let taxesData: TTax[] = [];
 
   try {
     const result = (await serverRequest.get(
-      "categories/productCategory"
-    )) as unknown as TResponse<{ data: TProductCategory[] }>;
+      "/categories/productCategory",
+    )) as TResponse<{ data: TProductCategory[] }>;
 
     if (result?.success) {
       productCategoriesData = result?.data?.data || [];
@@ -23,12 +25,24 @@ export default async function AddItemPage() {
   }
 
   try {
-    const result = (await serverRequest.get(
-      "add-ons/"
-    )) as unknown as TResponse<{ data: TAddonGroup[] }>;
+    const result = (await serverRequest.get("/add-ons")) as TResponse<{
+      data: TAddonGroup[];
+    }>;
 
     if (result?.success) {
       addonGroupsData = result?.data?.data || [];
+    }
+  } catch (err) {
+    console.log("Server fetch error:", err);
+  }
+
+  try {
+    const result = (await serverRequest.get("/taxes")) as TResponse<{
+      data: TTax[];
+    }>;
+
+    if (result?.success) {
+      taxesData = result?.data?.data || [];
     }
   } catch (err) {
     console.log("Server fetch error:", err);
@@ -38,6 +52,7 @@ export default async function AddItemPage() {
     <ProductForm
       productCategories={productCategoriesData}
       addonGroupsData={addonGroupsData}
+      taxesData={taxesData}
     />
   );
 }

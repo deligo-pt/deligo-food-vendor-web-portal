@@ -27,9 +27,9 @@ export const productValidation = z.object({
 
   price: z.number().min(1, "Price is required"),
 
-  discount: z.number().min(0).max(100),
+  taxId: z.string().nonempty("Tax is required"),
 
-  tax: z.number().min(0).max(100),
+  discount: z.number().min(0).max(100),
 
   quantity: z.number().min(0, "Quantity must be at least 0"),
 
@@ -52,9 +52,10 @@ export const productValidation = z.object({
         z.object({
           label: z.string(),
           price: z.number().min(0),
-        })
+          stockQuantity: z.number().min(0),
+        }),
       ),
-    })
+    }),
   ),
 
   organic: z.boolean().optional(),

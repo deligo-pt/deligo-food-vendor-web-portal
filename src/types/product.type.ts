@@ -21,7 +21,7 @@ export type TProduct = {
   pricing: {
     price: number;
     discount?: number;
-    tax?: number;
+    taxId?: string;
     finalPrice: number;
     currency: string;
   };

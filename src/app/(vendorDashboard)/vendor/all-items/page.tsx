@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import Products from "@/src/components/Dashboard/Products/Products";
 import { TMeta, TResponse } from "@/src/types";
 import { TProduct, TProductsQueryParams } from "@/src/types/product.type";
+import { TTax } from "@/src/types/tax.type";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -23,20 +24,35 @@ export default async function ProductsPage({ searchParams }: IProps) {
     ...(availability ? { "stock.availabilityStatus": availability } : {}),
   };
 
-  const initialData: { data: TProduct[]; meta?: TMeta } = { data: [] };
+  const productsData: { data: TProduct[]; meta?: TMeta } = { data: [] };
+  const taxesData: { data: TTax[]; meta?: TMeta } = { data: [] };
 
   try {
     const result = (await serverRequest.get("/products", {
       params: query,
-    })) as unknown as TResponse<TProduct[]>;
+    })) as TResponse<TProduct[]>;
 
     if (result?.success) {
-      initialData.data = result.data;
-      initialData.meta = result.meta;
+      productsData.data = result.data;
+      productsData.meta = result.meta;
     }
   } catch (err) {
     console.log("Server fetchProducts error:", err);
   }
 
-  return <Products initialData={initialData} />;
+  try {
+    const result = (await serverRequest.get("/taxes")) as TResponse<{
+      data: TTax[];
+      meta?: TMeta;
+    }>;
+
+    if (result?.success) {
+      taxesData.data = result.data?.data;
+      taxesData.meta = result.data?.meta;
+    }
+  } catch (err) {
+    console.log("Server fetch error:", err);
+  }
+
+  return <Products productsData={productsData} taxesData={taxesData} />;
 }
