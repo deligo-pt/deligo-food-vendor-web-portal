@@ -54,5 +54,5 @@ export default async function ProductsPage({ searchParams }: IProps) {
     console.log("Server fetch error:", err);
   }
 
-  return <Products productsData={productsData} taxesData={taxesData} />;
+  return <Products productsData={productsData} />;
 }

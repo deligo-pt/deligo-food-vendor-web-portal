@@ -9,7 +9,6 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { deleteProductReq } from "@/src/services/dashboard/products/products";
 import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
-import { TTax } from "@/src/types/tax.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useState } from "react";
@@ -17,10 +16,9 @@ import { toast } from "sonner";
 
 interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
-  taxesData: { data: TTax[]; meta?: TMeta };
 }
 
-export default function Products({ productsData, taxesData }: IProps) {
+export default function Products({ productsData }: IProps) {
   const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
@@ -180,7 +178,6 @@ export default function Products({ productsData, taxesData }: IProps) {
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
-        taxesData={taxesData}
       />
     </div>
   );
