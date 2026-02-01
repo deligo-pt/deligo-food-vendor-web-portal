@@ -54,7 +54,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       maxDiscountAmount: 0,
       buyQty: 1,
       getQty: 1,
-      itemId: "",
+      productId: "",
       startDate: new Date(),
       endDate: new Date(),
       minOrderAmount: 0,
@@ -79,7 +79,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
             bogo: {
               buyQty: data.buyQty as number,
               getQty: data.getQty as number,
-              itemId: data.itemId as string,
+              productId: data.productId as string,
             },
           }
         : {}),
@@ -173,7 +173,9 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               <SelectTrigger
                                 className={cn(
                                   "w-full h-12",
-                                  fieldState.invalid ? "border-destructive" : ""
+                                  fieldState.invalid
+                                    ? "border-destructive"
+                                    : "",
                                 )}
                               >
                                 <SelectValue placeholder={t("select_type")} />
@@ -253,7 +255,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   {watchOfferType === "BOGO" && (
                     <FormField
                       control={form.control}
-                      name="itemId"
+                      name="productId"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>

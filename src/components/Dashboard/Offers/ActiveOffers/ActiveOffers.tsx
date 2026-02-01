@@ -149,7 +149,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                         </div>
                         {/* {offer.offerType === "BOGO" && (
                           <p className="text-sm text-gray-500 mt-1 mb-2">
-                            {offer?.bogo?.itemId?.name}
+                            {offer?.bogo?.productId?.name}
                           </p>
                         )} */}
                       </div>
@@ -176,10 +176,10 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                         {offer.offerType === "PERCENT"
                           ? `${offer.discountValue}% Off`
                           : offer.offerType === "FLAT"
-                          ? `€ ${offer.discountValue} Off`
-                          : offer.offerType === "BOGO"
-                          ? `Buy ${offer.bogo?.buyQty} Get ${offer.bogo?.getQty}`
-                          : ""}
+                            ? `€ ${offer.discountValue} Off`
+                            : offer.offerType === "BOGO"
+                              ? `Buy ${offer.bogo?.buyQty} Get ${offer.bogo?.getQty}`
+                              : ""}
                       </p>
                     </div>
                   </div>

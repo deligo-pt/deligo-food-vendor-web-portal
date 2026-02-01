@@ -67,7 +67,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
       maxDiscountAmount: offer?.maxDiscountAmount || 0,
       buyQty: offer?.bogo?.buyQty || 1,
       getQty: offer?.bogo?.getQty || 1,
-      itemId: offer?.bogo?.itemId || "",
+      productId: offer?.bogo?.productId || "",
       startDate: new Date(offer.startDate),
       endDate: new Date(offer.endDate),
       minOrderAmount: offer?.minOrderAmount || 0,
@@ -92,7 +92,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
             bogo: {
               buyQty: data.buyQty as number,
               getQty: data.getQty as number,
-              itemId: data.itemId as string,
+              productId: data.productId as string,
             },
           }
         : {}),
@@ -191,7 +191,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                           <SelectTrigger
                             className={cn(
                               "w-full h-12",
-                              fieldState.invalid ? "border-destructive" : ""
+                              fieldState.invalid ? "border-destructive" : "",
                             )}
                           >
                             <SelectValue placeholder="Select type" />
@@ -269,7 +269,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
               {watchOfferType === "BOGO" && (
                 <FormField
                   control={form.control}
-                  name="itemId"
+                  name="productId"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
