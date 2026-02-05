@@ -68,11 +68,11 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
       buyQty: offer?.bogo?.buyQty || 1,
       getQty: offer?.bogo?.getQty || 1,
       productId: offer?.bogo?.productId || "",
-      startDate: new Date(offer.startDate),
-      endDate: new Date(offer.endDate),
+      validFrom: new Date(offer.validFrom),
+      expiresAt: new Date(offer.expiresAt),
       minOrderAmount: offer?.minOrderAmount || 0,
       code: offer?.code || "",
-      // isAutoApply: offer?.isAutoApply || false,
+      isAutoApply: offer?.isAutoApply || false,
     },
   });
 
@@ -285,7 +285,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                               {itemsResult?.data.map((item: TProduct) => (
                                 <SelectItem
                                   key={item._id}
-                                  value={item.productId}
+                                  value={item._id as string}
                                 >
                                   {item.name}
                                 </SelectItem>
@@ -359,7 +359,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="startDate"
+                  name="validFrom"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -383,7 +383,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                 />
                 <FormField
                   control={form.control}
-                  name="endDate"
+                  name="expiresAt"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>

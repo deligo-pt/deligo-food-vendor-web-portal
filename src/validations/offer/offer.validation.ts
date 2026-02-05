@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const offerValidation = z
   .object({
-    title: z.string().min(2, "Title must be at least 2 characters long"),
+    title: z.string().min(3, "Title must be at least 3 characters long"),
 
     description: z
       .string()
@@ -33,18 +33,35 @@ export const offerValidation = z
 
     productId: z.string().optional(),
 
-    startDate: z.date("Start date must be a valid date"),
-    endDate: z.date("End date must be a valid date"),
+    validFrom: z.date("Start date must be a valid date"),
+    expiresAt: z.date("End date must be a valid date"),
 
     minOrderAmount: z
       .number()
       .min(0, "Minimum order amount must be at least 0")
       .optional(),
 
-    code: z.string().nonempty("Code is required"),
-    // code: z.string().optional(),
-    // isAutoApply: z.boolean("Auto apply must be a boolean").optional(),
+    code: z.string().optional(),
+    isAutoApply: z.boolean("Auto apply must be a boolean").optional(),
   })
+  .refine(
+    (data) => {
+      if (data.validFrom >= data.expiresAt) {
+        return false;
+      }
+      return true;
+    },
+    { message: "End date must be after start date", path: ["expiresAt"] },
+  )
+  .refine(
+    (data) => {
+      if (!data.isAutoApply && (!data.code || data.code === "")) {
+        return false;
+      }
+      return true;
+    },
+    { message: "Code is required", path: ["code"] },
+  )
   .refine(
     (data) => {
       if (data.offerType === "BOGO" && !data.productId) {

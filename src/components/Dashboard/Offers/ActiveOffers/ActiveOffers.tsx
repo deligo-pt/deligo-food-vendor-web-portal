@@ -145,7 +145,9 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
                         <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
                           <CalendarClock size={14} /> {t("valid_till")}:{" "}
-                          {format(offer.endDate, "dd MMM, yyyy")}
+                          {offer.expiresAt
+                            ? format(offer.expiresAt, "dd MMM, yyyy")
+                            : "N/A"}
                         </div>
                         {/* {offer.offerType === "BOGO" && (
                           <p className="text-sm text-gray-500 mt-1 mb-2">

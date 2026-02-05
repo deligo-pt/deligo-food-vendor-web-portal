@@ -332,7 +332,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
     });
 
     if (result.success) {
-      console.log("categories", result.data);
       setProductCategoriesData(result.data);
     }
   };

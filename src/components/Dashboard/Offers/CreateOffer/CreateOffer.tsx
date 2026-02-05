@@ -55,11 +55,11 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       buyQty: 1,
       getQty: 1,
       productId: "",
-      startDate: new Date(),
-      endDate: new Date(),
+      validFrom: new Date(),
+      expiresAt: new Date(),
       minOrderAmount: 0,
       code: "",
-      // isAutoApply: false,
+      isAutoApply: false,
     },
   });
 
@@ -273,7 +273,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                   {itemsResult?.data.map((item: TProduct) => (
                                     <SelectItem
                                       key={item._id}
-                                      value={item.productId}
+                                      value={item._id as string}
                                     >
                                       {item.name}
                                     </SelectItem>
@@ -347,7 +347,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="startDate"
+                      name="validFrom"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -371,7 +371,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     />
                     <FormField
                       control={form.control}
-                      name="endDate"
+                      name="expiresAt"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
