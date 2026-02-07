@@ -642,33 +642,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <FormField
                         control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="price"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Price (€)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
                         name="discount"
                         render={({ field }) => (
                           <FormItem className="gap-1">
@@ -761,7 +734,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                             + €{" "}
                             {(
                               (watchPrice *
-                                (1 - watchDiscount / 100) *
                                 (taxesData?.data?.find(
                                   (tax) => tax._id === watchTaxId,
                                 )?.taxRate || 0)) /
@@ -777,8 +749,8 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                             €{" "}
                             {(
                               watchPrice *
-                              (1 - watchDiscount / 100) *
-                              (1 +
+                              (1 -
+                                watchDiscount / 100 +
                                 (taxesData?.data?.find(
                                   (tax) => tax._id === watchTaxId,
                                 )?.taxRate || 0) /
@@ -979,6 +951,28 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                               }}
                             />
                           </div>
+                          <div>
+                            <Label className="text-gray-700 mb-1">
+                              Stock Quantity
+                            </Label>
+                            <Input
+                              type="number"
+                              min={0}
+                              value={option.stockQuantity}
+                              onChange={(e) =>
+                                setOption({
+                                  ...option,
+                                  stockQuantity: Number(e.target.value),
+                                })
+                              }
+                              placeholder="Add stock quantity"
+                              onKeyUp={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                }
+                              }}
+                            />
+                          </div>
                           <div className="text-right">
                             <Button
                               onClick={addOption}
@@ -1022,33 +1016,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                       Stock Information
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="quantity"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="quantity"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Quantity
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                       <FormField
                         control={form.control}
                         name="unit"

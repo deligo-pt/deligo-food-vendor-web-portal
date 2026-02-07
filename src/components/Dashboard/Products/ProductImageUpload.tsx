@@ -53,7 +53,7 @@ export function ImageUpload({ images, setImages }: IProps) {
         reader.readAsDataURL(file);
       });
     },
-    [images, setImages]
+    [images, setImages],
   );
 
   const handleDrop = useCallback(
@@ -65,7 +65,7 @@ export function ImageUpload({ images, setImages }: IProps) {
         handleFiles(e.dataTransfer.files);
       }
     },
-    [handleFiles]
+    [handleFiles],
   );
 
   const handleChange = useCallback(
@@ -75,7 +75,7 @@ export function ImageUpload({ images, setImages }: IProps) {
         handleFiles(e.target.files);
       }
     },
-    [handleFiles]
+    [handleFiles],
   );
 
   const removeImage = useCallback(
@@ -83,17 +83,18 @@ export function ImageUpload({ images, setImages }: IProps) {
       setImages((prev) => prev.filter((_, i) => i !== index));
       if (inputRef.current) inputRef.current.value = "";
     },
-    [setImages]
+    [setImages],
   );
 
   return (
     <div className="space-y-4">
       <div
         onDragEnter={handleDrag}
-        className={`border-2 border-dashed rounded-lg p-8 text-center ${dragActive
+        className={`border-2 border-dashed rounded-lg p-8 text-center ${
+          dragActive
             ? "border-[#DC3173] bg-pink-50"
             : "border-gray-300 hover:border-gray-400"
-          } transition-colors duration-200`}
+        } transition-colors duration-200`}
       >
         {dragActive && (
           <div
@@ -188,6 +189,7 @@ export function ImageUpload({ images, setImages }: IProps) {
                     height={500}
                   />
                   <motion.button
+                    type="button"
                     whileHover={{
                       scale: 1.1,
                     }}

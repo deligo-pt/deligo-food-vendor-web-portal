@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -8,12 +7,13 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useRef, useState } from "react";
 
 import { useChatSocket } from "@/src/hooks/use-chat-socket";
+import { useTranslation } from "@/src/hooks/use-translation";
+import { openConversationReq } from "@/src/services/dashboard/chat/chat";
 import { TMeta } from "@/src/types";
 import { TConversation, TMessage } from "@/src/types/chat.type";
 import { getCookie } from "@/src/utils/cookies";
 import { format } from "date-fns";
 import { Bot, Clock, PhoneCall, Send } from "lucide-react";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 interface IProps {
   initialConversation: TConversation;
@@ -29,19 +29,36 @@ export default function VendorChatSupport({
   initialMessagesData,
 }: IProps) {
   const { t } = useTranslation();
+
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [messages, setMessages] = useState<TMessage[]>(
-    initialMessagesData?.data || []
-  );
   const [text, setText] = useState("");
+
+  const [messages, setMessages] = useState<TMessage[]>(
+    initialMessagesData?.data || [],
+  );
   const [status, setStatus] = useState(conversation.status);
+
   const accessToken = getCookie("accessToken");
+
+  const openConversation = async () => {
+    const result = await openConversationReq();
+    if (result.success) {
+      setStatus("OPEN");
+    }
+  };
 
   const { sendMessage } = useChatSocket({
     room: conversation.room,
     token: accessToken as string,
-    onMessage: (msg) => setMessages((prev) => [...prev, msg]),
-    onTyping: (data) => {},
+    onMessage: (msg) => {
+      setMessages((prev) => [...prev, msg]);
+      if (status === "OPEN") {
+        setStatus("IN_PROGRESS");
+      }
+    },
+    onTyping: (data) => {
+      console.log(data);
+    },
     onClosed: () => setStatus("CLOSED"),
     onError: (msg) => alert(msg),
   });
@@ -76,10 +93,11 @@ export default function VendorChatSupport({
 
         {/* CHAT CARD */}
         <Card
-          className="rounded-3xl bg-white border"
+          className="rounded-3xl bg-white border py-0"
           style={{ boxShadow: SHADOW }}
         >
           <CardContent className="p-0">
+            {/* TOP */}
             <div className="p-6 border-b flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-full bg-pink-100">
@@ -88,7 +106,8 @@ export default function VendorChatSupport({
                 <div>
                   <h2 className="font-bold text-lg">{t("deligo_support")}</h2>
                   <p className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock size={12} /> {t("active_now")}
+                    <Clock size={12} /> {status.charAt(0)}
+                    {status.slice(1).toLowerCase().replace("_", " ")}
                   </p>
                 </div>
               </div>
@@ -102,16 +121,18 @@ export default function VendorChatSupport({
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`flex ${msg.senderRole === "VENDOR"
-                    ? "justify-end"
-                    : "justify-start"
-                    }`}
+                  className={`flex ${
+                    msg.senderRole === "VENDOR"
+                      ? "justify-end"
+                      : "justify-start"
+                  }`}
                 >
                   <div
-                    className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${msg.senderRole === "VENDOR"
-                      ? "bg-[" + PRIMARY + "] text-white rounded-br-none"
-                      : "bg-white rounded-bl-none border"
-                      }`}
+                    className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
+                      msg.senderRole === "VENDOR"
+                        ? "bg-[" + PRIMARY + "] text-white rounded-br-none"
+                        : "bg-white rounded-bl-none border"
+                    }`}
                   >
                     <div className="text-sm leading-relaxed">{msg.message}</div>
                     <p className="text-[10px] opacity-70 mt-1">
@@ -124,28 +145,38 @@ export default function VendorChatSupport({
 
             <Separator />
 
-            {/* INPUT */}
-            <div className="p-4 flex items-center gap-3">
-              <Input
-                placeholder={t("type_your_message")}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    handleSendMessage();
-                  }
-                }}
-                className="flex-1"
-              />
+            {status === "CLOSED" ? (
+              <div className="p-4 text-center">
+                <Button
+                  className="text-white bg-[#DC3173] bg-[#DC3173]/90"
+                  onClick={openConversation}
+                >
+                  Get Support
+                </Button>
+              </div>
+            ) : (
+              <div className="p-4 flex items-center gap-3">
+                <Input
+                  placeholder={t("type_your_message")}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendMessage();
+                    }
+                  }}
+                  className="flex-1"
+                />
 
-              <Button
-                onClick={handleSendMessage}
-                className="flex items-center gap-1 text-white"
-                style={{ background: PRIMARY }}
-              >
-                <Send size={16} /> {t("send")}
-              </Button>
-            </div>
+                <Button
+                  onClick={handleSendMessage}
+                  className="flex items-center gap-1 text-white"
+                  style={{ background: PRIMARY }}
+                >
+                  <Send size={16} /> {t("send")}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

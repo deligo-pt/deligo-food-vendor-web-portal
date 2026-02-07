@@ -1,29 +1,26 @@
-import { serverRequest } from "@/lib/serverFetch";
 import VendorChatSupport from "@/src/components/Dashboard/Support/ChatSupport";
-import { TMeta, TResponse } from "@/src/types";
+import {
+  getMessagesByRoomReq,
+  openConversationReq,
+} from "@/src/services/dashboard/chat/chat";
+import { TMeta } from "@/src/types";
 import { TConversation, TMessage } from "@/src/types/chat.type";
 
 export default async function ChatSupportPage() {
   let conversationData = {} as TConversation;
-  let messagesData = {} as { data: TMessage[]; meta?: TMeta };
+  const messagesData = {} as { data: TMessage[]; meta?: TMeta };
 
-  try {
-    const conversationResult = (await serverRequest.post(
-      "/support/conversation"
-    )) as TResponse<TConversation>;
+  const conversationResult = await openConversationReq();
 
+  if (conversationResult.success) {
     conversationData = conversationResult.data;
 
-    const messagesResult = (await serverRequest.get(
-      `/support/conversations/${conversationResult?.data?.room}/messages`,
-      { params: { page: 1, limit: 50, sortBy: "createdAt" } }
-    )) as TResponse<TMessage[]>;
+    const messagesResult = await getMessagesByRoomReq(conversationData.room);
 
-    messagesData = messagesResult;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.log(error?.response?.data, error.message);
+    if (messagesResult.success) {
+      messagesData.data = messagesResult.data;
+      messagesData.meta = messagesResult.meta;
+    }
   }
 
   return (

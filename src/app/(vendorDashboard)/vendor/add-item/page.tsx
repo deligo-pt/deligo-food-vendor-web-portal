@@ -25,12 +25,12 @@ export default async function AddItemPage() {
   }
 
   try {
-    const result = (await serverRequest.get("/add-ons")) as TResponse<{
-      data: TAddonGroup[];
-    }>;
+    const result = (await serverRequest.get("/add-ons")) as TResponse<
+      TAddonGroup[]
+    >;
 
     if (result?.success) {
-      addonGroupsData = result?.data?.data || [];
+      addonGroupsData = result?.data || [];
     }
   } catch (err) {
     console.log("Server fetch error:", err);
