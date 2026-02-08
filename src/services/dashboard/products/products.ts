@@ -18,20 +18,21 @@ export const deleteProductReq = async (id: string) => {
   });
 };
 
-export const updateStockReq = async (
+export const updateStockPriceReq = async (
   id: string,
   stock: {
-    quantity: number;
-    availabilityStatus: string;
+    addedQuantity?: number;
+    reduceQuantity?: number;
+    newPrice?: number;
+    variationSku?: string;
   },
 ) => {
   return catchAsync<null>(async () => {
-    const updatedData = { stock };
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(updatedData));
-
-    return await serverRequest.patch(`/products/${id}`, {
-      data: formData,
-    });
+    return await serverRequest.patch(
+      `/products/update-inventory-and-pricing/${id}`,
+      {
+        data: stock,
+      },
+    );
   });
 };

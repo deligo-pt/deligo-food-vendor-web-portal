@@ -82,7 +82,7 @@ const tabs = [
     icon: <InfoIcon className="h-5 w-5" />,
   },
   {
-    name: "Meta",
+    name: "DeliGo Metadata",
     icon: <StarIcon className="h-5 w-5" />,
   },
 ];
@@ -138,7 +138,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
     defaultValues: {
       name: prevData?.name || "",
       description: prevData?.description || "",
-      category: prevData?.category || "",
+      category: prevData?.category?._id || "",
       brand: prevData?.brand || "",
       price: prevData?.pricing?.price || 0,
       discount: prevData?.pricing?.discount || 0,
@@ -159,16 +159,34 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
     },
   });
 
-  const [
-    watchPrice,
-    watchDiscount,
-    watchTaxId,
-    watchTags,
-    watchAddons,
-    watchVariations,
-  ] = useWatch({
+  const packagingTypes = [
+    t("plastic_bag"),
+    t("paper_bag"),
+    t("box"),
+    t("bottle"),
+    "Vacuum Sealed",
+    "Insulated Thermal Bag",
+    "Eco-Friendly/Compostable",
+    "Glass Jar",
+    "Corrugated Wrap",
+    "Tamper-Evident Seal",
+    t("others"),
+  ];
+
+  const storageTemperatures = [
+    t("room_temperature"),
+    t("refrigerated"),
+    t("frozen"),
+    t("cool_and_dry"),
+    "Warm/Ambient",
+    "Piping Hot ($65$°C+)",
+    "Constant Heat",
+    t("others"),
+  ];
+
+  const [watchTags, watchAddons, watchVariations] = useWatch({
     control: form.control,
-    name: ["price", "discount", "taxId", "tags", "addonGroups", "variations"],
+    name: ["tags", "addonGroups", "variations"],
   });
 
   const addTag = () => {
@@ -368,7 +386,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
         transition={{
           duration: 0.5,
         }}
-        className="bg-white shadow-xl rounded-2xl overflow-hidden"
+        className="bg-white overflow-hidden"
       >
         <div className="px-6 py-8 bg-linear-to-r from-[#DC3173] to-[#FF6B98] text-white">
           <h1 className="text-3xl font-bold">Update Item</h1>
@@ -622,148 +640,8 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     <ImageUpload images={images} setImages={setImages} />
                   </motion.div>
                 )}
-                {/* Pricing Tab */}
-                {activeTab === 2 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      Pricing Information
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="discount"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="discount"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Discount (%)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                max={100}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="taxId"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="tax"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Tax (%)
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10">
-                                  <SelectValue placeholder="Select tax" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {taxesData?.data?.map((tax) => (
-                                    <SelectItem key={tax._id} value={tax._id}>
-                                      {tax.taxName}({}
-                                      {tax.taxRate}%)
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {watchPrice > 0 && watchDiscount >= 0 && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">
-                            {t("original_price")}:
-                          </span>
-                          <span className="font-medium">€ {watchPrice}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">
-                            {t("discount")} ({watchDiscount}%):
-                          </span>
-                          <span className="font-medium text-red-500">
-                            - €{" "}
-                            {((watchPrice * watchDiscount) / 100).toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">
-                            {t("tax")} (
-                            {
-                              taxesData?.data?.find(
-                                (tax) => tax._id === watchTaxId,
-                              )?.taxRate
-                            }
-                            %):
-                          </span>
-                          <span className="font-medium">
-                            + €{" "}
-                            {(
-                              (watchPrice *
-                                (taxesData?.data?.find(
-                                  (tax) => tax._id === watchTaxId,
-                                )?.taxRate || 0)) /
-                              100
-                            ).toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="border-t mt-2 pt-2 flex justify-between">
-                          <span className="font-semibold">
-                            {t("final_price")}:
-                          </span>
-                          <span className="font-bold text-[#DC3173]">
-                            €{" "}
-                            {(
-                              watchPrice *
-                              (1 -
-                                watchDiscount / 100 +
-                                (taxesData?.data?.find(
-                                  (tax) => tax._id === watchTaxId,
-                                )?.taxRate || 0) /
-                                  100)
-                            ).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
                 {/* Add-Ons & Variants Tab */}
-                {activeTab === 3 && (
+                {activeTab === 2 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -998,6 +876,88 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     </div>
                   </motion.div>
                 )}
+                {/* Pricing Tab */}
+                {activeTab === 3 && (
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                    }}
+                    transition={{
+                      duration: 0.3,
+                    }}
+                    className="space-y-6"
+                  >
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      Pricing Information
+                    </h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="discount"
+                        render={({ field }) => (
+                          <FormItem className="gap-1">
+                            <FormLabel
+                              htmlFor="discount"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Discount (%)
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="number"
+                                min={0}
+                                max={100}
+                                value={String(field.value)}
+                                onChange={(e) =>
+                                  field.onChange(Number(e.target.value))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="taxId"
+                        render={({ field }) => (
+                          <FormItem className="gap-1">
+                            <FormLabel
+                              htmlFor="tax"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Tax (%)
+                            </FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10">
+                                  <SelectValue placeholder="Select tax" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {taxesData?.data?.map((tax) => (
+                                    <SelectItem key={tax._id} value={tax._id}>
+                                      {tax.taxName}({}
+                                      {tax.taxRate}%)
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </motion.div>
+                )}
                 {/* Stock Tab */}
                 {activeTab === 4 && (
                   <motion.div
@@ -1161,7 +1121,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                               htmlFor="weight"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Weight
+                              Weight (Grams)
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -1206,16 +1166,14 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                                   <SelectValue placeholder="Select a packaging type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Plastic Bag">
-                                    Plastic Bag
-                                  </SelectItem>
-                                  <SelectItem value="Paper Bag">
-                                    Paper Bag
-                                  </SelectItem>
-                                  <SelectItem value="Box">Box</SelectItem>
-                                  <SelectItem value="Tin">Tin</SelectItem>
-                                  <SelectItem value="Bottle">Bottle</SelectItem>
-                                  <SelectItem value="Others">Others</SelectItem>
+                                  {packagingTypes.map((packagingType) => (
+                                    <SelectItem
+                                      key={packagingType}
+                                      value={packagingType}
+                                    >
+                                      {packagingType}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1250,17 +1208,16 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                                   <SelectValue placeholder="Select room temperature" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Room temperature">
-                                    Room temperature
-                                  </SelectItem>
-                                  <SelectItem value="Refrigerated">
-                                    Refrigerated
-                                  </SelectItem>
-                                  <SelectItem value="Frozen">Frozen</SelectItem>
-                                  <SelectItem value="Cool and dry">
-                                    Cool and dry
-                                  </SelectItem>
-                                  <SelectItem value="Others">Others</SelectItem>
+                                  {storageTemperatures.map(
+                                    (storageTemperature) => (
+                                      <SelectItem
+                                        key={storageTemperature}
+                                        value={storageTemperature}
+                                      >
+                                        {storageTemperature}
+                                      </SelectItem>
+                                    ),
+                                  )}
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1271,7 +1228,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     </div>
                   </motion.div>
                 )}
-                {/* Meta Tab */}
+                {/* DeliGo Metadata Tab */}
                 {activeTab === 6 && (
                   <motion.div
                     initial={{
@@ -1286,7 +1243,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Meta Information
+                      DeliGo Metadata Information
                     </h2>
                     <div className="space-y-4">
                       <FormField

@@ -1,5 +1,5 @@
 import { serverRequest } from "@/lib/serverFetch";
-import Stocks from "@/src/components/Dashboard/StockManagement/Stocks";
+import StockManagement from "@/src/components/Dashboard/StockManagement/StockManagement";
 import { TMeta, TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 
@@ -13,14 +13,12 @@ export default async function page({ searchParams }: IProps) {
   const page = Number(queries.page || 1);
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
-  const availability = queries.status || "";
 
   const query = {
     limit,
     page,
     sortBy,
     ...(searchTerm ? { searchTerm: searchTerm } : {}),
-    ...(availability ? { "stock.availabilityStatus": availability } : {}),
   };
 
   const initialData: { data: TProduct[]; meta?: TMeta } = { data: [] };
@@ -38,5 +36,5 @@ export default async function page({ searchParams }: IProps) {
     console.log("Server fetch error:", err);
   }
 
-  return <Stocks productsResult={initialData} />;
+  return <StockManagement productsResult={initialData} />;
 }

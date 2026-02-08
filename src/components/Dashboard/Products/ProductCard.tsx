@@ -4,6 +4,7 @@ import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
 import { Clock, ShoppingBag, Star, Tag } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface IProps {
   product: TProduct;
@@ -12,6 +13,8 @@ interface IProps {
 }
 
 export default function ProductCard({ product, onEdit, onDelete }: IProps) {
+  const router = useRouter();
+
   const statusColors = {
     ACTIVE: "bg-green-100 text-green-800",
     INACTIVE: "bg-gray-100 text-gray-800",
@@ -137,6 +140,20 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
             {product.vendor?.vendorName}
           </div>
           <div className="flex space-x-2">
+            <motion.button
+              whileHover={{
+                scale: 1.05,
+              }}
+              whileTap={{
+                scale: 0.95,
+              }}
+              onClick={() =>
+                router.push(`/vendor/all-items/${product.productId}`)
+              }
+              className="text-xs px-3 py-1 rounded-md border border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173] hover:text-white transition-colors"
+            >
+              View
+            </motion.button>
             <motion.button
               whileHover={{
                 scale: 1.05,

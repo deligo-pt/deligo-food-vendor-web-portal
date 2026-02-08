@@ -1,10 +1,17 @@
 export type TVariations = {
   name: string;
-  options: { label: string; price: number }[];
+  options: {
+    label: string;
+    price: number;
+    stockQuantity: number;
+    sku: string;
+    isOutOfStock: boolean;
+    totalAddedQuantity: number;
+  }[];
 };
 
 export type TProduct = {
-  _id?: string;
+  _id: string;
   productId: string;
   sku: string;
   name: string;
@@ -14,7 +21,10 @@ export type TProduct = {
   isApproved: boolean;
   remarks?: string;
 
-  category: string;
+  category: {
+    _id: string;
+    name: string;
+  };
   subCategory?: string;
   brand?: string;
 
@@ -33,6 +43,7 @@ export type TProduct = {
     quantity: number;
     unit: string;
     availabilityStatus: "In Stock" | "Out of Stock" | "Limited";
+    hasVariations: boolean;
   };
 
   images: string[];

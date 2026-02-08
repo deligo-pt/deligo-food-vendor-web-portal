@@ -47,7 +47,7 @@ import {
   TagIcon,
   XIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -79,12 +79,12 @@ export function ProductForm({
       icon: <ImageIcon className="h-5 w-5" />,
     },
     {
-      name: t("pricing"),
-      icon: <TagIcon className="h-5 w-5" />,
-    },
-    {
       name: t("add_ons_and_variants"),
       icon: <LayersIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("pricing"),
+      icon: <TagIcon className="h-5 w-5" />,
     },
     {
       name: t("stock"),
@@ -95,9 +95,34 @@ export function ProductForm({
       icon: <InfoIcon className="h-5 w-5" />,
     },
     {
-      name: t("meta"),
+      name: "DeliGo Metadata",
       icon: <StarIcon className="h-5 w-5" />,
     },
+  ];
+
+  const packagingTypes = [
+    t("plastic_bag"),
+    t("paper_bag"),
+    t("box"),
+    t("bottle"),
+    "Vacuum Sealed",
+    "Insulated Thermal Bag",
+    "Eco-Friendly/Compostable",
+    "Glass Jar",
+    "Corrugated Wrap",
+    "Tamper-Evident Seal",
+    t("others"),
+  ];
+
+  const storageTemperatures = [
+    t("room_temperature"),
+    t("refrigerated"),
+    t("frozen"),
+    t("cool_and_dry"),
+    "Warm/Ambient",
+    "Piping Hot ($65$°C+)",
+    "Constant Heat",
+    t("others"),
   ];
 
   const [option, setOption] = useState<{
@@ -138,6 +163,15 @@ export function ProductForm({
       isAvailableForPreOrder: false,
     },
   });
+  const [tabError, setTabError] = useState(
+    tabs.reduce(
+      (err, t) => {
+        err[t.name] = false;
+        return err;
+      },
+      {} as Record<string, boolean>,
+    ),
+  );
 
   const [
     watchPrice,
@@ -287,6 +321,50 @@ export function ProductForm({
     console.log(result);
   };
 
+  useEffect(() => {
+    const errors = Object.entries(form.formState?.errors)?.filter(
+      (er) => er?.[1]?.message,
+    );
+    if (errors.length > 0) {
+      const newErrors = tabs.reduce(
+        (err, t) => {
+          err[t.name] = false;
+          return err;
+        },
+        {} as Record<string, boolean>,
+      );
+
+      errors.forEach(([key]) => {
+        switch (key) {
+          case "name":
+          case "brand":
+          case "description":
+          case "category":
+            newErrors["Basic Info"] = true;
+            return;
+          case "price":
+          case "discount":
+          case "taxId":
+            newErrors["Pricing"] = true;
+            return;
+          case "quantity":
+          case "unit":
+          case "availabilityStatus":
+            newErrors["Stock"] = true;
+            return;
+          case "weight":
+          case "packagingType":
+          case "storageTemperature":
+            newErrors["Attributes"] = true;
+            return;
+        }
+      });
+
+      setTabError(newErrors);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.formState?.errors]);
+
   return (
     <div className="p-8">
       <motion.div
@@ -323,11 +401,14 @@ export function ProductForm({
                     scale: 0.98,
                   }}
                   onClick={() => setActiveTab(index)}
-                  className={`w-full flex items-center space-x-2 px-4 py-3 rounded-lg text-left ${
+                  className={cn(
+                    "w-full flex items-center space-x-2 px-4 py-3 rounded-lg text-left",
                     activeTab === index
                       ? "bg-[#DC3173] text-white"
-                      : "hover:bg-gray-100 text-gray-700"
-                  }`}
+                      : tabError[tab.name]
+                        ? "bg-destructive/20 text-destructive"
+                        : "hover:bg-gray-100 text-gray-700",
+                  )}
                 >
                   <div className="w-5 h-5">{tab.icon}</div>
                   <span>{tab.name}</span>
@@ -551,173 +632,8 @@ export function ProductForm({
                     <ImageUpload images={images} setImages={setImages} />
                   </motion.div>
                 )}
-                {/* Pricing Tab */}
-                {activeTab === 2 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {t("pricing_information")}
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="price"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("price_E")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="discount"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="discount"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("discount_2")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                max={100}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="taxId"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="tax"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("tax_2")}
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10">
-                                  <SelectValue placeholder="Select tax" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {taxesData?.map((tax) => (
-                                    <SelectItem key={tax._id} value={tax._id}>
-                                      {tax.taxName}({}
-                                      {tax.taxRate}%)
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    {watchPrice > 0 && watchDiscount >= 0 && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">
-                            {t("original_price")}:
-                          </span>
-                          <span className="font-medium">€ {watchPrice}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">
-                            {t("discount")} ({watchDiscount}%):
-                          </span>
-                          <span className="font-medium text-red-500">
-                            - €{" "}
-                            {((watchPrice * watchDiscount) / 100).toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">
-                            {t("tax")} (
-                            {
-                              taxesData?.find((tax) => tax._id === watchTaxId)
-                                ?.taxRate
-                            }
-                            %):
-                          </span>
-                          <span className="font-medium">
-                            + €{" "}
-                            {(
-                              (watchPrice *
-                                (taxesData?.find(
-                                  (tax) => tax._id === watchTaxId,
-                                )?.taxRate || 0)) /
-                              100
-                            ).toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="border-t mt-2 pt-2 flex justify-between">
-                          <span className="font-semibold">
-                            {t("final_price")}:
-                          </span>
-                          <span className="font-bold text-[#DC3173]">
-                            €{" "}
-                            {(
-                              watchPrice *
-                              (1 -
-                                watchDiscount / 100 +
-                                (taxesData?.find(
-                                  (tax) => tax._id === watchTaxId,
-                                )?.taxRate || 0) /
-                                  100)
-                            ).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
                 {/* Add-Ons & Variants Tab */}
-                {activeTab === 3 && (
+                {activeTab === 2 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -952,6 +868,172 @@ export function ProductForm({
                     </div>
                   </motion.div>
                 )}
+                {/* Pricing Tab */}
+                {activeTab === 3 && (
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                    }}
+                    transition={{
+                      duration: 0.3,
+                    }}
+                    className="space-y-6"
+                  >
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      {t("pricing_information")}
+                    </h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {watchVariations.length === 0 && (
+                        <FormField
+                          control={form.control}
+                          name="price"
+                          render={({ field }) => (
+                            <FormItem className="gap-1">
+                              <FormLabel
+                                htmlFor="price"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                {t("price_E")}
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="number"
+                                  min={0}
+                                  value={String(field.value)}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                      <FormField
+                        control={form.control}
+                        name="discount"
+                        render={({ field }) => (
+                          <FormItem className="gap-1">
+                            <FormLabel
+                              htmlFor="discount"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              {t("discount_2")}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="number"
+                                min={0}
+                                max={100}
+                                value={String(field.value)}
+                                onChange={(e) =>
+                                  field.onChange(Number(e.target.value))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="taxId"
+                        render={({ field }) => (
+                          <FormItem className="gap-1">
+                            <FormLabel
+                              htmlFor="tax"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              {t("tax_2")}
+                            </FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10">
+                                  <SelectValue placeholder="Select tax" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {taxesData?.map((tax) => (
+                                    <SelectItem key={tax._id} value={tax._id}>
+                                      {tax.taxName}({}
+                                      {tax.taxRate}%)
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    {!!watchPrice && watchPrice > 0 && watchDiscount >= 0 && (
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex justify-between">
+                          <span className="text-gray-700">
+                            {t("original_price")}:
+                          </span>
+                          <span className="font-medium">€ {watchPrice}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-700">
+                            {t("discount")} ({watchDiscount}%):
+                          </span>
+                          <span className="font-medium text-red-500">
+                            - €{" "}
+                            {((watchPrice * watchDiscount) / 100).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-700">
+                            {t("tax")} (
+                            {
+                              taxesData?.find((tax) => tax._id === watchTaxId)
+                                ?.taxRate
+                            }
+                            %):
+                          </span>
+                          <span className="font-medium">
+                            + €{" "}
+                            {(
+                              (watchPrice *
+                                (1 - watchDiscount / 100) *
+                                (taxesData?.find(
+                                  (tax) => tax._id === watchTaxId,
+                                )?.taxRate || 0)) /
+                              100
+                            ).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="border-t mt-2 pt-2 flex justify-between">
+                          <span className="font-semibold">
+                            {t("final_price")}:
+                          </span>
+                          <span className="font-bold text-[#DC3173]">
+                            €{" "}
+                            {(
+                              watchPrice *
+                              (1 - watchDiscount / 100) *
+                              ((taxesData?.find((tax) => tax._id === watchTaxId)
+                                ?.taxRate || 0) /
+                                100)
+                            ).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
                 {/* Stock Tab */}
                 {activeTab === 4 && (
                   <motion.div
@@ -970,33 +1052,35 @@ export function ProductForm({
                       {t("stock_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="quantity"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="quantity"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("quantity")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {watchVariations.length === 0 && (
+                        <FormField
+                          control={form.control}
+                          name="quantity"
+                          render={({ field }) => (
+                            <FormItem className="gap-1">
+                              <FormLabel
+                                htmlFor="quantity"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                {t("quantity")}
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="number"
+                                  min={0}
+                                  value={String(field.value)}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                       <FormField
                         control={form.control}
                         name="unit"
@@ -1147,7 +1231,7 @@ export function ProductForm({
                               htmlFor="weight"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              {t("weight")}
+                              {t("weight")} (Grams)
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -1192,24 +1276,14 @@ export function ProductForm({
                                   <SelectValue placeholder="Select a packaging type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Plastic Bag">
-                                    {t("plastic_bag")}
-                                  </SelectItem>
-                                  <SelectItem value="Paper Bag">
-                                    {t("paper_bag")}
-                                  </SelectItem>
-                                  <SelectItem value="Box">
-                                    {t("box")}
-                                  </SelectItem>
-                                  <SelectItem value="Tin">
-                                    {t("tin")}
-                                  </SelectItem>
-                                  <SelectItem value="Bottle">
-                                    {t("bottle")}
-                                  </SelectItem>
-                                  <SelectItem value="Others">
-                                    {t("others")}
-                                  </SelectItem>
+                                  {packagingTypes.map((packagingType) => (
+                                    <SelectItem
+                                      key={packagingType}
+                                      value={packagingType}
+                                    >
+                                      {packagingType}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1244,21 +1318,11 @@ export function ProductForm({
                                   <SelectValue placeholder="Select room temperature" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Room temperature">
-                                    {t("room_temperature")}
-                                  </SelectItem>
-                                  <SelectItem value="Refrigerated">
-                                    {t("refrigerated")}
-                                  </SelectItem>
-                                  <SelectItem value="Frozen">
-                                    {t("frozen")}
-                                  </SelectItem>
-                                  <SelectItem value="Cool and dry">
-                                    {t("cool_and_dry")}
-                                  </SelectItem>
-                                  <SelectItem value="Others">
-                                    {t("others")}
-                                  </SelectItem>
+                                  {storageTemperatures.map((temp) => (
+                                    <SelectItem key={temp} value={temp}>
+                                      {temp}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -1269,7 +1333,7 @@ export function ProductForm({
                     </div>
                   </motion.div>
                 )}
-                {/* Meta Tab */}
+                {/* DeliGo Metadata Tab */}
                 {activeTab === 6 && (
                   <motion.div
                     initial={{
@@ -1284,7 +1348,7 @@ export function ProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      {t("meta_information")}
+                      DeliGo Metadata Information
                     </h2>
                     <div className="space-y-4">
                       <FormField
