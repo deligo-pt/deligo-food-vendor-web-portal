@@ -239,10 +239,7 @@ export default function ProductDetails({ product }: IProps) {
                     {product.pricing.price.toFixed(2)}
                   </span>
                   <span className="text-sm font-medium text-green-600">
-                    {Math.round(
-                      (product.pricing.discount / product.pricing.price) * 100,
-                    )}
-                    % {t("off")}
+                    {product.pricing.discount}% {t("off")}
                   </span>
                 </>
               ) : (

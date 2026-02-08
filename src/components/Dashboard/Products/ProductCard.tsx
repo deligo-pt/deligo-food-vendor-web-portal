@@ -110,7 +110,10 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
             </span>
             {product?.pricing?.discount ? (
               <span className="text-xs line-through text-gray-400 ml-2">
-                {product.pricing.currency} {product?.pricing?.price?.toFixed(2)}
+                {product.pricing.currency}{" "}
+                {new Intl.NumberFormat("de-DE", {
+                  minimumFractionDigits: 2,
+                }).format(product.pricing.price)}
               </span>
             ) : (
               ""

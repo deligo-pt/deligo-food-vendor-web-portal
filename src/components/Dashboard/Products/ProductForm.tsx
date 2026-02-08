@@ -1024,9 +1024,11 @@ export function ProductForm({
                             {(
                               watchPrice *
                               (1 - watchDiscount / 100) *
-                              ((taxesData?.find((tax) => tax._id === watchTaxId)
-                                ?.taxRate || 0) /
-                                100)
+                              (1 +
+                                (taxesData?.find(
+                                  (tax) => tax._id === watchTaxId,
+                                )?.taxRate || 0) /
+                                  100)
                             ).toFixed(2)}
                           </span>
                         </div>
