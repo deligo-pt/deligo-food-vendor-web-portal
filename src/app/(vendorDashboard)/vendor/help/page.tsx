@@ -1,23 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import {
-  HelpCircle,
-  Search,
-  BookOpen,
-  Mail,
-  PhoneCall,
-  MessageCircle,
-  FileQuestion,
   ArrowRight,
+  BookOpen,
+  FileQuestion,
+  HelpCircle,
+  Mail,
+  MessageCircle,
+  PhoneCall,
+  Search,
   ShieldCheck,
 } from "lucide-react";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -47,13 +47,12 @@ export default function VendorHelpPage() {
   ];
 
   const filtered = FAQ.filter((f) =>
-    f.q.toLowerCase().includes(query.toLowerCase())
+    f.q.toLowerCase().includes(query.toLowerCase()),
   );
 
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[900px] mx-auto space-y-10">
-
         {/* HEADER */}
         <div className="flex justify-between items-center">
           <div>
@@ -80,27 +79,42 @@ export default function VendorHelpPage() {
 
         {/* QUICK LINKS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <Card className="rounded-3xl bg-white border hover:shadow-xl transition" style={{ boxShadow: SHADOW }}>
+          <Card
+            className="rounded-3xl bg-white border hover:shadow-xl transition"
+            style={{ boxShadow: SHADOW }}
+          >
             <CardContent className="p-6 flex items-center gap-4">
               <BookOpen className="text-pink-600" size={34} />
               <div>
                 <h3 className="font-bold text-lg">{t("vendor_guidebook")}</h3>
-                <p className="text-sm text-gray-600">{t("learn_how_to_use_deligo")}</p>
+                <p className="text-sm text-gray-600">
+                  {t("learn_how_to_use_deligo")}
+                </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl bg-white border hover:shadow-xl transition" style={{ boxShadow: SHADOW }}>
+          <Card
+            className="rounded-3xl bg-white border hover:shadow-xl transition"
+            style={{ boxShadow: SHADOW }}
+          >
             <CardContent className="p-6 flex items-center gap-4">
               <ShieldCheck className="text-green-600" size={34} />
               <div>
-                <h3 className="font-bold text-lg">{t("policies_and_safety")}</h3>
-                <p className="text-sm text-gray-600">{t("rules_for_safe_platform")}</p>
+                <h3 className="font-bold text-lg">
+                  {t("policies_and_safety")}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {t("rules_for_safe_platform")}
+                </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl bg-white border hover:shadow-xl transition" style={{ boxShadow: SHADOW }}>
+          <Card
+            className="rounded-3xl bg-white border hover:shadow-xl transition"
+            style={{ boxShadow: SHADOW }}
+          >
             <CardContent className="p-6 flex items-center gap-4">
               <Mail className="text-blue-600" size={34} />
               <div>
@@ -110,12 +124,17 @@ export default function VendorHelpPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl bg-white border hover:shadow-xl transition" style={{ boxShadow: SHADOW }}>
+          <Card
+            className="rounded-3xl bg-white border hover:shadow-xl transition"
+            style={{ boxShadow: SHADOW }}
+          >
             <CardContent className="p-6 flex items-center gap-4">
               <MessageCircle className="text-purple-600" size={34} />
               <div>
                 <h3 className="font-bold text-lg">{t("live_chat")}</h3>
-                <p className="text-sm text-gray-600">{t("chat_with_support_team")}</p>
+                <p className="text-sm text-gray-600">
+                  {t("chat_with_support_team")}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -153,14 +172,20 @@ export default function VendorHelpPage() {
         </div>
 
         {/* CONTACT CTA */}
-        <Card className="rounded-3xl bg-white border shadow-md" style={{ boxShadow: SHADOW }}>
+        <Card
+          className="rounded-3xl bg-white border shadow-md"
+          style={{ boxShadow: SHADOW }}
+        >
           <CardContent className="p-7 flex flex-col items-center text-center gap-3">
             <PhoneCall size={40} className="text-pink-600" />
             <h2 className="font-bold text-xl">{t("need_more_help")}</h2>
             <p className="text-sm text-gray-600 max-w-[400px]">
               {t("our_support_team_available")}
             </p>
-            <Button style={{ background: PRIMARY }} className="text-white flex items-center gap-2 mt-3">
+            <Button
+              style={{ background: PRIMARY }}
+              className="text-white flex items-center gap-2 mt-3"
+            >
               {t("contact_support")} <ArrowRight size={16} />
             </Button>
           </CardContent>

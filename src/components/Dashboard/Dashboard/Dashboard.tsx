@@ -28,7 +28,7 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
   const { t } = useTranslation();
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="p-6">
       <DashboardHeader vendorName={vendorName} />
       <motion.div
         className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"

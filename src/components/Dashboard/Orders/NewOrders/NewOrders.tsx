@@ -22,7 +22,6 @@ import { toast } from "sonner";
 
 // Brand / colors
 const PRIMARY = "#DC3173"; // Deligo primary
-const BG_SOFT = "#FFEEF5";
 const CARD_BG = "#FFFFFF";
 const PINK_SOFT = "#FFE1EC";
 
@@ -101,8 +100,8 @@ export default function NewOrders({ ordersResult }: IProps) {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG_SOFT }}>
-      <div className="max-w-[1400px] w-full overflow-hidden mx-auto space-y-6">
+    <div className="min-h-screen p-6">
+      <div className="space-y-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}

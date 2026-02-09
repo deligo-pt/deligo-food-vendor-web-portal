@@ -36,8 +36,8 @@ export default function Categories({ categoriesResult }: IProps) {
   ];
 
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[900px] mx-auto space-y-8">
+    <div className="min-h-screen p-6" style={{ background: BG }}>
+      <div className="space-y-8">
         {/* HEADER */}
         <div>
           <h1
@@ -55,7 +55,11 @@ export default function Categories({ categoriesResult }: IProps) {
         <AllFilters sortOptions={sortOptions} />
 
         {/* CATEGORY LIST */}
-        <div className="space-y-4 mt-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4 mt-4"
+        >
           {categoriesResult?.data?.map((cat, i) => (
             <Card
               key={cat._id}
@@ -97,7 +101,7 @@ export default function Categories({ categoriesResult }: IProps) {
               </CardContent>
             </Card>
           ))}
-        </div>
+        </motion.div>
 
         {/* NO RESULTS */}
         {categoriesResult?.data?.length === 0 && (

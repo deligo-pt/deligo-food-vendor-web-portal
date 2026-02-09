@@ -5,19 +5,13 @@
 
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
-import {
-  Users,
-  MapPin,
-  Clock,
-  PieChart,
-  Activity,
-} from "lucide-react";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { Activity, Clock, MapPin, PieChart, Users } from "lucide-react";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -40,13 +34,34 @@ const DEMOGRAPHICS = {
 
 const WEEK_HOUR_HEAT = [
   // each array is 24 hours heat value for a day Mon-Sun
-  [1, 1, 1, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 20, 18, 16, 14, 12, 10, 8, 4, 2], // Mon
-  [1, 1, 1, 1, 2, 4, 6, 8, 11, 13, 15, 17, 19, 21, 23, 21, 19, 17, 15, 13, 11, 8, 4, 2], // Tue
-  [1, 1, 1, 1, 2, 4, 6, 8, 12, 14, 16, 18, 20, 22, 24, 22, 20, 18, 16, 14, 12, 9, 4, 2], // Wed
-  [1, 1, 1, 1, 2, 4, 6, 8, 14, 16, 18, 20, 22, 24, 26, 24, 22, 20, 18, 16, 14, 10, 4, 2], // Thu
-  [1, 1, 1, 1, 2, 4, 6, 8, 18, 20, 22, 24, 26, 28, 30, 28, 26, 24, 22, 20, 16, 12, 6, 2], // Fri
-  [1, 1, 1, 1, 2, 4, 6, 8, 20, 22, 24, 26, 28, 30, 32, 30, 28, 26, 24, 22, 18, 14, 8, 3], // Sat
-  [1, 1, 1, 1, 2, 4, 6, 8, 16, 18, 20, 22, 24, 26, 28, 26, 24, 22, 20, 18, 14, 10, 6, 2], // Sun
+  [
+    1, 1, 1, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 20, 18, 16, 14, 12, 10,
+    8, 4, 2,
+  ], // Mon
+  [
+    1, 1, 1, 1, 2, 4, 6, 8, 11, 13, 15, 17, 19, 21, 23, 21, 19, 17, 15, 13, 11,
+    8, 4, 2,
+  ], // Tue
+  [
+    1, 1, 1, 1, 2, 4, 6, 8, 12, 14, 16, 18, 20, 22, 24, 22, 20, 18, 16, 14, 12,
+    9, 4, 2,
+  ], // Wed
+  [
+    1, 1, 1, 1, 2, 4, 6, 8, 14, 16, 18, 20, 22, 24, 26, 24, 22, 20, 18, 16, 14,
+    10, 4, 2,
+  ], // Thu
+  [
+    1, 1, 1, 1, 2, 4, 6, 8, 18, 20, 22, 24, 26, 28, 30, 28, 26, 24, 22, 20, 16,
+    12, 6, 2,
+  ], // Fri
+  [
+    1, 1, 1, 1, 2, 4, 6, 8, 20, 22, 24, 26, 28, 30, 32, 30, 28, 26, 24, 22, 18,
+    14, 8, 3,
+  ], // Sat
+  [
+    1, 1, 1, 1, 2, 4, 6, 8, 16, 18, 20, 22, 24, 26, 28, 26, 24, 22, 20, 18, 14,
+    10, 6, 2,
+  ], // Sun
 ];
 
 const CUSTOMER_VALUE = [
@@ -79,9 +94,7 @@ function StatCard({ title, value, hint, icon }: any) {
   return (
     <Card className="rounded-2xl border" style={{ background: GRADIENT }}>
       <CardContent className="p-4 flex items-start gap-4">
-        <div className="p-3 rounded-lg bg-white/60">
-          {icon}
-        </div>
+        <div className="p-3 rounded-lg bg-white/60">{icon}</div>
         <div>
           <div className="text-sm text-gray-600">{title}</div>
           <div className="text-2xl font-bold">{value}</div>
@@ -92,22 +105,45 @@ function StatCard({ title, value, hint, icon }: any) {
   );
 }
 
-function LineSpark({ data, color = PRIMARY }: { data: number[]; color?: string }) {
+function LineSpark({
+  data,
+  color = PRIMARY,
+}: {
+  data: number[];
+  color?: string;
+}) {
   // simple SVG sparkline
   const width = 260;
   const height = 60;
   const max = Math.max(...data);
-  const points = data.map((d, i) => `${(i / (data.length - 1)) * width},${height - (d / max) * (height - 8)}`).join(' ');
+  const points = data
+    .map(
+      (d, i) =>
+        `${(i / (data.length - 1)) * width},${height - (d / max) * (height - 8)}`,
+    )
+    .join(" ");
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="rounded">
-      <polyline points={points} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      className="rounded"
+    >
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 function Heatmap({ grid }: { grid: number[][] }) {
   // grid: [day][hour]
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const max = Math.max(...grid.flat());
 
   return (
@@ -116,7 +152,9 @@ function Heatmap({ grid }: { grid: number[][] }) {
         {/* header hours */}
         <div className="col-span-24 flex gap-1 mb-2">
           {Array.from({ length: 24 }).map((_, i) => (
-            <div key={i} className="flex-1 text-xs text-center text-gray-500">{i}</div>
+            <div key={i} className="flex-1 text-xs text-center text-gray-500">
+              {i}
+            </div>
           ))}
         </div>
       </div>
@@ -130,7 +168,12 @@ function Heatmap({ grid }: { grid: number[][] }) {
                 const intensity = Math.round((v / max) * 255);
                 const bg = `rgb(255, ${255 - Math.round(intensity / 1.5)}, ${255 - intensity})`;
                 return (
-                  <div key={c} title={`${v} orders`} className="flex-1 h-6 rounded-sm" style={{ background: bg }} />
+                  <div
+                    key={c}
+                    title={`${v} orders`}
+                    className="flex-1 h-6 rounded-sm"
+                    style={{ background: bg }}
+                  />
                 );
               })}
             </div>
@@ -141,40 +184,64 @@ function Heatmap({ grid }: { grid: number[][] }) {
   );
 }
 
-
-
 /* ---------------------------
    Main Page
 ----------------------------*/
 export default function CustomerInsightsPage() {
   const { t } = useTranslation();
   // sample sparkline data
-  const retention = WEEKLY_RETENTION.map(w => w.pct);
+  const retention = WEEKLY_RETENTION.map((w) => w.pct);
   const sparkData = [12, 18, 9, 22, 27, 25, 30, 28, 35, 32];
 
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1200px] mx-auto space-y-8">
-
         {/* HEADER */}
         <div className="flex items-start justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>{t("customer_insights")}</h1>
+            <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
+              {t("customer_insights")}
+            </h1>
             <p className="text-gray-600 mt-1">{t("deep_customer_analytics")}</p>
           </div>
 
           <div className="flex items-center gap-3">
-            <Input placeholder="Search customers or segments..." className="max-w-sm" />
-            <Button style={{ background: PRIMARY }} className="text-white">{t("export_csv")}</Button>
+            <Input
+              placeholder="Search customers or segments..."
+              className="max-w-sm"
+            />
+            <Button style={{ background: PRIMARY }} className="text-white">
+              {t("export_csv")}
+            </Button>
           </div>
         </div>
 
         {/* TOP STATS */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <StatCard title={t("total_customers")} value={DEMOGRAPHICS.totalCustomers} hint={`${DEMOGRAPHICS.newCustomers} new`} icon={<Users size={20} />} />
-          <StatCard title={t("returning")} value={DEMOGRAPHICS.returningCustomers} hint={`Avg orders/month ${DEMOGRAPHICS.avgOrderFreq}`} icon={<Activity size={20} />} />
-          <StatCard title={t("top_city")} value={DEMOGRAPHICS.topCities[0].city} hint={`${DEMOGRAPHICS.topCities[0].pct}% of orders`} icon={<MapPin size={20} />} />
-          <StatCard title={t("avg_repeat")} value={`${(DEMOGRAPHICS.returningCustomers / DEMOGRAPHICS.totalCustomers * 100).toFixed(0)}%`} hint={`Retention`} icon={<Clock size={20} />} />
+          <StatCard
+            title={t("total_customers")}
+            value={DEMOGRAPHICS.totalCustomers}
+            hint={`${DEMOGRAPHICS.newCustomers} new`}
+            icon={<Users size={20} />}
+          />
+          <StatCard
+            title={t("returning")}
+            value={DEMOGRAPHICS.returningCustomers}
+            hint={`Avg orders/month ${DEMOGRAPHICS.avgOrderFreq}`}
+            icon={<Activity size={20} />}
+          />
+          <StatCard
+            title={t("top_city")}
+            value={DEMOGRAPHICS.topCities[0].city}
+            hint={`${DEMOGRAPHICS.topCities[0].pct}% of orders`}
+            icon={<MapPin size={20} />}
+          />
+          <StatCard
+            title={t("avg_repeat")}
+            value={`${((DEMOGRAPHICS.returningCustomers / DEMOGRAPHICS.totalCustomers) * 100).toFixed(0)}%`}
+            hint={`Retention`}
+            icon={<Clock size={20} />}
+          />
         </div>
 
         {/* DEMOGRAPHICS + RETENTION ROW */}
@@ -182,7 +249,10 @@ export default function CustomerInsightsPage() {
           <Card className="rounded-2xl border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2"><Users className="text-gray-700" /> <h3 className="font-bold">{t("demographics")}</h3></div>
+                <div className="flex items-center gap-2">
+                  <Users className="text-gray-700" />{" "}
+                  <h3 className="font-bold">{t("demographics")}</h3>
+                </div>
                 <Badge>{t("live")}</Badge>
               </div>
 
@@ -191,7 +261,9 @@ export default function CustomerInsightsPage() {
                   <div key={i} className="flex items-center justify-between">
                     <div>
                       <div className="font-medium">{c.city}</div>
-                      <div className="text-xs text-gray-500">{c.pct}% {t("of_orders")}</div>
+                      <div className="text-xs text-gray-500">
+                        {c.pct}% {t("of_orders")}
+                      </div>
                     </div>
                     <div className="text-sm text-gray-800">{c.pct}%</div>
                   </div>
@@ -203,7 +275,10 @@ export default function CustomerInsightsPage() {
           <Card className="rounded-2xl border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2"><PieChart className="text-gray-700" /> <h3 className="font-bold">{t("customer_value")}</h3></div>
+                <div className="flex items-center gap-2">
+                  <PieChart className="text-gray-700" />{" "}
+                  <h3 className="font-bold">{t("customer_value")}</h3>
+                </div>
                 <Badge variant="outline">{t("top_segments")}</Badge>
               </div>
 
@@ -212,7 +287,9 @@ export default function CustomerInsightsPage() {
                   <div key={i} className="flex items-center justify-between">
                     <div>
                       <div className="font-medium">{cv.name}</div>
-                      <div className="text-xs text-gray-500">{t("avg_order")} €{cv.avg.toFixed(2)}</div>
+                      <div className="text-xs text-gray-500">
+                        {t("avg_order")} €{cv.avg.toFixed(2)}
+                      </div>
                     </div>
                     <div className="text-sm text-gray-800">{cv.count}</div>
                   </div>
@@ -224,7 +301,10 @@ export default function CustomerInsightsPage() {
           <Card className="rounded-2xl border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2"><Clock className="text-gray-700" /> <h3 className="font-bold">{t("retention_trend")}</h3></div>
+                <div className="flex items-center gap-2">
+                  <Clock className="text-gray-700" />{" "}
+                  <h3 className="font-bold">{t("retention_trend")}</h3>
+                </div>
                 <Badge variant="secondary">{t("d_7")}</Badge>
               </div>
 
@@ -249,7 +329,10 @@ export default function CustomerInsightsPage() {
           <Card className="rounded-2xl border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2"><MapPin className="text-gray-700" /> <h3 className="font-bold">{t("peak_order_times")}</h3></div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="text-gray-700" />{" "}
+                  <h3 className="font-bold">{t("peak_order_times")}</h3>
+                </div>
                 <div className="text-sm text-gray-500">{t("local_time")}</div>
               </div>
 
@@ -262,7 +345,10 @@ export default function CustomerInsightsPage() {
         <Card className="rounded-2xl border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2"><Activity className="text-gray-700" /> <h3 className="font-bold">{t("actionable_insights")}</h3></div>
+              <div className="flex items-center gap-2">
+                <Activity className="text-gray-700" />{" "}
+                <h3 className="font-bold">{t("actionable_insights")}</h3>
+              </div>
               <Badge variant="outline">{t("ai_suggest")}</Badge>
             </div>
 
@@ -274,12 +360,13 @@ export default function CustomerInsightsPage() {
             </ul>
 
             <div className="mt-4 flex gap-3">
-              <Button style={{ background: PRIMARY }} className="text-white">{t("create_campaign")}</Button>
+              <Button style={{ background: PRIMARY }} className="text-white">
+                {t("create_campaign")}
+              </Button>
               <Button variant="outline">{t("export_segment")}</Button>
             </div>
           </CardContent>
         </Card>
-
       </div>
     </div>
   );

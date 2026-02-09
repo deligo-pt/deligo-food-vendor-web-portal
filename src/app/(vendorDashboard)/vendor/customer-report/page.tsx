@@ -1,26 +1,23 @@
-
-
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
+import { useTranslation } from "@/src/hooks/use-translation";
 import {
-  Users,
-  Search,
-
   BarChart3,
-  Star,
-  Euro,
-  UserRound,
   Clock3,
   Download,
+  Euro,
+  Search,
+  Star,
+  UserRound,
+  Users,
 } from "lucide-react";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
@@ -67,13 +64,12 @@ export default function CustomerReportPage() {
   const [query, setQuery] = useState("");
 
   const filtered = CUSTOMERS.filter((c) =>
-    c.name.toLowerCase().includes(query.toLowerCase())
+    c.name.toLowerCase().includes(query.toLowerCase()),
   );
 
   return (
     <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
       <div className="max-w-[1200px] mx-auto space-y-12">
-
         {/* HEADER */}
         <div className="flex items-center justify-between">
           <div>
@@ -88,32 +84,41 @@ export default function CustomerReportPage() {
             </p>
           </div>
 
-          <Button className="flex items-center gap-2 text-white" style={{ background: PRIMARY }}>
+          <Button
+            className="flex items-center gap-2 text-white"
+            style={{ background: PRIMARY }}
+          >
             <Download size={18} /> {t("export_csv")}
           </Button>
         </div>
 
         {/* OVERVIEW CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[{
-            label: t("total_customers"),
-            value: CUSTOMERS.length,
-            icon: <Users size={28} className="text-pink-600" />,
-          }, {
-            label: t("avg_rating"),
-            value: (
-              CUSTOMERS.reduce((a, b) => a + b.rating, 0) / CUSTOMERS.length
-            ).toFixed(1),
-            icon: <Star size={28} className="text-yellow-500" />,
-          }, {
-            label: t("highest_spender"),
-            value: CUSTOMERS.sort((a, b) => b.totalSpent - a.totalSpent)[0].name,
-            icon: <Euro size={28} className="text-green-600" />,
-          }, {
-            label: t("most_orders"),
-            value: CUSTOMERS.sort((a, b) => b.orders - a.orders)[0].name,
-            icon: <BarChart3 size={28} className="text-blue-600" />,
-          }].map((d, idx) => (
+          {[
+            {
+              label: t("total_customers"),
+              value: CUSTOMERS.length,
+              icon: <Users size={28} className="text-pink-600" />,
+            },
+            {
+              label: t("avg_rating"),
+              value: (
+                CUSTOMERS.reduce((a, b) => a + b.rating, 0) / CUSTOMERS.length
+              ).toFixed(1),
+              icon: <Star size={28} className="text-yellow-500" />,
+            },
+            {
+              label: t("highest_spender"),
+              value: CUSTOMERS.sort((a, b) => b.totalSpent - a.totalSpent)[0]
+                .name,
+              icon: <Euro size={28} className="text-green-600" />,
+            },
+            {
+              label: t("most_orders"),
+              value: CUSTOMERS.sort((a, b) => b.orders - a.orders)[0].name,
+              icon: <BarChart3 size={28} className="text-blue-600" />,
+            },
+          ].map((d, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 10 }}
@@ -156,10 +161,16 @@ export default function CustomerReportPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04 }}
             >
-              <Card className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all" style={{ boxShadow: SHADOW }}>
+              <Card
+                className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all"
+                style={{ boxShadow: SHADOW }}
+              >
                 <CardContent className="p-6 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center text-xl font-bold" style={{ color: PRIMARY }}>
+                    <div
+                      className="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center text-xl font-bold"
+                      style={{ color: PRIMARY }}
+                    >
                       {c.name[0]}
                     </div>
 
@@ -170,7 +181,8 @@ export default function CustomerReportPage() {
                         <UserRound size={14} /> {c.orders} {t("orders")}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center gap-1">
-                        <Euro size={14} /> €{c.totalSpent.toFixed(2)} {t("total_spent")}
+                        <Euro size={14} /> €{c.totalSpent.toFixed(2)}{" "}
+                        {t("total_spent")}
                       </p>
                       <p className="text-sm text-gray-600 flex items-center gap-1">
                         <Clock3 size={14} /> {t("last_order")}: {c.lastOrder}
@@ -189,7 +201,9 @@ export default function CustomerReportPage() {
           ))}
 
           {filtered.length === 0 && (
-            <p className="text-center text-gray-500 py-10">{t("no_customers_found")}</p>
+            <p className="text-center text-gray-500 py-10">
+              {t("no_customers_found")}
+            </p>
           )}
         </div>
 

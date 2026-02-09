@@ -1,21 +1,39 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { UserPlus, ShieldCheck, ChefHat, ClipboardList, Eye } from "lucide-react";
 import { useTranslation } from "@/src/hooks/use-translation";
+import {
+  ChefHat,
+  ClipboardList,
+  Eye,
+  ShieldCheck,
+  UserPlus,
+} from "lucide-react";
+import { useState } from "react";
 
 const PRIMARY = "#DC3173";
 const BG = "#FFF1F7";
 
 export default function VendorAddStaff() {
   const { t } = useTranslation();
-  const [staff, setStaff] = useState({ name: "", role: "Staff", email: "", phone: "", notes: "" });
+  const [staff, setStaff] = useState({
+    name: "",
+    role: "Staff",
+    email: "",
+    phone: "",
+    notes: "",
+  });
 
   const handleSubmit = () => {
     console.log("New Staff: ", staff);
@@ -29,9 +47,13 @@ export default function VendorAddStaff() {
         {/* HEADER */}
         <div className="flex items-center gap-3">
           <UserPlus size={32} className="text-pink-600" />
-          <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>{t("add_staff")}</h1>
+          <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
+            {t("add_staff")}
+          </h1>
         </div>
-        <p className="text-gray-600 text-sm -mt-4">{t("add_new_team_members_assign_role_permissions")}</p>
+        <p className="text-gray-600 text-sm -mt-4">
+          {t("add_new_team_members_assign_role_permissions")}
+        </p>
 
         {/* FORM CARD */}
         <Card className="rounded-3xl bg-white border shadow-lg">
@@ -67,14 +89,18 @@ export default function VendorAddStaff() {
                 <Input
                   placeholder={t("email_address")}
                   value={staff.email}
-                  onChange={(e) => setStaff({ ...staff, email: e.target.value })}
+                  onChange={(e) =>
+                    setStaff({ ...staff, email: e.target.value })
+                  }
                   className="h-12"
                 />
 
                 <Input
                   placeholder={t("phone_number")}
                   value={staff.phone}
-                  onChange={(e) => setStaff({ ...staff, phone: e.target.value })}
+                  onChange={(e) =>
+                    setStaff({ ...staff, phone: e.target.value })
+                  }
                   className="h-12"
                 />
               </div>
@@ -86,12 +112,22 @@ export default function VendorAddStaff() {
               <Separator />
 
               <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl">
-                {staff.role === "Manager" && <ShieldCheck size={24} className="text-green-600" />}
-                {staff.role === "Chef" && <ChefHat size={24} className="text-amber-600" />}
-                {staff.role === "Staff" && <ClipboardList size={24} className="text-blue-600" />}
-                {staff.role === "Viewer" && <Eye size={24} className="text-gray-600" />}
+                {staff.role === "Manager" && (
+                  <ShieldCheck size={24} className="text-green-600" />
+                )}
+                {staff.role === "Chef" && (
+                  <ChefHat size={24} className="text-amber-600" />
+                )}
+                {staff.role === "Staff" && (
+                  <ClipboardList size={24} className="text-blue-600" />
+                )}
+                {staff.role === "Viewer" && (
+                  <Eye size={24} className="text-gray-600" />
+                )}
 
-                <span className="font-semibold text-gray-700 text-lg">{staff.role}</span>
+                <span className="font-semibold text-gray-700 text-lg">
+                  {staff.role}
+                </span>
               </div>
             </div>
 
