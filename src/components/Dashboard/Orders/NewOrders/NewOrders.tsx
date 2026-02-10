@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { ORDER_STATUS } from "@/src/consts/order.const";
 import { useTranslation } from "@/src/hooks/use-translation";
 import {
@@ -100,219 +101,210 @@ export default function NewOrders({ ordersResult }: IProps) {
   };
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="space-y-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h1
-            className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent"
-            style={{
-              backgroundImage: `linear-gradient(90deg, ${PRIMARY}, #ff5fa2)`,
-            }}
-          >
-            {t("vendor_new_orders")}
-          </h1>
-        </motion.div>
+    <div className="min-h-screen p-6 space-y-6">
+      {/* Header */}
+      <TitleHeader
+        title={t("vendor_new_orders")}
+        subtitle="Manage new orders from customers"
+      />
 
-        <AllFilters sortOptions={sortOptions} />
-        <div>
-          {/* Orders list */}
-          <Card className="lg:col-span-3 bg-white shadow-xl rounded-2xl border border-pink-200">
-            <CardHeader>
-              <CardTitle
-                className="flex items-center gap-2 text-xl font-bold"
-                style={{ color: PRIMARY }}
-              >
-                <span
-                  className="w-3 h-3 rounded-full animate-pulse"
-                  style={{ background: PRIMARY }}
-                />
-                {t("live_orders")}
-              </CardTitle>
-            </CardHeader>
+      {/* Filters */}
+      <AllFilters sortOptions={sortOptions} />
 
-            <div className="h-[70vh] max-w-full overflow-x-auto overflow-y-auto p-4 space-y-4">
-              <AnimatePresence>
-                {ordersResult?.data?.length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="py-12 text-center text-gray-500"
-                  >
-                    {t("no_orders_match_query")}
-                  </motion.div>
-                )}
+      <div>
+        {/* Orders list */}
+        <Card className="lg:col-span-3 bg-white shadow-xl rounded-2xl border border-pink-200">
+          <CardHeader>
+            <CardTitle
+              className="flex items-center gap-2 text-xl font-bold"
+              style={{ color: PRIMARY }}
+            >
+              <span
+                className="w-3 h-3 rounded-full animate-pulse"
+                style={{ background: PRIMARY }}
+              />
+              {t("live_orders")}
+            </CardTitle>
+          </CardHeader>
 
-                {ordersResult?.data?.map((order) => (
-                  <motion.div
-                    key={order.orderId}
-                    layout
-                    initial={{ opacity: 0, y: 25, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 120, damping: 15 }}
-                    className={`rounded-2xl border p-5 shadow-sm hover:shadow-md transition-all`}
-                    style={{
-                      background: order.flash ? PINK_SOFT : CARD_BG,
-                      borderColor: PINK_BORDER,
-                    }}
-                  >
-                    <div className="lg:flex justify-between gap-4">
-                      {/* Left info */}
-                      <div className="flex gap-4 min-w-0">
-                        <div
-                          className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm shrink-0"
-                          style={{ background: PRIMARY + "22", color: PRIMARY }}
-                        >
-                          {order.customerId?.name?.firstName?.charAt(0)}
-                          {order.customerId?.name?.lastName?.charAt(0)}
-                        </div>
+          <div className="h-[70vh] max-w-full overflow-x-auto overflow-y-auto p-4 space-y-4">
+            <AnimatePresence>
+              {ordersResult?.data?.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="py-12 text-center text-gray-500"
+                >
+                  {t("no_orders_match_query")}
+                </motion.div>
+              )}
 
-                        <div className="min-w-0">
-                          <div className="lg:flex items-center gap-2">
-                            <h3 className="text-lg font-semibold text-gray-800">
-                              {order.customerId?.name?.firstName}{" "}
-                              {order.customerId?.name?.lastName}
-                            </h3>
-                            <span className="text-xs text-gray-500 flex items-center gap-1">
-                              <Clock size={12} />{" "}
-                              {formatDistanceToNow(new Date(order.updatedAt), {
-                                addSuffix: true,
-                              })}
-                            </span>
-                          </div>
-
-                          <div className="mt-2 text-sm text-gray-700 leading-5">
-                            {order.items?.map((item, i) => (
-                              <span key={i} className="mr-2 inline-block">
-                                {item?.quantity}× {item.productId?.name}
-                              </span>
-                            ))}
-                          </div>
-
-                          <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
-                            <div className="w-4">
-                              <MapPin size={12} />
-                            </div>{" "}
-                            <p className="">
-                              {order.deliveryAddress?.street},{" "}
-                              {order.deliveryAddress?.postalCode},{" "}
-                              {order.deliveryAddress?.city},{" "}
-                              {order.deliveryAddress?.state}
-                            </p>
-                          </div>
-                        </div>
+              {ordersResult?.data?.map((order) => (
+                <motion.div
+                  key={order.orderId}
+                  layout
+                  initial={{ opacity: 0, y: 25, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 120, damping: 15 }}
+                  className={`rounded-2xl border p-5 shadow-sm hover:shadow-md transition-all`}
+                  style={{
+                    background: order.flash ? PINK_SOFT : CARD_BG,
+                    borderColor: PINK_BORDER,
+                  }}
+                >
+                  <div className="lg:flex justify-between gap-4">
+                    {/* Left info */}
+                    <div className="flex gap-4 min-w-0">
+                      <div
+                        className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm shrink-0"
+                        style={{ background: PRIMARY + "22", color: PRIMARY }}
+                      >
+                        {order.customerId?.name?.firstName?.charAt(0)}
+                        {order.customerId?.name?.lastName?.charAt(0)}
                       </div>
 
-                      {/* Right side: timeline + actions */}
-                      <div className="flex flex-col md:items-end justify-between min-w-[180px] mt-6 md:mt-0">
-                        <div className="w-fit">
-                          <StatusBadge status={order.orderStatus} />
+                      <div className="min-w-0">
+                        <div className="lg:flex items-center gap-2">
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            {order.customerId?.name?.firstName}{" "}
+                            {order.customerId?.name?.lastName}
+                          </h3>
+                          <span className="text-xs text-gray-500 flex items-center gap-1">
+                            <Clock size={12} />{" "}
+                            {formatDistanceToNow(new Date(order.updatedAt), {
+                              addSuffix: true,
+                            })}
+                          </span>
                         </div>
 
-                        <div className="flex items-center gap-2 mt-3">
-                          {order.orderStatus === ORDER_STATUS.ACCEPTED ||
-                          order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
-                          order.orderStatus ===
-                            ORDER_STATUS.REASSIGNMENT_NEEDED ? (
-                            <span
-                              onClick={() => broadcastOrder(order.orderId)}
-                              className="bg-yellow-500 px-2 py-1 text-xs rounded-md inline-flex font-medium"
-                            >
-                              {t("click_assign_delivery_partner")}
+                        <div className="mt-2 text-sm text-gray-700 leading-5">
+                          {order.items?.map((item, i) => (
+                            <span key={i} className="mr-2 inline-block">
+                              {item?.quantity}× {item.productId?.name}
                             </span>
-                          ) : (
-                            <>
-                              {order.orderStatus === ORDER_STATUS.PENDING && (
-                                <>
-                                  <Button
-                                    size="sm"
-                                    onClick={() => accept(order.orderId)}
-                                    className="bg-[#DC3173] hover:bg-[#DC3173]/90"
-                                  >
-                                    {t("accept")}
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    onClick={() => reject(order.orderId)}
-                                    className="bg-yellow-500 hover:bg-yellow-500/90"
-                                  >
-                                    {t("reject")}
-                                  </Button>
-                                </>
-                              )}
-                              {order.orderStatus === ORDER_STATUS.ASSIGNED && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => startPreparing(order.orderId)}
-                                  className="bg-sky-500 hover:bg-sky-600"
-                                >
-                                  {t("prepare")}
-                                </Button>
-                              )}
-                              {order.orderStatus === ORDER_STATUS.PREPARING && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => markReady(order.orderId)}
-                                  className="bg-green-500 hover:bg-green-600"
-                                >
-                                  {t("mark_ready")}
-                                </Button>
-                              )}
-                            </>
-                          )}
-
-                          <Sheet>
-                            <SheetTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="flex items-center gap-1"
-                              >
-                                {t("view")} <ChevronRight size={14} />
-                              </Button>
-                            </SheetTrigger>
-                            <SheetContent
-                              side="right"
-                              className="w-full md:w-[460px] p-6 overflow-y-auto"
-                            >
-                              <OrderDetails
-                                order={order}
-                                onAccept={() => accept(order.orderId)}
-                                onReject={() => reject(order.orderId)}
-                                onStart={() => startPreparing(order.orderId)}
-                                onReady={() => markReady(order.orderId)}
-                                onBroadcastOrder={() =>
-                                  broadcastOrder(order.orderId)
-                                }
-                              />
-                            </SheetContent>
-                          </Sheet>
+                          ))}
                         </div>
 
-                        {/* Timeline compact below actions for small screens */}
-                        <div className="mt-3 w-full">
-                          <OrderTimeline status={order.orderStatus} />
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
+                          <div className="w-4">
+                            <MapPin size={12} />
+                          </div>{" "}
+                          <p className="">
+                            {order.deliveryAddress?.street},{" "}
+                            {order.deliveryAddress?.postalCode},{" "}
+                            {order.deliveryAddress?.city},{" "}
+                            {order.deliveryAddress?.state}
+                          </p>
                         </div>
                       </div>
                     </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </Card>
-        </div>
-        {!!ordersResult?.meta?.total && ordersResult?.meta?.total > 0 && (
-          <div className="px-6 pb-4">
-            <PaginationComponent
-              totalPages={ordersResult?.meta?.totalPage || 0}
-            />
+
+                    {/* Right side: timeline + actions */}
+                    <div className="flex flex-col md:items-end justify-between min-w-[180px] mt-6 md:mt-0">
+                      <div className="w-fit">
+                        <StatusBadge status={order.orderStatus} />
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-3">
+                        {order.orderStatus === ORDER_STATUS.ACCEPTED ||
+                        order.orderStatus === ORDER_STATUS.AWAITING_PARTNER ||
+                        order.orderStatus ===
+                          ORDER_STATUS.REASSIGNMENT_NEEDED ? (
+                          <span
+                            onClick={() => broadcastOrder(order.orderId)}
+                            className="bg-yellow-500 px-2 py-1 text-xs rounded-md inline-flex font-medium"
+                          >
+                            {t("click_assign_delivery_partner")}
+                          </span>
+                        ) : (
+                          <>
+                            {order.orderStatus === ORDER_STATUS.PENDING && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => accept(order.orderId)}
+                                  className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                                >
+                                  {t("accept")}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => reject(order.orderId)}
+                                  className="bg-yellow-500 hover:bg-yellow-500/90"
+                                >
+                                  {t("reject")}
+                                </Button>
+                              </>
+                            )}
+                            {order.orderStatus === ORDER_STATUS.ASSIGNED && (
+                              <Button
+                                size="sm"
+                                onClick={() => startPreparing(order.orderId)}
+                                className="bg-sky-500 hover:bg-sky-600"
+                              >
+                                {t("prepare")}
+                              </Button>
+                            )}
+                            {order.orderStatus === ORDER_STATUS.PREPARING && (
+                              <Button
+                                size="sm"
+                                onClick={() => markReady(order.orderId)}
+                                className="bg-green-500 hover:bg-green-600"
+                              >
+                                {t("mark_ready")}
+                              </Button>
+                            )}
+                          </>
+                        )}
+
+                        <Sheet>
+                          <SheetTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="flex items-center gap-1"
+                            >
+                              {t("view")} <ChevronRight size={14} />
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent
+                            side="right"
+                            className="w-full md:w-[460px] p-6 overflow-y-auto"
+                          >
+                            <OrderDetails
+                              order={order}
+                              onAccept={() => accept(order.orderId)}
+                              onReject={() => reject(order.orderId)}
+                              onStart={() => startPreparing(order.orderId)}
+                              onReady={() => markReady(order.orderId)}
+                              onBroadcastOrder={() =>
+                                broadcastOrder(order.orderId)
+                              }
+                            />
+                          </SheetContent>
+                        </Sheet>
+                      </div>
+
+                      {/* Timeline compact below actions for small screens */}
+                      <div className="mt-3 w-full">
+                        <OrderTimeline status={order.orderStatus} />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
-        )}
+        </Card>
       </div>
+      {!!ordersResult?.meta?.total && ordersResult?.meta?.total > 0 && (
+        <div className="px-6 pb-4">
+          <PaginationComponent
+            totalPages={ordersResult?.meta?.totalPage || 0}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -409,7 +401,7 @@ function OrderTimeline({ status }: { status: TOrderStatus }) {
 
             {i < steps.length - 1 && (
               <div
-                className={`h-[1px] md:h-0.5 w-4 md:w-8 ${
+                className={`h-px md:h-0.5 w-4 md:w-8 ${
                   i < active ? "bg-[--primary]" : "bg-pink-100"
                 }`}
                 style={i < active ? { background: PRIMARY } : undefined}

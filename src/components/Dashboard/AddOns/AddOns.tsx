@@ -13,6 +13,7 @@ import CreateOrEditAddOnsGroup from "@/src/components/Dashboard/AddOns/CreateOrE
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import DeleteModal from "@/src/components/Modals/DeleteModal";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { deleteOptionFromGroup } from "@/src/services/dashboard/add-ons/add-ons";
 import { TMeta } from "@/src/types";
@@ -21,8 +22,6 @@ import { TTax } from "@/src/types/tax.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-const PRIMARY = "#DC3173";
-const BG = "#FFF2F8";
 const SHADOW =
   "0px 6px 24px rgba(0,0,0,0.06), inset 0px 0px 10px rgba(0,0,0,0.03)";
 
@@ -73,33 +72,24 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[900px] mx-auto space-y-8">
+    <>
+      <div className="min-h-screen p-6 space-y-8">
         {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1
-              className="text-4xl font-extrabold tracking-tight"
-              style={{ color: PRIMARY }}
-            >
-              {t("add_ons_extras")}
-            </h1>
-          </div>
 
-          {/* Create AddOns Group */}
-          <Button
-            onClick={() => setOpenCreateForm(true)}
-            className="flex items-center gap-2"
-            style={{ background: PRIMARY }}
-          >
-            <Plus size={18} /> {t("add_group")}
-          </Button>
-          <CreateOrEditAddOnsGroup
-            open={openCreateForm}
-            onOpenChange={(open) => !open && setOpenCreateForm(false)}
-            taxes={taxes}
-          />
-        </div>
+        <TitleHeader
+          title={t("add_ons_extras")}
+          subtitle="Manage your add-on groups and options"
+          buttonInfo={{
+            text: t("add_group"),
+            icon: Plus,
+            onClick: () => setOpenCreateForm(true),
+          }}
+        />
+        <CreateOrEditAddOnsGroup
+          open={openCreateForm}
+          onOpenChange={(open) => !open && setOpenCreateForm(false)}
+          taxes={taxes}
+        />
 
         {/* FILTERS */}
         <AllFilters sortOptions={sortOptions} />
@@ -284,6 +274,6 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
         taxes={taxes}
         actionType="edit"
       />
-    </div>
+    </>
   );
 }

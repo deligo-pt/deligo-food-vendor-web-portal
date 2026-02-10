@@ -4,20 +4,18 @@
 
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  LineChart,
-  ArrowUpRight,
-  ArrowDownRight,
-  TrendingUp,
-  BarChartHorizontal,
-  ChartLine,
-} from "lucide-react";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { motion } from "framer-motion";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  BarChartHorizontal,
+  LineChart,
+  TrendingUp,
+} from "lucide-react";
 
 const PRIMARY = "#DC3173";
 const GRADIENT = "linear-gradient(135deg, #FFE0ED, #FFFFFF)";
@@ -53,114 +51,119 @@ export default function VendorSalesAnalyticsPage() {
   const maxValue = Math.max(...WEEKLY_SALES.map((d) => d.value));
 
   return (
-    <div className="min-h-screen p-6 md:p-10 bg-[#FFF1F7]">
-      <div className="max-w-[1200px] mx-auto space-y-10">
-        {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              {t("sales_analytics")}
-            </h1>
-            <p className="text-gray-600 text-sm mt-1">
-              {t("deep_insights_revenue_best_selling_items_performance_trends")}
-            </p>
+    <div className="min-h-screen p-6 space-y-10">
+      {/* HEADER */}
+      <TitleHeader
+        title={t("sales_analytics")}
+        subtitle={t(
+          "deep_insights_revenue_best_selling_items_performance_trends",
+        )}
+      />
+
+      {/* SALES SUMMARY CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card
+          style={{ background: GRADIENT, boxShadow: SHADOW }}
+          className="rounded-3xl border"
+        >
+          <CardContent className="p-6 flex justify-between items-center">
+            <div>
+              <p className="text-gray-600 text-sm">{t("total_sales")}</p>
+              <h2
+                className="text-4xl font-extrabold"
+                style={{ color: PRIMARY }}
+              >
+                €{SALES_OVERVIEW.totalSales.toFixed(2)}
+              </h2>
+              <p className="text-xs text-gray-500 mt-2">{t("last_7_days")}</p>
+            </div>
+            <TrendingUp size={42} className="text-green-600" />
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl bg-white border shadow-md">
+          <CardContent className="p-6 flex justify-between items-center">
+            <div>
+              <p className="text-gray-600 text-sm">
+                {t("best_performing_day")}
+              </p>
+              <h2 className="text-3xl font-bold">{SALES_OVERVIEW.bestDay}</h2>
+            </div>
+            <ArrowUpRight size={42} className="text-green-600" />
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl bg-white border shadow-md">
+          <CardContent className="p-6 flex justify-between items-center">
+            <div>
+              <p className="text-gray-600 text-sm">{t("slowest_day")}</p>
+              <h2 className="text-3xl font-bold">{SALES_OVERVIEW.worstDay}</h2>
+            </div>
+            <ArrowDownRight size={42} className="text-red-600" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* WEEKLY SALES GRAPH */}
+      <Card className="rounded-3xl bg-white border shadow-md">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <LineChart className="text-gray-600" />
+            <h2 className="font-bold text-lg">{t("weekly_sales_trend")}</h2>
           </div>
 
-          <Button style={{ background: PRIMARY }} className="text-white flex items-center gap-2">
-            <ChartLine size={18} /> {t("export_report")}
-          </Button>
-        </div>
-
-        {/* SALES SUMMARY CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card style={{ background: GRADIENT, boxShadow: SHADOW }} className="rounded-3xl border">
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-gray-600 text-sm">{t("total_sales")}</p>
-                <h2 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-                  €{SALES_OVERVIEW.totalSales.toFixed(2)}
-                </h2>
-                <p className="text-xs text-gray-500 mt-2">{t("last_7_days")}</p>
-              </div>
-              <TrendingUp size={42} className="text-green-600" />
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-3xl bg-white border shadow-md">
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-gray-600 text-sm">{t("best_performing_day")}</p>
-                <h2 className="text-3xl font-bold">{SALES_OVERVIEW.bestDay}</h2>
-              </div>
-              <ArrowUpRight size={42} className="text-green-600" />
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-3xl bg-white border shadow-md">
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-gray-600 text-sm">{t("slowest_day")}</p>
-                <h2 className="text-3xl font-bold">{SALES_OVERVIEW.worstDay}</h2>
-              </div>
-              <ArrowDownRight size={42} className="text-red-600" />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* WEEKLY SALES GRAPH */}
-        <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <LineChart className="text-gray-600" />
-              <h2 className="font-bold text-lg">{t("weekly_sales_trend")}</h2>
-            </div>
-
-            <div className="flex items-end gap-4 h-52">
-              {WEEKLY_SALES.map((d, i) => {
-                const height = Math.round((d.value / maxValue) * 180);
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center">
-                    <motion.div
-                      initial={{ height: 4 }}
-                      animate={{ height }}
-                      transition={{ duration: 0.6, delay: i * 0.05 }}
-                      className="w-full rounded-t-xl"
-                      style={{ background: "linear-gradient(180deg,#FF97C0,#FF5A92)" }}
-                    />
-                    <div className="text-xs text-gray-600 mt-2">{d.day}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* TOP SELLING ITEMS */}
-        <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6 space-y-6">
-            <div className="flex items-center gap-2">
-              <BarChartHorizontal className="text-gray-700" />
-              <h2 className="font-bold text-lg">{t("top_selling_items")}</h2>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-4">
-              {TOP_ITEMS.map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl shadow-inner">
-                  <span className="text-gray-800 font-medium">{item.name}</span>
-                  <span className="text-pink-600 font-bold">{item.sales} {t("sold")}</span>
+          <div className="flex items-end gap-4 h-52">
+            {WEEKLY_SALES.map((d, i) => {
+              const height = Math.round((d.value / maxValue) * 180);
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center">
+                  <motion.div
+                    initial={{ height: 4 }}
+                    animate={{ height }}
+                    transition={{ duration: 0.6, delay: i * 0.05 }}
+                    className="w-full rounded-t-xl"
+                    style={{
+                      background: "linear-gradient(180deg,#FF97C0,#FF5A92)",
+                    }}
+                  />
+                  <div className="text-xs text-gray-600 mt-2">{d.day}</div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* FOOTNOTE */}
-        <p className="text-center text-xs text-gray-500 pt-6">
-          {t("data_based_on_last_7_days")}
-        </p>
-      </div>
+      {/* TOP SELLING ITEMS */}
+      <Card className="rounded-3xl bg-white border shadow-md">
+        <CardContent className="p-6 space-y-6">
+          <div className="flex items-center gap-2">
+            <BarChartHorizontal className="text-gray-700" />
+            <h2 className="font-bold text-lg">{t("top_selling_items")}</h2>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-4">
+            {TOP_ITEMS.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl shadow-inner"
+              >
+                <span className="text-gray-800 font-medium">{item.name}</span>
+                <span className="text-pink-600 font-bold">
+                  {item.sales} {t("sold")}
+                </span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* FOOTNOTE */}
+      <p className="text-center text-xs text-gray-500 pt-6">
+        {t("data_based_on_last_7_days")}
+      </p>
     </div>
   );
 }

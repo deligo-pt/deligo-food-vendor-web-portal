@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TReview, TReviewSentiment } from "@/src/types/review.type";
@@ -11,8 +12,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Clock, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const PRIMARY = "#DC3173";
-const BG = "#FFF1F7";
 const SHADOW = "0 6px 20px rgba(0,0,0,0.06)";
 
 interface IProps {
@@ -43,212 +42,162 @@ export default function CustomerReviews({
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[1100px] mx-auto space-y-10">
-        {/* --------------------------------------------------------- */}
-        {/* HEADER */}
-        {/* --------------------------------------------------------- */}
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen p-6 space-y-10">
+      {/* HEADER */}
+      <TitleHeader
+        title={t("customer_reviews")}
+        subtitle={t("real_feedback_from_Your_customers")}
+      />
+
+      {/* STATS SUMMARY */}
+      <Card
+        className="rounded-3xl bg-white border shadow-md"
+        style={{ boxShadow: SHADOW }}
+      >
+        <CardContent className="p-6 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              {t("customer_reviews")}
-            </h1>
-            <p className="text-gray-600 mt-1 text-sm">
-              {t("real_feedback_from_Your_customers")}
+            <p className="text-gray-600 text-sm">{t("average_rating")}</p>
+            <div className="flex items-end gap-2 mt-1">
+              <h2 className="text-5xl font-extrabold text-gray-900">
+                {vendorRating.average}
+              </h2>
+              <span className="text-gray-500">/5</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              {t("based_on")} {vendorRating.totalReviews} {t("reviews_sm")}
             </p>
           </div>
 
-          {/* <Button
-            className="flex items-center gap-2 text-white"
-            style={{ background: PRIMARY }}
-          >
-            <Filter size={18} /> Export
-          </Button> */}
-        </div>
-
-        {/* --------------------------------------------------------- */}
-        {/* STATS SUMMARY */}
-        {/* --------------------------------------------------------- */}
-        <Card
-          className="rounded-3xl bg-white border shadow-md"
-          style={{ boxShadow: SHADOW }}
-        >
-          <CardContent className="p-6 flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">{t("average_rating")}</p>
-              <div className="flex items-end gap-2 mt-1">
-                <h2 className="text-5xl font-extrabold text-gray-900">
-                  {vendorRating.average}
-                </h2>
-                <span className="text-gray-500">/5</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                {t("based_on")} {vendorRating.totalReviews} {t('reviews_sm')}
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star
-                  key={i}
-                  size={26}
-                  className={
-                    i <= vendorRating.average
-                      ? "text-yellow-400"
-                      : "text-gray-300"
-                  }
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* FILTER */}
-        <div className="flex gap-3">
-          <Button
-            variant={sentimentParam === "ALL" ? "default" : "outline"}
-            onClick={() => filterReviews("ALL")}
-            className={sentimentParam === "ALL" ? "bg-[#DC3173]" : ""}
-          >
-            {t("all")}
-          </Button>
-          <Button
-            variant={sentimentParam === "POSITIVE" ? "default" : "outline"}
-            onClick={() => filterReviews("POSITIVE")}
-            className={sentimentParam === "POSITIVE" ? "bg-[#DC3173]" : ""}
-          >
-            {t("positive")}
-          </Button>
-          <Button
-            variant={sentimentParam === "NEGATIVE" ? "default" : "outline"}
-            onClick={() => filterReviews("NEGATIVE")}
-            className={sentimentParam === "NEGATIVE" ? "bg-[#DC3173]" : ""}
-          >
-            {t("negative")}
-          </Button>
-          <Button
-            variant={sentimentParam === "NEUTRAL" ? "default" : "outline"}
-            onClick={() => filterReviews("NEUTRAL")}
-            className={sentimentParam === "NEUTRAL" ? "bg-[#DC3173]" : ""}
-          >
-            Neutral
-          </Button>
-        </div>
-
-        {/* --------------------------------------------------------- */}
-        {/* REVIEWS LIST */}
-        {/* --------------------------------------------------------- */}
-        <div className="space-y-6">
-          <AnimatePresence>
-            {reviewsResult?.data?.map((rev) => (
-              <motion.div
-                key={rev._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ type: "spring", stiffness: 160, damping: 18 }}
-              >
-                <Card className="rounded-3xl bg-white border shadow-sm hover:shadow-lg transition-all">
-                  <CardContent className="p-6 flex gap-5">
-                    {/* Avatar */}
-                    <div className="w-14 h-14 rounded-2xl bg-pink-100 flex items-center justify-center text-xl font-bold text-pink-600">
-                      {rev.reviewerId?.name?.firstName?.charAt(0)}
-                      {rev.reviewerId?.name?.lastName?.charAt(0)}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-bold text-gray-800">
-                          {rev.reviewerId?.name?.firstName}{" "}
-                          {rev.reviewerId?.name?.lastName}
-                        </h3>
-                        <span className="text-gray-500 text-sm flex items-center gap-1">
-                          <Clock size={14} />{" "}
-                          {formatDistanceToNow(rev.createdAt, {
-                            addSuffix: true,
-                          })}
-                        </span>
-                      </div>
-
-                      {/* Rating */}
-                      <div className="flex items-center gap-1 mt-1">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <Star
-                            key={i}
-                            size={16}
-                            className={
-                              i <= rev.rating
-                                ? "text-yellow-400"
-                                : "text-gray-300"
-                            }
-                          />
-                        ))}
-                      </div>
-
-                      {/* Review text */}
-                      <p className="mt-2 text-gray-700 text-sm leading-relaxed">
-                        {rev.review}
-                      </p>
-
-                      {/* Like/Dislike */}
-                      <div className="flex items-center gap-3 mt-3">
-                        {rev.rating > 3 ? (
-                          <Badge className="bg-green-100 text-green-700 flex gap-1">
-                            <ThumbsUp size={14} /> {t("liked")}
-                          </Badge>
-                        ) : rev.rating === 3 ? (
-                          <Badge className="bg-yellow-100 text-yellow-700 flex gap-1">
-                            <ThumbsDown size={14} /> Neutral
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-red-100 text-red-700 flex gap-1">
-                            <ThumbsDown size={14} /> {t("not_great")}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+          <div className="flex gap-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Star
+                key={i}
+                size={26}
+                className={
+                  i <= vendorRating.average
+                    ? "text-yellow-400"
+                    : "text-gray-300"
+                }
+              />
             ))}
-          </AnimatePresence>
+          </div>
+        </CardContent>
+      </Card>
 
-          {reviewsResult?.meta?.total === 0 && (
-            <p className="text-center text-gray-500 py-10 text-sm">
-              {t("no_reviews_found")}
-            </p>
-          )}
-        </div>
+      {/* FILTER */}
+      <div className="flex gap-3">
+        <Button
+          variant={sentimentParam === "ALL" ? "default" : "outline"}
+          onClick={() => filterReviews("ALL")}
+          className={sentimentParam === "ALL" ? "bg-[#DC3173]" : ""}
+        >
+          {t("all")}
+        </Button>
+        <Button
+          variant={sentimentParam === "POSITIVE" ? "default" : "outline"}
+          onClick={() => filterReviews("POSITIVE")}
+          className={sentimentParam === "POSITIVE" ? "bg-[#DC3173]" : ""}
+        >
+          {t("positive")}
+        </Button>
+        <Button
+          variant={sentimentParam === "NEGATIVE" ? "default" : "outline"}
+          onClick={() => filterReviews("NEGATIVE")}
+          className={sentimentParam === "NEGATIVE" ? "bg-[#DC3173]" : ""}
+        >
+          {t("negative")}
+        </Button>
+        <Button
+          variant={sentimentParam === "NEUTRAL" ? "default" : "outline"}
+          onClick={() => filterReviews("NEUTRAL")}
+          className={sentimentParam === "NEUTRAL" ? "bg-[#DC3173]" : ""}
+        >
+          Neutral
+        </Button>
+      </div>
 
-        {/* --------------------------------------------------------- */}
-        {/* INSIGHTS */}
-        {/* --------------------------------------------------------- */}
-        {/* <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6 space-y-3">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="text-gray-800" />
-              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
-            </div>
+      {/* REVIEWS LIST */}
+      <div className="space-y-6">
+        <AnimatePresence>
+          {reviewsResult?.data?.map((rev) => (
+            <motion.div
+              key={rev._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ type: "spring", stiffness: 160, damping: 18 }}
+            >
+              <Card className="rounded-3xl bg-white border shadow-sm hover:shadow-lg transition-all">
+                <CardContent className="p-6 flex gap-5">
+                  {/* Avatar */}
+                  <div className="w-14 h-14 rounded-2xl bg-pink-100 flex items-center justify-center text-xl font-bold text-pink-600">
+                    {rev.reviewerId?.name?.firstName?.charAt(0)}
+                    {rev.reviewerId?.name?.lastName?.charAt(0)}
+                  </div>
 
-            <Separator />
+                  {/* Content */}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-bold text-gray-800">
+                        {rev.reviewerId?.name?.firstName}{" "}
+                        {rev.reviewerId?.name?.lastName}
+                      </h3>
+                      <span className="text-gray-500 text-sm flex items-center gap-1">
+                        <Clock size={14} />{" "}
+                        {formatDistanceToNow(rev.createdAt, {
+                          addSuffix: true,
+                        })}
+                      </span>
+                    </div>
 
-            <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
-              <li>
-                {t("fast_delivery_comments_increased")}
-              </li>
-              <li>
-                {t("negatie_comments_mostly_delays")}
-              </li>
-              <li>
-                {t("most_positive_reviews_mention")}
-              </li>
-              <li>
-                {t("weekend_orders_show_rating_dip")}
-              </li>
-            </ul>
-          </CardContent>
-        </Card> */}
+                    {/* Rating */}
+                    <div className="flex items-center gap-1 mt-1">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <Star
+                          key={i}
+                          size={16}
+                          className={
+                            i <= rev.rating
+                              ? "text-yellow-400"
+                              : "text-gray-300"
+                          }
+                        />
+                      ))}
+                    </div>
+
+                    {/* Review text */}
+                    <p className="mt-2 text-gray-700 text-sm leading-relaxed">
+                      {rev.review}
+                    </p>
+
+                    {/* Like/Dislike */}
+                    <div className="flex items-center gap-3 mt-3">
+                      {rev.rating > 3 ? (
+                        <Badge className="bg-green-100 text-green-700 flex gap-1">
+                          <ThumbsUp size={14} /> {t("liked")}
+                        </Badge>
+                      ) : rev.rating === 3 ? (
+                        <Badge className="bg-yellow-100 text-yellow-700 flex gap-1">
+                          <ThumbsDown size={14} /> Neutral
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-red-100 text-red-700 flex gap-1">
+                          <ThumbsDown size={14} /> {t("not_great")}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {reviewsResult?.meta?.total === 0 && (
+          <p className="text-center text-gray-500 py-10 text-sm">
+            {t("no_reviews_found")}
+          </p>
+        )}
       </div>
     </div>
   );

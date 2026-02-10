@@ -15,19 +15,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { changePasswordReq } from "@/src/services/dashboard/changePassword/changePassword";
 import { removeCookie } from "@/src/utils/cookies";
 import { changePasswordValidation } from "@/src/validations/auth/change-password.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, Eye, EyeOff, Lock } from "lucide-react";
+import { CheckCircle, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
 const PRIMARY = "#DC3173";
-const BG = "#FFF1F7";
 const SHADOW = "0px 8px 24px rgba(0,0,0,0.06)";
 
 type ChangePasswordData = z.infer<typeof changePasswordValidation>;
@@ -77,27 +77,14 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
+    <div className="min-h-screen p-6">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="max-w-[600px] mx-auto space-y-10"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           {/* HEADER */}
-          <div className="flex items-center gap-3">
-            <Lock size={40} className="text-pink-600" />
-            <div>
-              <h1
-                className="text-4xl font-extrabold"
-                style={{ color: PRIMARY }}
-              >
-                {t("change_password")}
-              </h1>
-              <p className="text-gray-600 mt-1 text-sm">
-                {t("update_account_password_securely")}
-              </p>
-            </div>
-          </div>
+          <TitleHeader
+            title={t("change_password")}
+            subtitle={t("update_account_password_securely")}
+          />
 
           {/* SUCCESS MESSAGE */}
           {success && (
@@ -128,7 +115,7 @@ export default function ChangePassword() {
                           placeholder={t("enter_current_password")}
                           className={cn(
                             "h-12 rounded-xl pr-10",
-                            fieldState.invalid ? "border-destructive" : ""
+                            fieldState.invalid ? "border-destructive" : "",
                           )}
                           {...field}
                         />
@@ -162,7 +149,7 @@ export default function ChangePassword() {
                           placeholder={t("enter_new_password")}
                           className={cn(
                             "h-12 rounded-xl pr-10",
-                            fieldState.invalid ? "border-destructive" : ""
+                            fieldState.invalid ? "border-destructive" : "",
                           )}
                           {...field}
                         />
@@ -196,7 +183,7 @@ export default function ChangePassword() {
                           placeholder={t("re_enter_new_password")}
                           className={cn(
                             "h-12 rounded-xl pr-10",
-                            fieldState.invalid ? "border-destructive" : ""
+                            fieldState.invalid ? "border-destructive" : "",
                           )}
                           {...field}
                         />

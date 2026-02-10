@@ -4,26 +4,31 @@
 
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import {
-  ArrowUpRight,
   ArrowDownLeft,
-  Wallet,
-  Download,
+  ArrowUpRight,
   BarChart3,
+  CalendarClock,
   History,
   TrendingUp,
-  CalendarClock,
+  Wallet,
 } from "lucide-react";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
 const GRADIENT = "linear-gradient(135deg, #FFD4E7, #FFFFFF)";
@@ -62,7 +67,7 @@ export default function VendorPayoutsPagePremium() {
   const [filter, setFilter] = useState<string>("all");
 
   const filteredPayouts = PAYOUTS.filter((p) =>
-    filter === "all" ? true : p.status === filter
+    filter === "all" ? true : p.status === filter,
   );
 
   const statusColor = (status: string) => {
@@ -72,155 +77,152 @@ export default function VendorPayoutsPagePremium() {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-10 bg-[#FFF1F7]">
-      <div className="max-w-[1200px] mx-auto space-y-10">
+    <div className="min-h-screen p-6 space-y-10">
+      {/* HEADER */}
+      <TitleHeader
+        title={t("vendor_payouts")}
+        subtitle={t("earnings_balance_payout")}
+      />
 
-        {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-extrabold tracking-tight" style={{ color: PRIMARY }}>
-              {t("vendor_payouts")}
-            </h1>
-            <p className="text-gray-600 mt-1 text-sm">{t("earnings_balance_payout")}</p>
-          </div>
-
-          <Button className="flex items-center gap-2 text-white" style={{ background: PRIMARY }}>
-            <Download size={18} /> {t("export_csv")}
-          </Button>
-        </div>
-
-        {/* TOP ANALYTICS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          {/* AVAILABLE BALANCE */}
-          <Card
-            className="rounded-3xl border"
-            style={{ background: GRADIENT, boxShadow: SHADOW }}
-          >
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-gray-600 text-sm">{t("available_balance")}</p>
-                <h2 className="text-4xl font-extrabold mt-1" style={{ color: PRIMARY }}>
-                  €247.40
-                </h2>
-                <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                  <CalendarClock size={14} /> {t("weekly_payout_every_monday")}
-                </p>
-              </div>
-              <div className="p-4 rounded-2xl bg-white shadow-inner">
-                <Wallet size={42} className="text-pink-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* COMPLETED PAYOUTS */}
-          <Card className="rounded-3xl bg-white border shadow-md">
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-gray-600 text-sm">{t("payout_completed")}</p>
-                <h2 className="text-3xl font-bold mt-1">€212.60</h2>
-              </div>
-              <TrendingUp className="text-green-600" size={36} />
-            </CardContent>
-          </Card>
-
-          {/* PROCESSING */}
-          <Card className="rounded-3xl bg-white border shadow-md">
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-gray-600 text-sm">{t("processing")}</p>
-                <h2 className="text-3xl font-bold mt-1">€42.80</h2>
-              </div>
-              <BarChart3 className="text-amber-600" size={36} />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* FILTER */}
-        <div className="flex justify-between items-center">
-          <Select onValueChange={(v) => setFilter(v)}>
-            <SelectTrigger className="w-40 bg-white">
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("all")}</SelectItem>
-              <SelectItem value="completed">{t("completed")}</SelectItem>
-              <SelectItem value="processing">{t("processing")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* PAYOUT LIST */}
-        <div className="space-y-6">
-
-          <AnimatePresence>
-            {filteredPayouts.map((p) => (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ type: "spring", stiffness: 160, damping: 18 }}
+      {/* TOP ANALYTICS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* AVAILABLE BALANCE */}
+        <Card
+          className="rounded-3xl border"
+          style={{ background: GRADIENT, boxShadow: SHADOW }}
+        >
+          <CardContent className="p-6 flex justify-between items-center">
+            <div>
+              <p className="text-gray-600 text-sm">{t("available_balance")}</p>
+              <h2
+                className="text-4xl font-extrabold mt-1"
+                style={{ color: PRIMARY }}
               >
-                <Card className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all">
-                  <CardContent className="p-0 flex justify-between items-center">
-
-                    {/* LEFT */}
-                    <div className="p-6 flex items-center gap-5">
-                      <div className="p-4 rounded-2xl bg-pink-50 shadow-sm">
-                        {p.status === "completed" ? (
-                          <ArrowUpRight size={30} className="text-green-600" />
-                        ) : (
-                          <ArrowDownLeft size={30} className="text-amber-600" />
-                        )}
-                      </div>
-
-                      <div>
-                        <h3 className="text-xl font-bold">€{p.amount.toFixed(2)}</h3>
-                        <p className="text-sm text-gray-600">{p.method}</p>
-                        <p className="text-xs text-gray-400 mt-1">{p.iban}</p>
-                      </div>
-                    </div>
-
-                    {/* RIGHT */}
-                    <div className="text-right p-6">
-                      <Badge className={statusColor(p.status)}>{p.status}</Badge>
-                      <p className="text-sm text-gray-500 mt-2">{p.date}</p>
-                    </div>
-
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {filteredPayouts.length === 0 && (
-            <p className="text-center text-gray-500 py-10 text-sm">{t("no_payouts_found")}</p>
-          )}
-        </div>
-
-        {/* PORTUGAL RULES */}
-        <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <History size={18} className="text-gray-700" />
-              <h2 className="font-bold text-lg">{t("portugal_payment_rules")}</h2>
+                €247.40
+              </h2>
+              <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                <CalendarClock size={14} /> {t("weekly_payout_every_monday")}
+              </p>
             </div>
-
-            <Separator className="my-3" />
-
-            <ul className="text-sm text-gray-600 space-y-2">
-              <li>• {t("automatic_weekly_payout")}.</li>
-              <li>• {t("iva_handled_per_portuguese_tax")}.</li>
-              <li>• {t("minimum_payout_threshold")}: <strong>{t("euro_20")}</strong>. {t("balances_below_roll_next_cycle")}.</li>
-              <li>• {t("typical_bank_transfer_time")}: <strong>{t("hours_24_48")}</strong>.</li>
-              <li>• {t("instant_payouts_fees_may_apply")}.</li>
-              <li>• {t("payouts_sent_to_registered_iban")}.</li>
-            </ul>
+            <div className="p-4 rounded-2xl bg-white shadow-inner">
+              <Wallet size={42} className="text-pink-600" />
+            </div>
           </CardContent>
         </Card>
 
+        {/* COMPLETED PAYOUTS */}
+        <Card className="rounded-3xl bg-white border shadow-md">
+          <CardContent className="p-6 flex justify-between items-center">
+            <div>
+              <p className="text-gray-600 text-sm">{t("payout_completed")}</p>
+              <h2 className="text-3xl font-bold mt-1">€212.60</h2>
+            </div>
+            <TrendingUp className="text-green-600" size={36} />
+          </CardContent>
+        </Card>
+
+        {/* PROCESSING */}
+        <Card className="rounded-3xl bg-white border shadow-md">
+          <CardContent className="p-6 flex justify-between items-center">
+            <div>
+              <p className="text-gray-600 text-sm">{t("processing")}</p>
+              <h2 className="text-3xl font-bold mt-1">€42.80</h2>
+            </div>
+            <BarChart3 className="text-amber-600" size={36} />
+          </CardContent>
+        </Card>
       </div>
+
+      {/* FILTER */}
+      <div className="flex justify-between items-center">
+        <Select onValueChange={(v) => setFilter(v)}>
+          <SelectTrigger className="w-40 bg-white">
+            <SelectValue placeholder="Filter" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("all")}</SelectItem>
+            <SelectItem value="completed">{t("completed")}</SelectItem>
+            <SelectItem value="processing">{t("processing")}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* PAYOUT LIST */}
+      <div className="space-y-6">
+        <AnimatePresence>
+          {filteredPayouts.map((p) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ type: "spring", stiffness: 160, damping: 18 }}
+            >
+              <Card className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all">
+                <CardContent className="p-0 flex justify-between items-center">
+                  {/* LEFT */}
+                  <div className="p-6 flex items-center gap-5">
+                    <div className="p-4 rounded-2xl bg-pink-50 shadow-sm">
+                      {p.status === "completed" ? (
+                        <ArrowUpRight size={30} className="text-green-600" />
+                      ) : (
+                        <ArrowDownLeft size={30} className="text-amber-600" />
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold">
+                        €{p.amount.toFixed(2)}
+                      </h3>
+                      <p className="text-sm text-gray-600">{p.method}</p>
+                      <p className="text-xs text-gray-400 mt-1">{p.iban}</p>
+                    </div>
+                  </div>
+
+                  {/* RIGHT */}
+                  <div className="text-right p-6">
+                    <Badge className={statusColor(p.status)}>{p.status}</Badge>
+                    <p className="text-sm text-gray-500 mt-2">{p.date}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {filteredPayouts.length === 0 && (
+          <p className="text-center text-gray-500 py-10 text-sm">
+            {t("no_payouts_found")}
+          </p>
+        )}
+      </div>
+
+      {/* PORTUGAL RULES */}
+      <Card className="rounded-3xl bg-white border shadow-md">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-2 mb-3">
+            <History size={18} className="text-gray-700" />
+            <h2 className="font-bold text-lg">{t("portugal_payment_rules")}</h2>
+          </div>
+
+          <Separator className="my-3" />
+
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• {t("automatic_weekly_payout")}.</li>
+            <li>• {t("iva_handled_per_portuguese_tax")}.</li>
+            <li>
+              • {t("minimum_payout_threshold")}: <strong>{t("euro_20")}</strong>
+              . {t("balances_below_roll_next_cycle")}.
+            </li>
+            <li>
+              • {t("typical_bank_transfer_time")}:{" "}
+              <strong>{t("hours_24_48")}</strong>.
+            </li>
+            <li>• {t("instant_payouts_fees_may_apply")}.</li>
+            <li>• {t("payouts_sent_to_registered_iban")}.</li>
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }

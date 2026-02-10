@@ -1,25 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import {
+  AlertTriangle,
   Bell,
   BellRing,
-  AlertTriangle,
-  Mail,
+  CheckCircle,
   Clock,
   Info,
-  CheckCircle,
+  Mail,
+  RefreshCcw,
 } from "lucide-react";
-import { useTranslation } from "@/src/hooks/use-translation";
 
 const PRIMARY = "#DC3173";
-const BG = "#FFF1F7";
 const SHADOW = "0 6px 20px rgba(0,0,0,0.06)";
 
 // MOCK NOTIFICATIONS
@@ -67,105 +68,111 @@ export default function VendorNotificationsPage() {
   const clearAll = () => setNotifications([]);
 
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[900px] mx-auto space-y-10">
+    <div className="min-h-screen p-6 space-y-10">
+      {/* HEADER */}
+      <TitleHeader
+        title={t("notifications")}
+        subtitle={t("manage_alerts_system_updates")}
+        buttonInfo={{
+          text: t("clear_all"),
+          icon: RefreshCcw,
+          onClick: clearAll,
+        }}
+      />
 
-        {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              {t("notifications")}
-            </h1>
-            <p className="text-gray-600 text-sm mt-1">
-              {t("manage_alerts_system_updates")}
-            </p>
+      {/* NOTIFICATION LIST */}
+      <div className="space-y-4">
+        <AnimatePresence>
+          {notifications.map((n, idx) => (
+            <motion.div
+              key={n.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ delay: idx * 0.03 }}
+            >
+              <Card
+                className="rounded-2xl bg-white border shadow-md hover:shadow-xl transition-all"
+                style={{ boxShadow: SHADOW }}
+              >
+                <CardContent className="p-6 flex items-center gap-5">
+                  <div className="p-3 rounded-2xl bg-gray-100">{n.icon}</div>
+
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-800">
+                      {n.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">{n.message}</p>
+                    <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                      <Clock size={12} /> {n.time}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {notifications.length === 0 && (
+          <p className="text-center text-gray-500 py-10">
+            {t("no_notifications_available")}
+          </p>
+        )}
+      </div>
+
+      {/* PREFERENCE SETTINGS */}
+      <Card
+        className="rounded-3xl bg-white border shadow-md"
+        style={{ boxShadow: SHADOW }}
+      >
+        <CardContent className="p-6 space-y-6">
+          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <Bell size={20} /> {t("notification_settings")}
+          </h2>
+          <Separator />
+
+          {/* EMAIL NOTIFICATIONS */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div className="flex items-center gap-3">
+              <Mail size={20} className="text-gray-700" />
+              <div>
+                <h3 className="font-semibold text-gray-800">
+                  {t("email_alerts")}
+                </h3>
+                <p className="text-xs text-gray-500">
+                  {t("get_order_payout_updates_via_email")}
+                </p>
+              </div>
+            </div>
+            <Switch checked={emailEnabled} onCheckedChange={setEmailEnabled} />
           </div>
 
-          <Button
-            className="text-white flex items-center gap-2"
-            style={{ background: PRIMARY }}
-            onClick={clearAll}
-          >
-            {t("clear_all")}
-          </Button>
-        </div>
-
-        {/* NOTIFICATION LIST */}
-        <div className="space-y-4">
-          <AnimatePresence>
-            {notifications.map((n, idx) => (
-              <motion.div
-                key={n.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ delay: idx * 0.03 }}
-              >
-                <Card
-                  className="rounded-2xl bg-white border shadow-md hover:shadow-xl transition-all"
-                  style={{ boxShadow: SHADOW }}
-                >
-                  <CardContent className="p-6 flex items-center gap-5">
-                    <div className="p-3 rounded-2xl bg-gray-100">{n.icon}</div>
-
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-gray-800">{n.title}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{n.message}</p>
-                      <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                        <Clock size={12} /> {n.time}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {notifications.length === 0 && (
-            <p className="text-center text-gray-500 py-10">{t("no_notifications_available")}</p>
-          )}
-        </div>
-
-        {/* PREFERENCE SETTINGS */}
-        <Card className="rounded-3xl bg-white border shadow-md" style={{ boxShadow: SHADOW }}>
-          <CardContent className="p-6 space-y-6">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <Bell size={20} /> {t("notification_settings")}
-            </h2>
-            <Separator />
-
-            {/* EMAIL NOTIFICATIONS */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-              <div className="flex items-center gap-3">
-                <Mail size={20} className="text-gray-700" />
-                <div>
-                  <h3 className="font-semibold text-gray-800">{t("email_alerts")}</h3>
-                  <p className="text-xs text-gray-500">{t("get_order_payout_updates_via_email")}</p>
-                </div>
+          {/* PUSH NOTIFICATIONS */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div className="flex items-center gap-3">
+              <BellRing size={20} className="text-gray-700" />
+              <div>
+                <h3 className="font-semibold text-gray-800">
+                  {t("push_notifications")}
+                </h3>
+                <p className="text-xs text-gray-500">
+                  {t("instant_alerts_for_orders_reviews")}
+                </p>
               </div>
-              <Switch checked={emailEnabled} onCheckedChange={setEmailEnabled} />
             </div>
+            <Switch checked={pushEnabled} onCheckedChange={setPushEnabled} />
+          </div>
 
-            {/* PUSH NOTIFICATIONS */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-              <div className="flex items-center gap-3">
-                <BellRing size={20} className="text-gray-700" />
-                <div>
-                  <h3 className="font-semibold text-gray-800">{t("push_notifications")}</h3>
-                  <p className="text-xs text-gray-500">{t("instant_alerts_for_orders_reviews")}</p>
-                </div>
-              </div>
-              <Switch checked={pushEnabled} onCheckedChange={setPushEnabled} />
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <Button className="text-white h-12 px-6" style={{ background: PRIMARY }}>
-                {t("save_preferences")}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="pt-2 flex justify-end">
+            <Button
+              className="text-white h-12 px-6"
+              style={{ background: PRIMARY }}
+            >
+              {t("save_preferences")}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -2,10 +2,11 @@
 
 import StockProductCard from "@/src/components/Dashboard/StockManagement/StockProductCard";
 import AllFilters from "@/src/components/Filtering/AllFilters";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { Package } from "lucide-react";
 
 interface IProps {
@@ -30,63 +31,34 @@ export default function StockManagement({ productsResult }: IProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-pink-50/50 pb-20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
-        {/* Header */}
-        <div className="mb-8">
-          <motion.h1
-            initial={{
-              opacity: 0,
-              x: -20,
-            }}
-            animate={{
-              opacity: 1,
-              x: 0,
-            }}
-            className="text-3xl font-extrabold text-[#DC3173] tracking-tight"
-          >
-            {t("stock_management")}
-          </motion.h1>
-          <motion.p
-            initial={{
-              opacity: 0,
-              x: -20,
-            }}
-            animate={{
-              opacity: 1,
-              x: 0,
-            }}
-            transition={{
-              delay: 0.1,
-            }}
-            className="text-gray-500 mt-1 text-lg"
-          >
-            {t("update_product_stock_in_real_time")}
-          </motion.p>
-        </div>
+    <div className="min-h-screen p-6">
+      {/* Header */}
+      <TitleHeader
+        title={t("stock_management")}
+        subtitle={t("update_product_stock_in_real_time")}
+      />
 
-        {/* FILTERS */}
-        <AllFilters sortOptions={sortOptions} />
+      {/* FILTERS */}
+      <AllFilters sortOptions={sortOptions} />
 
-        {/* Product List */}
-        <div className="space-y-6">
-          <AnimatePresence mode="popLayout">
-            {productsResult.data?.map((product) => (
-              <StockProductCard key={product._id} product={product} />
-            ))}
-          </AnimatePresence>
+      {/* Product List */}
+      <div className="space-y-6">
+        <AnimatePresence mode="popLayout">
+          {productsResult.data?.map((product) => (
+            <StockProductCard key={product._id} product={product} />
+          ))}
+        </AnimatePresence>
 
-          {productsResult.meta?.total === 0 && (
-            <div className="text-center py-12">
-              <div className="inline-flex bg-white rounded-full text-[#DC3173]/70 mb-3 shadow-sm">
-                <Package size={32} />
-              </div>
-              <h3 className="text-lg font-medium text-gray-500">
-                {t("no_products_found")}
-              </h3>
+        {productsResult.meta?.total === 0 && (
+          <div className="text-center py-12">
+            <div className="inline-flex bg-white rounded-full text-[#DC3173]/70 mb-3 shadow-sm">
+              <Package size={32} />
             </div>
-          )}
-        </div>
+            <h3 className="text-lg font-medium text-gray-500">
+              {t("no_products_found")}
+            </h3>
+          </div>
+        )}
       </div>
     </div>
   );

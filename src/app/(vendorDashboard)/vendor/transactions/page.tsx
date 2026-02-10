@@ -1,29 +1,28 @@
-
-
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 
-import {
-  ArrowUpRight,
-  ArrowDownLeft,
-  Wallet,
-  Search,
-
-  Receipt,
-
-} from "lucide-react";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
-
-const PRIMARY = "#DC3173";
-const BG = "#FFF1F7";
-
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Receipt,
+  Search,
+  Wallet,
+} from "lucide-react";
 
 // Mock transactions
 const STATIC_TRANSACTIONS = [
@@ -94,116 +93,114 @@ export default function VendorTransactionsHistory() {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[1100px] mx-auto space-y-10">
+    <div className="min-h-screen p-6 space-y-10">
+      {/* HEADER */}
+      <TitleHeader
+        title={t("transaction_history")}
+        subtitle={t("full_breakdown_of_earnings_payouts_fees")}
+      />
 
-        {/* HEADER */}
-        <div>
-          <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-            {t("transaction_history")}
-          </h1>
-          <p className="text-gray-600 text-sm mt-1">
-            {t("full_breakdown_of_earnings_payouts_fees")}
-          </p>
+      {/* FILTER BAR */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* Search */}
+        <div className="relative w-full md:w-80">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={16}
+          />
+          <Input
+            placeholder={t("search_transactions")}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="pl-9 bg-white"
+          />
         </div>
 
-        {/* FILTER BAR */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Search */}
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <Input
-              placeholder={t("search_transactions")}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="pl-9 bg-white"
-            />
-          </div>
-
-          {/* Type Filter */}
-          <Select onValueChange={setFilter} defaultValue="all">
-            <SelectTrigger className="w-48 bg-white">
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("all")}</SelectItem>
-              <SelectItem value="order">{t("orders")}</SelectItem>
-              <SelectItem value="payout">{t("payouts")}</SelectItem>
-              <SelectItem value="fee">{t("fees")}</SelectItem>
-              <SelectItem value="refund">{t("refunds")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* LIST */}
-        <div className="space-y-5">
-          <AnimatePresence>
-            {filtered.map((trx) => (
-              <motion.div
-                key={trx.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ type: "spring", stiffness: 160, damping: 20 }}
-              >
-                <Card className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all">
-                  <CardContent className="p-5 flex items-center justify-between gap-4">
-
-                    {/* LEFT */}
-                    <div className="flex items-center gap-4">
-                      <div className="p-4 rounded-2xl bg-pink-50 shadow-sm">
-                        {getIcon(trx.type)}
-                      </div>
-
-                      <div>
-                        <h2 className="text-base font-semibold text-gray-800">{trx.description}</h2>
-                        <p className="text-sm text-gray-500 mt-1">{trx.date}</p>
-                      </div>
-                    </div>
-
-                    {/* RIGHT — AMOUNT */}
-                    <div className="text-right">
-                      <div
-                        className={`text-xl font-bold ${trx.amount >= 0 ? "text-green-600" : "text-red-600"
-                          }`}
-                      >
-                        {trx.amount >= 0 ? "+" : ""}€{trx.amount.toFixed(2)}
-                      </div>
-                      <p className="text-xs text-gray-400">{t("id")}: {trx.id}</p>
-                    </div>
-
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {filtered.length === 0 && (
-            <div className="text-center py-20 text-gray-500 text-sm">
-              {t("no_transactions_found")}
-            </div>
-          )}
-        </div>
-
-        {/* SUMMARY BOX */}
-        <Card className="rounded-3xl bg-white border shadow-md mt-10">
-          <CardContent className="p-6 space-y-3">
-            <h2 className="font-bold text-lg flex items-center gap-2">
-              <Wallet className="text-gray-700" /> {t("summary")}
-            </h2>
-
-            <Separator />
-
-            <ul className="text-sm text-gray-600 space-y-2">
-              <li>• {t("positive_values_revenue_from_orders")}</li>
-              <li>• {t("negative_values_fees_adjustments_refunds")}</li>
-              <li>• {t("weekly_sepa_cycle_portugal")}</li>
-              <li>• {t("refunds_may_take_24_48_hours")}</li>
-            </ul>
-          </CardContent>
-        </Card>
-
+        {/* Type Filter */}
+        <Select onValueChange={setFilter} defaultValue="all">
+          <SelectTrigger className="w-48 bg-white">
+            <SelectValue placeholder="Filter" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("all")}</SelectItem>
+            <SelectItem value="order">{t("orders")}</SelectItem>
+            <SelectItem value="payout">{t("payouts")}</SelectItem>
+            <SelectItem value="fee">{t("fees")}</SelectItem>
+            <SelectItem value="refund">{t("refunds")}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
+
+      {/* LIST */}
+      <div className="space-y-5">
+        <AnimatePresence>
+          {filtered.map((trx) => (
+            <motion.div
+              key={trx.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ type: "spring", stiffness: 160, damping: 20 }}
+            >
+              <Card className="rounded-3xl bg-white border shadow-md hover:shadow-xl transition-all">
+                <CardContent className="p-5 flex items-center justify-between gap-4">
+                  {/* LEFT */}
+                  <div className="flex items-center gap-4">
+                    <div className="p-4 rounded-2xl bg-pink-50 shadow-sm">
+                      {getIcon(trx.type)}
+                    </div>
+
+                    <div>
+                      <h2 className="text-base font-semibold text-gray-800">
+                        {trx.description}
+                      </h2>
+                      <p className="text-sm text-gray-500 mt-1">{trx.date}</p>
+                    </div>
+                  </div>
+
+                  {/* RIGHT — AMOUNT */}
+                  <div className="text-right">
+                    <div
+                      className={`text-xl font-bold ${
+                        trx.amount >= 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {trx.amount >= 0 ? "+" : ""}€{trx.amount.toFixed(2)}
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {t("id")}: {trx.id}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {filtered.length === 0 && (
+          <div className="text-center py-20 text-gray-500 text-sm">
+            {t("no_transactions_found")}
+          </div>
+        )}
+      </div>
+
+      {/* SUMMARY BOX */}
+      <Card className="rounded-3xl bg-white border shadow-md mt-10">
+        <CardContent className="p-6 space-y-3">
+          <h2 className="font-bold text-lg flex items-center gap-2">
+            <Wallet className="text-gray-700" /> {t("summary")}
+          </h2>
+
+          <Separator />
+
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• {t("positive_values_revenue_from_orders")}</li>
+            <li>• {t("negative_values_fees_adjustments_refunds")}</li>
+            <li>• {t("weekly_sepa_cycle_portugal")}</li>
+            <li>• {t("refunds_may_take_24_48_hours")}</li>
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }

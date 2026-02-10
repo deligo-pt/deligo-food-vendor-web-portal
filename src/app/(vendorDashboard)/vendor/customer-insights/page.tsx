@@ -8,7 +8,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 
 import { useTranslation } from "@/src/hooks/use-translation";
 import { Activity, Clock, MapPin, PieChart, Users } from "lucide-react";
@@ -194,180 +194,164 @@ export default function CustomerInsightsPage() {
   const sparkData = [12, 18, 9, 22, 27, 25, 30, 28, 35, 32];
 
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[1200px] mx-auto space-y-8">
-        {/* HEADER */}
-        <div className="flex items-start justify-between gap-6">
-          <div>
-            <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-              {t("customer_insights")}
-            </h1>
-            <p className="text-gray-600 mt-1">{t("deep_customer_analytics")}</p>
-          </div>
+    <div className="min-h-screen p-6 space-y-8">
+      {/* HEADER */}
+      <TitleHeader
+        title={t("customer_insights")}
+        subtitle={t("deep_customer_analytics")}
+      />
 
-          <div className="flex items-center gap-3">
-            <Input
-              placeholder="Search customers or segments..."
-              className="max-w-sm"
-            />
-            <Button style={{ background: PRIMARY }} className="text-white">
-              {t("export_csv")}
-            </Button>
-          </div>
-        </div>
+      {/* TOP STATS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <StatCard
+          title={t("total_customers")}
+          value={DEMOGRAPHICS.totalCustomers}
+          hint={`${DEMOGRAPHICS.newCustomers} new`}
+          icon={<Users size={20} />}
+        />
+        <StatCard
+          title={t("returning")}
+          value={DEMOGRAPHICS.returningCustomers}
+          hint={`Avg orders/month ${DEMOGRAPHICS.avgOrderFreq}`}
+          icon={<Activity size={20} />}
+        />
+        <StatCard
+          title={t("top_city")}
+          value={DEMOGRAPHICS.topCities[0].city}
+          hint={`${DEMOGRAPHICS.topCities[0].pct}% of orders`}
+          icon={<MapPin size={20} />}
+        />
+        <StatCard
+          title={t("avg_repeat")}
+          value={`${((DEMOGRAPHICS.returningCustomers / DEMOGRAPHICS.totalCustomers) * 100).toFixed(0)}%`}
+          hint={`Retention`}
+          icon={<Clock size={20} />}
+        />
+      </div>
 
-        {/* TOP STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <StatCard
-            title={t("total_customers")}
-            value={DEMOGRAPHICS.totalCustomers}
-            hint={`${DEMOGRAPHICS.newCustomers} new`}
-            icon={<Users size={20} />}
-          />
-          <StatCard
-            title={t("returning")}
-            value={DEMOGRAPHICS.returningCustomers}
-            hint={`Avg orders/month ${DEMOGRAPHICS.avgOrderFreq}`}
-            icon={<Activity size={20} />}
-          />
-          <StatCard
-            title={t("top_city")}
-            value={DEMOGRAPHICS.topCities[0].city}
-            hint={`${DEMOGRAPHICS.topCities[0].pct}% of orders`}
-            icon={<MapPin size={20} />}
-          />
-          <StatCard
-            title={t("avg_repeat")}
-            value={`${((DEMOGRAPHICS.returningCustomers / DEMOGRAPHICS.totalCustomers) * 100).toFixed(0)}%`}
-            hint={`Retention`}
-            icon={<Clock size={20} />}
-          />
-        </div>
-
-        {/* DEMOGRAPHICS + RETENTION ROW */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="rounded-2xl border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Users className="text-gray-700" />{" "}
-                  <h3 className="font-bold">{t("demographics")}</h3>
-                </div>
-                <Badge>{t("live")}</Badge>
-              </div>
-
-              <div className="space-y-3">
-                {DEMOGRAPHICS.topCities.map((c, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">{c.city}</div>
-                      <div className="text-xs text-gray-500">
-                        {c.pct}% {t("of_orders")}
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-800">{c.pct}%</div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-2xl border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <PieChart className="text-gray-700" />{" "}
-                  <h3 className="font-bold">{t("customer_value")}</h3>
-                </div>
-                <Badge variant="outline">{t("top_segments")}</Badge>
-              </div>
-
-              <div className="space-y-3">
-                {CUSTOMER_VALUE.map((cv, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">{cv.name}</div>
-                      <div className="text-xs text-gray-500">
-                        {t("avg_order")} €{cv.avg.toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-800">{cv.count}</div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-2xl border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Clock className="text-gray-700" />{" "}
-                  <h3 className="font-bold">{t("retention_trend")}</h3>
-                </div>
-                <Badge variant="secondary">{t("d_7")}</Badge>
-              </div>
-
-              <div className="mb-2">
-                <LineSpark data={retention} color={PRIMARY} />
-              </div>
-
-              <div className="grid grid-cols-4 text-center text-sm text-gray-600">
-                {WEEKLY_RETENTION.map((w, i) => (
-                  <div key={i}>
-                    <div className="font-semibold">{w.pct}%</div>
-                    <div className="text-xs">{w.label}</div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* BEHAVIOR HEATMAP & REVIEWS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="rounded-2xl border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <MapPin className="text-gray-700" />{" "}
-                  <h3 className="font-bold">{t("peak_order_times")}</h3>
-                </div>
-                <div className="text-sm text-gray-500">{t("local_time")}</div>
-              </div>
-
-              <Heatmap grid={WEEK_HOUR_HEAT} />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* ACTIONABLE INSIGHTS */}
+      {/* DEMOGRAPHICS + RETENTION ROW */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="rounded-2xl border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Activity className="text-gray-700" />{" "}
-                <h3 className="font-bold">{t("actionable_insights")}</h3>
+                <Users className="text-gray-700" />{" "}
+                <h3 className="font-bold">{t("demographics")}</h3>
               </div>
-              <Badge variant="outline">{t("ai_suggest")}</Badge>
+              <Badge>{t("live")}</Badge>
             </div>
 
-            <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
-              <li>{t("promote_popular_items")}</li>
-              <li>{t("target_top_customers_with_exclusive")}</li>
-              <li>{t("address_cold_food_feedback")}</li>
-              <li>{t("run_campaign_slow_days")}</li>
-            </ul>
+            <div className="space-y-3">
+              {DEMOGRAPHICS.topCities.map((c, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">{c.city}</div>
+                    <div className="text-xs text-gray-500">
+                      {c.pct}% {t("of_orders")}
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-800">{c.pct}%</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-            <div className="mt-4 flex gap-3">
-              <Button style={{ background: PRIMARY }} className="text-white">
-                {t("create_campaign")}
-              </Button>
-              <Button variant="outline">{t("export_segment")}</Button>
+        <Card className="rounded-2xl border">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <PieChart className="text-gray-700" />{" "}
+                <h3 className="font-bold">{t("customer_value")}</h3>
+              </div>
+              <Badge variant="outline">{t("top_segments")}</Badge>
+            </div>
+
+            <div className="space-y-3">
+              {CUSTOMER_VALUE.map((cv, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">{cv.name}</div>
+                    <div className="text-xs text-gray-500">
+                      {t("avg_order")} €{cv.avg.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-800">{cv.count}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl border">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Clock className="text-gray-700" />{" "}
+                <h3 className="font-bold">{t("retention_trend")}</h3>
+              </div>
+              <Badge variant="secondary">{t("d_7")}</Badge>
+            </div>
+
+            <div className="mb-2">
+              <LineSpark data={retention} color={PRIMARY} />
+            </div>
+
+            <div className="grid grid-cols-4 text-center text-sm text-gray-600">
+              {WEEKLY_RETENTION.map((w, i) => (
+                <div key={i}>
+                  <div className="font-semibold">{w.pct}%</div>
+                  <div className="text-xs">{w.label}</div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* BEHAVIOR HEATMAP & REVIEWS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="rounded-2xl border">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <MapPin className="text-gray-700" />{" "}
+                <h3 className="font-bold">{t("peak_order_times")}</h3>
+              </div>
+              <div className="text-sm text-gray-500">{t("local_time")}</div>
+            </div>
+
+            <Heatmap grid={WEEK_HOUR_HEAT} />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ACTIONABLE INSIGHTS */}
+      <Card className="rounded-2xl border">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Activity className="text-gray-700" />{" "}
+              <h3 className="font-bold">{t("actionable_insights")}</h3>
+            </div>
+            <Badge variant="outline">{t("ai_suggest")}</Badge>
+          </div>
+
+          <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
+            <li>{t("promote_popular_items")}</li>
+            <li>{t("target_top_customers_with_exclusive")}</li>
+            <li>{t("address_cold_food_feedback")}</li>
+            <li>{t("run_campaign_slow_days")}</li>
+          </ul>
+
+          <div className="mt-4 flex gap-3">
+            <Button style={{ background: PRIMARY }} className="text-white">
+              {t("create_campaign")}
+            </Button>
+            <Button variant="outline">{t("export_segment")}</Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

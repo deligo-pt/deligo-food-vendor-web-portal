@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import CancelOrderModal from "@/src/components/Dashboard/Orders/OrderCancelModal/OrderCancelModal";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { ORDER_STATUS } from "@/src/consts/order.const";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { updateOrderStatusReq } from "@/src/services/dashboard/order/order";
@@ -41,7 +42,7 @@ export default function PreparingOrders({ ordersResult }: IProps) {
   const updateStatus = async (
     id: string,
     status: keyof typeof ORDER_STATUS,
-    reason?: string
+    reason?: string,
   ) => {
     const toastId = toast.loading("Order status updating...");
 
@@ -67,22 +68,18 @@ export default function PreparingOrders({ ordersResult }: IProps) {
   const cancelOrder = (id: string) => setCancelId(id);
 
   return (
-    <div className="min-h-screen p-6 md:p-10 bg-linear-to-br from-gray-50 to-white">
-      <div className="max-w-[1400px] mx-auto space-y-6">
-        {/* header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold" style={{ color: DELIGO }}>
-              {t("preparing_orders")}
-            </h1>
-            <p className="text-sm text-gray-600 mt-1">
-              {t("manage_orders_in_kitchen")}
-            </p>
-          </div>
-        </div>
+    <>
+      <div className="min-h-screen p-6 space-y-6">
+        {/* Header */}
+        <TitleHeader
+          title={t("preparing_orders")}
+          subtitle={t("manage_orders_in_kitchen")}
+        />
+
+        {/* Filters */}
         <AllFilters sortOptions={sortOptions} />
 
-        {/* content */}
+        {/* Orders List */}
         <div>
           <Card className="col-span-2 p-0 overflow-hidden rounded-2xl shadow-lg">
             <CardHeader className="flex items-center justify-between p-4">
@@ -250,27 +247,9 @@ export default function PreparingOrders({ ordersResult }: IProps) {
         orderId={cancelId || ""}
         updateStatus={updateStatus}
       />
-    </div>
+    </>
   );
 }
-
-/* ---------- small subcomponents ---------- */
-
-// function ProgressBar({ value }: { value: number }) {
-//   const safe = Math.max(0, Math.min(100, Math.round(value)));
-//   return (
-//     <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-//       <motion.div
-//         initial={{ width: 0 }}
-//         animate={{ width: `${safe}%` }}
-//         transition={{ type: "spring", stiffness: 100, damping: 20 }}
-//         className="h-3 rounded-full"
-//         style={{ background: `linear-gradient(90deg, ${DELIGO}, #ff7fb3)` }}
-//       />
-//       <div className="mt-1 text-xs text-gray-500">{safe}%</div>
-//     </div>
-//   );
-// }
 
 function OrderSheetContent({
   order,

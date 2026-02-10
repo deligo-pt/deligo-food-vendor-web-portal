@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
@@ -13,7 +14,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Clock, MapPin, Phone } from "lucide-react";
 
 const PRIMARY = "#DC3173";
-const BG = "#FFF1F7";
 
 interface IProps {
   ordersResult: {
@@ -22,21 +22,6 @@ interface IProps {
   };
 }
 
-/* -----------------------------------
-   Stage Map (colors + labels)
------------------------------------- */
-// const STAGE_INFO: Record<DeliveryStage, { label: string; color: string }> = {
-//   accepted: { label: "Accepted", color: "#8B5CF6" },
-//   picked: { label: "Picked", color: "#0EA5E9" },
-//   on_the_way: { label: "On The Way", color: "#F97316" },
-//   arriving: { label: "Arriving", color: PRIMARY },
-//   delivered: { label: "Delivered", color: "#16A34A" },
-// };
-
-
-/* -----------------------------------
-   Component
------------------------------------- */
 export default function OngoingDeliveries({ ordersResult }: IProps) {
   const { t } = useTranslation();
 
@@ -45,70 +30,48 @@ export default function OngoingDeliveries({ ordersResult }: IProps) {
     { label: t("oldest_first"), value: "createdAt" },
   ];
 
-  /* Simulate stage progression every 25s */
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       setDeliveries((prev) =>
-  //         prev.map((d) => {
-  //           const order = { ...d };
-  //           if (order.stage === "accepted") order.stage = "picked";
-  //           else if (order.stage === "picked") order.stage = "on_the_way";
-  //           else if (order.stage === "on_the_way") order.stage = "arriving";
-  //           else if (order.stage === "arriving") order.stage = "delivered";
-  //           return order;
-  //         })
-  //       );
-  //     }, 25000);
-
-  //     return () => clearInterval(interval);
-  //   }, []);
-
   return (
-    <div className="min-h-screen p-6 md:p-10" style={{ background: BG }}>
-      <div className="max-w-[950px] mx-auto space-y-8">
-        <header>
-          <h1 className="text-4xl font-extrabold" style={{ color: PRIMARY }}>
-            {t("ongoing_deliveries")}
-          </h1>
-          <p className="text-gray-600 mt-1">
-            {t("track_your_live_orders")}
-          </p>
-        </header>
+    <div className="min-h-screen p-6 space-y-8">
+      {/* HEADER */}
+      <TitleHeader
+        title={t("ongoing_deliveries")}
+        subtitle={t("track_your_live_orders")}
+      />
 
-        <AllFilters sortOptions={sortOptions} />
+      {/* FILTERS */}
+      <AllFilters sortOptions={sortOptions} />
 
-        {/* List */}
-        <div className="space-y-5">
-          <AnimatePresence>
-            {ordersResult?.data?.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="py-12 text-center text-gray-500"
-              >
-                {t("no_orders_match_query")}
-              </motion.div>
-            )}
-            {ordersResult?.data?.map((d) => (
-              <motion.div
-                key={d._id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8 }}
-              >
-                <DeliveryCard delivery={d} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-        {!!ordersResult?.meta?.total && ordersResult?.meta?.total > 0 && (
-          <div className="px-6 pb-4">
-            <PaginationComponent
-              totalPages={ordersResult?.meta?.totalPage || 0}
-            />
-          </div>
-        )}
+      {/* ORDER LIST */}
+      <div className="space-y-5">
+        <AnimatePresence>
+          {ordersResult?.data?.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="py-12 text-center text-gray-500"
+            >
+              {t("no_orders_match_query")}
+            </motion.div>
+          )}
+          {ordersResult?.data?.map((d) => (
+            <motion.div
+              key={d._id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+            >
+              <DeliveryCard delivery={d} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
+      {!!ordersResult?.meta?.total && ordersResult?.meta?.total > 0 && (
+        <div className="px-6 pb-4">
+          <PaginationComponent
+            totalPages={ordersResult?.meta?.totalPage || 0}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -134,18 +97,6 @@ function DeliveryCard({ delivery: d }: { delivery: TOrder }) {
               <Clock size={16} /> {format(d.updatedAt, "hh:mm a")}
             </div>
           </div>
-
-          {/* <div className="text-right">
-            <div
-              className="text-xs px-3 py-1 rounded-full inline-flex"
-              style={{
-                background: stage.color + "15",
-                color: stage.color,
-              }}
-            >
-              {stage.label}
-            </div>
-          </div> */}
         </div>
 
         {/* items */}
@@ -154,7 +105,7 @@ function DeliveryCard({ delivery: d }: { delivery: TOrder }) {
             key={item.productId._id}
             className={cn(
               "text-sm text-gray-700 bg-gray-100 px-3 py-2 rounded-lg",
-              i < d.items.length - 1 && "mb-1.5"
+              i < d.items.length - 1 && "mb-1.5",
             )}
           >
             {t("items")}: {item.productId?.name} x {item.quantity}
@@ -200,58 +151,7 @@ function DeliveryCard({ delivery: d }: { delivery: TOrder }) {
             <Phone size={16} /> {t("call_rider")}
           </a>
         </div>
-
-        {/* distance + map progress */}
-        {/* <div className="mt-3 flex items-center gap-4">
-          <div className="flex items-center gap-2 text-gray-700">
-            <Navigation size={18} className="text-blue-600" />
-            {d.distanceKm} km away
-          </div>
-
-          <ProgressTimeline stage={d.stage} />
-        </div> */}
       </CardContent>
     </Card>
   );
 }
-
-/* -----------------------------------
-   Timeline Component (Glovo-style)
------------------------------------- */
-// function ProgressTimeline({ stage }: { stage: DeliveryStage }) {
-//   const stages: DeliveryStage[] = [
-//     "accepted",
-//     "picked",
-//     "on_the_way",
-//     "arriving",
-//     "delivered",
-//   ];
-
-//   const currentIndex = stages.indexOf(stage);
-
-//   return (
-//     <div className="flex items-center gap-2">
-//       {stages.map((s, i) => (
-//         <div key={s} className="flex items-center gap-2">
-//           <CircleDot
-//             size={14}
-//             className={
-//               i <= currentIndex
-//                 ? "text-green-600"
-//                 : "text-gray-300"
-//             }
-//           />
-//           {i < stages.length - 1 && (
-//             <div
-//               className={`w-8 h-1 rounded ${
-//                 i < currentIndex
-//                   ? "bg-green-600"
-//                   : "bg-gray-300"
-//               }`}
-//             ></div>
-//           )}
-//         </div>
-//       ))}
-//     </div>
-//   );
-// }
