@@ -10,6 +10,21 @@ export type TConversationParticipant = {
   name?: string;
 };
 
+export type TReadData = {
+  room: string;
+  userId: string;
+  time: Date;
+};
+
+export type TTypingData = {
+  userId: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  isTyping: boolean;
+};
+
 export type TMessage = {
   _id: string;
   room: string;

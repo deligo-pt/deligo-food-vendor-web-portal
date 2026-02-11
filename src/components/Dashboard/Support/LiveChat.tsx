@@ -21,7 +21,7 @@ export default function LiveChat({
   vendorId,
 }: IProps) {
   const [messages, setMessages] = useState<TMessage[]>(
-    initialMessagesData?.data || []
+    initialMessagesData?.data || [],
   );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [text, setText] = useState("");
@@ -35,7 +35,6 @@ export default function LiveChat({
   const accessToken = getCookie("accessToken") || "";
 
   const { sendMessage, makeTyping } = useChatSocket({
-    // const { sendMessage, closeConversation } = useChatSocket({
     room: conversation?.room,
     token: accessToken as string,
     onMessage: (msg) => setMessages((prev) => [...prev, msg]),
@@ -56,7 +55,8 @@ export default function LiveChat({
       }, 3000);
     },
     onClosed: () => setStatus("CLOSED"),
-    onError: (msg) => alert(msg),
+    onError: (msg) => console.log(msg),
+    chatType: "liveChat",
   });
 
   const handleSendMessage = () => {
@@ -73,8 +73,6 @@ export default function LiveChat({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  console.log(conversation?.room, status);
 
   useEffect(() => {
     scrollToBottom();

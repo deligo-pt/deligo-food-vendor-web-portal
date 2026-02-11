@@ -66,12 +66,12 @@ const tabs = [
     icon: <ImageIcon className="h-5 w-5" />,
   },
   {
-    name: "Pricing",
-    icon: <TagIcon className="h-5 w-5" />,
-  },
-  {
     name: "Addons and Variants",
     icon: <LayersIcon className="h-5 w-5" />,
+  },
+  {
+    name: "Pricing",
+    icon: <TagIcon className="h-5 w-5" />,
   },
   {
     name: "Stock",
@@ -1111,7 +1111,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                         </FormItem>
                       )}
                     />
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <FormField
                         control={form.control}
                         name="weight"

@@ -13,15 +13,21 @@ const AUTH_PATHS = [
 export async function proxy(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
 
+  if (searchParams.has("tokenRefreshed")) {
+    const url = req.nextUrl.clone();
+    url.searchParams.delete("tokenRefreshed");
+    return NextResponse.redirect(url);
+  }
+
   const loginUrl = new URL("/login", req.url);
   loginUrl.searchParams.set("redirect", pathname);
 
   const tokenWasRefreshed = await verifyTokens();
 
-  if (tokenWasRefreshed && !searchParams.has("tokenRefreshed")) {
-    const redirectUrl = new URL(req.nextUrl.pathname, req.url);
-    redirectUrl.searchParams.set("tokenRefreshed", "1");
-    return NextResponse.redirect(redirectUrl);
+  if (tokenWasRefreshed) {
+    const url = req.nextUrl.clone();
+    url.searchParams.set("tokenRefreshed", "true");
+    return NextResponse.redirect(url);
   }
 
   const vendorResult = await getVendorInfo();

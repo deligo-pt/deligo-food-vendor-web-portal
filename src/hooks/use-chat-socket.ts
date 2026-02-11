@@ -1,46 +1,48 @@
 "use client";
 
-import { getSocket } from "@/lib/socket";
-import { TMessage } from "@/src/types/chat.type";
+import { getLiveChatSocket, getSupportSocket } from "@/lib/socket";
+import { TMessage, TReadData, TTypingData } from "@/src/types/chat.type";
 import { useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
 
 interface Props {
-  room: string;
+  room?: string;
   token: string;
   onMessage: (msg: TMessage) => void;
-  onClosed: () => void;
-  onError: (msg: string) => void;
-  onTyping: (data: {
-    userId: string;
-    name: {
-      firstName: string;
-      lastName: string;
-    };
-    isTyping: boolean;
-  }) => void;
+  onRead?: (data: TReadData) => void;
+  onClosed?: () => void;
+  onError?: (err: string) => void;
+  onTyping?: (data: TTypingData) => void;
+  chatType: "support" | "liveChat";
 }
 
 export function useChatSocket({
   room,
   token,
   onMessage,
+  onRead,
   onClosed,
   onError,
   onTyping,
+  chatType = "support",
 }: Props) {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    const socket = getSocket(token);
+    const socket =
+      chatType === "support"
+        ? getSupportSocket(token)
+        : getLiveChatSocket(token);
+
     socketRef.current = socket;
 
     socket.emit("join-conversation", { room });
 
     socket.on("new-message", onMessage);
-    socket.on("user-typing", onTyping);
-    socket.on("conversation-closed", onClosed);
-    socket.on("chat-error", (e) => onError(e.message));
+    socket.on("read-update", onRead || (() => {}));
+    socket.on("user-typing", onTyping || (() => {}));
+    socket.on("conversation-closed", onClosed || (() => {}));
+    socket.on("chat-error", (e) => onError && onError(e.message));
 
     return () => {
       socket.off("new-message");

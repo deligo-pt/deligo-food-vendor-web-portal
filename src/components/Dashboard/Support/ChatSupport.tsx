@@ -56,6 +56,7 @@ export default function VendorChatSupport({
         setStatus("IN_PROGRESS");
       }
     },
+    onRead: () => {},
     onTyping: (data) => {
       console.log(data);
     },

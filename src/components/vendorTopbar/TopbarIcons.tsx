@@ -6,6 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SOSModal from "@/src/components/Dashboard/SOS/SOSModal";
+import TopbarMessageIcon from "@/src/components/vendorTopbar/TopbarMessageIcon";
 import TopbarNotification from "@/src/components/vendorTopbar/TopbarNotification";
 import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
@@ -15,7 +16,6 @@ import {
   AlertTriangle,
   ChevronDown,
   LogOut,
-  MessageSquare,
   User,
   UserIcon,
 } from "lucide-react";
@@ -85,12 +85,7 @@ export default function TopbarIcons({ vendor }: IProps) {
       <TopbarNotification />
 
       {/* Messages */}
-      <motion.button
-        whileHover={{ scale: 1.06 }}
-        className="p-2 rounded-lg hover:bg-pink-50 transition hidden sm:block shrink-0"
-      >
-        <MessageSquare size={18} className="text-gray-700" />
-      </motion.button>
+      <TopbarMessageIcon />
 
       {/* Profile */}
       <div className="relative shrink-0 z-3000">
