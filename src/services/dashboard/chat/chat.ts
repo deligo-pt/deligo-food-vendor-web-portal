@@ -10,6 +10,14 @@ export const openConversationReq = async () => {
   });
 };
 
+export const getAllAdminConversationsReq = async () => {
+  return catchAsync<TConversation[]>(async () => {
+    return await serverRequest.get("/support/conversations", {
+      params: { type: "VENDOR_CHAT" },
+    });
+  });
+};
+
 export const getMessagesByRoomReq = async (room: string, limit = 50) => {
   return catchAsync<TMessage[]>(async () => {
     return await serverRequest.get(`/support/conversations/${room}/messages`, {

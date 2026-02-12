@@ -44,12 +44,6 @@ export function useChatSocket({
     socket.on("conversation-closed", onClosed || (() => {}));
     socket.on("chat-error", (e) => onError && onError(e.message));
 
-    return () => {
-      socket.off("new-message");
-      socket.off("user-typing");
-      socket.off("conversation-closed");
-      socket.off("chat-error");
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room]);
 
@@ -72,5 +66,19 @@ export function useChatSocket({
     socketRef.current?.emit("close-conversation", { room });
   };
 
-  return { sendMessage, markRead, makeTyping, closeConversation };
+  const turnOffEvents = () => {
+    socketRef.current?.off("new-message");
+    socketRef.current?.off("user-typing");
+    socketRef.current?.off("conversation-closed");
+    socketRef.current?.off("chat-error");
+  };
+
+  return {
+    // socket: socketRef.current,
+    sendMessage,
+    markRead,
+    makeTyping,
+    closeConversation,
+    turnOffEvents,
+  };
 }

@@ -1,35 +1,58 @@
 "use client";
 
+import { getSupportSocket } from "@/lib/socket";
+import { useChatSocket } from "@/src/hooks/use-chat-socket";
+import { TConversation, TMessage } from "@/src/types/chat.type";
+import { catchAsync } from "@/src/utils/catchAsync";
+import { getCookie } from "@/src/utils/cookies";
+import { fetchData } from "@/src/utils/requests";
 import { motion } from "framer-motion";
 import { MessageSquare } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function TopbarMessageIcon() {
   const audioRef = useRef<HTMLAudioElement>(null);
-  //   const path = usePathname();
-  //   const accessToken = getCookie("accessToken") || "";
+  const [liveChatRoom, setLiveChatRoom] = useState("");
+  const accessToken = getCookie("accessToken") || "";
 
-  //   const newMessageHandler = (msg: TMessage) => {
-  //     console.log("New message received:", msg);
-  //     if (msg.senderRole !== "VENDOR") {
-  //       console.log("New message received:", msg);
-  //       audioRef.current?.play().catch((error) => {
-  //         console.log("Error playing audio:", error);
-  //       });
-  //     }
-  //   };
+  const newMessageHandler = (msg: TMessage) => {
+    if (msg.senderRole !== "VENDOR") {
+      audioRef.current?.play().catch((error) => {
+        console.log("Error playing audio:", error);
+      });
+    }
+  };
 
-  //   useChatSocket({
-  //     token: accessToken as string,
-  //     onMessage: (msg) => newMessageHandler(msg),
-  //   });
+  const getRoom = async () => {
+    const result = await catchAsync<TConversation[]>(async () => {
+      return await fetchData("/support/conversations", {
+        params: { type: "VENDOR_CHAT" },
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+    });
+    if (result.success) {
+      setLiveChatRoom(result.data?.[0]?.room);
+    }
+  };
 
-  //   useEffect(() => {
-  //     const socket = getSocket(accessToken);
-  //     const accessToken = getCookie("accessToken") || "";
+  useChatSocket({
+    room: liveChatRoom,
+    token: accessToken as string,
+    onMessage: (msg) => newMessageHandler(msg),
+    chatType: "liveChat",
+  });
 
-  //     socket.on("new-message", newMessageHandler);
-  //   }, [path]);
+  useEffect(() => {
+    const accessToken = getCookie("accessToken") || "";
+    const supportSocket = getSupportSocket(accessToken);
+
+    supportSocket.on("new-message", newMessageHandler);
+  }, []);
+
+  useEffect(() => {
+    (() => getRoom())();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
