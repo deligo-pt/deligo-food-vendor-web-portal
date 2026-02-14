@@ -13,7 +13,16 @@ import { TMeta } from "@/src/types";
 import { TConversation, TMessage } from "@/src/types/chat.type";
 import { getCookie } from "@/src/utils/cookies";
 import { format } from "date-fns";
-import { Bot, Clock, PhoneCall, Send } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
+import {
+  Bot,
+  CheckCheckIcon,
+  CheckIcon,
+  Clock,
+  PhoneCall,
+  Send,
+} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 
 interface IProps {
   initialConversation: TConversation;
@@ -29,6 +38,8 @@ export default function VendorChatSupport({
   initialMessagesData,
 }: IProps) {
   const { t } = useTranslation();
+  const path = usePathname();
+  const router = useRouter();
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [text, setText] = useState("");
@@ -38,7 +49,8 @@ export default function VendorChatSupport({
   );
   const [status, setStatus] = useState(conversation.status);
 
-  const accessToken = getCookie("accessToken");
+  const accessToken = getCookie("accessToken") || "";
+  const decoded = jwtDecode(accessToken) as { userId: string };
 
   const openConversation = async () => {
     const result = await openConversationReq();
@@ -56,12 +68,15 @@ export default function VendorChatSupport({
         setStatus("IN_PROGRESS");
       }
     },
-    onRead: () => {},
+    onRead: () => {
+      router.refresh();
+    },
     onTyping: (data) => {
       console.log(data);
     },
     onClosed: () => setStatus("CLOSED"),
     onError: (msg) => alert(msg),
+    willRead: path === "/vendor/chat-support",
   });
 
   const handleSendMessage = () => {
@@ -136,9 +151,17 @@ export default function VendorChatSupport({
                     }`}
                   >
                     <div className="text-sm leading-relaxed">{msg.message}</div>
-                    <p className="text-[10px] opacity-70 mt-1">
-                      {format(msg.createdAt as Date, "hh:mm a")}
-                    </p>
+                    <div className="flex items-end justify-between gap-3">
+                      <p className="text-[10px] opacity-70 mt-1">
+                        {format(msg.createdAt as Date, "hh:mm a")}
+                      </p>
+                      {msg.senderRole === "VENDOR" &&
+                        (msg.readBy?.[decoded.userId] ? (
+                          <CheckCheckIcon size={14} />
+                        ) : (
+                          <CheckIcon size={14} />
+                        ))}
+                    </div>
                   </div>
                 </div>
               ))}

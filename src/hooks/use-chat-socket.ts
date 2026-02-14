@@ -2,6 +2,7 @@
 
 import { getLiveChatSocket, getSupportSocket } from "@/lib/socket";
 import { TMessage, TReadData, TTypingData } from "@/src/types/chat.type";
+import { jwtDecode } from "jwt-decode";
 import { useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
 
@@ -14,6 +15,7 @@ interface Props {
   onError?: (err: string) => void;
   onTyping?: (data: TTypingData) => void;
   chatType?: "support" | "liveChat";
+  willRead?: boolean;
 }
 
 export function useChatSocket({
@@ -25,6 +27,7 @@ export function useChatSocket({
   onError,
   onTyping,
   chatType = "support",
+  willRead,
 }: Props) {
   const socketRef = useRef<Socket | null>(null);
 
@@ -38,7 +41,12 @@ export function useChatSocket({
 
     socket.emit("join-conversation", { room });
 
-    socket.on("new-message", onMessage);
+    socket.on("new-message", (msg: TMessage) => {
+      onMessage(msg);
+      const decoded = jwtDecode(token) as { userId: string };
+      if (msg.senderId !== decoded.userId && willRead)
+        socket.emit("read-update", { room });
+    });
     socket.on("read-update", onRead || (() => {}));
     socket.on("user-typing", onTyping || (() => {}));
     socket.on("conversation-closed", onClosed || (() => {}));

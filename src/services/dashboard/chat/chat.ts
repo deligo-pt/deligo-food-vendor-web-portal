@@ -25,3 +25,9 @@ export const getMessagesByRoomReq = async (room: string, limit = 50) => {
     });
   });
 };
+
+export const getUnreadCountReq = async () => {
+  return catchAsync<number>(async () => {
+    return await serverRequest.get("/support/unread-count");
+  });
+};
