@@ -180,11 +180,6 @@ export default function AddVariationForm({ productId, onCancel }: IProps) {
                 setOption({ ...option, price: Number(e.target.value) })
               }
               placeholder="Add an option price"
-              onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                }
-              }}
             />
           </div>
           <div>
@@ -200,11 +195,6 @@ export default function AddVariationForm({ productId, onCancel }: IProps) {
                 })
               }
               placeholder="Add stock quantity"
-              onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                }
-              }}
             />
           </div>
           {form.formState.errors.options && (

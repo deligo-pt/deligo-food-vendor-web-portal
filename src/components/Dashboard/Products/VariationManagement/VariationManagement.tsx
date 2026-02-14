@@ -88,7 +88,7 @@ export default function VariationManagement({ productsData }: IProps) {
           className="flex flex-wrap items-center gap-6 mb-8 px-5 py-3.5 bg-white rounded-xl border border-gray-100 shadow-sm"
         >
           <div className="flex items-center gap-2">
-            <Package size={16} className="text-brand-400" />
+            <Package size={16} className="text-[#DC3173]" />
             <span className="text-sm text-gray-500">Products:</span>
             <span className="text-sm font-bold text-gray-900">
               {productsData.meta?.total || 0}
@@ -137,7 +137,7 @@ export default function VariationManagement({ productsData }: IProps) {
 
           {productsData.meta?.total === 0 && (
             <div className="text-center py-16">
-              <div className="inline-flex p-4 bg-white rounded-full text-brand-300 mb-3 shadow-sm">
+              <div className="inline-flex p-4 bg-white rounded-full text-[#DC3173] mb-3 shadow-sm">
                 <Package size={32} />
               </div>
               <h3 className="text-lg font-medium text-gray-900">

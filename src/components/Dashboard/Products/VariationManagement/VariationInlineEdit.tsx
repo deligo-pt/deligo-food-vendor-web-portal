@@ -43,7 +43,7 @@ export default function VariationInlineEdit({
         <span>{value}</span>
         <PencilIcon
           size={12}
-          className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="text-[#DC3173] opacity-0 group-hover:opacity-100 transition-opacity"
         />
       </button>
     );
@@ -59,7 +59,7 @@ export default function VariationInlineEdit({
           if (e.key === "Escape") cancel();
         }}
         onBlur={commit}
-        className="px-2 py-0.5 rounded-lg border border-brand-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 w-32"
+        className="px-2 py-0.5 rounded-lg border border-[#DC3173]/10 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#DC3173]/50 w-32"
       />
       <button
         onClick={commit}

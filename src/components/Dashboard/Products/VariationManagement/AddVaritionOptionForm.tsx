@@ -1,30 +1,69 @@
 "use client";
 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { addVariationReq } from "@/src/services/dashboard/products/variation";
+import { variationOptionValidation } from "@/src/validations/product/product.validation";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
 
 interface IProps {
-  onAdd: (label: string, sku: string, price: number) => void;
+  productId: string;
+  variationName: string;
   onCancel: () => void;
 }
 
-export default function AddVaritionOptionForm({ onAdd, onCancel }: IProps) {
-  const [label, setLabel] = useState("");
-  const [sku, setSku] = useState("");
-  const [price, setPrice] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+type TOptionForm = z.infer<typeof variationOptionValidation>;
 
-  const handleSubmit = () => {
-    if (!label.trim() || !sku.trim()) return;
-    onAdd(label.trim(), sku.trim().toUpperCase(), parseFloat(price) || 0);
-    setLabel("");
-    setSku("");
-    setPrice("");
+export default function AddVaritionOptionForm({
+  productId,
+  variationName,
+  onCancel,
+}: IProps) {
+  const router = useRouter();
+
+  const form = useForm<TOptionForm>({
+    resolver: zodResolver(variationOptionValidation),
+    defaultValues: {
+      label: "",
+      price: 0,
+      stockQuantity: 0,
+    },
+  });
+
+  const onSubmit = async (data: TOptionForm) => {
+    const toastId = toast.loading("Adding option...");
+
+    const result = await addVariationReq(productId, {
+      name: variationName,
+      options: [data],
+    });
+
+    onCancel();
+
+    if (result.success) {
+      toast.success(result.message || "Option added successfully!", {
+        id: toastId,
+      });
+      form.reset();
+      router.refresh();
+      return;
+    }
+
+    toast.error(result.message || "Failed to add option.", { id: toastId });
+    console.log(result);
   };
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   return (
     <motion.div
@@ -42,61 +81,88 @@ export default function AddVaritionOptionForm({ onAdd, onCancel }: IProps) {
       }}
       className="overflow-hidden"
     >
-      <div className="flex flex-wrap items-end gap-3 p-3 bg-brand-50/50 rounded-xl border border-brand-100 mt-3">
-        <div className="flex-1 min-w-[120px]">
-          <label className="block text-xs font-medium text-gray-500 mb-1">
-            Option Label
-          </label>
-          <input
-            ref={inputRef}
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder="e.g. Medium"
-            className="w-full px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-          />
-        </div>
-        <div className="w-28">
-          <label className="block text-xs font-medium text-gray-500 mb-1">
-            SKU
-          </label>
-          <input
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder="SKU-001"
-            className="w-full px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-          />
-        </div>
-        <div className="w-24">
-          <label className="block text-xs font-medium text-gray-500 mb-1">
-            Price ($)
-          </label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder="0.00"
-            className="w-full px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleSubmit}
-            disabled={!label.trim() || !sku.trim()}
-            className="px-4 py-1.5 bg-brand-500 text-white rounded-lg text-sm font-bold hover:bg-brand-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Add
-          </button>
-          <button
-            onClick={onCancel}
-            className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-wrap items-start gap-3 p-3 rounded-xl border border-[#DC3173]/10 mt-3"
+        >
+          <div className="flex-1 min-w-[120px]">
+            <FormField
+              control={form.control}
+              name="label"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="block text-xs font-medium text-gray-500 mb-1">
+                    Option Label
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="e.g. Medium" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-28">
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="block text-xs font-medium text-gray-500 mb-1">
+                    Price (€)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      type="number"
+                      placeholder="0.00"
+                      min={0}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-24">
+            <FormField
+              control={form.control}
+              name="stockQuantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="block text-xs font-medium text-gray-500 mb-1">
+                    Stock
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      type="number"
+                      placeholder="0"
+                      min={0}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="px-4 py-1.5 bg-[#DC3173] text-white rounded-lg text-sm font-bold hover:bg-[#DC3173]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              Add
+            </button>
+            <button
+              type="submit"
+              onClick={onCancel}
+              className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </Form>
     </motion.div>
   );
 }

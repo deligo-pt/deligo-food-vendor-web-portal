@@ -13,7 +13,7 @@ interface Props {
   onClosed?: () => void;
   onError?: (err: string) => void;
   onTyping?: (data: TTypingData) => void;
-  chatType: "support" | "liveChat";
+  chatType?: "support" | "liveChat";
 }
 
 export function useChatSocket({

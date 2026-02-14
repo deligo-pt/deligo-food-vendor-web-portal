@@ -1,6 +1,7 @@
 "use client";
 
 import AddVariationForm from "@/src/components/Dashboard/Products/VariationManagement/AddVariationForm";
+import AddVaritionOptionForm from "@/src/components/Dashboard/Products/VariationManagement/AddVaritionOptionForm";
 import VariationDeleteButton from "@/src/components/Dashboard/Products/VariationManagement/VariationDeleteButton";
 import VariationInlineEdit from "@/src/components/Dashboard/Products/VariationManagement/VariationInlineEdit";
 import {
@@ -31,7 +32,7 @@ export default function ProductVariationCard({ product }: IProps) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAddVariation, setShowAddVariation] = useState(false);
-  // const [addingOptionFor, setAddingOptionFor] = useState<number | null>(null);
+  const [addingOptionFor, setAddingOptionFor] = useState<string | null>(null);
 
   const variationCount = product.variations.length;
   const optionCount = product.variations.reduce(
@@ -142,7 +143,7 @@ export default function ProductVariationCard({ product }: IProps) {
               setShowAddVariation(true);
               if (!isExpanded) setIsExpanded(true);
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-600 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#DC3173] bg-[#DC3173]/10 rounded-lg hover:bg-[#DC3173]/30 transition-colors"
           >
             <PlusIcon size={14} />
             Add Variation
@@ -231,8 +232,8 @@ export default function ProductVariationCard({ product }: IProps) {
                     {/* Variation Header */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
                       <div className="flex items-center gap-2">
-                        <div className="p-1 bg-brand-50 rounded-md">
-                          <TagIcon size={14} className="text-brand-500" />
+                        <div className="p-1 bg-[#DC3173]/10 rounded-md">
+                          <TagIcon size={14} className="text-[#DC3173]" />
                         </div>
                         <VariationInlineEdit
                           title="Variation Name"
@@ -251,17 +252,13 @@ export default function ProductVariationCard({ product }: IProps) {
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        {/* <button
-                          onClick={() =>
-                            setAddingOptionFor(
-                              addingOptionFor === vIdx ? null : vIdx,
-                            )
-                          }
-                          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                        <button
+                          onClick={() => setAddingOptionFor(variation.name)}
+                          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-[#DC3173] hover:bg-[#DC3173]/10 rounded-lg transition-colors"
                         >
                           <PlusIcon size={13} />
                           Option
-                        </button> */}
+                        </button>
                         <VariationDeleteButton
                           onConfirm={() =>
                             deleteVariation({ name: variation.name })
@@ -308,7 +305,7 @@ export default function ProductVariationCard({ product }: IProps) {
                             />
 
                             <span className="text-xs text-gray-500 shrink-0">
-                              ${option.price.toFixed(2)}
+                              €{option.price.toFixed(2)}
                             </span>
 
                             <span className="text-xs text-gray-500 shrink-0">
@@ -348,18 +345,17 @@ export default function ProductVariationCard({ product }: IProps) {
                     </div>
 
                     {/* Add Option Form */}
-                    {/* <AnimatePresence>
-                      {addingOptionFor === vIdx && (
+                    <AnimatePresence>
+                      {!!addingOptionFor && (
                         <div className="px-4 pb-3">
                           <AddVaritionOptionForm
-                            onAdd={(label, sku, price) =>
-                              addOption(vIdx, label, sku, price)
-                            }
+                            productId={product.productId}
+                            variationName={addingOptionFor}
                             onCancel={() => setAddingOptionFor(null)}
                           />
                         </div>
                       )}
-                    </AnimatePresence> */}
+                    </AnimatePresence>
                   </motion.div>
                 ))}
               </AnimatePresence>
