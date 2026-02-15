@@ -1,7 +1,6 @@
-export const dynamic = "force-dynamic";
-
 import { serverRequest } from "@/lib/serverFetch";
-import CancelledOrders from "@/src/components/Dashboard/Orders/CancelledOrders/CancelledOrders";
+import Orders from "@/src/components/Dashboard/Orders/Orders";
+import { ORDER_STATUS } from "@/src/consts/order.const";
 import { TMeta, TResponse } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 
@@ -9,7 +8,7 @@ type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
 };
 
-export default async function CancelledOrdersPage({ searchParams }: IProps) {
+export default async function AllOrdersPage({ searchParams }: IProps) {
   const queries = (await searchParams) || {};
   const limit = Number(queries?.limit || 10);
   const page = Number(queries.page || 1);
@@ -20,27 +19,30 @@ export default async function CancelledOrdersPage({ searchParams }: IProps) {
     limit,
     page,
     sortBy,
-    ...(searchTerm ? { searchTerm: searchTerm } : {}),
+    ...(searchTerm ? { searchTerm } : {}),
+    orderStatus: ORDER_STATUS.CANCELED,
   };
 
   const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };
 
   try {
     const result = (await serverRequest.get("/orders", {
-      params: {
-        ...query,
-        isPaid: true,
-        orderStatus: "CANCELED",
-      },
-    })) as unknown as TResponse<TOrder[]>;
+      params: query,
+    })) as TResponse<TOrder[]>;
 
     if (result?.success) {
-      initialData.data = result.data || [];
+      initialData.data = result.data;
       initialData.meta = result.meta;
     }
   } catch (err) {
     console.log("Server fetch error:", err);
   }
 
-  return <CancelledOrders ordersResult={initialData} />;
+  return (
+    <Orders
+      ordersResult={initialData}
+      title="Cancelled Orders"
+      subtitle="List of all cancelled orders"
+    />
+  );
 }

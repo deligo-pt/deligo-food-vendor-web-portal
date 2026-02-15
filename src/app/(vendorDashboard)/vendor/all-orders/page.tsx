@@ -1,7 +1,5 @@
-export const dynamic = "force-dynamic";
-
 import { serverRequest } from "@/lib/serverFetch";
-import ReadyForPickupOrders from "@/src/components/Dashboard/Orders/ReadyForPickup/ReadyForPickup";
+import Orders from "@/src/components/Dashboard/Orders/Orders";
 import { TMeta, TResponse } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 
@@ -9,40 +7,43 @@ type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
 };
 
-export default async function ReadyForPickupOrdersPage({
-  searchParams,
-}: IProps) {
+export default async function AllOrdersPage({ searchParams }: IProps) {
   const queries = (await searchParams) || {};
   const limit = Number(queries?.limit || 10);
   const page = Number(queries.page || 1);
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
+  const orderStatus = queries.orderStatus || "";
 
   const query = {
     limit,
     page,
     sortBy,
-    ...(searchTerm ? { searchTerm: searchTerm } : {}),
+    ...(searchTerm ? { searchTerm } : {}),
+    ...(orderStatus ? { orderStatus } : {}),
   };
 
   const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };
 
   try {
     const result = (await serverRequest.get("/orders", {
-      params: {
-        ...query,
-        isPaid: true,
-        orderStatus: "READY_FOR_PICKUP",
-      },
-    })) as unknown as TResponse<TOrder[]>;
+      params: query,
+    })) as TResponse<TOrder[]>;
 
     if (result?.success) {
-      initialData.data = result.data || [];
+      initialData.data = result.data;
       initialData.meta = result.meta;
     }
   } catch (err) {
     console.log("Server fetch error:", err);
   }
 
-  return <ReadyForPickupOrders ordersResult={initialData} />;
+  return (
+    <Orders
+      ordersResult={initialData}
+      title="All Orders"
+      subtitle="Manage all orders here"
+      showFilters={true}
+    />
+  );
 }
