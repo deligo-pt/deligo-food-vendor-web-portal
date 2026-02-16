@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import CancelOrderModal from "@/src/components/Dashboard/Orders/OrderCancelModal/OrderCancelModal";
+import CancelOrderModal from "@/src/components/Dashboard/Orders1/OrderCancelModal/OrderCancelModal";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
