@@ -1,7 +1,6 @@
 import {
   AlertCircle,
   BarChart2,
-  Box,
   EuroIcon,
   FileText,
   Gift,
@@ -12,7 +11,6 @@ import {
   Settings,
   ShoppingBag,
   Star,
-  Users,
 } from "lucide-react";
 
 type TFunction = (key: string) => string;
@@ -86,16 +84,6 @@ export const getNavItems = (t: TFunction) => {
       ],
     },
     {
-      id: "inventory",
-      title: t("inventory"),
-      icon: <Box size={18} />,
-      items: [
-        { name: t("ingredients"), path: "/vendor/ingredients" },
-        { name: t("stock_alerts"), path: "/vendor/stock-alerts" },
-        { name: t("suppliers"), path: "/vendor/suppliers" },
-      ],
-    },
-    {
       id: "offers",
       title: t("offers_coupons"),
       icon: <Gift size={18} />,
@@ -105,16 +93,6 @@ export const getNavItems = (t: TFunction) => {
         { name: t("inactive_offers"), path: "/vendor/inactive-offers" },
         { name: t("create_new_offer"), path: "/vendor/create-offer" },
         { name: t("coupon_analytics"), path: "/vendor/coupon-analytics" },
-      ],
-    },
-    {
-      id: "staff",
-      title: t("staff_management"),
-      icon: <Users size={18} />,
-      items: [
-        { name: t("all_staff"), path: "/vendor/all-staff" },
-        { name: t("roles_permissions"), path: "/vendor/roles" },
-        { name: t("add_new_staff"), path: "/vendor/add-staff" },
       ],
     },
     {
@@ -135,7 +113,6 @@ export const getNavItems = (t: TFunction) => {
         { name: t("business_info"), path: "/vendor/business-info" },
         { name: t("notifications"), path: "/vendor/notifications" },
         { name: t("change_password"), path: "/vendor/change-password" },
-        { name: t("theme_branding"), path: "/vendor/theme" },
       ],
     },
     {
@@ -144,7 +121,6 @@ export const getNavItems = (t: TFunction) => {
       icon: <MessageCircle size={18} />,
       items: [
         { name: t("chat_with_support"), path: "/vendor/chat-support" },
-        { name: t("help_articles"), path: "/vendor/help" },
         { name: t("live_chat"), path: "/vendor/live-chat" },
         { name: t("report_an_issue"), path: "/vendor/report" },
       ],
