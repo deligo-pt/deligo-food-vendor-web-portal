@@ -1,5 +1,5 @@
 import { serverRequest } from "@/lib/serverFetch";
-import EarningsSummary from "@/src/components/Dashboard/Earnings/EarningsSummary/EarningsSummary";
+import EarningsSummary from "@/src/components/Dashboard/Payments/EarningsSummary/EarningsSummary";
 import { TEarningsAnalytics } from "@/src/types/analytics.type";
 
 export default async function EarningsSummaryPage() {

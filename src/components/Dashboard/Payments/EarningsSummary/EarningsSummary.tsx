@@ -3,7 +3,7 @@
 import {
   AnimatedCounter,
   AnimatedInteger,
-} from "@/src/components/Dashboard/Earnings/EarningsSummary/AnimatedCounter";
+} from "@/src/components/Dashboard/Payments/EarningsSummary/AnimatedCounter";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { TEarningsAnalytics } from "@/src/types/analytics.type";
 import { motion, Variants } from "framer-motion";
@@ -19,7 +19,7 @@ interface IProps {
   analyticsData: TEarningsAnalytics;
 }
 
-export default function EarningsSummary ({ analyticsData }: IProps) {
+export default function EarningsSummary({ analyticsData }: IProps) {
   const containerVariants = {
     hidden: {
       opacity: 0,
@@ -282,4 +282,4 @@ export default function EarningsSummary ({ analyticsData }: IProps) {
       </motion.div>
     </motion.div>
   );
-};
+}

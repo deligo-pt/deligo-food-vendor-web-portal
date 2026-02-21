@@ -1,31 +1,46 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { TRatingSummary, TStarPercentages } from "@/src/types/review.type";
-import { motion } from "framer-motion";
-import { Frown, Meh, Smile, Star } from "lucide-react";
+import { TRatingSummary } from "@/src/types/review.type";
+import { motion, Variants } from "framer-motion";
 import {
+  AwardIcon,
+  MessageCircleIcon,
+  StarIcon,
+  TrendingUpIcon,
+} from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
-  Line,
-  LineChart,
+  RadialBar,
+  RadialBarChart,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { Formatter } from "recharts/types/component/DefaultTooltipContent";
 
-const PRIMARY = "#DC3173";
-
-// Mock ratings
-const stars = [
-  { name: "five", number: 5 },
-  { name: "four", number: 4 },
-  { name: "three", number: 3 },
-  { name: "two", number: 2 },
-  { name: "one", number: 1 },
-];
+const getStar = (star: string) => {
+  switch (star) {
+    case "five":
+      return "5★";
+    case "four":
+      return "4★";
+    case "three":
+      return "3★";
+    case "two":
+      return "2★";
+    case "one":
+      return "1★";
+    default:
+      return "0★";
+  }
+};
 
 export default function RatingSummary({
   summaryResult,
@@ -34,187 +49,374 @@ export default function RatingSummary({
 }) {
   const { t } = useTranslation();
 
+  const radialData = [
+    {
+      name: "Rating",
+      value: (summaryResult.summary?.avgRating / 5) * 100,
+      fill: "#DC3173",
+    },
+  ];
+
+  const starPercentages = Object.entries(
+    summaryResult.summary?.starPercentages || {},
+  ).map(([key, value]) => ({ name: getStar(key), value }));
+
+  const containerVariants = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: {
+      y: 30,
+      opacity: 0,
+    },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 80,
+        damping: 20,
+      },
+    },
+  } as Variants;
+
+  const formatCategory = (cat: string) =>
+    cat.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
+
   return (
-    <div className="min-h-screen p-6 space-y-12">
-      {/* HEADER */}
+    <motion.div
+      className="min-h-screen p-6 space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Header */}
       <TitleHeader
         title={t("rating_summary")}
         subtitle={t("customer_satisfaction_overview")}
       />
 
-      {/* MAIN RATING BLOCK */}
-      <Card className="rounded-3xl bg-white shadow-xl border">
-        <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-10">
-          <div className="text-center md:text-left">
-            <p className="text-gray-500 text-sm">{t("overall_rating")}</p>
-            <h2 className="text-7xl font-extrabold text-gray-900">
-              {summaryResult?.summary?.avgRating}
-            </h2>
-            <div className="flex items-center gap-1 mt-2 justify-center md:justify-start">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star
-                  key={i}
-                  size={26}
-                  className={
-                    i <= summaryResult?.summary?.avgRating
-                      ? "text-yellow-400"
-                      : "text-gray-300"
+      <motion.div
+        variants={itemVariants}
+        className="bg-white rounded-3xl border border-rose-100 shadow-sm p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+      >
+        <div className="space-y-4">
+          <div className="inline-flex gap-2 bg-[#DC3173]/8 text-[#DC3173] text-xs font-semibold px-3 py-1.5 rounded-full">
+            <AwardIcon className="w-3.5 h-3.5" />
+            Customer Satisfaction
+          </div>
+          <div className="mt-6 flex items-center gap-6">
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
+                Total Reviews
+              </p>
+              <p className="text-xl md:text-2xl lg:text-4xl font-bold text-gray-900 mt-0.5">
+                {summaryResult.summary?.avgRating}
+              </p>
+            </div>
+            <div className="w-px h-10 bg-gray-100" />
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
+                Avg Score
+              </p>
+              <p className="text-xl md:text-2xl lg:text-4xl  font-bold text-gray-900 mt-0.5">
+                {summaryResult.summary?.avgRating?.toFixed(1)}
+              </p>
+            </div>
+            <div className="w-px h-10 bg-gray-100" />
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
+                Out of
+              </p>
+              <p className="text-xl md:text-2xl lg:text-4xl font-bold text-gray-900 mt-0.5">
+                5.0
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">
+            Based on last {summaryResult.summary?.totalRatings || 0} reviews
+          </p>
+        </div>
+
+        {/* Radial Score */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="relative w-48 h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadialBarChart
+                cx="50%"
+                cy="50%"
+                innerRadius="70%"
+                outerRadius="100%"
+                startAngle={90}
+                endAngle={-270}
+                data={radialData}
+              >
+                <RadialBar
+                  dataKey="value"
+                  cornerRadius={10}
+                  background={{
+                    fill: "#f1f5f9",
+                  }}
+                />
+              </RadialBarChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-5xl font-bold text-gray-900">
+                {summaryResult.summary?.avgRating?.toFixed(1) || "0.0"}
+              </span>
+              <span className="text-gray-400 text-sm">/ 5</span>
+            </div>
+          </div>
+          <div className="flex gap-1 mt-2">
+            {[1, 2, 3, 4, 5].map((s) => (
+              <StarIcon
+                key={s}
+                className={`w-4 h-4 ${s <= (summaryResult.summary?.avgRating || 0) ? "fill-[#DC3173] text-[#DC3173]" : "text-gray-200"}`}
+              />
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Sentiment Strip — 3 cards */}
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+      >
+        {[
+          {
+            label: "Positive Reviews",
+            value: summaryResult.summary?.sentimentPercentages?.positive,
+            color: "emerald",
+            border: "border-l-4 border-emerald-400",
+            bg: "bg-emerald-50",
+            text: "text-emerald-600",
+            num: "text-emerald-700",
+          },
+          {
+            label: "Neutral Reviews",
+            value: summaryResult.summary?.sentimentPercentages?.neutral,
+            color: "amber",
+            border: "border-l-4 border-amber-400",
+            bg: "bg-amber-50",
+            text: "text-amber-600",
+            num: "text-amber-700",
+          },
+          {
+            label: "Negative Reviews",
+            value: summaryResult.summary?.sentimentPercentages?.negative,
+            color: "red",
+            border: "border-l-4 border-red-400",
+            bg: "bg-red-50",
+            text: "text-red-600",
+            num: "text-red-700",
+          },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-5 ${item.border}`}
+          >
+            <p
+              className={`text-xs font-semibold uppercase tracking-wide ${item.text}`}
+            >
+              {item.label}
+            </p>
+            <p className={`text-4xl font-bold mt-2 ${item.num}`}>
+              {item.value}%
+            </p>
+            <div className={`mt-3 h-1.5 rounded-full ${item.bg}`}>
+              <div
+                className={`h-full rounded-full bg-current ${item.text}`}
+                style={{
+                  width: `${item.value}%`,
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Breakdown + Trend — two column */}
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        {/* Horizontal Bar Chart */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-8 h-8 bg-[#DC3173]/10 rounded-lg flex items-center justify-center">
+              <TrendingUpIcon className="w-4 h-4 text-[#DC3173]" />
+            </div>
+            <h3 className="font-semibold text-gray-900">Star Distribution</h3>
+          </div>
+          <div className="h-[220px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={starPercentages}
+                layout="vertical"
+                margin={{
+                  left: 0,
+                  right: 16,
+                }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  horizontal={false}
+                  stroke="#F1F5F9"
+                />
+                <XAxis
+                  type="number"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: "#94A3B8",
+                    fontSize: 11,
+                  }}
+                  domain={[0, 100]}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: "#64748B",
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}
+                  width={32}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: "10px",
+                    border: "1px solid #E2E8F0",
+                    fontSize: 12,
+                  }}
+                  formatter={
+                    ((v: number) => [`${v}%`, "Reviews"]) as Formatter<
+                      number,
+                      string
+                    >
                   }
                 />
-              ))}
-            </div>
-            {/* <p className="text-xs text-gray-400 mt-2">
-                {t("based_on_last")} 200 {t("reviews")}
-              </p> */}
+                <Bar dataKey="value" fill="#DC3173" radius={[0, 6, 6, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
+        </div>
 
-          {/* Sentiment Circles */}
-          <div className="flex gap-6">
-            {/* Positive */}
-            <div className="text-center">
-              <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center border-4 border-green-400">
-                <Smile className="text-green-600" size={32} />
-              </div>
-              <p className="text-sm font-semibold mt-2">
-                {summaryResult?.summary?.sentimentPercentages?.positive}%
-                {t("positive")}
-              </p>
+        {/* Area Trend */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 relative">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-8 h-8 bg-[#DC3173]/10 rounded-lg flex items-center justify-center">
+              <MessageCircleIcon className="w-4 h-4 text-[#DC3173]" />
             </div>
-
-            {/* Neutral */}
-            <div className="text-center">
-              <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center border-4 border-amber-400">
-                <Meh className="text-amber-600" size={32} />
-              </div>
-              <p className="text-sm font-semibold mt-2">
-                {summaryResult?.summary?.sentimentPercentages?.neutral}%
-                {t("neutral")}
-              </p>
-            </div>
-
-            {/* Negative */}
-            <div className="text-center">
-              <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center border-4 border-red-400">
-                <Frown className="text-red-600" size={32} />
-              </div>
-              <p className="text-sm font-semibold mt-2">
-                {summaryResult?.summary?.sentimentPercentages?.negative}%
-                {t("negative")}
-              </p>
-            </div>
+            <h3 className="font-semibold text-gray-900">30-Day Trend</h3>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* STAR DISTRIBUTION */}
-      <Card className="rounded-3xl bg-white border shadow-md">
-        <CardContent className="p-6 space-y-4">
-          <h2 className="font-bold text-lg">{t("rating_breakdown")}</h2>
-          <Separator />
-
-          {stars.map((star, idx) => (
-            <div key={idx} className="flex items-center gap-3">
-              <span className="w-14 text-sm font-semibold">
-                {star.number} {t("stars")}
-              </span>
-              <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${
-                      summaryResult?.summary?.starPercentages?.[
-                        star.name as keyof TStarPercentages
-                      ]
-                    }%`,
+          <div className="h-[220px] relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={summaryResult.chart}>
+                <defs>
+                  <linearGradient id="ratingGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#DC3173" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#DC3173" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: "#94A3B8",
+                    fontSize: 10,
                   }}
-                  transition={{ duration: 0.7, delay: idx * 0.1 }}
-                  style={{ background: PRIMARY }}
-                  className="h-full rounded-full"
+                  interval={6}
                 />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: "#94A3B8",
+                    fontSize: 10,
+                  }}
+                  domain={[0, 5]}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: "10px",
+                    border: "1px solid #E2E8F0",
+                    fontSize: 12,
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="avgRatings"
+                  stroke="#DC3173"
+                  strokeWidth={2}
+                  fill="url(#ratingGrad)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+            {summaryResult.summary?.avgRating === 0 && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                  <MessageCircleIcon className="w-5 h-5 text-gray-300" />
+                </div>
+                <p className="text-gray-400 text-sm font-medium">
+                  Awaiting reviews
+                </p>
               </div>
-              <span className="w-10 text-sm text-gray-600">
-                {
-                  summaryResult?.summary?.starPercentages?.[
-                    star.name as keyof TStarPercentages
-                  ]
-                }
-                %
-              </span>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            )}
+          </div>
+        </div>
+      </motion.div>
 
-      {/* 30 DAY TREND */}
-      <Card className="rounded-3xl bg-white border shadow-md">
-        <CardContent className="p-6">
-          <h2 className="font-bold text-lg mb-3">{t("rating_trend_30_day")}</h2>
-          <Separator className="mb-4" />
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={summaryResult?.chart}>
-              <Line
-                type="monotone"
-                dataKey="avgRatings"
-                stroke={PRIMARY}
-                strokeWidth={2}
-              />
-              <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-              <XAxis />
-              <YAxis dataKey="avgRatings" />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* CATEGORY RATINGS */}
-      <Card className="rounded-3xl bg-white border shadow-md">
-        <CardContent className="p-6 space-y-5">
-          <h2 className="font-bold text-lg">{t("category_ratings")}</h2>
-          <Separator />
-
-          {Object.entries(summaryResult?.summary?.categoryRatings)?.map(
-            ([key, val], i) => (
-              <div key={i} className="flex justify-between items-center">
-                <span className="font-medium text-gray-700">{key}</span>
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star
-                      key={s}
-                      size={18}
-                      className={s <= val ? "text-yellow-400" : "text-gray-300"}
+      {/* Category Ratings — 2x2 grid */}
+      <motion.div variants={itemVariants}>
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+          Category Scores
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Object.entries(summaryResult.summary?.categoryRatings)?.map(
+            ([key, value], i) => (
+              <motion.div
+                key={i}
+                variants={itemVariants}
+                transition={{
+                  delay: i * 0.05,
+                }}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center"
+              >
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  {formatCategory(key)}
+                </p>
+                <p className="text-4xl font-bold text-gray-900">
+                  {value?.toFixed(1)}
+                </p>
+                <div className="flex justify-center gap-1.5 mt-3">
+                  {[1, 2, 3, 4, 5].map((dot) => (
+                    <div
+                      key={dot}
+                      className={`w-2 h-2 rounded-full ${dot <= value ? "bg-[#DC3173]" : "bg-gray-200"}`}
                     />
                   ))}
                 </div>
-              </div>
+                <p className="text-xs text-gray-400 mt-2">No reviews yet</p>
+              </motion.div>
             ),
           )}
-        </CardContent>
-      </Card>
-
-      {/* AI INSIGHTS */}
-      {/* <Card className="rounded-3xl bg-white border shadow-md">
-          <CardContent className="p-6 space-y-3">
-            <div className="flex items-center gap-2">
-              <Gauge className="text-gray-800" />
-              <h2 className="font-bold text-lg">{t("ai_insights")}</h2>
-            </div>
-
-            <Separator />
-
-            <ul className="list-disc pl-5 text-sm text-gray-700 space-y-2">
-              <li>{t("delivery_speed_ratings_improved")}</li>
-              <li>{t("negative_reviews_mostly_happed_after")}</li>
-              <li>{t("food_quality_strong_weekends")}</li>
-              <li>{t("packaging_complaints_decreased_after")}</li>
-            </ul>
-
-            <div className="pt-2">
-              <Button style={{ background: PRIMARY }} className="text-white">
-                {t("improve_performance")}
-              </Button>
-            </div>
-          </CardContent>
-        </Card> */}
-    </div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }

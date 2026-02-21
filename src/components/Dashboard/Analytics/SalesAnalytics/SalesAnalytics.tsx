@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatedCounter } from "@/src/components/Dashboard/Earnings/EarningsSummary/AnimatedCounter";
+import { AnimatedCounter } from "@/src/components/Dashboard/Payments/EarningsSummary/AnimatedCounter";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { TSalesAnalytics } from "@/src/types/analytics.type";
 import { motion, Variants } from "framer-motion";
