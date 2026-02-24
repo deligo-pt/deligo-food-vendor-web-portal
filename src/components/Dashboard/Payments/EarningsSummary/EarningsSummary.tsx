@@ -1,5 +1,6 @@
 "use client";
 
+import AnalyticsChart from "@/src/components/AnalyticsChart/AnalyticsChart";
 import {
   AnimatedCounter,
   AnimatedInteger,
@@ -7,17 +8,38 @@ import {
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { TEarningsAnalytics } from "@/src/types/analytics.type";
 import { motion, Variants } from "framer-motion";
-import {
-  ActivityIcon,
-  CalendarIcon,
-  ClockIcon,
-  EuroIcon,
-  PackageIcon,
-} from "lucide-react";
+import { ActivityIcon, CalendarIcon, ClockIcon, EuroIcon } from "lucide-react";
 
 interface IProps {
   analyticsData: TEarningsAnalytics;
 }
+
+const monthlyEarnings = [
+  {
+    name: "Jan",
+    earnings: 1250,
+  },
+  {
+    name: "Feb",
+    earnings: 1450,
+  },
+  {
+    name: "Mar",
+    earnings: 1350,
+  },
+  {
+    name: "Apr",
+    earnings: 1650,
+  },
+  {
+    name: "May",
+    earnings: 1850,
+  },
+  {
+    name: "Jun",
+    earnings: 2100,
+  },
+];
 
 export default function EarningsSummary({ analyticsData }: IProps) {
   const containerVariants = {
@@ -218,68 +240,36 @@ export default function EarningsSummary({ analyticsData }: IProps) {
         </motion.div>
       </div>
 
-      {/* Products Stats Section */}
-      <motion.div
-        variants={itemVariants}
-        className="bg-white rounded-3xl p-8 border border-gray-200 shadow-sm relative overflow-hidden"
-      >
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[#DC3173]/5 rounded-full blur-[50px] -translate-y-1/2 translate-x-1/2" />
-
-        <div className="flex items-center gap-3 mb-6">
-          <PackageIcon className="w-6 h-6 text-[#DC3173]" />
-          <h2 className="text-xl font-bold text-gray-900">
-            Product Performance
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-gray-50 p-4 rounded-2xl text-center border border-gray-200">
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              <AnimatedInteger value={analyticsData.products?.total} />
-            </div>
-            <div className="text-xs text-gray-400 uppercase tracking-wider">
-              Total Items
-            </div>
-          </div>
-          <div className="bg-[#DC3173]/10 p-4 rounded-2xl text-center border border-green-100">
-            <div className="text-3xl font-bold text-[#DC3173] mb-1">
-              <AnimatedInteger value={analyticsData.products?.active} />
-            </div>
-            <div className="text-xs text-[#DC3173]/80 uppercase tracking-wider">
-              Active Items
-            </div>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-2xl text-center border border-gray-200">
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              <AnimatedInteger value={analyticsData.products?.inactive} />
-            </div>
-            <div className="text-xs text-gray-400 uppercase tracking-wider">
-              Inactive Items
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-gray-100">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Inventory Progress</span>
-          </div>
-          <div className="w-full bg-gray-200 h-2 rounded-full mt-3 overflow-hidden">
-            <motion.div
-              className="h-full bg-linear-to-r from-[#DC3173] to-[#e45a92]"
-              initial={{
-                width: 0,
-              }}
-              animate={{
-                width: `${(analyticsData.products?.active / analyticsData.products?.total) * 100}%`,
-              }}
-              transition={{
-                duration: 1.5,
-                ease: "easeOut",
-              }}
-            />
-          </div>
-        </div>
-      </motion.div>
+      {/* Charts */}
+      <div className="mb-8 print:mb-4">
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            delay: 0.2,
+          }}
+          className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+        >
+          <h3 className="text-lg font-bold text-gray-900 mb-2">
+            Earnings Overview
+          </h3>
+          <p className="text-sm text-gray-500 mb-6">
+            Earnings trend over the last 6 months
+          </p>
+          <AnalyticsChart
+            data={monthlyEarnings}
+            type="bar"
+            dataKey="earnings"
+            height={200}
+          />
+        </motion.div>
+      </div>
     </motion.div>
   );
 }

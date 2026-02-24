@@ -1,5 +1,5 @@
-import ListCardSkeleton from "@/src/components/Skeletons/common/ListCardSkeleton";
+import TablePaginationSkeleton from "@/src/components/Skeletons/common/TablePaginationSkeleton";
 
 export default function Loading() {
-  return <ListCardSkeleton />;
+  return <TablePaginationSkeleton cols={7} />;
 }

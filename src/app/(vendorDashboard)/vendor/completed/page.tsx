@@ -20,7 +20,7 @@ export default async function AllOrdersPage({ searchParams }: IProps) {
     page,
     sortBy,
     ...(searchTerm ? { searchTerm } : {}),
-    orderStatus: ORDER_STATUS.CANCELED,
+    orderStatus: ORDER_STATUS.DELIVERED,
   };
 
   const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };

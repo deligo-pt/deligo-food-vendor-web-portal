@@ -130,7 +130,7 @@ export default function GlobalError() {
       </motion.div>
 
       {/* Bottom Accent Bar */}
-      <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-[#DC3173] via-[#ff5fa0] to-[#DC3173] opacity-60" />
+      <div className="absolute bottom-0 left-0 w-full h-2 bg-linear-to-r from-[#DC3173] via-[#ff5fa0] to-[#DC3173] opacity-60" />
     </div>
   );
 }

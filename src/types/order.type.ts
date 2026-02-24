@@ -66,6 +66,11 @@ export type TOrder = {
     geoAccuracy?: number; // meters
   };
 
+  // Price
+  payoutSummary?: {
+    grandTotal: number;
+  };
+
   // Delivery Details
   deliveryCharge?: number;
   estimatedDeliveryTime?: string; // e.g., "30 mins"

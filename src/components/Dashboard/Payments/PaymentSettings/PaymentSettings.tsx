@@ -2,6 +2,7 @@
 
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { TVendor } from "@/src/types/vendor.type";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import {
   AlertTriangleIcon,
@@ -15,6 +16,10 @@ import {
   ShieldIcon,
 } from "lucide-react";
 import { useState } from "react";
+
+interface IProps {
+  bankDetails: TVendor["bankDetails"];
+}
 
 const tabs = [
   {
@@ -52,13 +57,18 @@ const scheduleOptions = [
   },
 ];
 
-export default function PaymentSettings() {
+export default function PaymentSettings({ bankDetails }: IProps) {
   const { t } = useTranslation();
 
+  console.log("Bank Details:", bankDetails);
+
   const [activeTab, setActiveTab] = useState("bank");
-  const [iban, setIban] = useState("PT50 0002 0123 5678 9011 22");
-  const [accountHolder, setAccountHolder] = useState("Deligo Vendor");
-  const [bankName, setBankName] = useState("Caixa Geral de Depósitos");
+  const [iban, setIban] = useState(bankDetails?.iban || "");
+  const [accountHolder, setAccountHolder] = useState(
+    bankDetails?.accountHolderName || "",
+  );
+  const [bankName, setBankName] = useState(bankDetails?.bankName || "");
+  const [swift, setSwift] = useState(bankDetails?.swiftCode || "");
   const [selectedSchedule, setSelectedSchedule] = useState("weekly");
 
   const containerVariants = {
@@ -118,7 +128,7 @@ export default function PaymentSettings() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all mb-1 last:mb-0 ${isActive ? "bg-[#DC3173]/8 text-[#DC3173]" : "text-gray-500 hover:bg-gray-50"}`}
               >
-                <Icon className="w-4 h-4 flex-shrink-0" />
+                <Icon className="w-4 h-4 shrink-0" />
                 <span className="flex-1 text-left">{tab.label}</span>
                 {isActive && (
                   <motion.div
@@ -154,7 +164,7 @@ export default function PaymentSettings() {
               className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 bg-[#DC3173]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-[#DC3173]/10 rounded-xl flex items-center justify-center shrink-0">
                   <LandmarkIcon className="w-6 h-6 text-[#DC3173]" />
                 </div>
                 <div>
@@ -169,7 +179,7 @@ export default function PaymentSettings() {
               <div className="border-t border-gray-100 mb-6" />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="md:col-span-2">
+                <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                     IBAN
                   </label>
@@ -177,7 +187,18 @@ export default function PaymentSettings() {
                     type="text"
                     value={iban}
                     onChange={(e) => setIban(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 focus:bg-white focus:border-[#DC3173] focus:ring-2 focus:ring-[#DC3173]/20 outline-none transition-all font-mono text-sm"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 focus:bg-white focus:border-[#DC3173] focus:ring-2 focus:ring-[#DC3173]/20 outline-none transition-all font-mono text-sm uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    Swift
+                  </label>
+                  <input
+                    type="text"
+                    value={swift}
+                    onChange={(e) => setSwift(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-900 focus:bg-white focus:border-[#DC3173] focus:ring-2 focus:ring-[#DC3173]/20 outline-none transition-all font-mono text-sm uppercase"
                   />
                 </div>
                 <div>
@@ -246,7 +267,7 @@ export default function PaymentSettings() {
               className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
                   <CalendarIcon className="w-6 h-6 text-amber-600" />
                 </div>
                 <div>
@@ -270,7 +291,7 @@ export default function PaymentSettings() {
                       className={`w-full flex items-center gap-4 rounded-xl border p-4 text-left transition-all ${isSelected ? "ring-2 ring-[#DC3173] border-[#DC3173]/30 bg-[#DC3173]/5" : "border-gray-200 hover:border-gray-300"}`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? "border-[#DC3173]" : "border-gray-300"}`}
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? "border-[#DC3173]" : "border-gray-300"}`}
                       >
                         {isSelected && (
                           <div className="w-2 h-2 rounded-full bg-[#DC3173]" />
@@ -292,7 +313,7 @@ export default function PaymentSettings() {
               </div>
 
               <div className="mt-5 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-                <InfoIcon className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <InfoIcon className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <p className="text-amber-700 text-sm">
                   Payments follow SEPA rules for Portugal. Processing may take
                   1–3 business days.
@@ -337,7 +358,7 @@ export default function PaymentSettings() {
               className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
                   <ShieldIcon className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
@@ -352,7 +373,7 @@ export default function PaymentSettings() {
               <div className="border-t border-gray-100 mb-6" />
 
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 mb-6">
-                <AlertTriangleIcon className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <AlertTriangleIcon className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-amber-800 text-sm">
                     Identity Not Verified
@@ -382,7 +403,7 @@ export default function PaymentSettings() {
                       key={item.title}
                       className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl"
                     >
-                      <div className="w-9 h-9 bg-white border border-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <div className="w-9 h-9 bg-white border border-gray-200 rounded-lg flex items-center justify-center shrink-0">
                         <Icon className="w-4 h-4 text-gray-500" />
                       </div>
                       <div>

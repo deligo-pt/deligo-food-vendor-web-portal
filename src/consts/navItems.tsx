@@ -110,7 +110,6 @@ export const getNavItems = (t: TFunction) => {
       title: t("settings"),
       icon: <Settings size={18} />,
       items: [
-        { name: t("business_info"), path: "/vendor/business-info" },
         { name: t("notifications"), path: "/vendor/notifications" },
         { name: t("change_password"), path: "/vendor/change-password" },
       ],
