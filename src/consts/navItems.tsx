@@ -50,6 +50,8 @@ export const getNavItems = (t: TFunction) => {
         { name: t("stock_management"), path: "/vendor/stock" },
         { name: "Variation Management", path: "/vendor/variation-management" },
         { name: t("add_ons"), path: "/vendor/addons" },
+        { name: "Ingredients", path: "/vendor/ingredients" },
+        { name: "My Ingredient Orders", path: "/vendor/ingredients/my-orders" },
       ],
     },
     {
