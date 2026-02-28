@@ -1,35 +1,25 @@
-import { TOrder } from "@/src/types/order.type";
-
-export type TPayoutStatus = "COMPLETED" | "PROCESSING" | "FAILED";
-
 export type TPayout = {
   _id: string;
   payoutId: string;
 
   amount: string;
-  method: string;
-  iban: string;
-  accountHolder: string;
-  bankName: string;
 
-  status: TPayoutStatus;
+  bankDetails: {
+    iban: string;
+    accountHolder: string;
+    bankName: string;
+    swiftCode: string;
+  };
 
-  initiatedAt?: string;
-  processedAt?: string;
-  settledAt?: string;
+  status: "PENDING" | "PROCESSING" | "PAID" | "FAILED";
+  paymentMethod: "BANK_TRANSFER" | "MOBILE_BANKING" | "CASH";
 
-  reference?: string;
+  bankReferenceId: string;
 
-  orders?: {
-    orderId: string;
-    amount: string;
-    date: string;
-    status: TOrder["orderStatus"];
-  }[];
+  payoutCategory: string;
+  remarks: string;
 
-  grossEarnings?: string;
-  platformFee?: string;
-  netPayout?: string;
+  payoutProof: string;
 
   createdAt: string;
   updatedAt: string;

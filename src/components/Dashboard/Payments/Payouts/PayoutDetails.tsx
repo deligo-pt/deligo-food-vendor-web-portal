@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { TPayout } from "@/src/types/payout.type";
 import { format } from "date-fns";
@@ -10,85 +11,48 @@ import {
   CheckCircle2Icon,
   ClockIcon,
   CopyIcon,
-  HashIcon,
-  MinusCircleIcon,
-  ShoppingBagIcon,
-  TrendingUpIcon,
-  WalletIcon,
+  ThumbsUpIcon,
+  XCircleIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-const payout: TPayout = {
-  _id: "1",
-  payoutId: "PAY-2025-001",
-  amount: "84.50",
-  method: "Bank Transfer (SEPA)",
-  iban: "PT50 0002 0123 5678 9011 22",
-  accountHolder: "Deligo Vendor",
-  bankName: "Caixa Geral de Depósitos",
-  status: "COMPLETED",
-  initiatedAt: "2025-11-08 · 09:00 AM",
-  processedAt: "2025-11-08 · 02:32 PM",
-  settledAt: "2025-11-08 · 05:00 PM",
-  reference: "SEPA-REF-20251108-001",
-  orders: [
-    {
-      orderId: "DG-9031",
-      amount: "12.90",
-      date: "2025-11-08",
-      status: "DELIVERED",
-    },
-    {
-      orderId: "DG-9022",
-      amount: "19.40",
-      date: "2025-11-07",
-      status: "DELIVERED",
-    },
-    {
-      orderId: "DG-9018",
-      amount: "24.80",
-      date: "2025-11-06",
-      status: "DELIVERED",
-    },
-    {
-      orderId: "DG-9010",
-      amount: "31.20",
-      date: "2025-11-05",
-      status: "DELIVERED",
-    },
-  ],
-  grossEarnings: "88.30",
-  platformFee: "3.80",
-  netPayout: "84.50",
-  createdAt: "2025-11-08T09:00:00Z",
-  updatedAt: "2025-11-08T09:00:00Z",
-};
+// const timeline = [
+//   {
+//     label: "Initiated",
+//     time: "09:00 AM",
+//     done: true,
+//   },
+//   {
+//     label: "Processing",
+//     time: "11:15 AM",
+//     done: true,
+//   },
+//   {
+//     label: "Sent to Bank",
+//     time: "02:32 PM",
+//     done: true,
+//   },
+//   {
+//     label: "Settled",
+//     time: "05:00 PM",
+//     done: true,
+//   },
+// ];
 
-const timeline = [
-  {
-    label: "Initiated",
-    time: "09:00 AM",
-    done: true,
-  },
-  {
-    label: "Processing",
-    time: "11:15 AM",
-    done: true,
-  },
-  {
-    label: "Sent to Bank",
-    time: "02:32 PM",
-    done: true,
-  },
-  {
-    label: "Settled",
-    time: "05:00 PM",
-    done: true,
-  },
-];
+interface IProps {
+  payout: TPayout;
+}
 
-export default function PayoutDetails() {
+export default function PayoutDetails({ payout }: IProps) {
   const router = useRouter();
+  const [ibanCopied, setIbanCopied] = useState(false);
+
+  const copyIban = () => {
+    navigator.clipboard.writeText(payout.bankDetails.iban!);
+    setIbanCopied(true);
+    setTimeout(() => setIbanCopied(false), 3000);
+  };
 
   const containerVariants = {
     hidden: {
@@ -156,18 +120,44 @@ export default function PayoutDetails() {
                 <span className="text-black/70 text-sm font-medium">
                   Payout
                 </span>
-                <span className="bg-black/20 text-black text-xs px-2 py-0.5 rounded-full font-mono">
-                  {payout.payoutId}
-                </span>
+                {payout.payoutId && (
+                  <span className="bg-black/20 text-black text-xs px-2 py-0.5 rounded-full font-mono">
+                    {payout.payoutId}
+                  </span>
+                )}
               </div>
               <p className="text-2xl md:text-4xl text-[#DC3173] font-bold mt-2">
                 €{payout.amount}
               </p>
-              <p className="text-[#DC3173]/70 text-sm mt-2">{payout.method}</p>
+              <p className="text-[#DC3173]/70 text-sm mt-2">
+                {payout.paymentMethod}
+              </p>
             </div>
-            <div className="flex items-center gap-2 bg-[#DC3173]/10 border border-[#DC3173]/30 text-[#DC3173] px-4 py-2 rounded-full text-sm font-semibold">
-              <CheckCircle2Icon className="w-4 h-4" />
-              Completed
+            <div
+              className={cn(
+                "flex items-center gap-2 border px-4 py-2 rounded-full text-sm font-semibold",
+                payout.status === "PAID"
+                  ? "bg-[#DC3173]/10 border-[#DC3173]/30 text-[#DC3173]"
+                  : payout.status === "PENDING"
+                    ? "bg-amber-100 border-amber-200 text-amber-800"
+                    : payout.status === "FAILED"
+                      ? "bg-red-100 border-red-200 text-red-800"
+                      : payout.status === "PROCESSING"
+                        ? "bg-amber-100 border-amber-200 text-amber-800"
+                        : "bg-gray-100 border-gray-200 text-gray-800",
+              )}
+            >
+              {payout.status === "PAID" && (
+                <CheckCircle2Icon className="w-4 h-4" />
+              )}
+              {payout.status === "PENDING" && <ClockIcon className="w-4 h-4" />}
+              {payout.status === "FAILED" && (
+                <XCircleIcon className="w-4 h-4" />
+              )}
+              {payout.status === "PROCESSING" && (
+                <ClockIcon className="w-4 h-4" />
+              )}
+              <span>{payout.status}</span>
             </div>
           </div>
           <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -176,7 +166,9 @@ export default function PayoutDetails() {
                 Date
               </p>
               <p className="text-black font-semibold mt-0.5">
-                {format(payout.createdAt, "do MMM yyyy")}
+                {payout.createdAt
+                  ? format(payout.createdAt, "do MMM yyyy")
+                  : "N/A"}
               </p>
             </div>
             <div>
@@ -184,7 +176,7 @@ export default function PayoutDetails() {
                 Bank
               </p>
               <p className="text-black font-semibold mt-0.5">
-                {payout.bankName}
+                {payout.bankDetails?.bankName}
               </p>
             </div>
             <div>
@@ -192,16 +184,16 @@ export default function PayoutDetails() {
                 Reference
               </p>
               <p className="text-black font-mono text-sm mt-0.5">
-                {payout.reference}
+                {payout.bankReferenceId}
               </p>
             </div>
           </div>
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Timeline */}
-        <motion.div
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
+      {/* Timeline */}
+      {/* <motion.div
           variants={itemVariants}
           className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
         >
@@ -240,158 +232,68 @@ export default function PayoutDetails() {
               ))}
             </div>
           </div>
-        </motion.div>
+        </motion.div> */}
 
-        {/* Bank Details */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
-        >
-          <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <BuildingIcon className="w-4 h-4 text-[#DC3173]" />
-            Bank Account
-          </h3>
-          <div className="space-y-4">
-            {[
-              {
-                label: "Account Holder",
-                value: payout.accountHolder,
-              },
-              {
-                label: "Bank Name",
-                value: payout.bankName,
-              },
-              {
-                label: "IBAN",
-                value: payout.iban,
-                mono: true,
-              },
-              {
-                label: "Method",
-                value: payout.method,
-              },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0"
-              >
-                <span className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
-                  {item.label}
-                </span>
-                <span
-                  className={`text-sm text-gray-900 font-medium ${item.mono ? "font-mono" : ""}`}
-                >
-                  {item.value}
-                </span>
-              </div>
-            ))}
-          </div>
-          <button className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-colors">
-            <CopyIcon className="w-3.5 h-3.5" />
-            Copy IBAN
-          </button>
-        </motion.div>
-      </div>
-
-      {/* Earnings Breakdown */}
+      {/* Bank Details */}
       <motion.div
         variants={itemVariants}
         className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
       >
         <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <TrendingUpIcon className="w-4 h-4 text-[#DC3173]" />
-          Earnings Breakdown
+          <BuildingIcon className="w-4 h-4 text-[#DC3173]" />
+          Bank Account
         </h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl">
-            <div className="flex items-center gap-3">
-              <ShoppingBagIcon className="w-4 h-4 text-green-600" />
-              <span className="text-sm font-medium text-green-800">
-                Gross Earnings
-              </span>
-            </div>
-            <span className="font-bold text-green-700">
-              +€{payout.grossEarnings}
-            </span>
-          </div>
-          <div className="flex items-center justify-between p-3 bg-red-50 rounded-xl">
-            <div className="flex items-center gap-3">
-              <MinusCircleIcon className="w-4 h-4 text-red-500" />
-              <span className="text-sm font-medium text-red-700">
-                Platform Fee
-              </span>
-            </div>
-            <span className="font-bold text-red-600">
-              -€{payout.platformFee}
-            </span>
-          </div>
-          <div className="h-px bg-gray-100 my-2" />
-          <div className="flex items-center justify-between p-3 bg-[#DC3173]/5 rounded-xl border border-[#DC3173]/15">
-            <div className="flex items-center gap-3">
-              <WalletIcon className="w-4 h-4 text-[#DC3173]" />
-              <span className="text-sm font-bold text-[#DC3173]">
-                Net Payout
-              </span>
-            </div>
-            <span className="font-bold text-[#DC3173] text-lg">
-              €{payout.netPayout}
-            </span>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Included Orders */}
-      <motion.div
-        variants={itemVariants}
-        className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6"
-      >
-        <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-          <ShoppingBagIcon className="w-4 h-4 text-[#DC3173]" />
-          Included Orders
-        </h3>
-        <p className="text-gray-400 text-sm mb-5">
-          {payout.orders?.length} orders included in this payout
-        </p>
-        <div className="space-y-3">
-          {payout.orders?.map((order, i) => (
-            <motion.div
-              key={order.orderId}
-              initial={{
-                opacity: 0,
-                x: -10,
-              }}
-              animate={{
-                opacity: 1,
-                x: 0,
-              }}
-              transition={{
-                delay: 0.3 + i * 0.07,
-              }}
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+        <div className="space-y-4">
+          {[
+            {
+              label: "Account Holder",
+              value: payout.bankDetails?.accountHolder || "N/A",
+            },
+            {
+              label: "Bank Name",
+              value: payout.bankDetails?.bankName || "N/A",
+            },
+            {
+              label: "IBAN",
+              value: payout.bankDetails?.iban || "N/A",
+              mono: true,
+            },
+            {
+              label: "Method",
+              value: payout.paymentMethod || "N/A",
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[#DC3173]/10 rounded-lg flex items-center justify-center">
-                  <HashIcon className="w-4 h-4 text-[#DC3173]" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">
-                    Order #{order.orderId}
-                  </p>
-                  <p className="text-xs text-gray-400">{order.date}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                  {order.status}
-                </span>
-                <span className="font-bold text-gray-900">
-                  +€{order.amount}
-                </span>
-              </div>
-            </motion.div>
+              <span className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
+                {item.label}
+              </span>
+              <span
+                className={`text-sm text-gray-900 font-medium ${item.mono ? "font-mono" : ""}`}
+              >
+                {item.value}
+              </span>
+            </div>
           ))}
         </div>
+        {ibanCopied ? (
+          <div className="font-semibold text-[#DC3173] mt-4 w-full flex items-center justify-center gap-2 border border-[#DC3173] rounded-xl py-2.5 text-sm">
+            <ThumbsUpIcon className="w-3.5 h-3.5" />
+            Copied to clipboard
+          </div>
+        ) : (
+          <button
+            onClick={copyIban}
+            className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+          >
+            <CopyIcon className="w-3.5 h-3.5" />
+            Copy IBAN
+          </button>
+        )}
       </motion.div>
+      {/* </div> */}
     </motion.div>
   );
 }

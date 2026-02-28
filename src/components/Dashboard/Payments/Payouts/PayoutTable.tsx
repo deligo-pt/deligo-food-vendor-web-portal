@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,6 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
 import { TPayout } from "@/src/types/payout.type";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -18,8 +23,8 @@ import {
   Cog,
   CreditCardIcon,
   EuroIcon,
-  EyeIcon,
   HashIcon,
+  MoreVertical,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -89,19 +94,30 @@ export default function PayoutTable({ payouts }: IProps) {
           {payouts?.map((p) => (
             <TableRow key={p._id}>
               <TableCell>{p.payoutId}</TableCell>
-              <TableCell>{p.method}</TableCell>
+              <TableCell>{p.paymentMethod}</TableCell>
               <TableCell>€{p.amount}</TableCell>
               <TableCell>{p.status}</TableCell>
               <TableCell>{format(p.createdAt, "do MMM yyyy")}</TableCell>
               <TableCell className="text-right">
-                <Button
-                  onClick={() => router.push(`/vendor/payouts/${p.payoutId}`)}
-                  size="sm"
-                  className="bg-[#DC3173] flex items-center gap-2 hover:bg-[#DC3173]/90 ml-auto"
-                >
-                  <EyeIcon />
-                  View
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <MoreVertical className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        router.push(`/vendor/payouts/${p.payoutId}`)
+                      }
+                    >
+                      View
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => window.open(p.payoutProof, "_blank")}
+                    >
+                      Payout Proof
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))}

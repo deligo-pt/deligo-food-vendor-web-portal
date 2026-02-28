@@ -66,6 +66,10 @@ export type TEarningsAnalytics = {
     active: number;
     inactive: number;
   };
+  monthlyEarnings: {
+    name: string;
+    earnings: string;
+  };
 };
 
 type TWeeklyTrend = {
