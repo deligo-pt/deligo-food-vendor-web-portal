@@ -22,8 +22,6 @@ interface IProps {
 export default function OrderDetails({ order }: IProps) {
   const router = useRouter();
 
-  console.log(order);
-
   const containerVariants = {
     hidden: {
       opacity: 0,
@@ -60,7 +58,7 @@ export default function OrderDetails({ order }: IProps) {
         animate="visible"
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#DC3173] to-[#e45a92] p-6 text-white">
+        <div className="bg-linear-to-r from-[#DC3173] to-[#e45a92] p-6 text-white">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.back()}

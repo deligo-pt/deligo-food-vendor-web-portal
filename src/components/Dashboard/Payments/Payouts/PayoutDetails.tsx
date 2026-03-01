@@ -247,7 +247,7 @@ export default function PayoutDetails({ payout }: IProps) {
           {[
             {
               label: "Account Holder",
-              value: payout.bankDetails?.accountHolder || "N/A",
+              value: payout.bankDetails?.accountHolderName || "N/A",
             },
             {
               label: "Bank Name",

@@ -6,7 +6,7 @@ export type TPayout = {
 
   bankDetails: {
     iban: string;
-    accountHolder: string;
+    accountHolderName: string;
     bankName: string;
     swiftCode: string;
   };

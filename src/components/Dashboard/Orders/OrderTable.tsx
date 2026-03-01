@@ -15,6 +15,7 @@ import {
   AvatarImage,
 } from "@/src/components/ui/avatar";
 import { TOrder } from "@/src/types/order.type";
+import { formatPrice } from "@/src/utils/formatPrice";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import {
@@ -126,11 +127,18 @@ export default function OrderTable({ orders }: IProps) {
               <TableCell>
                 {order.items?.map((i, index) => (
                   <span key={index}>
-                    {i.productId?.name} x {i.quantity}
+                    {i.productId?.name} x {i.itemSummary?.quantity}
                   </span>
                 ))}
               </TableCell>
-              <TableCell> €{order.totalPrice?.toLocaleString()}</TableCell>
+              <TableCell>
+                €
+                {formatPrice(
+                  (order?.payoutSummary?.vendor?.vendorNetPayout || 0) +
+                    (order?.payoutSummary?.deliGoCommission?.totalDeduction ||
+                      0),
+                )}
+              </TableCell>
               <TableCell>{format(order.createdAt, "do MMM yyyy")}</TableCell>
               <TableCell>{order.orderStatus}</TableCell>
               <TableCell className="text-right">

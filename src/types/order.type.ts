@@ -23,6 +23,10 @@ export type TOrder = {
     quantity: number;
     price: number;
     subtotal: number;
+    itemSummary?: {
+      grandTotal: number;
+      quantity: number;
+    };
   }[];
 
   // Pricing & Payment
@@ -69,6 +73,12 @@ export type TOrder = {
   // Price
   payoutSummary?: {
     grandTotal: number;
+    vendor: {
+      vendorNetPayout: number;
+    };
+    deliGoCommission: {
+      totalDeduction: number;
+    };
   };
 
   // Delivery Details
