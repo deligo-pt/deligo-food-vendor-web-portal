@@ -313,6 +313,7 @@ export function ProductForm({
       });
       form.reset();
       setImages([]);
+      setTabError({});
       setActiveTab(0);
       return;
     }

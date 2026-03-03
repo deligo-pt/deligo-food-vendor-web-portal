@@ -10,7 +10,7 @@ export default async function DashboardPage() {
 
   try {
     const result = await serverRequest.get(
-      "/analytics/vendor-dashboard-analytics",
+      "/analytics/vendor/dashboard-analytics",
     );
 
     if (result?.success) {

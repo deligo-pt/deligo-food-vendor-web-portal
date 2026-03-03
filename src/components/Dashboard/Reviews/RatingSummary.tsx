@@ -387,7 +387,7 @@ export default function RatingSummary({
           Category Scores
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Object.entries(summaryResult.summary?.categoryRatings)?.map(
+          {Object.entries(summaryResult.summary?.categoryRatings || {})?.map(
             ([key, value], i) => (
               <motion.div
                 key={i}

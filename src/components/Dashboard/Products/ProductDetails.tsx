@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { motion, Variants } from "framer-motion";
 import {
   AlertCircleIcon,
+  ArrowLeftIcon,
   CheckCircleIcon,
   Edit2Icon,
   InfoIcon,
@@ -127,246 +128,70 @@ export default function ProductDetails({ product }: IProps) {
   };
 
   return (
-    <motion.div
-      className="bg-white rounded-lg shadow-xl max-w-6xl mx-auto overflow-hidden"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* Header */}
-      <div className="bg-linear-to-r from-[#DC3173] to-[#e45a92] p-6 flex justify-between items-center">
-        <motion.h1
-          className="text-2xl font-bold text-white"
-          variants={itemVariants as Variants}
+    <div className="p-6">
+      {/* Back */}
+      <motion.div
+        variants={itemVariants as Variants}
+        className="flex items-center gap-4 mb-4"
+      >
+        <button
+          onClick={() => router.push("/vendor/all-items")}
+          className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium"
         >
-          Product Details
-        </motion.h1>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-        {/* Product Images */}
-        <motion.div
-          className="col-span-1 md:col-span-1"
-          variants={itemVariants as Variants}
-        >
-          <div className="relative aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100">
-            {product.images && product.images.length > 0 ? (
-              <motion.img
-                key={currentImageIndex}
-                src={product.images[currentImageIndex]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-                variants={imageVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                <PackageIcon className="w-16 h-16 text-gray-400" />
-              </div>
-            )}
-          </div>
-          {product.images && product.images.length > 1 && (
-            <div className="grid grid-cols-5 gap-2">
-              {product.images.map((image, index) => (
-                <motion.div
-                  key={index}
-                  className={`aspect-square rounded-md overflow-hidden cursor-pointer ${
-                    index === currentImageIndex ? "ring-2 ring-[#DC3173]" : ""
-                  }`}
-                  onClick={() => setCurrentImageIndex(index)}
-                  whileHover={{
-                    scale: 1.05,
-                  }}
-                  whileTap={{
-                    scale: 0.95,
-                  }}
-                >
-                  <Image
-                    src={image}
-                    alt={`${product.name} - view ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    width={500}
-                    height={500}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-        {/* Product Info */}
-        <div className="col-span-1 md:col-span-2 space-y-6">
-          <motion.div variants={itemVariants as Variants}>
-            <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-            <div className="flex items-center mt-2 space-x-4">
-              <span className="text-sm text-gray-500">
-                Product ID: {product.productId}
-              </span>
-              <div
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  product.isApproved
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
-                {product.isApproved ? "Approved" : "Not Approved"}
-              </div>
-              {product.meta.isFeatured && (
-                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                  {t("featured")}
-                </div>
-              )}
-            </div>
-          </motion.div>
-          {/* Pricing */}
-          <motion.div
-            className="bg-gray-50 p-4 rounded-lg"
+          <ArrowLeftIcon className="w-4 h-4" />
+          Back to Items
+        </button>
+      </motion.div>
+
+      <motion.div
+        className="bg-white rounded-lg shadow-xl overflow-hidden"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Header */}
+        <div className="bg-linear-to-r from-[#DC3173] to-[#e45a92] p-6 flex justify-between items-center">
+          <motion.h1
+            className="text-2xl font-bold text-white"
             variants={itemVariants as Variants}
           >
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              {t("pricing")}
-            </h2>
-            <div className="flex items-center gap-2 mb-2"></div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-[#DC3173]">
-                {product.pricing.currency}{" "}
-                {product.pricing.finalPrice.toFixed(2)}
-              </span>
-              {product?.pricing?.discount ? (
-                <>
-                  <span className="text-lg text-gray-500 line-through">
-                    {product.pricing.currency}{" "}
-                    {product.pricing.price.toFixed(2)}
-                  </span>
-                  <span className="text-sm font-medium text-green-600">
-                    {product.pricing.discount}% {t("off")}
-                  </span>
-                </>
+            Product Details
+          </motion.h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+          {/* Product Images */}
+          <motion.div
+            className="col-span-1 md:col-span-1"
+            variants={itemVariants as Variants}
+          >
+            <div className="relative aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100">
+              {product.images && product.images.length > 0 ? (
+                <motion.img
+                  key={currentImageIndex}
+                  src={product.images[currentImageIndex]}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  variants={imageVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                />
               ) : (
-                ""
+                <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                  <PackageIcon className="w-16 h-16 text-gray-400" />
+                </div>
               )}
             </div>
-            {/* {product.pricing.taxId ? (
-              <p className="text-sm text-gray-500 mt-1">
-                {t("includes")} {product.pricing.taxId}% {t("tax")}
-              </p>
-            ) : (
-              ""
-            )} */}
-          </motion.div>
-          {/* Stock */}
-          <motion.div variants={itemVariants as Variants}>
-            <div className="flex items-center gap-2 mb-2">
-              <ShoppingBagIcon className="w-5 h-5 text-[#DC3173]" />
-              <h2 className="text-lg font-semibold text-gray-900">
-                {t("stock_information")}
-              </h2>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStockStatusColor(
-                  product.stock.availabilityStatus,
-                )}`}
-              >
-                {getStockStatusIcon(product.stock.availabilityStatus)}
-                {product.stock.availabilityStatus}
-              </div>
-              <span className="text-gray-700">
-                {product.stock.quantity} {product.stock.unit} {t("available")}
-              </span>
-            </div>
-          </motion.div>
-          {/* Description */}
-          <motion.div variants={itemVariants as Variants}>
-            <div className="flex items-center gap-2 mb-2">
-              <InfoIcon className="w-5 h-5 text-[#DC3173]" />
-              <h2 className="text-lg font-semibold text-gray-900">
-                {t("description")}
-              </h2>
-            </div>
-            <p className="text-gray-700 leading-relaxed">
-              {product.description}
-            </p>
-          </motion.div>
-          {/* Category & Brand */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-4"
-            variants={itemVariants as Variants}
-          >
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Category</h3>
-              <p className="mt-1 text-gray-900">{product.category?.name}</p>
-            </div>
-            {product.brand && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">Brand</h3>
-                <p className="mt-1 text-gray-900">{product.brand}</p>
-              </div>
-            )}
-          </motion.div>
-          {/* Variations */}
-          {product.variations?.length > 0 && (
-            <>
-              <div className="flex items-center gap-2 mb-2">
-                <PackageIcon className="w-5 h-5 text-[#DC3173]" />
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Variations
-                </h2>
-              </div>
-              {product.variations?.map((v, i) => (
-                <div key={i}>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-medium">Name: </span>
-                      <span>{v.name}</span>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <h4 className="font-semibold w-[200px]">
-                        Variation Options
-                      </h4>
-                      <div className="mt-0.5 flex-1">
-                        {v.options.map((option, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-start gap-3 text-sm"
-                          >
-                            <div>
-                              <span className="font-semibold">Label: </span>
-                              <span>{option.label}</span>
-                            </div>
-                            <div className="flex items-start gap-3">
-                              <div>
-                                <span className="font-semibold">Price: </span>
-                                <span>€{option.price}</span>
-                              </div>
-                              <div>
-                                <span className="font-semibold">Stock: </span>
-                                <span>{option.stockQuantity}</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </>
-          )}
-          {/* Tags */}
-          {product.tags && product.tags.length > 0 && (
-            <motion.div variants={itemVariants as Variants}>
-              <div className="flex items-center gap-2 mb-2">
-                <TagIcon className="w-5 h-5 text-[#DC3173]" />
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {t("tags")}
-                </h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {product.tags.map((tag, index) => (
-                  <motion.span
+            {product.images && product.images.length > 1 && (
+              <div className="grid grid-cols-5 gap-2">
+                {product.images.map((image, index) => (
+                  <motion.div
                     key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#DC3173] bg-opacity-10 text-white"
+                    className={`aspect-square rounded-md overflow-hidden cursor-pointer ${
+                      index === currentImageIndex ? "ring-2 ring-[#DC3173]" : ""
+                    }`}
+                    onClick={() => setCurrentImageIndex(index)}
                     whileHover={{
                       scale: 1.05,
                     }}
@@ -374,120 +199,315 @@ export default function ProductDetails({ product }: IProps) {
                       scale: 0.95,
                     }}
                   >
-                    {tag}
-                  </motion.span>
+                    <Image
+                      src={image}
+                      alt={`${product.name} - view ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      width={500}
+                      height={500}
+                    />
+                  </motion.div>
                 ))}
               </div>
+            )}
+          </motion.div>
+          {/* Product Info */}
+          <div className="col-span-1 md:col-span-2 space-y-6">
+            <motion.div variants={itemVariants as Variants}>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {product.name}
+              </h1>
+              <div className="flex items-center mt-2 space-x-4">
+                <span className="text-sm text-gray-500">
+                  Product ID: {product.productId}
+                </span>
+                <div
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    product.isApproved
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {product.isApproved ? "Approved" : "Not Approved"}
+                </div>
+                {product.meta.isFeatured && (
+                  <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    {t("featured")}
+                  </div>
+                )}
+              </div>
             </motion.div>
-          )}
-          {/* Rating */}
-          {product.rating && (
+            {/* Pricing */}
+            <motion.div
+              className="bg-gray-50 p-4 rounded-lg"
+              variants={itemVariants as Variants}
+            >
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">
+                {t("pricing")}
+              </h2>
+              <div className="flex items-center gap-2 mb-2"></div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-[#DC3173]">
+                  {product.pricing.currency}{" "}
+                  {product.pricing.finalPrice.toFixed(2)}
+                </span>
+                {product?.pricing?.discount ? (
+                  <>
+                    <span className="text-lg text-gray-500 line-through">
+                      {product.pricing.currency}{" "}
+                      {product.pricing.price.toFixed(2)}
+                    </span>
+                    <span className="text-sm font-medium text-green-600">
+                      {product.pricing.discount}% {t("off")}
+                    </span>
+                  </>
+                ) : (
+                  ""
+                )}
+              </div>
+              {/* {product.pricing.taxId ? (
+              <p className="text-sm text-gray-500 mt-1">
+                {t("includes")} {product.pricing.taxId}% {t("tax")}
+              </p>
+            ) : (
+              ""
+            )} */}
+            </motion.div>
+            {/* Stock */}
             <motion.div variants={itemVariants as Variants}>
               <div className="flex items-center gap-2 mb-2">
-                <StarIcon className="w-5 h-5 text-[#DC3173]" />
+                <ShoppingBagIcon className="w-5 h-5 text-[#DC3173]" />
                 <h2 className="text-lg font-semibold text-gray-900">
-                  Ratings & Reviews
+                  {t("stock_information")}
                 </h2>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <span className="text-2xl font-bold text-gray-900">
-                    {product.rating.average.toFixed(1)}
-                  </span>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <StarIcon
-                        key={i}
-                        className={`w-5 h-5 ${
-                          i < Math.floor(product?.rating?.average || 0)
-                            ? "text-amber-400 fill-amber-400"
-                            : i < (product?.rating?.average || 0)
-                              ? "text-amber-400 fill-amber-400 opacity-50"
-                              : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStockStatusColor(
+                    product.stock.availabilityStatus,
+                  )}`}
+                >
+                  {getStockStatusIcon(product.stock.availabilityStatus)}
+                  {product.stock.availabilityStatus}
                 </div>
-                <span className="text-gray-500">
-                  {t("based_on")} {product.rating.totalReviews}{" "}
-                  {product.rating.totalReviews === 1
-                    ? t("review")
-                    : t("reviews")}
+                <span className="text-gray-700">
+                  {product.stock.quantity} {product.stock.unit} {t("available")}
                 </span>
               </div>
             </motion.div>
-          )}
-          {/* Meta Information */}
-          <motion.div
-            className="border-t border-gray-200 pt-4 text-sm text-gray-500"
-            variants={itemVariants as Variants}
-          >
-            <div className="grid grid-cols-2 gap-4">
+            {/* Description */}
+            <motion.div variants={itemVariants as Variants}>
+              <div className="flex items-center gap-2 mb-2">
+                <InfoIcon className="w-5 h-5 text-[#DC3173]" />
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {t("description")}
+                </h2>
+              </div>
+              <p className="text-gray-700 leading-relaxed">
+                {product.description}
+              </p>
+            </motion.div>
+            {/* Category & Brand */}
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              variants={itemVariants as Variants}
+            >
               <div>
-                <p>
-                  {t("status")}:{" "}
-                  <span
-                    className={`font-medium ${
-                      product.isDeleted
-                        ? "text-red-600"
-                        : product.meta.status === "ACTIVE"
-                          ? "text-green-600"
-                          : "text-yellow-600"
-                    }`}
-                  >
-                    {product.isDeleted ? "DELETED" : product.meta.status}
+                <h3 className="text-sm font-medium text-gray-500">Category</h3>
+                <p className="mt-1 text-gray-900">{product.category?.name}</p>
+              </div>
+              {product.brand && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500">Brand</h3>
+                  <p className="mt-1 text-gray-900">{product.brand}</p>
+                </div>
+              )}
+            </motion.div>
+            {/* Variations */}
+            {product.variations?.length > 0 && (
+              <>
+                <div className="flex items-center gap-2 mb-2">
+                  <PackageIcon className="w-5 h-5 text-[#DC3173]" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Variations
+                  </h2>
+                </div>
+                {product.variations?.map((v, i) => (
+                  <div key={i}>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium">Name: </span>
+                        <span>{v.name}</span>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <h4 className="font-semibold w-[200px]">
+                          Variation Options
+                        </h4>
+                        <div className="mt-0.5 flex-1">
+                          {v.options.map((option, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-start gap-3 text-sm"
+                            >
+                              <div>
+                                <span className="font-semibold">Label: </span>
+                                <span>{option.label}</span>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <div>
+                                  <span className="font-semibold">Price: </span>
+                                  <span>€{option.price}</span>
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Stock: </span>
+                                  <span>{option.stockQuantity}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {/* Tags */}
+            {product.tags && product.tags.length > 0 && (
+              <motion.div variants={itemVariants as Variants}>
+                <div className="flex items-center gap-2 mb-2">
+                  <TagIcon className="w-5 h-5 text-[#DC3173]" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {t("tags")}
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {product.tags.map((tag, index) => (
+                    <motion.span
+                      key={index}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#DC3173] bg-opacity-10 text-white"
+                      whileHover={{
+                        scale: 1.05,
+                      }}
+                      whileTap={{
+                        scale: 0.95,
+                      }}
+                    >
+                      {tag}
+                    </motion.span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+            {/* Rating */}
+            {product.rating && (
+              <motion.div variants={itemVariants as Variants}>
+                <div className="flex items-center gap-2 mb-2">
+                  <StarIcon className="w-5 h-5 text-[#DC3173]" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Ratings & Reviews
+                  </h2>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1">
+                    <span className="text-2xl font-bold text-gray-900">
+                      {product.rating.average.toFixed(1)}
+                    </span>
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <StarIcon
+                          key={i}
+                          className={`w-5 h-5 ${
+                            i < Math.floor(product?.rating?.average || 0)
+                              ? "text-amber-400 fill-amber-400"
+                              : i < (product?.rating?.average || 0)
+                                ? "text-amber-400 fill-amber-400 opacity-50"
+                                : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <span className="text-gray-500">
+                    {t("based_on")} {product.rating.totalReviews}{" "}
+                    {product.rating.totalReviews === 1
+                      ? t("review")
+                      : t("reviews")}
                   </span>
-                </p>
-                {product.meta.origin && (
+                </div>
+              </motion.div>
+            )}
+            {/* Meta Information */}
+            <motion.div
+              className="border-t border-gray-200 pt-4 text-sm text-gray-500"
+              variants={itemVariants as Variants}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <div>
                   <p>
-                    {t("origin")}: {product.meta.origin}
+                    {t("status")}:{" "}
+                    <span
+                      className={`font-medium ${
+                        product.isDeleted
+                          ? "text-red-600"
+                          : product.meta.status === "ACTIVE"
+                            ? "text-green-600"
+                            : "text-yellow-600"
+                      }`}
+                    >
+                      {product.isDeleted ? "DELETED" : product.meta.status}
+                    </span>
                   </p>
-                )}
+                  {product.meta.origin && (
+                    <p>
+                      {t("origin")}: {product.meta.origin}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <p>
+                    {t("created")}:{" "}
+                    {format(product.meta.createdAt, "do MMM yyyy")}
+                  </p>
+                  <p>
+                    {t("updated")}:{" "}
+                    {format(product.meta.updatedAt, "do MMM yyyy")}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p>
-                  {t("created")}:{" "}
-                  {format(product.meta.createdAt, "do MMM yyyy")}
-                </p>
-                <p>
-                  {t("updated")}:{" "}
-                  {format(product.meta.updatedAt, "do MMM yyyy")}
-                </p>
-              </div>
+            </motion.div>
+            {/* Action Button */}
+            <div className="pt-4 flex items-center gap-2 justify-end">
+              <button
+                onClick={() => setIsEditDialogOpen(true)}
+                className="bg-[#DC3173] hover:bg-[#c71d62] text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+              >
+                <Edit2Icon className="w-5 h-5" />
+                <span>Edit Product</span>
+              </button>
+              <button
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+              >
+                <Trash2Icon className="w-5 h-5" />
+                <span>Delete Product</span>
+              </button>
             </div>
-          </motion.div>
-          {/* Action Button */}
-          <div className="pt-4 flex items-center gap-2 justify-end">
-            <button
-              onClick={() => setIsEditDialogOpen(true)}
-              className="bg-[#DC3173] hover:bg-[#c71d62] text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
-            >
-              <Edit2Icon className="w-5 h-5" />
-              <span>Edit Product</span>
-            </button>
-            <button
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
-            >
-              <Trash2Icon className="w-5 h-5" />
-              <span>Delete Product</span>
-            </button>
           </div>
         </div>
-      </div>
 
-      <DeleteProductDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={() => setIsDeleteDialogOpen(false)}
-        onConfirm={handleDeleteProduct}
-      />
+        <DeleteProductDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={() => setIsDeleteDialogOpen(false)}
+          onConfirm={handleDeleteProduct}
+        />
 
-      <EditProductDialog
-        open={isEditDialogOpen}
-        onOpenChange={() => setIsEditDialogOpen(false)}
-        prevData={product}
-      />
-    </motion.div>
+        <EditProductDialog
+          open={isEditDialogOpen}
+          onOpenChange={() => setIsEditDialogOpen(false)}
+          prevData={product}
+        />
+      </motion.div>
+    </div>
   );
 }

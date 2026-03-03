@@ -10,7 +10,7 @@ type IProps = {
 
 export default async function ProductsPage({ searchParams }: IProps) {
   const queries = (await searchParams) || {};
-  const limit = Number(queries?.limit || 10);
+  const limit = Number(queries?.limit || 20);
   const page = Number(queries.page || 1);
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
