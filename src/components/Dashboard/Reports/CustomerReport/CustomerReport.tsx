@@ -8,7 +8,7 @@ import PaginationComponent from "@/src/components/Filtering/PaginationComponent"
 import StatsCard from "@/src/components/StatsCard/StatsCard";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { TMeta } from "@/src/types";
-import { TCustomer } from "@/src/types/customer.type";
+import { TCustomerReport } from "@/src/types/report.type";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { EuroIcon, ShoppingBag, User } from "lucide-react";
@@ -16,7 +16,7 @@ import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
 interface IProps {
-  customersData: { data: TCustomer[]; meta?: TMeta };
+  customerReportData: { data: TCustomerReport; meta?: TMeta };
 }
 
 const sortOptions = [
@@ -49,52 +49,24 @@ const filterOptions = [
   },
 ];
 
-const monthlyCustomers = [
-  {
-    name: "Jan",
-    customers: 45,
-  },
-  {
-    name: "Feb",
-    customers: 62,
-  },
-  {
-    name: "Mar",
-    customers: 58,
-  },
-  {
-    name: "Apr",
-    customers: 71,
-  },
-  {
-    name: "May",
-    customers: 89,
-  },
-  {
-    name: "Jun",
-    customers: 95,
-  },
-];
-
-export default function CustomerReport({ customersData }: IProps) {
+export default function CustomerReport({ customerReportData }: IProps) {
   const reportRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
     contentRef: reportRef,
     documentTitle: `customer_report_${format(new Date(), "yyyy-MM-dd_hh_mm_ss_a")}`,
   });
 
+  console.log(customerReportData);
+
   const stats = {
-    total: customersData.meta?.total || 0,
-    highestSpender: "John Doe",
-    mostOrders: "Jane Smith",
+    total: customerReportData?.data?.stats?.totalCustomers || 0,
+    highestSpender: customerReportData?.data?.stats?.highestSpender || "N/A",
+    mostOrders: customerReportData?.data?.stats?.mostOrders || "N/A",
   };
 
   return (
-    <div
-      ref={reportRef}
-      className="print-container min-h-screen bg-gray-50/50 pb-20"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 print:pt-4">
+    <div ref={reportRef} className="print-container min-h-screen p-6">
+      <div className="">
         {/* Logo for print */}
         <div className="hidden print:flex items-center gap-2 mb-4">
           <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#DC3173] overflow-hidden shadow-md">
@@ -173,7 +145,7 @@ export default function CustomerReport({ customersData }: IProps) {
               Customer ordered over the last 6 months
             </p>
             <AnalyticsChart
-              data={monthlyCustomers}
+              data={customerReportData?.data?.monthlyCustomers || []}
               type="bar"
               dataKey="customers"
               height={200}
@@ -206,7 +178,8 @@ export default function CustomerReport({ customersData }: IProps) {
                   All Customers
                 </h2>
                 <p className="text-sm text-gray-500">
-                  {customersData.meta?.total || 0} customers
+                  {customerReportData?.data?.customers?.meta?.total || 0}{" "}
+                  customers
                 </p>
               </div>
             </div>
@@ -214,15 +187,19 @@ export default function CustomerReport({ customersData }: IProps) {
 
           <AllFilters sortOptions={sortOptions} filterOptions={filterOptions} />
 
-          <CustomerReportTable customers={customersData?.data} />
+          <CustomerReportTable
+            customers={customerReportData?.data?.customers?.data || []}
+          />
 
-          {!!customersData?.meta?.totalPage && (
+          {!!customerReportData?.data?.customers?.meta?.totalPage && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <PaginationComponent
-                totalPages={customersData?.meta?.totalPage as number}
+                totalPages={
+                  customerReportData?.data?.customers?.meta?.totalPage as number
+                }
               />
             </motion.div>
           )}

@@ -14,33 +14,6 @@ interface IProps {
   analyticsData: TEarningsAnalytics;
 }
 
-const monthlyEarnings = [
-  {
-    name: "Jan",
-    earnings: 1250,
-  },
-  {
-    name: "Feb",
-    earnings: 1450,
-  },
-  {
-    name: "Mar",
-    earnings: 1350,
-  },
-  {
-    name: "Apr",
-    earnings: 1650,
-  },
-  {
-    name: "May",
-    earnings: 1850,
-  },
-  {
-    name: "Jun",
-    earnings: 2100,
-  },
-];
-
 export default function EarningsSummary({ analyticsData }: IProps) {
   const containerVariants = {
     hidden: {
@@ -263,7 +236,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
             Earnings trend over the last 6 months
           </p>
           <AnalyticsChart
-            data={monthlyEarnings}
+            data={analyticsData?.monthlyEarnings || []}
             type="bar"
             dataKey="earnings"
             height={200}

@@ -1,7 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import SalesReport from "@/src/components/Dashboard/Reports/SalesReport/SalesReport";
 import { TMeta, TResponse } from "@/src/types";
-import { TOrder } from "@/src/types/order.type";
+import { TSalesReport } from "@/src/types/report.type";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -23,12 +23,17 @@ export default async function SalesReportPage({ searchParams }: IProps) {
     ...(orderStatus ? { orderStatus } : {}),
   };
 
-  const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };
+  const initialData: { data: TSalesReport; meta?: TMeta } = {
+    data: {} as TSalesReport,
+  };
 
   try {
-    const result = (await serverRequest.get("/orders", {
-      params: query,
-    })) as TResponse<TOrder[]>;
+    const result = (await serverRequest.get(
+      "/analytics/vendor-sales-report-analytics",
+      {
+        params: query,
+      },
+    )) as TResponse<TSalesReport>;
 
     if (result?.success) {
       initialData.data = result.data;
@@ -38,5 +43,5 @@ export default async function SalesReportPage({ searchParams }: IProps) {
     console.log("Server fetch error:", err);
   }
 
-  return <SalesReport ordersResult={initialData} />;
+  return <SalesReport salesReportData={initialData} />;
 }

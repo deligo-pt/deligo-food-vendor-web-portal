@@ -96,11 +96,7 @@ export default function TransactionTable({ transactions }: IProps) {
               <TableCell>{p.transactionId}</TableCell>
               <TableCell>{p.description}</TableCell>
               <TableCell className="capitalize">{p.type}</TableCell>
-              <TableCell
-                className={p.positive ? "text-green-500" : "text-red-500"}
-              >
-                {p.positive ? "+" : "-"}€{p.amount}
-              </TableCell>
+              <TableCell>€{p.amount}</TableCell>
               <TableCell>{format(p.createdAt, "do MMM yyyy")}</TableCell>
               <TableCell className="text-right print:hidden">
                 <DropdownMenu>

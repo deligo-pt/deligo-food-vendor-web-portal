@@ -61,15 +61,10 @@ export type TEarningsAnalytics = {
     thisMonth: string;
     totalIncome: string;
   };
-  products: {
-    total: number;
-    active: number;
-    inactive: number;
-  };
   monthlyEarnings: {
     name: string;
     earnings: string;
-  };
+  }[];
 };
 
 type TWeeklyTrend = {

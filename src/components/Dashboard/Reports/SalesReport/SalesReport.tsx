@@ -10,61 +10,27 @@ import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { ORDER_STATUS } from "@/src/consts/order.const";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
-import { TOrder } from "@/src/types/order.type";
+import { TSalesReport } from "@/src/types/report.type";
+import { formatPrice } from "@/src/utils/formatPrice";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { CreditCard, Filter, ShoppingBag, TrendingUp } from "lucide-react";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
-const salesData = [
-  {
-    name: "Mon",
-    sales: 450,
-    orders: 12,
-  },
-  {
-    name: "Tue",
-    sales: 520,
-    orders: 15,
-  },
-  {
-    name: "Wed",
-    sales: 480,
-    orders: 14,
-  },
-  {
-    name: "Thu",
-    sales: 610,
-    orders: 18,
-  },
-  {
-    name: "Fri",
-    sales: 850,
-    orders: 25,
-  },
-  {
-    name: "Sat",
-    sales: 920,
-    orders: 28,
-  },
-  {
-    name: "Sun",
-    sales: 780,
-    orders: 22,
-  },
-];
 interface IProps {
-  ordersResult: { data: TOrder[]; meta?: TMeta };
+  salesReportData: { data: TSalesReport; meta?: TMeta };
 }
 
-export default function SalesReport({ ordersResult }: IProps) {
+export default function SalesReport({ salesReportData }: IProps) {
   const { t } = useTranslation();
   const reportRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
     contentRef: reportRef,
     documentTitle: `sales_report_${format(new Date(), "yyyy-MM-dd_hh_mm_ss_a")}`,
   });
+
+  console.log(salesReportData);
 
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
@@ -173,19 +139,20 @@ export default function SalesReport({ ordersResult }: IProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <StatsCard
           title="Total Sales"
-          value="€4,610.00"
+          // value="€4,610.00"
+          value={`€${formatPrice(salesReportData?.data?.stats?.totalSales || 0)}`}
           icon={CreditCard}
           delay={0}
         />
         <StatsCard
           title="Total Orders"
-          value="134"
+          value={salesReportData?.data?.stats?.totalOrders}
           icon={ShoppingBag}
           delay={0.1}
         />
         <StatsCard
           title="Avg Order Value"
-          value="€34.40"
+          value={`€${formatPrice(salesReportData?.data?.stats?.avgOrderValue || 0)}`}
           icon={TrendingUp}
           delay={0.2}
         />
@@ -216,7 +183,7 @@ export default function SalesReport({ ordersResult }: IProps) {
           </div>
         </div>
         <AnalyticsChart
-          data={salesData}
+          data={salesReportData?.data?.salesData}
           type="bar"
           dataKey="sales"
           height={300}
@@ -247,15 +214,15 @@ export default function SalesReport({ ordersResult }: IProps) {
 
         <AllFilters sortOptions={sortOptions} filterOptions={filterOptions} />
 
-        <SalesReportOrderTable orders={ordersResult?.data} />
+        <SalesReportOrderTable orders={salesReportData?.data?.orders} />
 
-        {!!ordersResult?.meta?.totalPage && (
+        {!!salesReportData?.meta?.totalPage && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <PaginationComponent
-              totalPages={ordersResult?.meta?.totalPage as number}
+              totalPages={salesReportData?.meta?.totalPage as number}
             />
           </motion.div>
         )}

@@ -1,3 +1,4 @@
+import { TMeta } from "@/src/types";
 import { TCustomer } from "@/src/types/customer.type";
 import { TOrder } from "@/src/types/order.type";
 
@@ -61,5 +62,5 @@ export type TCustomerReport = {
   }[]; // based on last 6 months
 
   //   All customers on this vendor
-  customers: TCustomer[];
+  customers: { data: TCustomer[]; meta: TMeta };
 };
