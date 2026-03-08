@@ -7,7 +7,8 @@ export default async function EarningsSummaryPage() {
 
   try {
     const result = await serverRequest.get(
-      "/analytics/vendor-earnings-analytics",
+      // "/analytics/vendor-earnings-analytics",
+      "/analytics/vendor/earnings-analytics",
     );
 
     if (result?.success) {
