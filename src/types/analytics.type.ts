@@ -87,8 +87,8 @@ export type TSalesAnalytics = {
 };
 
 type TDemographic = {
-  name: string;
-  value: number;
+  city: string;
+  percentage: string;
 };
 
 type TCustomerValueSegment = {

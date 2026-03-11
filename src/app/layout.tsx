@@ -1,3 +1,4 @@
+import NumberInputStopScroll from "@/src/components/NumberInputStopScroll/NumberInputStopScroll";
 import { RegisterFCMSW } from "@/src/components/RegisterFCMSW/RegisterFCMSW";
 import SonnerToaster from "@/src/components/SonnerToaster/SonnerToaster";
 import type { Metadata } from "next";
@@ -20,6 +21,7 @@ export default function RootLayout({
         <RegisterFCMSW />
         {children}
         <SonnerToaster />
+        <NumberInputStopScroll />
       </body>
     </html>
   );

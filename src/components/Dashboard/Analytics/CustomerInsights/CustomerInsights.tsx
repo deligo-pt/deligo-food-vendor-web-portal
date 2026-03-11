@@ -21,6 +21,7 @@ const COLORS = ["#DC3173", "#e45a92", "#f9a8d4", "#fbcfe8"];
 
 export default function CustomerInsights({ insights }: IProps) {
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
   const hourLabel = (h: number) => {
     const suffix = h >= 12 ? "PM" : "AM";
     const display = h > 12 ? h - 12 : h === 0 ? 12 : h;
@@ -162,13 +163,18 @@ export default function CustomerInsights({ insights }: IProps) {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={insights.demographics}
+                  data={
+                    insights.demographics?.map(({ city, percentage }) => ({
+                      city,
+                      percentage: Number(percentage?.replace("%", "")),
+                    })) || []
+                  }
                   cx="50%"
                   cy="50%"
                   innerRadius={65}
                   outerRadius={100}
                   paddingAngle={4}
-                  dataKey="value"
+                  dataKey="percentage"
                   animationBegin={0}
                   animationDuration={1200}
                 >
@@ -186,10 +192,10 @@ export default function CustomerInsights({ insights }: IProps) {
                     boxShadow: "0 4px 6px -1px rgba(0,0,0,0.07)",
                   }}
                   formatter={
-                    ((value: number) => [`${value}%`, "Share"]) as Formatter<
-                      number,
-                      "Share"
-                    >
+                    ((value: number, ...rest) => [
+                      `${value}%`,
+                      rest?.[1]?.payload?.city || "City",
+                    ]) as Formatter<number, "Share">
                   }
                 />
               </PieChart>
@@ -204,9 +210,9 @@ export default function CustomerInsights({ insights }: IProps) {
                     backgroundColor: COLORS[index % COLORS.length],
                   }}
                 />
-                {entry.value && (
+                {entry.percentage && (
                   <span className="text-sm text-gray-600 font-medium">
-                    {entry.name} ({entry.value}%)
+                    {entry.city} ({entry.percentage})
                   </span>
                 )}
               </div>
@@ -280,7 +286,7 @@ export default function CustomerInsights({ insights }: IProps) {
               </div>
               <div>
                 <div className="font-bold text-gray-900">
-                  {dayNames[slot.day]} · {hourLabel(slot.hour)}
+                  {dayNames[slot.day - 1]} · {hourLabel(slot.hour)}
                 </div>
                 <div className="text-sm text-gray-500 mt-0.5">
                   <span className="font-semibold text-[#DC3173]">

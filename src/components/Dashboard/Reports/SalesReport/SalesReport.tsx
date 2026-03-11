@@ -11,12 +11,11 @@ import { ORDER_STATUS } from "@/src/consts/order.const";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TSalesReport } from "@/src/types/report.type";
+import { generateSalesReportCSV } from "@/src/utils/csv/generateSalesReportCSV";
 import { formatPrice } from "@/src/utils/formatPrice";
-import { format } from "date-fns";
+import { generateSalesReportPDF } from "@/src/utils/pdf/salesReportPdf";
 import { motion } from "framer-motion";
 import { CreditCard, Filter, ShoppingBag, TrendingUp } from "lucide-react";
-import { useRef } from "react";
-import { useReactToPrint } from "react-to-print";
 
 interface IProps {
   salesReportData: { data: TSalesReport; meta?: TMeta };
@@ -24,13 +23,6 @@ interface IProps {
 
 export default function SalesReport({ salesReportData }: IProps) {
   const { t } = useTranslation();
-  const reportRef = useRef<HTMLDivElement>(null);
-  const handlePrint = useReactToPrint({
-    contentRef: reportRef,
-    documentTitle: `sales_report_${format(new Date(), "yyyy-MM-dd_hh_mm_ss_a")}`,
-  });
-
-  console.log(salesReportData);
 
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
@@ -101,36 +93,19 @@ export default function SalesReport({ salesReportData }: IProps) {
   ];
 
   return (
-    <div ref={reportRef} className="print-container min-h-screen p-6">
-      {/* Logo for print */}
-      <div className="hidden print:flex items-center gap-2 mb-4">
-        <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#DC3173] overflow-hidden shadow-md">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/deligoLogo.png"
-            alt="DeliGo Logo"
-            width={36}
-            height={36}
-            className="object-cover"
-          />
-        </div>
-        <h1 className="font-bold text-xl text-[#DC3173]">DeliGo</h1>
-      </div>
+    <div className="min-h-screen p-6">
       {/* Header */}
       <TitleHeader
         title={t("sales_report")}
         subtitle={t("detailed_revenue_performance")}
         extraComponent={
           <ExportPopover
-            onPDFClick={() => handlePrint()}
-            //   onCSVClick={() =>
-            //     exportCustomerReportCSV({
-            //       stats: stats,
-            //       monthlySignups,
-            //       statusDistribution,
-            //       customers: customersData.data,
-            //     })
-            //   }
+            onPDFClick={() =>
+              generateSalesReportPDF(salesReportData?.data || {})
+            }
+            onCSVClick={() =>
+              generateSalesReportCSV(salesReportData?.data || {})
+            }
           />
         }
       />

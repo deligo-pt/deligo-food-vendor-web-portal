@@ -125,7 +125,7 @@ export default function SalesReportOrderTable({ orders }: IProps) {
               <TableCell>
                 {order.items?.map((i, index) => (
                   <span key={index}>
-                    {i.productId?.name} x {i.quantity}
+                    {i.productId?.name} x {i.itemSummary?.quantity}
                   </span>
                 ))}
               </TableCell>
