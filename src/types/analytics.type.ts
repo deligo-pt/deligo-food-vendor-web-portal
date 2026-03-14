@@ -91,9 +91,9 @@ type TDemographic = {
   percentage: string;
 };
 
-type TCustomerValueSegment = {
-  segment: string;
-  avgOrder: string;
+type TOrderFrequency = {
+  name: "weekly" | "biweekly" | "monthly";
+  orders: number;
 };
 
 type TOrderHeatmap = {
@@ -121,8 +121,8 @@ export type TCustomerInsights = {
       subValue: string;
     };
   };
+  orderFrequency: TOrderFrequency[];
   demographics: TDemographic[];
-  customerValue: TCustomerValueSegment[];
   heatmap: TOrderHeatmap[];
 };
 
