@@ -9,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import ClearSessionModal from "@/src/components/Login/ClearSessionModal";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { loginReq } from "@/src/services/auth/auth";
@@ -31,7 +32,11 @@ type FormData = {
 };
 
 export default function LoginForm({ redirect }: { redirect?: string }) {
+  const router = useRouter();
   const { t } = useTranslation();
+
+  const [showModal, setShowModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(loginValidation),
@@ -40,15 +45,19 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
       password: "",
     },
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
 
-  const onSubmit = async (data: FormData) => {
+  const login = async (payload: {
+    email: string;
+    password: string;
+    forceLogin?: boolean;
+  }) => {
     const toastId = toast.loading("Logging in...");
 
-    const result = await loginReq(data);
+    const result = await loginReq(payload);
 
     if (result?.success) {
+      setShowModal(false);
+
       const decoded = jwtDecode(result.data.accessToken) as {
         role: string;
         status: string;
@@ -87,6 +96,22 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
 
     toast.error(result.message || "Login failed", { id: toastId });
     console.log(result);
+
+    if (result.message === "LIMIT_EXCEEDED") {
+      setShowModal(true);
+    }
+  };
+
+  const onSubmit = async (data: FormData) => {
+    login(data);
+  };
+
+  const clearSession = async () => {
+    await login({
+      email: form.getValues("email"),
+      password: form.getValues("password"),
+      forceLogin: true,
+    });
   };
 
   return (
@@ -192,6 +217,12 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
           </Link>
         </p>
       </motion.div>
+
+      <ClearSessionModal
+        open={showModal}
+        onOpenChange={(open) => setShowModal(open)}
+        onRemove={clearSession}
+      />
     </div>
   );
 }
