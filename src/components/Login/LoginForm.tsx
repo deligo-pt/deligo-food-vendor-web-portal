@@ -15,14 +15,15 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { loginReq } from "@/src/services/auth/auth";
 import { setCookie } from "@/src/utils/cookies";
 import { getAndSaveFcmToken } from "@/src/utils/fcmToken";
+import { getDeviceInfo } from "@/src/utils/getDeviceInfo";
 import { loginValidation } from "@/src/validations/auth/auth.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -34,6 +35,7 @@ type FormData = {
 export default function LoginForm({ redirect }: { redirect?: string }) {
   const router = useRouter();
   const { t } = useTranslation();
+  const params = useSearchParams();
 
   const [showModal, setShowModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -52,8 +54,12 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
     forceLogin?: boolean;
   }) => {
     const toastId = toast.loading("Logging in...");
+    const deviceDetails = await getDeviceInfo();
 
-    const result = await loginReq(payload);
+    const result = await loginReq({
+      ...payload,
+      deviceDetails,
+    });
 
     if (result?.success) {
       setShowModal(false);
@@ -113,6 +119,14 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
       forceLogin: true,
     });
   };
+
+  useEffect(() => {
+    if (params.get("sessionExpired")) {
+      toast.error(
+        "Your session has expired as this device is no longer authorized.",
+      );
+    }
+  }, [params]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#FF7EB3]/20 to-[#DC3173]/20 p-6">

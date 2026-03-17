@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const backendUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1";
@@ -18,17 +19,37 @@ const serverRequestHelper = async (
   const cookieStr = cookieStore.toString();
   const accessToken = cookieStore.get("accessToken")?.value || "";
 
-  return axiosInstance({
-    url,
-    ...options,
-    headers: {
-      ...(options?.headers || {}),
-      authorization: `Bearer ${accessToken}`,
-      ...(cookieStr && {
-        cookie: cookieStr,
-      }),
-    },
-  }).then((res) => res.data);
+  return (
+    axiosInstance({
+      url,
+      ...options,
+      headers: {
+        ...(options?.headers || {}),
+        ...(accessToken && {
+          authorization: `Bearer ${accessToken}`,
+        }),
+        ...(cookieStr && {
+          cookie: cookieStr,
+        }),
+      },
+    })
+      .then((res) => res.data)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .catch((error: any) => {
+        const status = error?.response?.status;
+
+        if (status === 401) {
+          // ✅ 1. Clear cookies (server-side)
+          cookieStore.delete("accessToken");
+          cookieStore.delete("refreshToken");
+
+          // ✅ 2. Redirect to login (server-side)
+          redirect("/login?sessionExpired=true");
+        }
+
+        throw error;
+      })
+  );
 };
 
 export const serverRequest = {

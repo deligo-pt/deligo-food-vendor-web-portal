@@ -9,8 +9,10 @@ import {
 } from "@/src/components/ui/card";
 import { USER_STATUS } from "@/src/consts/user.const";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { logoutReq } from "@/src/services/auth/auth";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
+import { getFcmToken } from "@/src/utils/fcmToken";
 import { motion } from "framer-motion";
 import {
   Award,
@@ -23,6 +25,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface IProps {
   vendor: TVendor;
@@ -33,10 +36,28 @@ export default function RegistrationStatus({ vendor, decodedStatus }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const logOut = () => {
-    removeCookie("accessToken");
-    removeCookie("refreshToken");
-    router.push("/login");
+  const logOut = async () => {
+    const toastId = toast.loading("Logging out...");
+
+    const token = (await getFcmToken()) || "";
+
+    const result = await logoutReq({
+      email: vendor?.email || "",
+      token,
+    });
+
+    if (result?.success) {
+      toast.success(result?.message || "Logout successful!", {
+        id: toastId,
+      });
+
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+    }
+
+    toast.error(result?.message || "Logout failed", { id: toastId });
+    console.log(result);
   };
 
   return (

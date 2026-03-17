@@ -8,14 +8,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { logoutReq } from "@/src/services/auth/auth";
 import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
+import { getFcmToken } from "@/src/utils/fcmToken";
 import { ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Navbar({ vendorData }: { vendorData: TVendor }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -38,10 +41,29 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
     { name: t("contactUs"), href: "/contact-us" },
   ];
 
-  const logOut = () => {
-    removeCookie("accessToken");
-    removeCookie("refreshToken");
-    router.refresh();
+  const logOut = async () => {
+    const toastId = toast.loading("Logging out...");
+
+    const token = (await getFcmToken()) || "";
+
+    const result = await logoutReq({
+      email: vendorData?.email || "",
+      token,
+    });
+
+    if (result?.success) {
+      toast.success(result?.message || "Logout successful!", {
+        id: toastId,
+      });
+
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    }
+
+    toast.error(result?.message || "Logout failed", { id: toastId });
+    console.log(result);
   };
 
   return (
@@ -115,8 +137,8 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
             {/* language switcher */}
             <Select
               value={lang}
-              onValueChange={(value: 'en' | 'pt') => {
-                setLang(value)
+              onValueChange={(value: "en" | "pt") => {
+                setLang(value);
               }}
             >
               <SelectTrigger className="w-[70px] hover:border hover:border-[#DC3173]">

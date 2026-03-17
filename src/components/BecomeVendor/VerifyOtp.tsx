@@ -14,6 +14,7 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { resendOtpReq, verifyOtpReq } from "@/src/services/auth/auth";
 import { setCookie } from "@/src/utils/cookies";
 import { getAndSaveFcmToken } from "@/src/utils/fcmToken";
+import { getDeviceInfo } from "@/src/utils/getDeviceInfo";
 import { motion } from "framer-motion";
 import { Clock, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -30,7 +31,7 @@ export default function VerifyOtp({ email }: { email: string }) {
   // Countdown timer
   useEffect(() => {
     if (timer > 0) {
-      const interval = setInterval(() => setTimer((t) => t - 1), 1000); // ✅ every 1 second
+      const interval = setInterval(() => setTimer((t) => t - 1), 1000); // every 1 second
       return () => clearInterval(interval);
     }
   }, [timer]);
@@ -57,6 +58,7 @@ export default function VerifyOtp({ email }: { email: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const finalOtp = otp.join("");
+    const deviceDetails = await getDeviceInfo();
 
     if (finalOtp.length === 4) {
       const toastId = toast.loading("Verifying OTP...");
@@ -64,6 +66,7 @@ export default function VerifyOtp({ email }: { email: string }) {
       const result = await verifyOtpReq({
         email,
         otp: finalOtp,
+        deviceDetails,
       });
 
       if (result.success) {

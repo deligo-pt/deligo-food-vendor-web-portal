@@ -8,9 +8,11 @@ import {
 import SOSModal from "@/src/components/Dashboard/SOS/SOSModal";
 import TopbarMessageIcon from "@/src/components/vendorTopbar/TopbarMessageIcon";
 import TopbarNotification from "@/src/components/vendorTopbar/TopbarNotification";
+import { logoutReq } from "@/src/services/auth/auth";
 import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
+import { getFcmToken } from "@/src/utils/fcmToken";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle,
@@ -22,6 +24,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const PRIMARY = "#DC3173";
 
@@ -35,10 +38,29 @@ export default function TopbarIcons({ vendor }: IProps) {
   const [openSosModal, setOpenSosModal] = useState(false);
   const router = useRouter();
 
-  const logOut = () => {
-    removeCookie("accessToken");
-    removeCookie("refreshToken");
-    router.push("/login");
+  const logOut = async () => {
+    const toastId = toast.loading("Logging out...");
+
+    const token = (await getFcmToken()) || "";
+
+    const result = await logoutReq({
+      email: vendor?.email || "",
+      token,
+    });
+
+    if (result?.success) {
+      toast.success(result?.message || "Logout successful!", {
+        id: toastId,
+      });
+
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    }
+
+    toast.error(result?.message || "Logout failed", { id: toastId });
+    console.log(result);
   };
 
   return (
