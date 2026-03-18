@@ -367,7 +367,7 @@ export function ProductForm({
   }, [form.formState?.errors]);
 
   return (
-    <div className="p-8">
+    <div>
       <motion.div
         initial={{
           opacity: 0,

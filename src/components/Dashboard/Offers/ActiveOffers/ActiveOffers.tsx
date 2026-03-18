@@ -82,7 +82,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
   const title_lowercase = title.toLowerCase();
 
   return (
-    <div className="space-y-12 min-h-screen p-6">
+    <div className="space-y-12 min-h-screen">
       {/* HEADER */}
       <TitleHeader
         title={`${t(title_lowercase)} ${t("offers")}`}

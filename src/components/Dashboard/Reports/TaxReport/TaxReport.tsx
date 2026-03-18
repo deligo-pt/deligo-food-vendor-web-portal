@@ -81,7 +81,7 @@ const addonTaxData = [
 
 export default function TaxReport() {
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen">
       {/* Header */}
       <TitleHeader
         title="Tax Report"

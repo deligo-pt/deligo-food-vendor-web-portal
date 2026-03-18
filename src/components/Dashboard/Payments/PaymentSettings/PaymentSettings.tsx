@@ -101,7 +101,7 @@ export default function PaymentSettings({ bankDetails }: IProps) {
 
   return (
     <motion.div
-      className="min-h-screen p-6"
+      className="min-h-screen"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

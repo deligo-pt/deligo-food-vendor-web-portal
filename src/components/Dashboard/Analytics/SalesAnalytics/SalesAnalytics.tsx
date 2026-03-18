@@ -62,7 +62,7 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
 
   return (
     <motion.div
-      className="min-h-screen p-6 space-y-6"
+      className="min-h-screen space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

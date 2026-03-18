@@ -52,7 +52,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20">
-      <div className="min-h-screen p-6">
+      <div className="min-h-screen">
         {/* Header */}
         <div className="mb-4">
           <Link
