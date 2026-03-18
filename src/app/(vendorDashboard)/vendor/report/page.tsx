@@ -37,7 +37,7 @@ export default function VendorReportIssuePage() {
   };
 
   return (
-    <div className="min-h-screen p-6 space-y-10">
+    <div className="min-h-screen space-y-10">
       {/* HEADER */}
       <TitleHeader
         title={t("report_an_issue")}

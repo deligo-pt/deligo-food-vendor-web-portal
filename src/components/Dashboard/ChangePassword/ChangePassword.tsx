@@ -77,7 +77,7 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
           {/* HEADER */}
