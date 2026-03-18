@@ -32,7 +32,7 @@ export default function Transactions({ transactionsResult }: IProps) {
   ];
 
   return (
-    <div ref={reportRef} className="p-4 md:p-6 space-y-6 max-w-full">
+    <div ref={reportRef} className="space-y-6 max-w-full">
       {/* Logo for print */}
       <div className="hidden print:flex items-center gap-2 mb-4">
         <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#DC3173] overflow-hidden shadow-md">
