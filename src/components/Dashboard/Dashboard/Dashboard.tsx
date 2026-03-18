@@ -28,7 +28,7 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
   const { t } = useTranslation();
 
   return (
-    <div className="p-6">
+    <div>
       {/* Header */}
       <TitleHeader
         title={`${t("hello")}, ${vendorName}`}

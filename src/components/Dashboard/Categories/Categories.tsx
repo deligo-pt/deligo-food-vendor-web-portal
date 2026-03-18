@@ -36,7 +36,7 @@ export default function Categories({ categoriesResult }: IProps) {
   ];
 
   return (
-    <div className="min-h-screen p-6 space-y-8">
+    <div className="min-h-screen space-y-8">
       {/* HEADER */}
       <TitleHeader
         title={t("categories")}

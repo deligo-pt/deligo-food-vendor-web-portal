@@ -73,7 +73,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
 
   return (
     <>
-      <div className="min-h-screen p-6 space-y-8">
+      <div className="min-h-screen space-y-8">
         {/* HEADER */}
 
         <TitleHeader
