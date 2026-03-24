@@ -40,9 +40,8 @@ export const businessDetailsValidation = z
 
     closingDays: z
       .array(z.string())
-      .min(1, "At least one closing day is required")
       .max(7, "Closing days must be at most 7")
-      .nonempty("Closing days is required"),
+      .optional(),
   })
   .refine(
     (data) => {

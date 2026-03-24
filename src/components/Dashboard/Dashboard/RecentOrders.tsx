@@ -37,9 +37,21 @@ const RecentOrders = ({ recentOrders }: IProps) => {
 
   const STATUS_MAP = {
     PENDING: { label: t("pending"), color: "text-amber-500", icon: ClockIcon },
-    ACCEPTED: { label: t("accepted"), color: "text-blue-500", icon: ThumbsUpIcon },
-    REJECTED: { label: t("rejected"), color: "text-red-500", icon: XCircleIcon },
-    PREPARING: { label: t("preparing"), color: "text-yellow-500", icon: ClockIcon },
+    ACCEPTED: {
+      label: t("accepted"),
+      color: "text-blue-500",
+      icon: ThumbsUpIcon,
+    },
+    REJECTED: {
+      label: t("rejected"),
+      color: "text-red-500",
+      icon: XCircleIcon,
+    },
+    PREPARING: {
+      label: t("preparing"),
+      color: "text-yellow-500",
+      icon: ClockIcon,
+    },
     READY_FOR_PICKUP: {
       label: t("ready_for_pickup"),
       color: "text-green-500",
@@ -70,7 +82,11 @@ const RecentOrders = ({ recentOrders }: IProps) => {
       color: "text-purple-500",
       icon: PackageCheckIcon,
     },
-    ON_THE_WAY: { label: t("on_the_way"), color: "text-sky-500", icon: TruckIcon },
+    ON_THE_WAY: {
+      label: t("on_the_way"),
+      color: "text-sky-500",
+      icon: TruckIcon,
+    },
     DELIVERED: {
       label: t("delivered"),
       color: "text-green-500",
@@ -143,14 +159,16 @@ const RecentOrders = ({ recentOrders }: IProps) => {
           </motion.div>
         ))}
       </motion.div>
-      <Link href="/vendor/new-orders">
-        <Button
-          variant="link"
-          className="w-full mt-4 text-[#DC3173] text-sm font-medium hover:underline"
-        >
-          {t("view_all_orders")}
-        </Button>
-      </Link>
+      {recentOrders.length > 0 && (
+        <Link href="/vendor/new-orders">
+          <Button
+            variant="link"
+            className="w-full mt-4 text-[#DC3173] text-sm font-medium hover:underline"
+          >
+            {t("view_all_orders")}
+          </Button>
+        </Link>
+      )}
     </div>
   );
 };

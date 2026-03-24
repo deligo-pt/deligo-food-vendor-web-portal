@@ -188,7 +188,7 @@ export default function BusinessDetailsForm({
                                   "pl-11 pr-4 h-12 w-full bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer  ",
                                   fieldState.invalid
                                     ? "border-destructive focus-visible:ring-destructive/20"
-                                    : "border-gray-300"
+                                    : "border-gray-300",
                                 )}
                                 style={{
                                   height: "3rem",
@@ -364,14 +364,14 @@ export default function BusinessDetailsForm({
                               type="button"
                               onClick={() => {
                                 field.onChange(
-                                  field.value.includes(day)
+                                  field.value?.includes(day)
                                     ? field.value.filter((d) => d !== day)
-                                    : [...field.value, day]
+                                    : [...(field.value || []), day],
                                 );
                               }}
                               whileTap={{ scale: 0.95 }}
                               className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${
-                                field.value.includes(day)
+                                field.value?.includes(day)
                                   ? "bg-[#DC3173] text-white border-[#DC3173]"
                                   : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
                               }`}

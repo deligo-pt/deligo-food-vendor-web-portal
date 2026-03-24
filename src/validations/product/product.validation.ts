@@ -22,9 +22,7 @@ export const productValidation = z
 
     brand: z
       .string()
-      .min(2, "Brand must be at least 2 character")
-      .max(50, "Brand must be at most 50 characters")
-      .nonempty("Brand is required"),
+      .optional(),
 
     price: z.number().optional(),
 

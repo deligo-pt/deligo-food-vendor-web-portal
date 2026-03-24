@@ -17,7 +17,7 @@ export default async function RegistrationStatusPage() {
 
   try {
     const result = (await serverRequest.get(
-      `/vendors/${decoded.userId}`
+      `/vendors/${decoded.userId}`,
     )) as unknown as TResponse<TVendor>;
 
     if (result?.success) {
@@ -28,5 +28,5 @@ export default async function RegistrationStatusPage() {
     console.log("Server fetch error:", err?.response?.data);
   }
 
-  return <RegistrationStatus vendor={vendor} decodedStatus={decoded.status} />;
+  return <RegistrationStatus vendor={vendor} />;
 }

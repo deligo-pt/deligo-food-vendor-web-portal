@@ -29,10 +29,9 @@ import { toast } from "sonner";
 
 interface IProps {
   vendor: TVendor;
-  decodedStatus: keyof typeof USER_STATUS;
 }
 
-export default function RegistrationStatus({ vendor, decodedStatus }: IProps) {
+export default function RegistrationStatus({ vendor }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -54,6 +53,7 @@ export default function RegistrationStatus({ vendor, decodedStatus }: IProps) {
       removeCookie("accessToken");
       removeCookie("refreshToken");
       router.push("/login");
+      return;
     }
 
     toast.error(result?.message || "Logout failed", { id: toastId });
@@ -278,17 +278,21 @@ export default function RegistrationStatus({ vendor, decodedStatus }: IProps) {
                 <>
                   <Button
                     className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
-                    onClick={() =>
-                      decodedStatus === vendor.status
-                        ? router.push("/become-vendor/personal-details")
-                        : logOut()
-                    }
+                    onClick={() => router.push("/vendor/dashboard")}
                   >
-                    {t("loginAgain")}
+                    Go to Dashboard
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
+                    onClick={logOut}
+                  >
+                    {t("logout")}
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    {t("loginAgainDesc")}
+                    Your application has been approved. You can now visit your
+                    dashboard.
                   </p>
                 </>
               )}
@@ -297,12 +301,17 @@ export default function RegistrationStatus({ vendor, decodedStatus }: IProps) {
                   <Button
                     className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
                     onClick={() =>
-                      decodedStatus === vendor.status
-                        ? router.push("/become-vendor/personal-details")
-                        : logOut()
+                      router.push("/become-vendor/personal-details")
                     }
                   >
                     {t("submitDetailsAgain")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
+                    onClick={logOut}
+                  >
+                    {t("logout")}
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
