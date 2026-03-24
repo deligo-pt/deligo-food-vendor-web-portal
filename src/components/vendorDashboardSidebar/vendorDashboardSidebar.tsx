@@ -67,9 +67,9 @@ export default function Sidebar({ open, setOpen, vendor }: IProps) {
 
       {/* Desktop Sidebar */}
       <motion.aside
-        animate={{ width: open ? 280 : 80 }}
+        animate={{ width: open ? "100%" : 80 }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        className="hidden md:flex h-screen bg-linear-to-b from-pink-50 via-white to-pink-100 shadow-xl flex-col border-r border-pink-200 overflow-hidden fixed left-0 top-0 z-40"
+        className="h-screen bg-linear-to-b from-pink-50 via-white to-pink-100 shadow-xl hidden md:flex flex-col border-r border-pink-200 overflow-hidden relative w-full"
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-pink-200">
           <div className="flex items-center gap-2">

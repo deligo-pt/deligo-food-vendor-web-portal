@@ -60,7 +60,7 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20">
-      <div className="min-h-screen p-6">
+      <div className="min-h-screen">
         {/* Header */}
         <TitleHeader
           title="My Ingredient Orders"

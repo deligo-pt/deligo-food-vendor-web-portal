@@ -93,7 +93,7 @@ export default function SalesReport({ salesReportData }: IProps) {
   ];
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen">
       {/* Header */}
       <TitleHeader
         title={t("sales_report")}

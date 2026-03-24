@@ -26,7 +26,7 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen p-6 space-y-12">
+    <div className="min-h-screen space-y-12">
       {/* HEADER */}
       <TitleHeader
         title={t("coupon_analytics")}
