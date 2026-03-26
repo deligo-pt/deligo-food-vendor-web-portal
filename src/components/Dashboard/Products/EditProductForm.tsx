@@ -32,7 +32,6 @@ import { TProductCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 import { TTax } from "@/src/types/tax.type";
 import { catchAsync } from "@/src/utils/catchAsync";
-import { getCookie } from "@/src/utils/cookies";
 import { updateData } from "@/src/utils/requests";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -309,7 +308,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
       return (await updateData(`/products/${prevData?.productId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          authorization: `Bearer ${getCookie("accessToken")}`,
         },
       })) as unknown as TResponse<TProduct>;
     });

@@ -30,7 +30,6 @@ export default function TopbarMessageIcon() {
     const result = await catchAsync<TConversation[]>(async () => {
       return await fetchData("/support/conversations", {
         params: { type: "VENDOR_CHAT" },
-        headers: { Authorization: `Bearer ${accessToken}` },
       });
     });
     if (result.success) {

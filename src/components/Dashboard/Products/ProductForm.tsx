@@ -29,7 +29,6 @@ import { TBusinessCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 import { TTax } from "@/src/types/tax.type";
 import { catchAsync } from "@/src/utils/catchAsync";
-import { getCookie } from "@/src/utils/cookies";
 import { postData } from "@/src/utils/requests";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -302,7 +301,6 @@ export function ProductForm({
       return (await postData("/products/create-product", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          authorization: `Bearer ${getCookie("accessToken")}`,
         },
       })) as unknown as TResponse<TProduct>;
     });
