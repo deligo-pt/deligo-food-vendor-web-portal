@@ -17,7 +17,12 @@ export default function SingleIngredientCard({ item }: IProps) {
 
   const [isBuying, setIsBuying] = useState(false);
   const [isOrdering, setIsOrdering] = useState(false);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(item.minOrder || 1);
+
+  const increment = () => setQuantity((q) => Math.min(item.stock, q + 1));
+
+  const decrement = () =>
+    setQuantity((q) => Math.max(item.minOrder || 1, q - 1));
 
   const handlePlaceOrder = async () => {
     setIsOrdering(true);
@@ -26,7 +31,7 @@ export default function SingleIngredientCard({ item }: IProps) {
 
     setIsOrdering(false);
     toast.success("Order placed successfully!", { id: toastId });
-    setQuantity(0);
+    setQuantity(item.minOrder || 1);
     setIsBuying(false);
   };
 
@@ -72,8 +77,9 @@ export default function SingleIngredientCard({ item }: IProps) {
           {isBuying ? (
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1">
               <button
-                onClick={() => setQuantity((prev) => prev - 1)}
-                className="p-1.5 hover:bg-white rounded-md text-gray-600 shadow-sm transition-all"
+                onClick={decrement}
+                className="p-1.5 bg-white rounded-md text-[#DC3173] shadow-sm transition-all cursor-pointer hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                disabled={quantity <= (item.minOrder || 1)}
               >
                 <MinusIcon size={14} />
               </button>
@@ -81,8 +87,9 @@ export default function SingleIngredientCard({ item }: IProps) {
                 {quantity}
               </span>
               <button
-                onClick={() => setQuantity((prev) => prev + 1)}
-                className="p-1.5 bg-white rounded-md text-[#DC3173] shadow-sm transition-all"
+                onClick={increment}
+                className="p-1.5 bg-white rounded-md text-[#DC3173] shadow-sm transition-all cursor-pointer hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                disabled={quantity >= item.stock}
               >
                 <PlusIcon size={14} />
               </button>
@@ -103,9 +110,7 @@ export default function SingleIngredientCard({ item }: IProps) {
           ) : (
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1">
               <button
-                onClick={() =>
-                  router.push(`/vendor/ingredients/${item.ingredientId}`)
-                }
+                onClick={() => router.push(`/vendor/ingredients/${item._id}`)}
                 className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] transition-colors"
               >
                 <EyeIcon size={16} />

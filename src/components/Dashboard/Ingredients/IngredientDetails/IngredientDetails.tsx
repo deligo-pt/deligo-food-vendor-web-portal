@@ -1,5 +1,6 @@
 "use client";
 
+import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { TIngredient } from "@/src/types/ingredient.type";
 import { motion } from "framer-motion";
 import {
@@ -21,10 +22,10 @@ interface IProps {
 }
 
 export default function IngredientDetail({ ingredient }: IProps) {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(ingredient.minOrder || 1);
   const [isAdding, setIsAdding] = useState(false);
 
-  const handleAddToCart = async () => {
+  const handleBuy = async () => {
     setIsAdding(true);
     const toastId = toast.loading("Buying...");
 
@@ -32,6 +33,7 @@ export default function IngredientDetail({ ingredient }: IProps) {
 
     toast.success("Successfully bought", { id: toastId });
     setIsAdding(false);
+    setQuantity(ingredient.minOrder || 1);
   };
 
   const increment = () => setQuantity((q) => Math.min(ingredient.stock, q + 1));
@@ -49,6 +51,12 @@ export default function IngredientDetail({ ingredient }: IProps) {
           Back to Ingredients
         </Link>
       </div>
+
+      {/* Header */}
+      <TitleHeader
+        title="Ingredients Details"
+        subtitle="View detailed information about the ingredient and place your order"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Image */}
@@ -114,8 +122,8 @@ export default function IngredientDetail({ ingredient }: IProps) {
               <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-1">
                 <button
                   onClick={decrement}
-                  className="p-2 hover:bg-white rounded-lg text-gray-600 shadow-sm transition-all disabled:opacity-50"
-                  disabled={quantity <= 0}
+                  className="p-2 bg-white rounded-lg text-[#DC3173] shadow-sm transition-all cursor-pointer hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                  disabled={quantity <= (ingredient.minOrder || 1)}
                 >
                   <Minus size={18} />
                 </button>
@@ -124,12 +132,19 @@ export default function IngredientDetail({ ingredient }: IProps) {
                 </span>
                 <button
                   onClick={increment}
-                  className="p-2 bg-white rounded-lg text-[#DC3173] shadow-sm transition-all hover:scale-105"
+                  className="p-2 bg-white rounded-lg text-[#DC3173] shadow-sm transition-all cursor-pointer hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                   disabled={quantity >= ingredient.stock}
                 >
                   <Plus size={18} />
                 </button>
               </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-xl mb-2">
+              <Info size={16} />
+              <span>
+                Minimum order quantity is {ingredient.minOrder || 1} units
+              </span>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-xl mb-6">
@@ -147,7 +162,7 @@ export default function IngredientDetail({ ingredient }: IProps) {
             </div>
 
             <button
-              onClick={handleAddToCart}
+              onClick={handleBuy}
               disabled={isAdding}
               className={`w-full py-4 bg-[#DC3173] text-white rounded-xl font-bold text-lg shadow-lg shadow-[#DC3173]/20 hover:bg-[#DC3173]/90 transition-all flex items-center justify-center gap-2 ${isAdding ? "opacity-70 cursor-wait" : ""}`}
             >

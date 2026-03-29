@@ -8,6 +8,7 @@ export type TIngredient = {
 
   price: number;
   stock: number;
+  minOrder?: number;
 
   image: string;
 

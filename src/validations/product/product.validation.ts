@@ -20,9 +20,7 @@ export const productValidation = z
       .max(50, "Category must be at most 50 characters")
       .nonempty("Category is required"),
 
-    brand: z
-      .string()
-      .optional(),
+    brand: z.string().optional(),
 
     price: z.number().optional(),
 
