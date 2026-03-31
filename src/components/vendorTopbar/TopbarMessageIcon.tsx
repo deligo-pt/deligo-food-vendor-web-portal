@@ -1,67 +1,61 @@
 "use client";
 
-import { getSupportSocket } from "@/lib/socket";
-import { useChatSocket } from "@/src/hooks/use-chat-socket";
-import { getUnreadCountReq } from "@/src/services/dashboard/chat/chat";
-import { TConversation, TMessage } from "@/src/types/chat.type";
-import { catchAsync } from "@/src/utils/catchAsync";
-import { getCookie } from "@/src/utils/cookies";
-import { fetchData } from "@/src/utils/requests";
 import { motion } from "framer-motion";
 import { MessageSquare } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 export default function TopbarMessageIcon() {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const accessToken = getCookie("accessToken") || "";
-  const [liveChatRoom, setLiveChatRoom] = useState("");
-  const [unreadCount, setUnreadCount] = useState(0);
+  // const accessToken = getCookie("accessToken") || "";
+  // const [liveChatRoom, setLiveChatRoom] = useState("");
+  // const [unreadCount, setUnreadCount] = useState(0);
+  const unreadCount = 0;
 
-  const newMessageHandler = (msg: TMessage) => {
-    if (msg.senderRole !== "VENDOR") {
-      getUnreadMessageCount();
-      audioRef.current?.play().catch((error) => {
-        console.log("Error playing audio:", error);
-      });
-    }
-  };
+  // const newMessageHandler = (msg: TMessage) => {
+  //   if (msg.senderRole !== "VENDOR") {
+  //     getUnreadMessageCount();
+  //     audioRef.current?.play().catch((error) => {
+  //       console.log("Error playing audio:", error);
+  //     });
+  //   }
+  // };
 
-  const getRoom = async () => {
-    const result = await catchAsync<TConversation[]>(async () => {
-      return await fetchData("/support/conversations", {
-        params: { type: "VENDOR_CHAT" },
-      });
-    });
-    if (result.success) {
-      setLiveChatRoom(result.data?.[0]?.room);
-    }
-  };
+  // const getRoom = async () => {
+  //   const result = await catchAsync<TConversation[]>(async () => {
+  //     return await fetchData("/support/conversations", {
+  //       params: { type: "VENDOR_CHAT" },
+  //     });
+  //   });
+  //   if (result.success) {
+  //     setLiveChatRoom(result.data?.[0]?.room);
+  //   }
+  // };
 
-  const getUnreadMessageCount = async () => {
-    const result = await getUnreadCountReq();
+  // const getUnreadMessageCount = async () => {
+  //   const result = await getUnreadCountReq();
 
-    if (result.success) {
-      setUnreadCount(result.data || 0);
-    }
-  };
+  //   if (result.success) {
+  //     setUnreadCount(result.data || 0);
+  //   }
+  // };
 
-  useChatSocket({
-    room: liveChatRoom,
-    token: accessToken as string,
-    onMessage: (msg) => newMessageHandler(msg),
-    chatType: "liveChat",
-  });
+  // useChatSocket({
+  //   room: liveChatRoom,
+  //   token: accessToken as string,
+  //   onMessage: (msg) => newMessageHandler(msg),
+  //   chatType: "liveChat",
+  // });
 
-  useEffect(() => {}, []);
+  // useEffect(() => {}, []);
 
-  useEffect(() => {
-    (() => getUnreadMessageCount())();
-    (() => getRoom())();
+  // useEffect(() => {
+  //   (() => getUnreadMessageCount())();
+  //   (() => getRoom())();
 
-    const supportSocket = getSupportSocket(accessToken);
-    supportSocket.on("new-message", newMessageHandler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   const supportSocket = getSupportSocket(accessToken);
+  //   supportSocket.on("new-message", newMessageHandler);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <>

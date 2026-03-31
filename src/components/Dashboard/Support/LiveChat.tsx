@@ -3,8 +3,8 @@
 import { useChatSocket } from "@/src/hooks/use-chat-socket";
 import { TMeta } from "@/src/types";
 import { TConversation, TMessage } from "@/src/types/chat.type";
+import { TSupportMessage } from "@/src/types/support.type";
 import { getCookie } from "@/src/utils/cookies";
-import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
 import { MessageCircle, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -17,12 +17,10 @@ interface IProps {
 
 export default function LiveChat({
   initialConversation: conversation,
-  initialMessagesData,
+  // initialMessagesData,
   vendorId,
 }: IProps) {
-  const [messages, setMessages] = useState<TMessage[]>(
-    initialMessagesData?.data || [],
-  );
+  const [messages, setMessages] = useState<TSupportMessage[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [text, setText] = useState("");
   const [typingInfo, setTypingInfo] = useState<{
@@ -35,7 +33,7 @@ export default function LiveChat({
   const accessToken = getCookie("accessToken") || "";
 
   const { sendMessage, makeTyping } = useChatSocket({
-    room: conversation?.room,
+    ticketId: conversation?.room,
     token: accessToken as string,
     onMessage: (msg) => setMessages((prev) => [...prev, msg]),
     onTyping: (data) => {
@@ -119,11 +117,11 @@ export default function LiveChat({
                       }`}
                     >
                       {msg.message}
-                      <p className="text-[10px] opacity-70 mt-1">
+                      {/* <p className="text-[10px] opacity-70 mt-1">
                         {formatDistanceToNow(msg.createdAt as Date, {
                           addSuffix: true,
                         })}
-                      </p>
+                      </p> */}
                     </div>
                   </motion.div>
                 ))}

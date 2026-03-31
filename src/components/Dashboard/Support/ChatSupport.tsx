@@ -8,25 +8,15 @@ import { useEffect, useRef, useState } from "react";
 
 import { useChatSocket } from "@/src/hooks/use-chat-socket";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { openConversationReq } from "@/src/services/dashboard/chat/chat";
-import { TMeta } from "@/src/types";
-import { TConversation, TMessage } from "@/src/types/chat.type";
+import { TConversation } from "@/src/types/chat.type";
+import { TSupportMessage } from "@/src/types/support.type";
 import { getCookie } from "@/src/utils/cookies";
 import { format } from "date-fns";
-import { jwtDecode } from "jwt-decode";
-import {
-  Bot,
-  CheckCheckIcon,
-  CheckIcon,
-  Clock,
-  PhoneCall,
-  Send,
-} from "lucide-react";
+import { Bot, Clock, PhoneCall, Send } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 interface IProps {
   initialConversation: TConversation;
-  initialMessagesData: { data: TMessage[]; meta?: TMeta };
 }
 
 const PRIMARY = "#DC3173";
@@ -35,7 +25,6 @@ const SHADOW = "0 6px 22px rgba(0,0,0,0.06)";
 
 export default function VendorChatSupport({
   initialConversation: conversation,
-  initialMessagesData,
 }: IProps) {
   const { t } = useTranslation();
   const path = usePathname();
@@ -44,25 +33,23 @@ export default function VendorChatSupport({
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [text, setText] = useState("");
 
-  const [messages, setMessages] = useState<TMessage[]>(
-    initialMessagesData?.data || [],
-  );
+  const [messages, setMessages] = useState<TSupportMessage[]>([]);
   const [status, setStatus] = useState(conversation.status);
 
   const accessToken = getCookie("accessToken") || "";
-  const decoded = jwtDecode(accessToken) as { userId: string };
+  // const decoded = jwtDecode(accessToken) as { userId: string };
 
-  const openConversation = async () => {
-    const result = await openConversationReq();
-    if (result.success) {
-      setStatus("OPEN");
-    }
-  };
+  // const openConversation = async () => {
+  //   const result = await openConversationReq();
+  //   if (result.success) {
+  //     setStatus("OPEN");
+  //   }
+  // };
 
   const { sendMessage } = useChatSocket({
-    room: conversation.room,
     token: accessToken as string,
     onMessage: (msg) => {
+      console.log(msg);
       setMessages((prev) => [...prev, msg]);
       if (status === "OPEN") {
         setStatus("IN_PROGRESS");
@@ -75,7 +62,7 @@ export default function VendorChatSupport({
       console.log(data);
     },
     onClosed: () => setStatus("CLOSED"),
-    onError: (msg) => alert(msg),
+    onError: (msg) => console.log(msg),
     willRead: path === "/vendor/chat-support",
   });
 
@@ -122,8 +109,8 @@ export default function VendorChatSupport({
                 <div>
                   <h2 className="font-bold text-lg">{t("deligo_support")}</h2>
                   <p className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock size={12} /> {status.charAt(0)}
-                    {status.slice(1).toLowerCase().replace("_", " ")}
+                    <Clock size={12} /> {status?.charAt(0)}
+                    {status?.slice(1)?.toLowerCase()?.replace("_", " ")}
                   </p>
                 </div>
               </div>
@@ -134,7 +121,7 @@ export default function VendorChatSupport({
               ref={scrollRef}
               className="h-[520px] overflow-y-auto p-6 space-y-4 bg-gray-50"
             >
-              {messages.map((msg, i) => (
+              {messages?.map((msg, i) => (
                 <div
                   key={i}
                   className={`flex ${
@@ -153,14 +140,14 @@ export default function VendorChatSupport({
                     <div className="text-sm leading-relaxed">{msg.message}</div>
                     <div className="flex items-end justify-between gap-3">
                       <p className="text-[10px] opacity-70 mt-1">
-                        {format(msg.createdAt as Date, "hh:mm a")}
+                        {format(msg.createdAt, "hh:mm a")}
                       </p>
-                      {msg.senderRole === "VENDOR" &&
+                      {/* {msg.senderRole === "VENDOR" &&
                         (msg.readBy?.[decoded.userId] ? (
                           <CheckCheckIcon size={14} />
                         ) : (
                           <CheckIcon size={14} />
-                        ))}
+                        ))} */}
                     </div>
                   </div>
                 </div>
@@ -172,8 +159,8 @@ export default function VendorChatSupport({
             {status === "CLOSED" ? (
               <div className="p-4 text-center">
                 <Button
-                  className="text-white bg-[#DC3173] bg-[#DC3173]/90"
-                  onClick={openConversation}
+                  className="text-white bg-[#DC3173] hover:bg-[#DC3173]/90"
+                  // onClick={openConversation}
                 >
                   Get Support
                 </Button>
