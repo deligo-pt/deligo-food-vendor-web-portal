@@ -6,15 +6,10 @@ import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TIngredientOrder } from "@/src/types/ingredient.type";
+import { formatPrice } from "@/src/utils/formatPrice";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import {
-  CheckCircle,
-  ChevronRight,
-  Clock,
-  Package,
-  XCircle,
-} from "lucide-react";
+import { CheckCircle, ChevronRight, Clock, Package, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface IProps {
@@ -30,29 +25,27 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
     { label: t("oldest_first"), value: "createdAt" },
   ];
 
-  const getStatusColor = (status: TIngredientOrder["status"]) => {
+  const getStatusColor = (status: TIngredientOrder["orderStatus"]) => {
     switch (status) {
       case "DELIVERED":
+        return "text-[#DC3173] bg-[#DC3173]/10 border-[#DC3173]/20";
+      case "SHIPPED":
         return "text-indigo-600 bg-indigo-50 border-indigo-100";
-      case "APPROVED":
+      case "CONFIRMED":
         return "text-green-600 bg-green-50 border-green-100";
-      case "REJECTED":
-        return "text-red-600 bg-red-50 border-red-100";
-      case "CANCELLED":
-        return "text-gray-600 bg-gray-50 border-gray-100";
       case "PENDING":
         return "text-amber-600 bg-amber-50 border-amber-100";
     }
   };
 
-  const getStatusIcon = (status: TIngredientOrder["status"]) => {
+  const getStatusIcon = (status: TIngredientOrder["orderStatus"]) => {
     switch (status) {
-      case "APPROVED":
       case "DELIVERED":
         return <CheckCircle size={16} />;
-      case "REJECTED":
-      case "CANCELLED":
-        return <XCircle size={16} />;
+      case "SHIPPED":
+        return <Truck size={16} />;
+      case "CONFIRMED":
+        return <Package size={16} />;
       case "PENDING":
         return <Clock size={16} />;
     }
@@ -71,7 +64,7 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
         <AllFilters sortOptions={sortOptions} />
 
         {/* Orders List */}
-        <div className="space-y-4">
+        <div className="space-y-4 mb-4">
           {ordersData.data?.map((order, index) => (
             <motion.div
               key={order._id}
@@ -99,10 +92,10 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
                         {order.orderId}
                       </h3>
                       <span
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(order.status)}`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(order.orderStatus)}`}
                       >
-                        {getStatusIcon(order.status)}
-                        {order.status}
+                        {getStatusIcon(order.orderStatus)}
+                        {order.orderStatus}
                       </span>
                     </div>
                     <p className="text-sm text-gray-500 mb-2">
@@ -110,14 +103,10 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
                       {format(order.createdAt, "do MMM yyyy, hh:mm a")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {order.ingredients.map((item, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600"
-                        >
-                          {item.name} (x{item.quantity})
-                        </span>
-                      ))}
+                      <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">
+                        {order?.orderDetails?.ingredient?.name} (x
+                        {order?.orderDetails?.totalQuantity})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -128,7 +117,7 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
                       Total Amount
                     </p>
                     <p className="text-2xl font-bold text-gray-900">
-                      €{order.totalPrice?.toFixed(2)}
+                      €{formatPrice(order.grandTotal || 0)}
                     </p>
                   </div>
                   <button
@@ -164,7 +153,6 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="px-4 md:px-6"
           >
             <PaginationComponent
               totalPages={ordersData?.meta?.totalPage as number}

@@ -6,34 +6,30 @@ import { EyeIcon, MinusIcon, PlusIcon, ShoppingBag, XIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
 
 interface IProps {
   item: TIngredient;
+  setOrderDetails: React.Dispatch<
+    React.SetStateAction<{
+      ingredient: string;
+      totalQuantity: number;
+    } | null>
+  >;
 }
 
-export default function SingleIngredientCard({ item }: IProps) {
+export default function SingleIngredientCard({
+  item,
+  setOrderDetails,
+}: IProps) {
   const router = useRouter();
 
   const [isBuying, setIsBuying] = useState(false);
-  const [isOrdering, setIsOrdering] = useState(false);
   const [quantity, setQuantity] = useState(item.minOrder || 1);
 
   const increment = () => setQuantity((q) => Math.min(item.stock, q + 1));
 
   const decrement = () =>
     setQuantity((q) => Math.max(item.minOrder || 1, q - 1));
-
-  const handlePlaceOrder = async () => {
-    setIsOrdering(true);
-    const toastId = toast.loading("Placing order...");
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    setIsOrdering(false);
-    toast.success("Order placed successfully!", { id: toastId });
-    setQuantity(item.minOrder || 1);
-    setIsBuying(false);
-  };
 
   return (
     <motion.div
@@ -94,9 +90,14 @@ export default function SingleIngredientCard({ item }: IProps) {
                 <PlusIcon size={14} />
               </button>
               <button
-                onClick={handlePlaceOrder}
+                onClick={() =>
+                  setOrderDetails({
+                    ingredient: item._id,
+                    totalQuantity: quantity,
+                  })
+                }
                 className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] hover:bg-[#DC3173]/90 transition-colors"
-                disabled={isOrdering}
+                // disabled={isOrdering}
               >
                 Order
               </button>

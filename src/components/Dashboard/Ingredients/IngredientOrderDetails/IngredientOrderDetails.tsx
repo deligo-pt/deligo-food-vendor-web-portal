@@ -1,9 +1,10 @@
 "use client";
 
 import { TIngredientOrder } from "@/src/types/ingredient.type";
+import { formatPrice } from "@/src/utils/formatPrice";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, Clock, Truck, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock, Package, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,36 +16,30 @@ interface IProps {
 export function IngredientOrderDetails({ orderData }: IProps) {
   const router = useRouter();
 
-  const getStatusBadge = (status: TIngredientOrder["status"]) => {
+  const getStatusBadge = (status: TIngredientOrder["orderStatus"]) => {
     switch (status) {
       case "DELIVERED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-indigo-100 text-indigo-700">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-[#DC3173]/10 text-[#DC3173]">
             <CheckCircle size={14} /> Delivered
           </span>
         );
-      case "APPROVED":
+      case "SHIPPED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700">
-            <CheckCircle size={14} /> Approved
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-indigo-100 text-indigo-700">
+            <Truck size={14} /> Shipped
           </span>
         );
-      case "REJECTED":
+      case "CONFIRMED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-700">
-            <XCircle size={14} /> Rejected
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700">
+            <Package size={14} /> Confirmed
           </span>
         );
       case "PENDING":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-amber-100 text-amber-700">
             <Clock size={14} /> Pending
-          </span>
-        );
-      case "CANCELLED":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-gray-100 text-gray-700">
-            <XCircle size={14} /> Cancelled
           </span>
         );
     }
@@ -66,7 +61,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
             <div>
               <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
                 Order #{orderData.orderId}
-                {getStatusBadge(orderData.status)}
+                {getStatusBadge(orderData.orderStatus)}
               </h1>
               <p className="text-gray-500 mt-1">
                 Placed on {format(orderData.createdAt, "do MMM yyyy, hh:mm a")}
@@ -95,36 +90,39 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                   Items Ordered
                 </h2>
               </div>
-              <div className="divide-y divide-gray-50">
-                {orderData.ingredients?.map((item, i) => (
-                  <div
-                    key={i}
-                    className="p-6 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl bg-gray-50 flex items-center justify-center text-3xl">
-                        <Image
-                          src={item.image as string}
-                          alt={item.name as string}
-                          width={64}
-                          height={64}
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-gray-900">{item.name}</h4>
-                        <p className="text-sm text-gray-500">
-                          €{(item.price || 0)?.toFixed(2)} x {item.quantity}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg text-gray-900">
-                        €{(item.quantity * (item.price || 0))?.toFixed(2)}
-                      </p>
-                    </div>
+              <div className="p-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-xl bg-gray-50 flex items-center justify-center text-3xl">
+                    <Image
+                      src={orderData.orderDetails?.ingredient?.image}
+                      alt={orderData.orderDetails?.ingredient?.name as string}
+                      width={64}
+                      height={64}
+                      className="object-cover w-full h-full"
+                    />
                   </div>
-                ))}
+                  <div>
+                    <h4 className="font-bold text-gray-900">
+                      {orderData.orderDetails?.ingredient?.name}
+                    </h4>
+                    <p className="text-sm text-gray-500">
+                      €
+                      {(
+                        orderData.orderDetails?.ingredient?.price || 0
+                      )?.toFixed(2)}{" "}
+                      x {orderData.orderDetails?.totalQuantity}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-lg text-gray-900">
+                    €
+                    {(
+                      orderData.orderDetails?.totalQuantity *
+                      (orderData.orderDetails?.ingredient?.price || 0)
+                    )?.toFixed(2)}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -171,7 +169,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
               <div className="space-y-4">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>€{orderData.totalPrice?.toFixed(2)}</span>
+                  <span>€{formatPrice(orderData.grandTotal)}</span>
                 </div>
                 {/* <div className="flex justify-between text-gray-600">
                   <span>Tax (10%)</span>
@@ -184,7 +182,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                 <div className="border-t border-gray-100 pt-4 flex justify-between items-center">
                   <span className="font-bold text-gray-900 text-lg">Total</span>
                   <span className="font-bold text-[#DC3173] text-xl">
-                    €{orderData.totalPrice.toFixed(2)}
+                    €{formatPrice(orderData.grandTotal)}
                   </span>
                 </div>
               </div>
