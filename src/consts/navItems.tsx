@@ -35,8 +35,8 @@ export const getNavItems = (t: TFunction) => {
       icon: <ShoppingBag size={18} />,
       items: [
         { name: "All Orders", path: "/vendor/all-orders" },
-        { name: t("completed"), path: "/vendor/completed" },
         { name: t("cancelled"), path: "/vendor/cancelled" },
+        { name: t("completed"), path: "/vendor/completed" },
       ],
     },
     {
@@ -44,9 +44,9 @@ export const getNavItems = (t: TFunction) => {
       title: t("menu_items"),
       icon: <Layers size={18} />,
       items: [
+        { name: t("add_new_item"), path: "/vendor/add-item" },
         { name: t("all_items"), path: "/vendor/all-items" },
         { name: t("categories"), path: "/vendor/categories" },
-        { name: t("add_new_item"), path: "/vendor/add-item" },
         { name: t("stock_management"), path: "/vendor/stock" },
         { name: "Variation Management", path: "/vendor/variation-management" },
         { name: t("add_ons"), path: "/vendor/addons" },
@@ -59,9 +59,9 @@ export const getNavItems = (t: TFunction) => {
       title: t("payments_earnings"),
       icon: <EuroIcon size={18} />,
       items: [
-        { name: t("payouts"), path: "/vendor/payouts" },
         { name: t("earnings_summary"), path: "/vendor/earnings" },
         { name: t("payment_settings"), path: "/vendor/payment-settings" },
+        { name: t("payouts"), path: "/vendor/payouts" },
         { name: t("transaction_history"), path: "/vendor/transactions" },
       ],
     },
@@ -70,9 +70,9 @@ export const getNavItems = (t: TFunction) => {
       title: t("analytics_insights"),
       icon: <BarChart2 size={18} />,
       items: [
-        { name: t("sales_analytics"), path: "/vendor/sales-analytics" },
         { name: t("customer_insights"), path: "/vendor/customer-insights" },
         { name: t("order_trends"), path: "/vendor/order-trends" },
+        { name: t("sales_analytics"), path: "/vendor/sales-analytics" },
         { name: t("top_performing_items"), path: "/vendor/top-items" },
       ],
     },
@@ -90,10 +90,10 @@ export const getNavItems = (t: TFunction) => {
       title: t("offers_coupons"),
       icon: <Gift size={18} />,
       items: [
+        { name: t("create_new_offer"), path: "/vendor/create-offer" },
         { name: t("all_offers"), path: "/vendor/offers" },
         { name: t("active_offers"), path: "/vendor/active-offers" },
         { name: t("inactive_offers"), path: "/vendor/inactive-offers" },
-        { name: t("create_new_offer"), path: "/vendor/create-offer" },
         { name: t("coupon_analytics"), path: "/vendor/coupon-analytics" },
       ],
     },
@@ -102,9 +102,9 @@ export const getNavItems = (t: TFunction) => {
       title: t("reports"),
       icon: <FileText size={18} />,
       items: [
+        { name: t("customer_report"), path: "/vendor/customer-report" },
         { name: t("sales_report"), path: "/vendor/sales-report" },
         { name: t("tax_report"), path: "/vendor/tax-report" },
-        { name: t("customer_report"), path: "/vendor/customer-report" },
       ],
     },
     {
@@ -112,8 +112,8 @@ export const getNavItems = (t: TFunction) => {
       title: t("settings"),
       icon: <Settings size={18} />,
       items: [
-        { name: t("notifications"), path: "/vendor/notifications" },
         { name: t("change_password"), path: "/vendor/change-password" },
+        { name: t("notifications"), path: "/vendor/notifications" },
       ],
     },
     {
