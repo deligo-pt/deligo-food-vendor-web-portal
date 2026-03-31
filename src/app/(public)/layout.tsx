@@ -1,6 +1,6 @@
 import { serverRequest } from "@/lib/serverFetch";
 import FooterDeligoPremium from "@/src/components/Footer/Footer";
-import Navbar from "@/src/components/nabar/Navbar";
+import Navbar from "@/src/components/navbar/Navbar";
 import { TVendor } from "@/src/types/vendor.type";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
@@ -11,11 +11,11 @@ const PublicLayout = async ({ children }: { children: React.ReactNode }) => {
   let vendorData: TVendor = {} as TVendor;
 
   if (accessToken) {
-    const decoded = jwtDecode(accessToken) as { role: string };
+    const decoded = jwtDecode(accessToken) as { role: string; userId: string };
 
     if (decoded && decoded?.role === "VENDOR") {
       try {
-        const result = await serverRequest.get("/profile");
+        const result = await serverRequest.get(`/vendors/${decoded.userId}`);
 
         if (result?.success) {
           vendorData = result?.data;

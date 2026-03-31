@@ -138,7 +138,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
       name: prevData?.name || "",
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
-      brand: prevData?.brand || "",
       price: prevData?.pricing?.price || 0,
       discount: prevData?.pricing?.discount || 0,
       taxId: prevData?.pricing?.taxId || "",
@@ -268,7 +267,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
       name: data.name,
       description: data.description,
       category: data.category,
-      brand: data.brand,
       pricing: {
         price: data.price,
         discount: data.discount,
@@ -442,7 +440,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     <h2 className="text-xl font-semibold text-gray-800">
                       Basic Information
                     </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
                       <FormField
                         control={form.control}
                         name="name"
@@ -453,27 +451,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                               className="block text-sm font-medium text-gray-700"
                             >
                               Product Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="brand"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="brand"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Brand
                             </FormLabel>
                             <FormControl>
                               <Input

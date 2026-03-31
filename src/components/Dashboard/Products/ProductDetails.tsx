@@ -316,12 +316,6 @@ export default function ProductDetails({ product }: IProps) {
                 <h3 className="text-sm font-medium text-gray-500">Category</h3>
                 <p className="mt-1 text-gray-900">{product.category?.name}</p>
               </div>
-              {product.brand && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Brand</h3>
-                  <p className="mt-1 text-gray-900">{product.brand}</p>
-                </div>
-              )}
             </motion.div>
             {/* Variations */}
             {product.variations?.length > 0 && (

@@ -144,7 +144,6 @@ export function ProductForm({
       name: "",
       description: "",
       category: "",
-      brand: "",
       price: 0,
       discount: 0,
       taxId: "",
@@ -264,7 +263,6 @@ export function ProductForm({
       name: data.name,
       description: data.description,
       category: data.category,
-      brand: data.brand,
       pricing: {
         price: data.price,
         discount: data.discount,
@@ -439,7 +437,7 @@ export function ProductForm({
                     <h2 className="text-xl font-semibold text-gray-800">
                       {t("basic_information")}
                     </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
                       <FormField
                         control={form.control}
                         name="name"
@@ -450,27 +448,6 @@ export function ProductForm({
                               className="block text-sm font-medium text-gray-700"
                             >
                               {t("product_name")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="brand"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="brand"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("brand")}
                             </FormLabel>
                             <FormControl>
                               <Input

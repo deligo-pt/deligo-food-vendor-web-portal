@@ -2,7 +2,7 @@
 
 import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
-import { Clock, ShoppingBag, Star, Tag } from "lucide-react";
+import { Clock, ShoppingBag, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -91,12 +91,6 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
             </span>
           </div>
         </div>
-        {product.brand && (
-          <div className="flex items-center text-sm text-gray-500 mb-2">
-            <Tag className="h-4 w-4 mr-1" />
-            <span className="ml-2 text-gray-400">{product.brand}</span>
-          </div>
-        )}
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.description}
         </p>

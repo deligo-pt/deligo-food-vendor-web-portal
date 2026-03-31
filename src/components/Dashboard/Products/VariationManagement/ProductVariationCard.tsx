@@ -301,7 +301,7 @@ export default function ProductVariationCard({ product }: IProps) {
                                   newLabel,
                                 })
                               }
-                              className="text-sm font-medium text-gray-800 min-w-[80px]"
+                              className="text-sm font-medium text-gray-800 min-w-20"
                             />
 
                             <span className="text-xs text-gray-500 shrink-0">

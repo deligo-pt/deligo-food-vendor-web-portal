@@ -153,12 +153,24 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
             {vendorData?.email ? (
               <>
                 {/* Dashboard Button */}
-                <Link
-                  href="/vendor/dashboard"
-                  className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all"
-                >
-                  Dashboard
-                </Link>
+                {vendorData?.status === "PENDING" ||
+                vendorData?.status === "SUBMITTED" ||
+                vendorData?.status === "REJECTED" ||
+                vendorData?.status === "BLOCKED" ? (
+                  <Link
+                    href="/become-vendor/registration-status"
+                    className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all"
+                  >
+                    Registration Status
+                  </Link>
+                ) : (
+                  <Link
+                    href="/vendor/dashboard"
+                    className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all"
+                  >
+                    Dashboard
+                  </Link>
+                )}
                 {/* Logout Button */}
                 <Button
                   onClick={logOut}
