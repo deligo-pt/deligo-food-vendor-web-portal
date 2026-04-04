@@ -4,7 +4,7 @@ import { TDeliveryPartner } from "@/src/types/delivery-partner.type";
 import { TVendor } from "@/src/types/vendor.type";
 
 export type TOrder = {
-  _id?: string;
+  _id: string;
   flash?: boolean;
 
   // Relationships

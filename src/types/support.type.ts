@@ -16,7 +16,11 @@ export type TUserModel =
 export type TSupportTicket = {
   _id: string;
   ticketId: string;
-  userId: unknown;
+  userId: {
+    _id: string;
+    email: string;
+    name: { firstName?: string; lastName?: string };
+  };
   userModel: TUserModel;
   activeHandler: THandlerType;
   // assignedAdminId?: TAdmin | null;
@@ -26,7 +30,7 @@ export type TSupportTicket = {
   lastMessage?: string;
   lastMessageSender?: TUserRole;
   lastMessageTime?: string;
-  unreadCount: Map<string, number>;
+  unreadCount: Record<string, number>;
   closedAt?: string;
   closedBy?: unknown;
 
@@ -42,8 +46,17 @@ export type TSupportMessage = {
   message: string;
   messageType: "TEXT" | "IMAGE" | "AUDIO" | "LOCATION" | "SYSTEM";
   attachments?: string[];
-  readBy: Map<string, boolean>;
+  readBy: Record<string, boolean>;
 
   createdAt: string;
   updatedAt: string;
+};
+
+export type TUserTypingPayload = {
+  userId: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  isTyping: boolean;
 };

@@ -1,9 +1,11 @@
 "use client";
 
-import { getLiveChatSocket, getSupportSocket } from "@/lib/socket";
-import { TReadData, TTypingData } from "@/src/types/chat.type";
-import { TSupportMessage } from "@/src/types/support.type";
-import { jwtDecode } from "jwt-decode";
+import { getSupportSocket } from "@/lib/socket";
+import {
+  TSupportMessage,
+  TSupportTicket,
+  TUserTypingPayload,
+} from "@/src/types/support.type";
 import { useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
 
@@ -11,59 +13,54 @@ interface Props {
   ticketId?: string;
   token: string;
   onMessage: (msg: TSupportMessage) => void;
-  onRead?: (data: TReadData) => void;
   onClosed?: () => void;
-  onError?: (err: string) => void;
-  onTyping?: (data: TTypingData) => void;
-  chatType?: "support" | "liveChat";
-  willRead?: boolean;
+  onRead?: () => void;
+  onError: (msg: string) => void;
+  onTyping?: (data: TUserTypingPayload) => void;
 }
 
 export function useChatSocket({
   ticketId,
   token,
   onMessage,
-  onRead,
   onClosed,
   onError,
   onTyping,
-  chatType = "support",
-  willRead,
+  onRead,
 }: Props) {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    const socket =
-      chatType === "support"
-        ? getSupportSocket(token)
-        : getLiveChatSocket(token);
-
+    const socket = getSupportSocket(token);
     socketRef.current = socket;
 
-    if (ticketId) {
-      socket.emit("join-conversation", { ticketId });
-    }
+    socket.emit("join-conversation", { ticketId });
 
-    socket.on("new-message", (msg: TSupportMessage) => {
-      onMessage(msg);
-      const decoded = jwtDecode(token) as { userId: string };
-      if (msg.senderId !== decoded.userId && willRead)
-        socket.emit("read-update", { ticketId });
-    });
+    socket.on("new-message", onMessage);
+    socket.on("user-typing", (data) => onTyping && onTyping(data));
+    socket.on("read-update", () => onRead && onRead());
+    socket.on("conversation-closed", () => onClosed && onClosed());
+    socket.on("chat-error", (e) => onError(e));
 
-    socket.on("read-update", onRead || (() => {}));
-    socket.on("user-typing", onTyping || (() => {}));
-    socket.on("conversation-closed", onClosed || (() => {}));
-    socket.on("chat-error", (e) => onError && onError(e.message));
-
+    // return () => {
+    //   socket.off("new-message");
+    //   socket.off("user-typing");
+    //   socket.off("read-update");
+    //   socket.off("conversation-closed");
+    //   socket.off("chat-error");
+    // };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketId]);
 
-  const sendMessage = (message: string) => {
-    console.log("Sending message:", { ticketId, message });
-    socketRef.current?.emit("send-message", {
-      message,
-    });
+  const sendMessage = (payload: {
+    ticketId?: string;
+    message: string;
+    attachments?: File[];
+    messageType: TSupportMessage["messageType"];
+    referenceOrderId?: string;
+    category?: TSupportTicket["category"];
+  }) => {
+    socketRef.current?.emit("send-message", payload);
   };
 
   const makeTyping = (isTyping: boolean) => {
@@ -78,19 +75,15 @@ export function useChatSocket({
     socketRef.current?.emit("close-conversation", { ticketId });
   };
 
-  const turnOffEvents = () => {
-    socketRef.current?.off("new-message");
-    socketRef.current?.off("user-typing");
-    socketRef.current?.off("conversation-closed");
-    socketRef.current?.off("chat-error");
+  const leaveConversation = () => {
+    socketRef.current?.emit("leave-conversation", { ticketId });
   };
 
   return {
-    // socket: socketRef.current,
     sendMessage,
     markRead,
     makeTyping,
     closeConversation,
-    turnOffEvents,
+    leaveConversation,
   };
 }

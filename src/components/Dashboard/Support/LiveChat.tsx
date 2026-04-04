@@ -53,14 +53,19 @@ export default function LiveChat({
       }, 3000);
     },
     onClosed: () => setStatus("CLOSED"),
+    onRead: () => {},
     onError: (msg) => console.log(msg),
-    chatType: "liveChat",
+    // chatType: "liveChat",
   });
 
   const handleSendMessage = () => {
     if (!text.trim()) return;
 
-    sendMessage(text);
+    sendMessage({
+      ticketId: conversation?.room,
+      message: text,
+      messageType: "TEXT",
+    });
     setText("");
   };
 

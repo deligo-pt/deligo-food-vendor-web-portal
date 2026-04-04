@@ -11,12 +11,20 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { TConversation } from "@/src/types/chat.type";
 import { TSupportMessage } from "@/src/types/support.type";
 import { getCookie } from "@/src/utils/cookies";
-import { format } from "date-fns";
-import { Bot, Clock, PhoneCall, Send } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
+import {
+  Bot,
+  CheckCheckIcon,
+  CheckIcon,
+  Clock,
+  PhoneCall,
+  Send,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface IProps {
   initialConversation: TConversation;
+  userId: string;
 }
 
 const PRIMARY = "#DC3173";
@@ -25,34 +33,27 @@ const SHADOW = "0 6px 22px rgba(0,0,0,0.06)";
 
 export default function VendorChatSupport({
   initialConversation: conversation,
+  userId,
 }: IProps) {
   const { t } = useTranslation();
-  const path = usePathname();
   const router = useRouter();
+  const accessToken = getCookie("accessToken") || "";
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [text, setText] = useState("");
-
   const [messages, setMessages] = useState<TSupportMessage[]>([]);
   const [status, setStatus] = useState(conversation.status);
-
-  const accessToken = getCookie("accessToken") || "";
-  // const decoded = jwtDecode(accessToken) as { userId: string };
-
-  // const openConversation = async () => {
-  //   const result = await openConversationReq();
-  //   if (result.success) {
-  //     setStatus("OPEN");
-  //   }
-  // };
 
   const { sendMessage } = useChatSocket({
     token: accessToken as string,
     onMessage: (msg) => {
-      console.log(msg);
       setMessages((prev) => [...prev, msg]);
       if (status === "OPEN") {
         setStatus("IN_PROGRESS");
+      }
+      if (msg.ticketId === conversation._id) {
+        setMessages((prev) => [...prev, msg]);
+        // scrollToBottom();
       }
     },
     onRead: () => {
@@ -63,13 +64,16 @@ export default function VendorChatSupport({
     },
     onClosed: () => setStatus("CLOSED"),
     onError: (msg) => console.log(msg),
-    willRead: path === "/vendor/chat-support",
   });
 
   const handleSendMessage = () => {
     if (!text.trim()) return;
 
-    sendMessage(text);
+    sendMessage({
+      ticketId: conversation._id,
+      message: text,
+      messageType: "TEXT",
+    });
     setText("");
   };
 
@@ -140,14 +144,16 @@ export default function VendorChatSupport({
                     <div className="text-sm leading-relaxed">{msg.message}</div>
                     <div className="flex items-end justify-between gap-3">
                       <p className="text-[10px] opacity-70 mt-1">
-                        {format(msg.createdAt, "hh:mm a")}
+                        {formatDistanceToNow(msg.createdAt, {
+                          addSuffix: true,
+                        })}
                       </p>
-                      {/* {msg.senderRole === "VENDOR" &&
-                        (msg.readBy?.[decoded.userId] ? (
+                      {msg.senderRole === "VENDOR" &&
+                        (msg.readBy?.[userId] ? (
                           <CheckCheckIcon size={14} />
                         ) : (
                           <CheckIcon size={14} />
-                        ))} */}
+                        ))}
                     </div>
                   </div>
                 </div>
