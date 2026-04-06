@@ -311,6 +311,10 @@ export function ProductForm({
       setImages([]);
       setTabError({});
       setActiveTab(0);
+      setTag("");
+      setOptions([])
+      setOption({ label: "", price: "", stockQuantity: 0 });
+      setVariationName("")
       return;
     }
 

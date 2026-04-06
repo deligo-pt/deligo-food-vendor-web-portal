@@ -95,9 +95,10 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(chatInput);
-    }
-
-    if (e.key !== "Enter") {
+      clearTimeout(timeoutState);
+      setTyping(false);
+      makeTyping(false);
+    } else {
       if (!typing) {
         setTyping(true);
         makeTyping(true);
@@ -110,10 +111,6 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
           makeTyping(false);
         }, 2000),
       );
-    } else {
-      clearTimeout(timeoutState);
-      setTyping(false);
-      makeTyping(false);
     }
   };
 
@@ -133,7 +130,8 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
     return () => {
       leaveConversation();
     };
-  }, [leaveConversation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
