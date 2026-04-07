@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import SupportStatusBadge from "@/src/components/Dashboard/Support/SupportTickets/SupportStatusBadge";
 import { useChatSocket } from "@/src/hooks/use-chat-socket";
-import { getMessagesReq } from "@/src/services/dashboard/support/support.service";
+import { TMeta } from "@/src/types";
 import {
   TSupportMessage,
   TSupportTicket,
@@ -28,12 +28,20 @@ import { useEffect, useRef, useState } from "react";
 interface IProps {
   ticket: TSupportTicket;
   closeChatSheet: () => void;
+  initialMessagesData: { data: TSupportMessage[]; meta?: TMeta };
 }
 
-export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
+export default function SupportChatSheet({
+  ticket,
+  closeChatSheet,
+  initialMessagesData,
+}: IProps) {
   const msgEndRef = useRef<HTMLDivElement | null>(null);
   const [chatInput, setChatInput] = useState("");
-  const [messages, setMessages] = useState<TSupportMessage[]>([]);
+  const [messagesData, setMessagesData] = useState<{
+    data: TSupportMessage[];
+    meta?: TMeta;
+  }>(initialMessagesData);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
   const [typing, setTyping] = useState(false);
   const [timeoutState, setTimeoutState] = useState<
@@ -67,12 +75,12 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
     token: accessToken as string,
     onMessage: (msg) => {
       if (msg.ticketId === ticket?.ticketId) {
-        setMessages((prev) => {
-          if (prev.length >= 50) {
-            prev.shift();
+        setMessagesData((prev) => {
+          if (prev.data.length >= 50) {
+            prev.data.shift();
           }
-          if (prev.findIndex((m) => m._id === msg._id) === -1) {
-            return [...prev, msg];
+          if (prev.data.findIndex((m) => m._id === msg._id) === -1) {
+            return { ...prev, data: [...prev.data, msg] };
           }
           return prev;
         });
@@ -115,16 +123,8 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
   };
 
   useEffect(() => {
-    if (!!ticket) {
-      getMessagesReq(ticket?.ticketId, { limit: "50" }).then((result) => {
-        setMessages(result.data);
-      });
-    }
-  }, [ticket]);
-
-  useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messagesData]);
 
   useEffect(() => {
     return () => {
@@ -204,7 +204,7 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
 
         {/* Chat Area */}
         <div className="flex-1 overflow-y-auto p-5 space-y-6 bg-gray-50/50">
-          {messages.map((msg) => {
+          {messagesData.data?.map((msg) => {
             const isVendor = msg.senderRole === "VENDOR";
             return (
               <div
@@ -276,7 +276,7 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={handleMessageTyping}
                   placeholder="Type a message..."
-                  className="w-full bg-transparent px-3 py-2 outline-none text-sm resize-none max-h-32 min-h-[40px]"
+                  className="w-full bg-transparent px-3 py-2 outline-none text-sm resize-none max-h-32 min-h-10"
                 />
               </div>
               <button

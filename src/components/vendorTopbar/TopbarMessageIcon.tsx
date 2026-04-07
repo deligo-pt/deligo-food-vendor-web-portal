@@ -1,61 +1,64 @@
 "use client";
 
+import { USER_ROLE } from "@/src/consts/user.const";
+import { useTopbarMessageIconSocket } from "@/src/hooks/use-chat-socket";
+import {
+  getMyTicketReq,
+  getUnreadCountReq,
+} from "@/src/services/dashboard/support/support.service";
+import { TSupportMessage } from "@/src/types/support.type";
+import { getCookie } from "@/src/utils/cookies";
 import { motion } from "framer-motion";
 import { MessageSquare } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function TopbarMessageIcon() {
   const audioRef = useRef<HTMLAudioElement>(null);
-  // const accessToken = getCookie("accessToken") || "";
-  // const [liveChatRoom, setLiveChatRoom] = useState("");
-  // const [unreadCount, setUnreadCount] = useState(0);
-  const unreadCount = 0;
+  const accessToken = getCookie("accessToken") || "";
+  const [ticketId, setTicketId] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  // const newMessageHandler = (msg: TMessage) => {
-  //   if (msg.senderRole !== "VENDOR") {
-  //     getUnreadMessageCount();
-  //     audioRef.current?.play().catch((error) => {
-  //       console.log("Error playing audio:", error);
-  //     });
-  //   }
-  // };
+  const newMessageHandler = (msg: TSupportMessage) => {
+    if (msg.senderRole !== USER_ROLE.VENDOR && msg.ticketId === ticketId) {
+      getUnreadMessageCount();
+      audioRef.current?.play().catch((error) => {
+        console.log("Error playing audio:", error);
+      });
+    }
+  };
 
-  // const getRoom = async () => {
-  //   const result = await catchAsync<TConversation[]>(async () => {
-  //     return await fetchData("/support/conversations", {
-  //       params: { type: "VENDOR_CHAT" },
-  //     });
-  //   });
-  //   if (result.success) {
-  //     setLiveChatRoom(result.data?.[0]?.room);
-  //   }
-  // };
+  const getTicketId = async () => {
+    const result = await getMyTicketReq();
 
-  // const getUnreadMessageCount = async () => {
-  //   const result = await getUnreadCountReq();
+    if (result.success) {
+      setTicketId(result.data?.ticketId || "");
+    }
+  };
 
-  //   if (result.success) {
-  //     setUnreadCount(result.data || 0);
-  //   }
-  // };
+  const getUnreadMessageCount = async () => {
+    const result = await getUnreadCountReq();
 
-  // useChatSocket({
-  //   room: liveChatRoom,
-  //   token: accessToken as string,
-  //   onMessage: (msg) => newMessageHandler(msg),
-  //   chatType: "liveChat",
-  // });
+    if (result.success) {
+      setUnreadCount(result.data || 0);
+    }
+  };
 
-  // useEffect(() => {}, []);
+  const { leaveConversation } = useTopbarMessageIconSocket({
+    ticketId,
+    token: accessToken as string,
+    onMessage: (msg) => newMessageHandler(msg),
+    onError: () => {},
+  });
 
-  // useEffect(() => {
-  //   (() => getUnreadMessageCount())();
-  //   (() => getRoom())();
+  useEffect(() => {
+    (() => getUnreadMessageCount())();
+    (() => getTicketId())();
 
-  //   const supportSocket = getSupportSocket(accessToken);
-  //   supportSocket.on("new-message", newMessageHandler);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+    return () => {
+      leaveConversation();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>

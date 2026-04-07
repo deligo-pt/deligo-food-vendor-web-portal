@@ -122,7 +122,6 @@ export const getNavItems = (t: TFunction) => {
       icon: <MessageCircle size={18} />,
       items: [
         { name: t("chat_with_support"), path: "/vendor/chat-support" },
-        { name: t("live_chat"), path: "/vendor/live-chat" },
         { name: t("report_an_issue"), path: "/vendor/report" },
       ],
     },

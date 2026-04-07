@@ -1,131 +1,132 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import CreateNewTicket from "@/src/components/Dashboard/Support/SupportTickets/CreateNewTicket";
 import SupportChatSheet from "@/src/components/Dashboard/Support/SupportTickets/SupportChatSheet";
 import SupportStatusBadge from "@/src/components/Dashboard/Support/SupportTickets/SupportStatusBadge";
-import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { TMeta } from "@/src/types";
-import { TSupportTicket } from "@/src/types/support.type";
-import { removeUnderscore, textLimitter } from "@/src/utils/formatter";
+import { TSupportMessage, TSupportTicket } from "@/src/types/support.type";
+import { removeUnderscore } from "@/src/utils/formatter";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { Clock, MessageSquare } from "lucide-react";
+import { ChevronRight, Clock, MessageSquare, Tag } from "lucide-react";
 import { useState } from "react";
 
 interface IProps {
-  ticketsData: { data: TSupportTicket[]; meta?: TMeta };
+  ticket: TSupportTicket;
   userId: string;
   userName: string;
+  initialMessagesData: { data: TSupportMessage[]; meta?: TMeta };
 }
 
-export default function SupportTickets({ ticketsData }: IProps) {
-  //  const { t } = useTranslation();
-
-  //  const [tickets, setTickets] = useState<TSupportTicket[]>(
-  //    ticketsData?.data || [],
-  //  );
+export default function SupportTickets({
+  ticket,
+  initialMessagesData,
+}: IProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState<TSupportTicket | null>(
-    null,
-  );
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="min-h-screen">
+    <div>
       {/* Header */}
       <TitleHeader
-        title="Support Tickets"
-        subtitle="Need help? Open a ticket and our team will assist you"
-        buttonInfo={{
-          text: "New Ticket",
-          onClick: () => setIsModalOpen(true),
-        }}
+        title="Chat With Support"
+        subtitle="Chat directly with our support experts with support ticket"
       />
 
-      {/* Ticket Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div>
         <AnimatePresence mode="popLayout">
-          {ticketsData.data?.map((ticket, index) => (
+          {ticket?.ticketId ? (
             <motion.div
               key={ticket._id}
-              layout
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.95,
-              }}
-              transition={{
-                delay: index * 0.05,
-              }}
-              onClick={() => setSelectedTicket(ticket)}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 cursor-pointer hover:shadow-md hover:border-[#DC3173]/30 transition-all group flex flex-col"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden"
             >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-xs font-mono font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded">
-                  {ticket.ticketId}
-                </span>
-                <SupportStatusBadge status={ticket.status} />
+              <div className="p-8 md:p-10">
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-mono font-semibold tracking-wider">
+                      #{ticket.ticketId}
+                    </span>
+                    <SupportStatusBadge status={ticket.status} />
+                  </div>
+                  <div className="flex items-center text-gray-400 text-sm">
+                    <Clock size={16} className="mr-2" />
+                    {format(
+                      new Date(ticket.createdAt),
+                      "dd MMMM yyyy, hh:mm a",
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 text-[#DC3173] mb-2">
+                      <Tag size={18} />
+                      <span className="text-sm font-medium uppercase tracking-wide">
+                        {removeUnderscore(ticket.category)}
+                      </span>
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                      {removeUnderscore(ticket.category)} Inquiry
+                    </h2>
+                    <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                      <p className="text-gray-600 leading-relaxed italic">
+                        &quot;
+                        {ticket.lastMessage || "No message content available."}
+                        &quot;
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => setIsOpen(true)}
+                    className="flex items-center justify-center gap-2 bg-[#DC3173] hover:bg-[#DC3173]/90 font-semibold transition-all hover:shadow-lg active:scale-95 cursor-pointer"
+                  >
+                    View Conversation
+                    <ChevronRight size={20} />
+                  </Button>
+                </div>
               </div>
 
-              <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#DC3173] transition-colors">
-                {removeUnderscore(ticket.category)}
-              </h3>
-              <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">
-                {textLimitter(ticket.lastMessage as string) || "-"}
-              </p>
-
-              {/* <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded flex items-center gap-1">
-                    <Tag size={12} />
-                    {ticket.category}
-                  </span>
-                </div> */}
-
-              <div className="border-t border-gray-100 pt-3 flex items-center justify-between text-xs text-gray-400">
-                <span className="flex items-center gap-1">
-                  <Clock size={14} />
-                  Created: {format(ticket.createdAt, "dd MMMM yyyy; hh:mm a")}
-                </span>
-                {/* <span>{ticket.messages.length} msgs</span> */}
+              <div className="bg-gray-50 border-t border-gray-100 px-8 py-4 flex items-center justify-between">
+                <p className="text-sm text-gray-500">
+                  Our team typically responds within{" "}
+                  <span className="font-semibold text-gray-700">2-4 hours</span>
+                  .
+                </p>
               </div>
             </motion.div>
-          ))}
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="py-20 text-center rounded-3xl"
+            >
+              <div className="inline-flex p-6 bg-pink-50 text-[#DC3173] rounded-full mb-6">
+                <MessageSquare size={48} />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                No Active Support Tickets
+              </h3>
+              <p className="text-gray-500 max-w-md mx-auto mb-8 px-4">
+                You don&lsquo;t have any open requests. If you&lsquo;re
+                experiencing an issue, create a ticket and we&lsquo;ll get right
+                on it!
+              </p>
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-[#DC3173] hover:bg-[#DC3173]/90 cursor-pointer"
+              >
+                Create your first ticket
+              </Button>
+            </motion.div>
+          )}
         </AnimatePresence>
-
-        {ticketsData.meta?.total === 0 && (
-          <div className="col-span-full py-12 text-center">
-            <div className="inline-flex p-4 bg-white rounded-full text-gray-300 mb-3 shadow-sm">
-              <MessageSquare size={32} />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900">
-              No tickets found
-            </h3>
-            <p className="text-gray-500">
-              Try adjusting your search or filters
-            </p>
-          </div>
-        )}
       </div>
-
-      {/* Pagination */}
-      {!!ticketsData?.meta?.totalPage && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="px-4 md:px-6"
-        >
-          <PaginationComponent
-            totalPages={ticketsData?.meta?.totalPage as number}
-          />
-        </motion.div>
-      )}
 
       {/* Create Ticket Modal */}
       <AnimatePresence>
@@ -136,10 +137,11 @@ export default function SupportTickets({ ticketsData }: IProps) {
 
       {/* Right-side Chat Sheet */}
       <AnimatePresence>
-        {selectedTicket && (
+        {isOpen && (
           <SupportChatSheet
-            ticket={selectedTicket}
-            closeChatSheet={() => setSelectedTicket(null)}
+            ticket={ticket}
+            closeChatSheet={() => setIsOpen(false)}
+            initialMessagesData={initialMessagesData}
           />
         )}
       </AnimatePresence>

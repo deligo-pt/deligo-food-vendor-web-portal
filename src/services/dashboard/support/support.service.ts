@@ -4,36 +4,15 @@ import { serverRequest } from "@/lib/serverFetch";
 import { TSupportMessage, TSupportTicket } from "@/src/types/support.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 
-export const getAllTicketsReq = async (
-  queries: Record<string, string | undefined>,
-) => {
-  const limit = Number(queries?.limit || 10);
-  const page = Number(queries.page || 1);
-  //   const searchTerm = queries.searchTerm || "";
-  //   const sortBy = queries.sortBy || "-createdAt";
-  const status = queries.status || "";
-
-  const params = {
-    limit,
-    page,
-    // sortBy,
-    ...(status ? { status } : {}),
-  };
-
-  const result = await catchAsync<TSupportTicket[]>(async () => {
-    return await serverRequest.get("/support/tickets", {
-      params,
-    });
+export const getMyTicketReq = async () => {
+  const result = await catchAsync<TSupportTicket>(async () => {
+    return await serverRequest.get("/support/tickets");
   });
 
-  if (result?.success)
-    return {
-      data: result.data,
-      meta: result.meta,
-    };
+  if (result?.success) return result.data?.[0] || {};
 
   return {
-    data: [],
+    data: {},
   };
 };
 
@@ -43,7 +22,7 @@ export const getMessagesReq = async (
 ) => {
   const limit = Number(queries?.limit || 10);
   const page = Number(queries.page || 1);
-  //   const searchTerm = queries.searchTerm || "";
+  const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
   const status = queries.status || "";
 
@@ -51,6 +30,7 @@ export const getMessagesReq = async (
     limit,
     page,
     sortBy,
+    ...(searchTerm ? { searchTerm } : {}),
     ...(status ? { status } : {}),
   };
 
@@ -87,22 +67,4 @@ export const getUnreadCountReq = async () => {
   return catchAsync<number>(async () => {
     return await serverRequest.get("/support/unread-count");
   });
-};
-
-export const getMessagesByRoom = async (room: string) => {
-  const result = await catchAsync<number>(async () => {
-    return await serverRequest.get(`/support/conversations/${room}/messages`, {
-      params: { limit: 50, sortBy: "-createdAt" },
-    });
-  });
-
-  if (result.success)
-    return {
-      data: (result?.data || [])?.reverse(),
-      meta: result.meta,
-    };
-
-  return {
-    data: [],
-  };
 };

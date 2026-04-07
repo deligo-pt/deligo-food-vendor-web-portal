@@ -1,6 +1,6 @@
 "use client";
 
-import { getSupportSocket } from "@/lib/socket";
+import { getSupportSocket, getTopbarMessageIconSocket } from "@/lib/socket";
 import {
   TSupportMessage,
   TSupportTicket,
@@ -41,14 +41,6 @@ export function useChatSocket({
     socket.on("read-update", () => onRead && onRead());
     socket.on("conversation-closed", () => onClosed && onClosed());
     socket.on("chat-error", (e) => onError(e));
-
-    // return () => {
-    //   socket.off("new-message");
-    //   socket.off("user-typing");
-    //   socket.off("read-update");
-    //   socket.off("conversation-closed");
-    //   socket.off("chat-error");
-    // };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketId]);
 
@@ -84,6 +76,34 @@ export function useChatSocket({
     markRead,
     makeTyping,
     closeConversation,
+    leaveConversation,
+  };
+}
+
+export function useTopbarMessageIconSocket({
+  ticketId,
+  token,
+  onMessage,
+}: Props) {
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    const socket = getTopbarMessageIconSocket(token);
+    socketRef.current = socket;
+
+    socket.emit("join-conversation", { ticketId });
+
+    socket.on("new-message", onMessage);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketId]);
+
+  const leaveConversation = () => {
+    socketRef.current?.off("new-message");
+    socketRef.current?.emit("leave-conversation", { ticketId });
+  };
+
+  return {
     leaveConversation,
   };
 }
