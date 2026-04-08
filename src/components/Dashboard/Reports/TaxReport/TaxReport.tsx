@@ -3,6 +3,8 @@
 import AnalyticsChart from "@/src/components/AnalyticsChart/AnalyticsChart";
 import StatsCard from "@/src/components/StatsCard/StatsCard";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { TTaxReport } from "@/src/types/report.type";
+import { formatPrice } from "@/src/utils/formatPrice";
 import { motion } from "framer-motion";
 import { EuroIcon, FileText, PieChart, TrendingUp } from "lucide-react";
 import {
@@ -18,68 +20,13 @@ import {
   YAxis,
 } from "recharts";
 
-const revenueData = [
-  {
-    name: "Jan",
-    revenue: 3200,
-    tax: 420,
-  },
-  {
-    name: "Feb",
-    revenue: 3800,
-    tax: 510,
-  },
-  {
-    name: "Mar",
-    revenue: 3500,
-    tax: 465,
-  },
-  {
-    name: "Apr",
-    revenue: 4200,
-    tax: 560,
-  },
-  {
-    name: "May",
-    revenue: 4800,
-    tax: 640,
-  },
-  {
-    name: "Jun",
-    revenue: 5080,
-    tax: 650,
-  },
-];
+const COLORS = ["#DC3173", "#2563eb", "#10b981", "#f59e0b", "#8b5cf6"];
 
-const taxContributionData = [
-  { name: "Product", value: 33.6 },
-  { name: "Addon", value: 66.4 },
-];
+interface IProps {
+  taxReportData: TTaxReport;
+}
 
-const addonTaxData = [
-  {
-    name: "Extra Cheese",
-    tax: 245,
-  },
-  {
-    name: "Garlic Bread",
-    tax: 189,
-  },
-  {
-    name: "Extra Sauce",
-    tax: 156,
-  },
-  {
-    name: "Mushrooms",
-    tax: 134,
-  },
-  {
-    name: "Jalapeños",
-    tax: 98,
-  },
-];
-
-export default function TaxReport() {
+export default function TaxReport({ taxReportData }: IProps) {
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -92,19 +39,19 @@ export default function TaxReport() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <StatsCard
           title="Gross Sales"
-          value="€24,580.00"
+          value={`€${formatPrice(taxReportData.stats.totalSales)}`}
           icon={EuroIcon}
           delay={0}
         />
         <StatsCard
           title="Total Tax Liability"
-          value="€3,245.60"
+          value={`€${formatPrice(taxReportData.stats.totalTax)}`}
           icon={FileText}
           delay={0.1}
         />
         <StatsCard
           title="Net Revenue"
-          value="€21,334.40"
+          value={`€${formatPrice(taxReportData.stats.netRevenue)}`}
           icon={TrendingUp}
           delay={0.2}
         />
@@ -136,7 +83,7 @@ export default function TaxReport() {
             </h3>
           </div>
           <AnalyticsChart
-            data={taxContributionData}
+            data={taxReportData.taxContribution}
             dataKey="value"
             height={180}
             type="pie"
@@ -177,33 +124,21 @@ export default function TaxReport() {
             </h3>
           </div>
           <div className="space-y-3">
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-gray-600">6% Rate</span>
-                <span className="font-bold text-gray-900">€420.00</span>
+            {taxReportData.taxByCategory?.map((tax, i) => (
+              <div key={i}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="font-medium text-gray-600">{tax.name}</span>
+                  <span className="font-bold text-gray-900">
+                    €{formatPrice(tax.value)}
+                  </span>
+                </div>
+                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full bg-[${COLORS[i % COLORS.length]}] w-[${Math.min((i + 1) * 15, 100)}%]`}
+                  />
+                </div>
               </div>
-              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 w-[15%]" />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-gray-600">10% Rate</span>
-                <span className="font-bold text-gray-900">€1,185.60</span>
-              </div>
-              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-500 w-[35%]" />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-gray-600">23% Rate</span>
-                <span className="font-bold text-gray-900">€1,640.00</span>
-              </div>
-              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-[#DC3173] w-[50%]" />
-              </div>
-            </div>
+            ))}
           </div>
         </motion.div>
       </div>
@@ -230,7 +165,7 @@ export default function TaxReport() {
           </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
+              <LineChart data={taxReportData.revenueData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
                 <YAxis stroke="#94a3b8" fontSize={12} />
@@ -297,7 +232,7 @@ export default function TaxReport() {
           </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={addonTaxData} layout="vertical">
+              <BarChart data={taxReportData.addonTax} layout="vertical">
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="#f1f5f9"
