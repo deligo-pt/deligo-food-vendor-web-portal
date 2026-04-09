@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -30,6 +31,8 @@ import { TProduct } from "@/src/types/product.type";
 import { offerValidation } from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { XIcon } from "lucide-react";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -44,6 +47,12 @@ interface IProps {
 
 export default function VendorCreateOffer({ itemsResult }: IProps) {
   const { t } = useTranslation();
+
+  const [isSelectedAllProducts, setIsSelectedAllProducts] = useState(true);
+  const [filteredItems, setFilteredItems] = useState<TProduct[]>(
+    itemsResult.data || [],
+  );
+
   const form = useForm<TOfferForm>({
     resolver: zodResolver(offerValidation),
     defaultValues: {
@@ -60,18 +69,21 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       minOrderAmount: 0,
       code: "",
       isAutoApply: false,
+      maxUsageCount: "",
+      userUsageLimit: "",
+      applicableProducts: [],
     },
   });
 
-  const watchOfferType = useWatch({
+  const [watchOfferType, watchApplicableProducts] = useWatch({
     control: form.control,
-    name: "offerType",
+    name: ["offerType", "applicableProducts"],
   });
 
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Creating offer...");
 
-    const offerData: Partial<TOffer> = {
+    const offerData = {
       ...data,
       isAutoApply: false,
       ...(data.offerType === "BOGO"
@@ -83,7 +95,25 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
             },
           }
         : {}),
-    };
+      ...(data.maxUsageCount
+        ? { maxUsageCount: Number(data.maxUsageCount) }
+        : {}),
+      ...(data.userUsageLimit
+        ? { userUsageLimit: Number(data.userUsageLimit) }
+        : {}),
+    } as Partial<TOffer>;
+
+    if (isSelectedAllProducts) {
+      delete offerData.applicableProducts;
+    }
+
+    if (data.maxUsageCount === "") {
+      delete offerData.maxUsageCount;
+    }
+
+    if (data.userUsageLimit === "") {
+      delete offerData.userUsageLimit;
+    }
 
     const result = await createOfferReq(offerData);
 
@@ -170,7 +200,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           >
                             <SelectTrigger
                               className={cn(
-                                "w-full h-12",
+                                "w-full h-12!",
                                 fieldState.invalid ? "border-destructive" : "",
                               )}
                             >
@@ -260,7 +290,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               onValueChange={field.onChange}
                               value={field.value}
                             >
-                              <SelectTrigger className="w-full h-12">
+                              <SelectTrigger className="w-full h-12!">
                                 <SelectValue
                                   placeholder={t("choose_an_item")}
                                 />
@@ -417,34 +447,84 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     </FormItem>
                   )}
                 />
-                {/* <FormField
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
                     control={form.control}
-                    name="isAutoApply"
+                    name="maxUsageCount"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <FormLabel className="flex space-y-2 gap-2 items-center">
+                          <div className="space-y-2">
+                            <FormLabel className="font-medium text-sm text-gray-700">
+                              Maximum Usage Count
+                            </FormLabel>
                             <Input
-                              type="checkbox"
-                              placeholder="Offer Description"
-                              className="w-4 h-4 mb-0"
+                              placeholder="Maximum usage count"
+                              type="number"
+                              min={0}
+                              className="h-12 text-base"
                               {...field}
-                              checked={field.value ? true : false}
-                              value={"true"}
-                              onChange={(e) => field.onChange(e.target.checked)}
                             />
-                            <span
-                              onClick={() => field.onChange(!field.value)}
-                              className="font-medium text-sm text-gray-700"
-                            >
-                              Will Auto Apply?
-                            </span>
-                          </FormLabel>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
-                  /> */}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="userUsageLimit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="space-y-2">
+                            <FormLabel className="font-medium text-sm text-gray-700">
+                              Users Usage Limit
+                            </FormLabel>
+                            <Input
+                              placeholder="Users usage limit"
+                              type="number"
+                              min={0}
+                              className="h-12 text-base"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="isAutoApply"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <FormLabel className="flex space-y-2 gap-2 items-center">
+                          <Input
+                            type="checkbox"
+                            placeholder="Offer Description"
+                            className="w-4 h-4 mb-0"
+                            {...field}
+                            checked={field.value ? true : false}
+                            value={"true"}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                          />
+                          <span
+                            onClick={() => field.onChange(!field.value)}
+                            className="font-medium text-sm text-gray-700"
+                          >
+                            Will Auto Apply?
+                          </span>
+                        </FormLabel>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               {/* PROMO CODE */}
@@ -458,7 +538,6 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     <FormItem>
                       <FormControl>
                         <Input
-                          // placeholder="Enter promo code (optional)"
                           placeholder={t("enter_promo_code")}
                           className="h-12 text-base uppercase"
                           {...field}
@@ -471,6 +550,126 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     </FormItem>
                   )}
                 />
+              </div>
+
+              {/* APPLICABLE PRODUCTS */}
+              <div className="space-y-4">
+                <h2 className="font-bold text-lg">Applicable Products</h2>
+                <Separator />
+
+                <div className="flex items-center w-full gap-4">
+                  <Label className="font-medium text-sm text-gray-700">
+                    <Input
+                      className="w-4 h-4"
+                      name="products"
+                      type="radio"
+                      checked={isSelectedAllProducts}
+                      onChange={() => {
+                        setIsSelectedAllProducts(true);
+                      }}
+                    />
+                    <span>All Products</span>
+                  </Label>
+                  <Label className="font-medium text-sm text-gray-700">
+                    <Input
+                      className="w-4 h-4"
+                      name="products"
+                      type="radio"
+                      checked={!isSelectedAllProducts}
+                      onChange={() => {
+                        setIsSelectedAllProducts(false);
+                      }}
+                    />
+                    <span>Selected Products</span>
+                  </Label>
+                </div>
+
+                {!isSelectedAllProducts &&
+                  watchApplicableProducts &&
+                  watchApplicableProducts?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-1">
+                      {watchApplicableProducts?.map((itemId) => (
+                        <div
+                          key={itemId}
+                          className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
+                        >
+                          <span>
+                            {itemsResult.data.find((i) => i._id === itemId)
+                              ?.name || "-"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFilteredItems((prev) => {
+                                const removedItem = itemsResult.data.find(
+                                  (i) => i._id === itemId,
+                                );
+                                if (removedItem) {
+                                  return [...prev, removedItem];
+                                }
+                                return prev;
+                              });
+                              form.setValue(
+                                "applicableProducts",
+                                watchApplicableProducts.filter(
+                                  (i) => i !== itemId,
+                                ),
+                              );
+                            }}
+                            className="ml-2 text-white hover:text-[#CCC]"
+                          >
+                            <XIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                {!isSelectedAllProducts && (
+                  <FormField
+                    control={form.control}
+                    name="applicableProducts"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="space-y-2">
+                            <Select
+                              onValueChange={(value) => {
+                                const newValue = [
+                                  ...(field.value || []),
+                                  value,
+                                ];
+                                field.onChange(newValue);
+                                setFilteredItems((prev) =>
+                                  prev.filter((item) => item._id !== value),
+                                );
+                              }}
+                              value="select_products"
+                            >
+                              <SelectTrigger className="w-full h-12!">
+                                <SelectValue placeholder="Select Products" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="select_products">
+                                  Select Products
+                                </SelectItem>
+                                {filteredItems?.map((item: TProduct) => (
+                                  <SelectItem
+                                    key={item._id}
+                                    value={item._id as string}
+                                  >
+                                    {item.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
               {/* ACTION */}

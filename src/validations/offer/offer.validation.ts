@@ -43,6 +43,12 @@ export const offerValidation = z
 
     code: z.string().optional(),
     isAutoApply: z.boolean("Auto apply must be a boolean").optional(),
+
+    maxUsageCount: z.string().optional(),
+
+    userUsageLimit: z.string().optional(),
+
+    applicableProducts: z.array(z.string("Product is required")).optional(),
   })
   .refine(
     (data) => {
@@ -96,5 +102,65 @@ export const offerValidation = z
     {
       message: "Get quantity are required for BOGO offers",
       path: ["getQty"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.maxUsageCount) {
+        if (isNaN(Number(data.maxUsageCount))) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: "Max usage count must be a number",
+      path: ["maxUsageCount"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (
+        data.maxUsageCount &&
+        data.maxUsageCount.length > 0 &&
+        Number(data.maxUsageCount) < 1
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Max usage count must be at least 1",
+      path: ["maxUsageCount"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.userUsageLimit) {
+        if (isNaN(Number(data.userUsageLimit))) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: "User usage limit must be a number",
+      path: ["userUsageLimit"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (
+        data.userUsageLimit &&
+        data.userUsageLimit.length > 0 &&
+        Number(data.userUsageLimit) < 1
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "User usage limit must be at least 1",
+      path: ["userUsageLimit"],
     },
   );

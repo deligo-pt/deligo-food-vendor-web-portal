@@ -27,6 +27,9 @@ export type TOffer = {
   isAutoApply: boolean;
   code?: string; // if offer requires a code (optional)
 
+  // Applicable products (optional, if empty or not provided, applies to all products)
+  applicableProducts?: unknown[];
+
   // Usage control
   maxUsageCount?: number;
   usageCount?: number;
