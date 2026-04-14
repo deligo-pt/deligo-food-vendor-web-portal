@@ -22,6 +22,7 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { registerVendorReq } from "@/src/services/becomeVendor/become-vendor";
+import { setLocalOtpExpiry } from "@/src/utils/localOtpExpiry";
 import { becomeVendorValidation } from "@/src/validations/become-vendor/become-vendor.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -59,6 +60,7 @@ export default function BecomeVendor() {
       toast.success(result.message || "Registration successful!", {
         id: toastId,
       });
+      setLocalOtpExpiry();
       router.push(`/become-vendor/verify-otp?email=${data.email}`);
       return;
     }

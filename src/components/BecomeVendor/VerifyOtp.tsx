@@ -15,6 +15,11 @@ import { resendOtpReq, verifyOtpReq } from "@/src/services/auth/auth";
 import { setCookie } from "@/src/utils/cookies";
 import { getAndSaveFcmToken } from "@/src/utils/fcmToken";
 import { getDeviceInfo } from "@/src/utils/getDeviceInfo";
+import {
+  getExpiryTime,
+  removeLocalOtpExpiry,
+  setLocalOtpExpiry,
+} from "@/src/utils/localOtpExpiry";
 import { motion } from "framer-motion";
 import { Clock, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -23,15 +28,14 @@ import { toast } from "sonner";
 export default function VerifyOtp({ email }: { email: string }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [timer, setTimer] = useState(300); // 5 minutes = 300 seconds
+  const [timer, setTimer] = useState(getExpiryTime() || 0);
   const [otp, setOtp] = useState(["", "", "", ""]);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const canResend = timer <= 0;
 
-  // Countdown timer
   useEffect(() => {
     if (timer > 0) {
-      const interval = setInterval(() => setTimer((t) => t - 1), 1000); // every 1 second
+      const interval = setInterval(() => setTimer((t) => t - 1), 1000);
       return () => clearInterval(interval);
     }
   }, [timer]);
@@ -82,6 +86,8 @@ export default function VerifyOtp({ email }: { email: string }) {
           getAndSaveFcmToken(result.data.accessToken);
         }, 1000);
 
+        removeLocalOtpExpiry();
+
         router.push("/become-vendor/personal-details");
         return;
       }
@@ -102,6 +108,7 @@ export default function VerifyOtp({ email }: { email: string }) {
 
     if (result.success) {
       setTimer(300);
+      setLocalOtpExpiry();
 
       toast.success(result.message || "OTP resent successfully!", {
         id: toastId,

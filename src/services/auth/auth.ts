@@ -1,6 +1,7 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
+import { DEVICE_KEY } from "@/src/consts/device.const";
 import { catchAsync } from "@/src/utils/catchAsync";
 import { cookies } from "next/headers";
 
@@ -45,8 +46,7 @@ export const verifyOtpReq = async (data: {
 };
 
 export const logoutReq = async (data: { email: string; token: string }) => {
-  const deviceId =
-    (await cookies()).get("deligo-food-vendor-deviceId")?.value || "";
+  const deviceId = (await cookies()).get(DEVICE_KEY)?.value || "";
   return catchAsync<null>(async () => {
     return await serverRequest.post("/auth/logout", {
       data: { ...data, deviceId },

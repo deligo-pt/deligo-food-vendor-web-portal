@@ -30,7 +30,6 @@ import parsePhoneNumberFromString from "libphonenumber-js";
 import { ArrowLeftCircle, Mail, Phone, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PhoneInput } from "react-international-phone";
-import "react-international-phone/style.css";
 import { toast } from "sonner";
 
 type PersonalForm = {
@@ -252,7 +251,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                             onChange={(e) => {
                               const onlyDigits = e.target.value.replace(
                                 /\D/g,
-                                ""
+                                "",
                               );
                               field.onChange(onlyDigits);
                             }}
