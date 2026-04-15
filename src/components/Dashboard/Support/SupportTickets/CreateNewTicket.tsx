@@ -67,7 +67,14 @@ export default function CreateNewTicket({ onClose }: IProps) {
   });
 
   const handleCreateTicket = (data: TFormData) => {
-    sendMessage({ ...data, messageType: "TEXT" });
+    const payload = {
+      category: data.category,
+      message: data.message,
+      messageType: "TEXT" as "TEXT" | "IMAGE" | "AUDIO" | "LOCATION" | "SYSTEM",
+      ...(data.referenceOrderId && { referenceOrderId: data.referenceOrderId }),
+    };
+
+    sendMessage(payload);
     onClose();
     router.refresh();
   };

@@ -70,32 +70,33 @@ export default function SupportChatSheet({
     setChatInput("");
   };
 
-  const { sendMessage, leaveConversation, makeTyping } = useChatSocket({
-    ticketId: ticket?.ticketId,
-    token: accessToken as string,
-    onMessage: (msg) => {
-      if (msg.ticketId === ticket?.ticketId) {
-        setMessagesData((prev) => {
-          if (prev.data.length >= 50) {
-            prev.data.shift();
-          }
-          if (prev.data.findIndex((m) => m._id === msg._id) === -1) {
-            return { ...prev, data: [...prev.data, msg] };
-          }
-          return prev;
-        });
-        scrollToBottom();
-      }
-    },
-    onTyping: (data: TUserTypingPayload) => {
-      if (data.userId !== decoded?.userId) {
-        setOtherUserTyping(data.isTyping);
-      }
-    },
-    onClosed: () => {},
-    onRead: () => {},
-    onError: (msg) => console.log(msg),
-  });
+  const { sendMessage, leaveConversation, makeTyping, markRead } =
+    useChatSocket({
+      ticketId: ticket?.ticketId,
+      token: accessToken as string,
+      onMessage: (msg) => {
+        if (msg.ticketId === ticket?.ticketId) {
+          setMessagesData((prev) => {
+            if (prev.data.length >= 50) {
+              prev.data.shift();
+            }
+            if (prev.data.findIndex((m) => m._id === msg._id) === -1) {
+              return { ...prev, data: [...prev.data, msg] };
+            }
+            return prev;
+          });
+          scrollToBottom();
+        }
+      },
+      onTyping: (data: TUserTypingPayload) => {
+        if (data.userId !== decoded?.userId) {
+          setOtherUserTyping(data.isTyping);
+        }
+      },
+      onClosed: () => {},
+      onRead: () => {},
+      onError: (msg) => console.log(msg),
+    });
 
   const handleMessageTyping = async (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
@@ -103,27 +104,35 @@ export default function SupportChatSheet({
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(chatInput);
-      clearTimeout(timeoutState);
+
+      if (timeoutState) clearTimeout(timeoutState);
+
       setTyping(false);
       makeTyping(false);
-    } else {
-      if (!typing) {
-        setTyping(true);
-        makeTyping(true);
-      }
 
-      clearTimeout(timeoutState);
-      setTimeoutState(
-        setTimeout(() => {
-          setTyping(false);
-          makeTyping(false);
-        }, 2000),
-      );
+      return;
     }
+    if (!typing) {
+      setTyping(true);
+      makeTyping(true);
+    }
+
+    if (timeoutState) clearTimeout(timeoutState);
+
+    setTimeoutState(
+      setTimeout(() => {
+        setTyping(false);
+        makeTyping(false);
+      }, 2000),
+    );
   };
 
   useEffect(() => {
     scrollToBottom();
+    if (messagesData.data.length > 0) {
+      markRead();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messagesData]);
 
   useEffect(() => {
@@ -239,10 +248,8 @@ export default function SupportChatSheet({
             );
           })}
 
-          <div ref={msgEndRef} />
-
           {otherUserTyping && (
-            <div className="flex flex-col gap-1 items-center">
+            <div className="flex flex-col gap-1 items-center mb-0">
               <span className="text-xs text-gray-500">Admin is typing...</span>
               <div className="flex justify-center gap-1">
                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
@@ -257,6 +264,8 @@ export default function SupportChatSheet({
               </div>
             </div>
           )}
+
+          <div ref={msgEndRef} />
         </div>
 
         {/* Message Input */}
