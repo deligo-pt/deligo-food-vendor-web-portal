@@ -18,12 +18,13 @@ export type TSupportTicket = {
   ticketId: string;
   userId: {
     _id: string;
+    userId: string;
     email: string;
     name: { firstName?: string; lastName?: string };
   };
   userModel: TUserModel;
   activeHandler: THandlerType;
-  // assignedAdminId?: TAdmin | null;
+  assignedAdminId?: { userId: string };
   status: TTicketStatus;
   category: "ORDER_ISSUE" | "PAYMENT" | "IVA_INVOICE" | "TECHNICAL" | "GENERAL";
   referenceOrderId?: TOrder;

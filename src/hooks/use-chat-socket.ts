@@ -14,7 +14,7 @@ interface Props {
   token: string;
   onMessage: (msg: TSupportMessage) => void;
   onClosed?: () => void;
-  onRead?: () => void;
+  onRead?: (data: { ticketId: string; userId: string; time: string }) => void;
   onError: (msg: string) => void;
   onTyping?: (data: TUserTypingPayload) => void;
 }
@@ -38,7 +38,7 @@ export function useChatSocket({
 
     socket.on("new-message", onMessage);
     socket.on("user-typing", (data) => onTyping && onTyping(data));
-    socket.on("read-update", () => onRead && onRead());
+    socket.on("read-update", (data) => onRead && onRead(data));
     socket.on("conversation-closed", () => onClosed && onClosed());
     socket.on("chat-error", (e) => onError(e));
     // eslint-disable-next-line react-hooks/exhaustive-deps

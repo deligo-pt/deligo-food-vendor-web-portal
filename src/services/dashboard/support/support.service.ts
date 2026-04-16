@@ -4,16 +4,14 @@ import { serverRequest } from "@/lib/serverFetch";
 import { TSupportMessage, TSupportTicket } from "@/src/types/support.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 
-export const getMyTicketReq = async () => {
+export const getMyTicketReq = async (): Promise<TSupportTicket> => {
   const result = await catchAsync<TSupportTicket>(async () => {
     return await serverRequest.get("/support/tickets");
   });
 
   if (result?.success) return result.data?.[0] || {};
 
-  return {
-    data: {},
-  };
+  return {} as TSupportTicket;
 };
 
 export const getMessagesReq = async (
