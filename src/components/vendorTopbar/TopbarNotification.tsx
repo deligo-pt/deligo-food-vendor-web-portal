@@ -9,11 +9,12 @@ import {
 import { cn } from "@/lib/utils";
 import {
   allMarkReadReq,
-  getAllNotificationsReq,
   singleMarkReadReq,
 } from "@/src/services/notifications/notifications";
 import { TMeta } from "@/src/types";
 import { TNotification } from "@/src/types/notification.type";
+import { catchAsync } from "@/src/utils/catchAsync";
+import { fetchData } from "@/src/utils/requests";
 import { motion } from "framer-motion";
 import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -25,7 +26,12 @@ export default function TopbarNotification() {
   }>({ data: [] });
 
   const getNotifications = async ({ limit = 10 }) => {
-    const result = await getAllNotificationsReq({ limit });
+    const result = await catchAsync<TNotification[]>(async () => {
+      return await fetchData("/notifications/my-notifications", {
+        params: { limit },
+      });
+    });
+
     if (result.success) {
       setNotificationsData({ data: result.data, meta: result.meta });
     }

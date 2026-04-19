@@ -86,7 +86,15 @@ export type TVendor = {
 
   // Security & Access Control
   twoFactorEnabled?: boolean;
-  loginDevices?: { deviceId: string; lastLogin: Date | string }[];
+  loginDevices: {
+    deviceId: string;
+    deviceType: string;
+    deviceName: string;
+    userAgent: string;
+    ip: string;
+    isVerified: boolean;
+    lastLogin: string;
+  }[];
 
   // Admin & Audit Fields
   approvedBy?: string;

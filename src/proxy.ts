@@ -1,3 +1,4 @@
+import { DEVICE_KEY } from "@/src/consts/device.const";
 import { USER_ROLE, USER_STATUS } from "@/src/consts/user.const";
 import { getVendorInfo } from "@/src/utils/getVendorInfo";
 import { verifyTokens } from "@/src/utils/verifyTokens";
@@ -11,13 +12,7 @@ const AUTH_PATHS = [
 ];
 
 export async function proxy(req: NextRequest) {
-  const { pathname, searchParams } = req.nextUrl;
-
-  if (searchParams.has("tokenRefreshed")) {
-    const url = req.nextUrl.clone();
-    url.searchParams.delete("tokenRefreshed");
-    return NextResponse.redirect(url);
-  }
+  const { pathname } = req.nextUrl;
 
   const loginUrl = new URL("/login", req.url);
   loginUrl.searchParams.set("redirect", pathname);
@@ -25,9 +20,7 @@ export async function proxy(req: NextRequest) {
   const tokenWasRefreshed = await verifyTokens();
 
   if (tokenWasRefreshed) {
-    const url = req.nextUrl.clone();
-    url.searchParams.set("tokenRefreshed", "true");
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(new URL(pathname, req.url));
   }
 
   const vendorResult = await getVendorInfo();
@@ -40,6 +33,22 @@ export async function proxy(req: NextRequest) {
           (path) => pathname === path || pathname.startsWith(`${path}`),
         )
       ) {
+        const currentDeviceId = req.cookies.get(DEVICE_KEY)?.value || "";
+        const isValidSession = vendorInfo?.loginDevices?.some(
+          (device) => currentDeviceId === device.deviceId,
+        );
+
+        if (!isValidSession) {
+          req.cookies.delete("accessToken");
+          req.cookies.delete("refreshToken");
+          if (pathname !== "/login") {
+            loginUrl.searchParams.set("sessionExpired", "true");
+            return NextResponse.redirect(loginUrl);
+          } else {
+            return NextResponse.next();
+          }
+        }
+
         if (
           pathname === "/login" ||
           pathname === "/become-vendor" ||

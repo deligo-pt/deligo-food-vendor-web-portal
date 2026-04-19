@@ -39,11 +39,9 @@ const serverRequestHelper = async (
         const status = error?.response?.status;
 
         if (status === 401) {
-          // ✅ 1. Clear cookies (server-side)
           cookieStore.delete("accessToken");
           cookieStore.delete("refreshToken");
 
-          // ✅ 2. Redirect to login (server-side)
           redirect("/login?sessionExpired=true");
         }
 
