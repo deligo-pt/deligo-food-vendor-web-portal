@@ -30,6 +30,7 @@ export type TTaxReport = {
   taxByCategory: {
     name: string;
     value: number;
+    percentage: number;
   }[];
 
   revenueData: {

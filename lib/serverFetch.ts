@@ -1,3 +1,4 @@
+import { verifyTokens } from "@/src/utils/verifyTokens";
 import axios, { AxiosRequestConfig } from "axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -18,6 +19,10 @@ const serverRequestHelper = async (
 
   const cookieStr = cookieStore.toString();
   const accessToken = cookieStore.get("accessToken")?.value || "";
+
+  if (url !== "/auth/refresh-token") {
+    await verifyTokens();
+  }
 
   return (
     axiosInstance({

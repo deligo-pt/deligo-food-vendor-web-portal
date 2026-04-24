@@ -28,11 +28,7 @@ export async function proxy(req: NextRequest) {
   if (vendorResult) {
     const vendorInfo = vendorResult?.vendor;
     if (vendorInfo.role === USER_ROLE.VENDOR) {
-      if (
-        AUTH_PATHS.some(
-          (path) => pathname === path || pathname.startsWith(`${path}`),
-        )
-      ) {
+      
         const currentDeviceId = req.cookies.get(DEVICE_KEY)?.value || "";
         const isValidSession = vendorInfo?.loginDevices?.some(
           (device) => currentDeviceId === device.deviceId,
@@ -48,6 +44,12 @@ export async function proxy(req: NextRequest) {
             return NextResponse.next();
           }
         }
+
+      if (
+        AUTH_PATHS.some(
+          (path) => pathname === path || pathname.startsWith(`${path}`),
+        )
+      ) {
 
         if (
           pathname === "/login" ||
@@ -75,8 +77,15 @@ export async function proxy(req: NextRequest) {
               new URL("/become-vendor/registration-status", req.url),
             );
           }
+        } 
+      }else if (
+          pathname.startsWith("/vendor") &&
+          vendorInfo.status !== USER_STATUS.APPROVED
+        ) {
+          return NextResponse.redirect(
+            new URL("/become-vendor/registration-status", req.url),
+          );
         }
-      }
     } else {
       req.cookies.delete("accessToken");
       req.cookies.delete("refreshToken");

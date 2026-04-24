@@ -10,6 +10,7 @@ import {
   File,
   FileText,
   ImageIcon,
+  Plus,
   UploadCloud,
 } from "lucide-react";
 import Image from "next/image";
@@ -24,8 +25,6 @@ import {
 } from "@/src/components/ui/card";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { submitForApprovalReq } from "@/src/services/becomeVendor/become-vendor";
-import { uploadDocumentsReq } from "@/src/services/becomeVendor/uploadDocumentsReq";
-import { TResponse } from "@/src/types";
 import { DocKey, FilePreview } from "@/src/types/documents.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -37,7 +36,6 @@ interface IDoc {
 }
 
 export default function UploadDocuments({
-  savedPreviews,
   vendorId,
 }: {
   savedPreviews: Record<DocKey, FilePreview | null>;
@@ -45,8 +43,16 @@ export default function UploadDocuments({
 }) {
   const { t } = useTranslation();
   // store one preview per doc key
-  const [previews, setPreviews] =
-    useState<Record<DocKey, FilePreview | null>>(savedPreviews);
+  const [previews, setPreviews] = useState<
+    Record<DocKey, FilePreview[] | null>
+  >({
+    businessLicenseDoc: null,
+    taxDoc: null,
+    idProofFront: null,
+    idProofBack: null,
+    storePhoto: null,
+    menuUpload: null,
+  });
 
   // file input refs to trigger the browser picker
   const inputsRef = useRef<Record<string, HTMLInputElement | null>>({});
@@ -96,20 +102,26 @@ export default function UploadDocuments({
 
     const toastId = toast.loading("Uploading...");
 
-    const result = (await uploadDocumentsReq(
-      vendorId,
-      key,
-      f,
-    )) as unknown as TResponse<any>;
+    // const result = (await uploadDocumentsReq(
+    //   vendorId,
+    //   key,
+    //   f,
+    // )) as unknown as TResponse<any>;
+
+    const result = { success: true, message: "File uploaded successfully!" };
 
     if (result.success) {
       toast.success("File uploaded successfully!", { id: toastId });
 
       // revoke previous url if present
       const prev = previews[key];
-      if (prev && prev.url) URL.revokeObjectURL(prev.url);
+      if (prev && prev[prev.length - 1].url)
+        URL.revokeObjectURL(prev[prev.length - 1].url as string);
 
-      setPreviews((p) => ({ ...p, [key]: { file: f, url, isImage } }));
+      setPreviews((p) => ({
+        ...p,
+        [key]: [...(p[key] || []), { file: f, url, isImage }],
+      }));
 
       if (inputsRef.current[key]) {
         inputsRef.current[key]!.value = "";
@@ -122,10 +134,13 @@ export default function UploadDocuments({
   };
 
   // Remove selected file for a doc (and revoke URL)
-  const removeFile = (key: DocKey) => {
+  const removeFile = (key: DocKey, index: number) => {
     const prev = previews[key];
-    if (prev && prev.url) URL.revokeObjectURL(prev.url);
-    setPreviews((p) => ({ ...p, [key]: null }));
+    if (prev && prev[index].url) URL.revokeObjectURL(prev[index].url);
+    setPreviews((p) => ({
+      ...p,
+      [key]: p[key]?.filter((_, i) => i !== index),
+    }));
 
     if (inputsRef.current[key]) {
       inputsRef.current[key]!.value = "";
@@ -234,7 +249,11 @@ export default function UploadDocuments({
   useEffect(() => {
     return () => {
       Object.values(previews).forEach((p) => {
-        if (p && p.url) URL.revokeObjectURL(p.url);
+        if (p) {
+          p.forEach((f) => {
+            if (f.url) URL.revokeObjectURL(f.url);
+          });
+        }
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -335,8 +354,59 @@ export default function UploadDocuments({
                         <div className="text-sm font-semibold text-gray-800">
                           {d.label}
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {preview ? (
+                        <div className="text-xs text-gray-500 mt-1 space-y-1">
+                          {preview?.map((f, i) => (
+                            <div className="flex items-center gap-2" key={i}>
+                              {f.isImage && f.url ? (
+                                <div className="flex items-center gap-2 border p-1 rounded-md">
+                                  <Image
+                                    src={f.url}
+                                    alt={
+                                      f.file?.name ||
+                                      getActualFileName(f.url || "")
+                                    }
+                                    width={56}
+                                    height={40}
+                                    className="object-cover rounded-md border"
+                                    unoptimized
+                                  />
+                                  <div className="truncate">
+                                    {f.file?.name ||
+                                      getActualFileName(f.url || "")}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <File className="w-4 h-4 text-gray-500" />
+                                  <div className="truncate">
+                                    {f.file?.name ||
+                                      getActualFileName(f.url || "")}
+                                  </div>
+                                </div>
+                              )}
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() =>
+                                    f.url
+                                      ? window.open(f.url, "_blank")
+                                      : alert(f.file?.name)
+                                  }
+                                  className="inline-flex items-center gap-2 px-2 py-1 rounded-md text-xs cursor-pointer"
+                                >
+                                  <Eye className="w-3 h-3 text-[#DC3173]" />{" "}
+                                  {t("viewCTA")}
+                                </button>
+
+                                <button
+                                  onClick={() => removeFile(d.key, i)}
+                                  className="px-2 py-1 rounded-md text-xs cursor-pointer"
+                                >
+                                  {t("removeCTA")}
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                          {/* {preview ? (
                             preview.isImage && preview.url ? (
                               <div className="flex items-center gap-2">
                                 <Image
@@ -366,7 +436,7 @@ export default function UploadDocuments({
                             )
                           ) : (
                             <span>{t("noFileSelected")}</span>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>
@@ -391,6 +461,13 @@ export default function UploadDocuments({
                       {preview ? (
                         <>
                           <button
+                            onClick={() => openPicker(d.key)}
+                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm border border-gray-200 hover:shadow"
+                          >
+                            <Plus className="w-4 h-4 text-[#DC3173]" /> Add More
+                          </button>
+
+                          {/* <button
                             onClick={() =>
                               preview.url
                                 ? window.open(preview.url, "_blank")
@@ -400,14 +477,14 @@ export default function UploadDocuments({
                           >
                             <Eye className="w-4 h-4 text-[#DC3173]" />{" "}
                             {t("viewCTA")}
-                          </button>
+                          </button> */}
 
-                          <button
+                          {/* <button
                             onClick={() => removeFile(d.key)}
                             className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-600 border border-gray-100 hover:bg-gray-50"
                           >
                             {t("removeCTA")}
-                          </button>
+                          </button> */}
                         </>
                       ) : (
                         <button

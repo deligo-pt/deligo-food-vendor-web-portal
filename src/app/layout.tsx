@@ -2,6 +2,7 @@ import NumberInputStopScroll from "@/src/components/NumberInputStopScroll/Number
 import { RegisterFCMSW } from "@/src/components/RegisterFCMSW/RegisterFCMSW";
 import SonnerToaster from "@/src/components/SonnerToaster/SonnerToaster";
 import type { Metadata } from "next";
+import "react-international-phone/style.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

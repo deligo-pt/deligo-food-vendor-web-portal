@@ -127,14 +127,16 @@ export default function TaxReport({ taxReportData }: IProps) {
             {taxReportData.taxByCategory?.map((tax, i) => (
               <div key={i}>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="font-medium text-gray-600">{tax.name}</span>
+                  <span className="font-medium text-gray-600">
+                    {tax.name} tax
+                  </span>
                   <span className="font-bold text-gray-900">
                     €{formatPrice(tax.value)}
                   </span>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className={`h-full bg-[${COLORS[i % COLORS.length]}] w-[${Math.min((i + 1) * 15, 100)}%]`}
+                    className={`h-full bg-[${COLORS[i % COLORS.length]}] w-[${Math.min(tax.percentage || 0, 100)}%]`}
                   />
                 </div>
               </div>
@@ -179,6 +181,7 @@ export default function TaxReport({ taxReportData }: IProps) {
                   itemStyle={{
                     color: "#fff",
                   }}
+                  formatter={(value) => `€${formatPrice(value as number)}`}
                 />
                 <Legend />
                 <Line
@@ -256,6 +259,7 @@ export default function TaxReport({ taxReportData }: IProps) {
                     borderRadius: "8px",
                     color: "#fff",
                   }}
+                  formatter={(value) => `€${formatPrice(value as number)}`}
                 />
                 <Bar
                   dataKey="tax"
