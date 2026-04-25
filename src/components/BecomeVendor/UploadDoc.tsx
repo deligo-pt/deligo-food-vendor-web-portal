@@ -406,6 +406,8 @@ export default function UploadDocuments({
                               </div>
                             </div>
                           ))}
+
+                          {!isSelected && <span>{t("noFileSelected")}</span>}
                           {/* {preview ? (
                             preview.isImage && preview.url ? (
                               <div className="flex items-center gap-2">

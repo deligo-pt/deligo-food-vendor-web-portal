@@ -32,7 +32,7 @@ export default function TopbarMessageIcon() {
       return await fetchData("/support/tickets");
     });
 
-    if (result?.success && result.data?.[0].ticketId) {
+    if (result?.success && result.data?.[0]?.ticketId) {
       setTicketId(result.data?.[0]?.ticketId || "");
       setUnreadCount(
         result.data?.[0]?.unreadCount[result.data?.[0]?.userId?.userId] || 0,
