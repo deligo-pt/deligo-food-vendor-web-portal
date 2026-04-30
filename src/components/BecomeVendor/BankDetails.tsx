@@ -34,28 +34,25 @@ import { bankDetailsValidation } from "@/src/validations/become-vendor/bank-deta
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import z from "zod";
 
-type FormValues = {
-  bankName: string;
-  accountHolderName: string;
-  iban: string;
-  swiftCode: string;
-};
+type TBankForm = z.infer<typeof bankDetailsValidation>;
 
 export default function BankDetails({ vendor }: { vendor: TVendor }) {
   const { t } = useTranslation();
-  const form = useForm<FormValues>({
+  const form = useForm<TBankForm>({
     resolver: zodResolver(bankDetailsValidation),
     defaultValues: {
       bankName: vendor?.bankDetails?.bankName || "",
       accountHolderName: vendor?.bankDetails?.accountHolderName || "",
+      accountNumber: vendor?.bankDetails?.accountNumber || "",
       iban: vendor?.bankDetails?.iban || "",
       swiftCode: vendor?.bankDetails?.swiftCode || "",
     },
   });
   const router = useRouter();
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: TBankForm) => {
     const toastId = toast.loading("Updating...");
 
     const bankDetails = {
@@ -141,6 +138,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                       )}
                     />
                   </div>
+
                   <div>
                     <FormField
                       control={form.control}
@@ -151,6 +149,31 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                             <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
                               <User className="w-4 h-4 text-[#DC3173]" />{" "}
                               {t("accountHolder")}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Full name as on account"
+                                className="mt-2 w-full"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="accountNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="relative">
+                            <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                              <CreditCard className="w-4 h-4 text-[#DC3173]" />{" "}
+                              Account Number
                             </FormLabel>
                             <FormControl>
                               <Input
