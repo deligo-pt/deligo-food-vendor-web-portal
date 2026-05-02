@@ -124,7 +124,7 @@ export function EditProductForm({
   });
   const [variationName, setVariationName] = useState("");
   const [images, setImages] = useState<{ file: File | null; url: string }[]>(
-    [],
+    prevData?.images?.map((img) => ({ file: null, url: img })) || [],
   );
 
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
