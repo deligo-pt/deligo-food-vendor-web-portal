@@ -30,15 +30,9 @@ export const productValidation = z
 
     quantity: z.number().optional(),
 
-    unit: z.string().min(1, "Unit must be at least 1 character"),
+    unit: z.string().optional(),
 
-    availabilityStatus: z
-      .string()
-      .min(2, "Availability status must be at least 2 characters")
-      .max(50, "Availability status must be at most 50 characters")
-      .nonempty("Availability status is required"),
-
-    tags: z.array(z.string()),
+    availabilityStatus: z.string().optional(),
 
     addonGroups: z.array(z.string()),
 
@@ -49,31 +43,17 @@ export const productValidation = z
           z.object({
             label: z.string(),
             price: z.number().min(0),
-            stockQuantity: z.number().min(0),
+            stockQuantity: z.number().optional(),
           }),
         ),
       }),
     ),
 
-    organic: z.boolean().optional(),
-
-    weight: z.number().min(0, "Weight must be at least 0").optional(),
-
-    packagingType: z
-      .string()
-      .min(2, "Packaging type must be at least 2 characters")
-      .max(50, "Packaging type must be at most 50 characters")
-      .optional(),
-
-    storageTemperature: z
-      .string()
-      .min(2, "Storage temperature must be at least 2 characters")
-      .max(50, "Storage temperature must be at most 50 characters")
-      .optional(),
-
     isFeatured: z.boolean().optional(),
 
     isAvailableForPreOrder: z.boolean().optional(),
+
+    businessType: z.string(),
   })
   .refine(
     (data) => {
@@ -101,7 +81,11 @@ export const productValidation = z
   )
   .refine(
     (data) => {
-      if (data.variations.length === 0 && !data.quantity) {
+      if (
+        data.businessType !== "RESTAURANT" &&
+        data.variations.length === 0 &&
+        !data.quantity
+      ) {
         return false;
       }
       return true;
@@ -113,7 +97,12 @@ export const productValidation = z
   )
   .refine(
     (data) => {
-      if (data.variations.length === 0 && data.quantity && data.quantity < 0) {
+      if (
+        data.businessType !== "RESTAURANT" &&
+        data.variations.length === 0 &&
+        data.quantity &&
+        data.quantity < 0
+      ) {
         return false;
       }
       return true;

@@ -16,7 +16,6 @@ import {
   PackageIcon,
   ShoppingBagIcon,
   StarIcon,
-  TagIcon,
   Trash2Icon,
   XCircleIcon,
 } from "lucide-react";
@@ -27,9 +26,10 @@ import { toast } from "sonner";
 
 interface IProps {
   product: TProduct;
+  businessType: string;
 }
 
-export default function ProductDetails({ product }: IProps) {
+export default function ProductDetails({ product, businessType }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -274,27 +274,30 @@ export default function ProductDetails({ product }: IProps) {
             )} */}
             </motion.div>
             {/* Stock */}
-            <motion.div variants={itemVariants as Variants}>
-              <div className="flex items-center gap-2 mb-2">
-                <ShoppingBagIcon className="w-5 h-5 text-[#DC3173]" />
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {t("stock_information")}
-                </h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStockStatusColor(
-                    product.stock.availabilityStatus,
-                  )}`}
-                >
-                  {getStockStatusIcon(product.stock.availabilityStatus)}
-                  {product.stock.availabilityStatus}
+            {businessType !== "RESTAURANT" && (
+              <motion.div variants={itemVariants as Variants}>
+                <div className="flex items-center gap-2 mb-2">
+                  <ShoppingBagIcon className="w-5 h-5 text-[#DC3173]" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {t("stock_information")}
+                  </h2>
                 </div>
-                <span className="text-gray-700">
-                  {product.stock.quantity} {product.stock.unit} {t("available")}
-                </span>
-              </div>
-            </motion.div>
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStockStatusColor(
+                      product.stock.availabilityStatus,
+                    )}`}
+                  >
+                    {getStockStatusIcon(product.stock.availabilityStatus)}
+                    {product.stock.availabilityStatus}
+                  </div>
+                  <span className="text-gray-700">
+                    {product.stock.quantity} {product.stock.unit}{" "}
+                    {t("available")}
+                  </span>
+                </div>
+              </motion.div>
+            )}
             {/* Description */}
             <motion.div variants={itemVariants as Variants}>
               <div className="flex items-center gap-2 mb-2">
@@ -307,7 +310,7 @@ export default function ProductDetails({ product }: IProps) {
                 {product.description}
               </p>
             </motion.div>
-            {/* Category & Brand */}
+            {/* Category */}
             <motion.div
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
               variants={itemVariants as Variants}
@@ -352,10 +355,14 @@ export default function ProductDetails({ product }: IProps) {
                                   <span className="font-semibold">Price: </span>
                                   <span>€{option.price}</span>
                                 </div>
-                                <div>
-                                  <span className="font-semibold">Stock: </span>
-                                  <span>{option.stockQuantity}</span>
-                                </div>
+                                {businessType !== "RESTAURANT" && (
+                                  <div>
+                                    <span className="font-semibold">
+                                      Stock:{" "}
+                                    </span>
+                                    <span>{option.stockQuantity}</span>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -365,33 +372,6 @@ export default function ProductDetails({ product }: IProps) {
                   </div>
                 ))}
               </>
-            )}
-            {/* Tags */}
-            {product.tags && product.tags.length > 0 && (
-              <motion.div variants={itemVariants as Variants}>
-                <div className="flex items-center gap-2 mb-2">
-                  <TagIcon className="w-5 h-5 text-[#DC3173]" />
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {t("tags")}
-                  </h2>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag, index) => (
-                    <motion.span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#DC3173] bg-opacity-10 text-white"
-                      whileHover={{
-                        scale: 1.05,
-                      }}
-                      whileTap={{
-                        scale: 0.95,
-                      }}
-                    >
-                      {tag}
-                    </motion.span>
-                  ))}
-                </div>
-              </motion.div>
             )}
             {/* Rating */}
             {product.rating && (
@@ -500,6 +480,7 @@ export default function ProductDetails({ product }: IProps) {
           open={isEditDialogOpen}
           onOpenChange={() => setIsEditDialogOpen(false)}
           prevData={product}
+          businessType={businessType}
         />
       </motion.div>
     </div>

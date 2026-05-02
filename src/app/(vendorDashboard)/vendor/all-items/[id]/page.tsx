@@ -1,7 +1,9 @@
 import { serverRequest } from "@/lib/serverFetch";
 import ProductDetails from "@/src/components/Dashboard/Products/ProductDetails";
+import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
+import { TVendor } from "@/src/types/vendor.type";
 
 export default async function ProductDetailsPage({
   params,
@@ -24,5 +26,12 @@ export default async function ProductDetailsPage({
     console.log("Server fetch error:", err);
   }
 
-  return <ProductDetails product={initialData} />;
+  const vendorData: TVendor = await getProfileData();
+
+  return (
+    <ProductDetails
+      product={initialData}
+      businessType={vendorData?.businessDetails?.businessType as string}
+    />
+  );
 }
