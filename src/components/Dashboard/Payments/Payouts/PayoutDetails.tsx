@@ -1,8 +1,11 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { TPayout } from "@/src/types/payout.type";
+import { formatPrice } from "@/src/utils/formatPrice";
+import { generatePaymentPDF } from "@/src/utils/pdf/generatePaymentPDF";
 import { format } from "date-fns";
 import { motion, Variants } from "framer-motion";
 import {
@@ -106,7 +109,22 @@ export default function PayoutDetails({ payout }: IProps) {
         subtitle="Full details of the payout"
       />
 
-      {/* Hero Card */}
+      <div className="flex justify-end gap-4">
+        <Button
+          className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+          onClick={() => generatePaymentPDF(payout)}
+        >
+          Download Statement
+        </Button>
+        <Button
+          className="bg-indigo-500 hover:bg-indigo-600"
+          onClick={() => window.open(payout.payoutProof, "_blank")}
+        >
+          View Proof
+        </Button>
+      </div>
+
+      {/* Payout Details */}
       <motion.div
         variants={itemVariants}
         className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 relative overflow-hidden"
@@ -127,7 +145,7 @@ export default function PayoutDetails({ payout }: IProps) {
                 )}
               </div>
               <p className="text-2xl md:text-4xl text-[#DC3173] font-bold mt-2">
-                €{payout.amount}
+                €{formatPrice(payout.amount)}
               </p>
               <p className="text-[#DC3173]/70 text-sm mt-2">
                 {payout.paymentMethod}
@@ -246,12 +264,16 @@ export default function PayoutDetails({ payout }: IProps) {
         <div className="space-y-4">
           {[
             {
+              label: "Bank Name",
+              value: payout.bankDetails?.bankName || "N/A",
+            },
+            {
               label: "Account Holder",
               value: payout.bankDetails?.accountHolderName || "N/A",
             },
             {
-              label: "Bank Name",
-              value: payout.bankDetails?.bankName || "N/A",
+              label: "Account Number",
+              value: payout.bankDetails?.accountNumber || "N/A",
             },
             {
               label: "IBAN",

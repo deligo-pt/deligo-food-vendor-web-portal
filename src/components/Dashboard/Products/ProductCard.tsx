@@ -113,13 +113,15 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
               ""
             )}
           </div>
-          <div
-            className={`text-xs px-2 py-1 rounded-full ${
-              availabilityColors[product.stock.availabilityStatus]
-            }`}
-          >
-            {product.stock.availabilityStatus}
-          </div>
+          {product.stock?.availabilityStatus && (
+            <div
+              className={`text-xs px-2 py-1 rounded-full ${
+                availabilityColors[product.stock.availabilityStatus]
+              }`}
+            >
+              {product.stock.availabilityStatus}
+            </div>
+          )}
         </div>
         {product.deliveryInfo && (
           <div className="flex items-center text-xs text-gray-500 mb-3">

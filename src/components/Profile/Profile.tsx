@@ -47,7 +47,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
 
   const accountAge = Math.floor(
     (new Date().getTime() - new Date(vendor.createdAt).getTime()) /
-    (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24),
   );
 
   return (
@@ -99,7 +99,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 </h1>
                 <motion.span
                   className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
-                    vendor.status
+                    vendor.status,
                   )}`}
                   animate={{
                     scale: [1, 1.05, 1],
@@ -157,7 +157,9 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                   <span className="text-lg font-bold text-gray-900">
                     {accountAge}
                   </span>
-                  <span className="text-sm text-gray-500">{t("days_active")}</span>
+                  <span className="text-sm text-gray-500">
+                    {t("days_active")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -286,9 +288,14 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 icon={UserIcon}
               />
               <ProfileInfoRow
+                label="Account Number"
+                value={vendor.bankDetails?.accountNumber}
+                icon={CreditCardIcon}
+              />
+              <ProfileInfoRow
                 label={t("iban")}
                 value={vendor.bankDetails?.iban.replace(/(.{4})/g, "$1 ")}
-                icon={CreditCardIcon}
+                icon={FileTextIcon}
               />
               <ProfileInfoRow
                 label={t("swift_code")}
@@ -299,7 +306,11 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
           </ProfileSection>
 
           {/* Documents */}
-          <ProfileSection title={t("documents")} icon={FileTextIcon} delay={0.3}>
+          <ProfileSection
+            title={t("documents")}
+            icon={FileTextIcon}
+            delay={0.3}
+          >
             <ProfileDoc documents={vendor?.documents} />
           </ProfileSection>
 
@@ -315,7 +326,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                   label={t("last_login")}
                   value={format(
                     vendor.lastLoginAt,
-                    "hh:mm aa, do MMM yyyy"
+                    "hh:mm aa, do MMM yyyy",
                   ).toLocaleString()}
                   icon={ClockIcon}
                 />

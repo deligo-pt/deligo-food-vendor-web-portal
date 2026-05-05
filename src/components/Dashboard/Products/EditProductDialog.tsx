@@ -6,14 +6,24 @@ interface IProps {
   open: boolean;
   onOpenChange: () => void;
   prevData: TProduct;
+  businessType: string;
 }
 
-const EditProductDialog = ({ open, onOpenChange, prevData }: IProps) => {
+const EditProductDialog = ({
+  open,
+  onOpenChange,
+  prevData,
+  businessType,
+}: IProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form>
         <DialogContent className="w-full! sm:max-w-3xl overflow-y-auto h-11/12! max-h-11/12 p-0!">
-          <EditProductForm prevData={prevData} closeModal={onOpenChange} />
+          <EditProductForm
+            prevData={prevData}
+            closeModal={onOpenChange}
+            businessType={businessType}
+          />
         </DialogContent>
       </form>
     </Dialog>

@@ -55,7 +55,7 @@ export type TProduct = {
     rating?: number;
   };
 
-  tags?: string[];
+  // tags?: string[];
 
   deliveryInfo?: {
     deliveryType: "Instant" | "Scheduled" | "Pickup";
@@ -64,7 +64,7 @@ export type TProduct = {
     freeDeliveryAbove?: number;
   };
 
-  attributes?: Record<string, string | number | boolean | string[] | null>;
+  // attributes?: Record<string, string | number | boolean | string[] | null>;
 
   rating?: {
     average: number;

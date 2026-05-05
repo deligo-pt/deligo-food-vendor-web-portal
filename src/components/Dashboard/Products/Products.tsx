@@ -16,9 +16,10 @@ import { toast } from "sonner";
 
 interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
+  businessType: string;
 }
 
-export default function Products({ productsData }: IProps) {
+export default function Products({ productsData, businessType }: IProps) {
   const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
@@ -101,7 +102,10 @@ export default function Products({ productsData }: IProps) {
       </div>
 
       {/* Filters */}
-      <AllFilters sortOptions={sortOptions} filterOptions={filterOptions} />
+      <AllFilters
+        sortOptions={sortOptions}
+        {...(businessType !== "RESTAURANT" ? { filterOptions } : {})}
+      />
 
       {productsData.data?.length > 0 && (
         <div className="flex justify-between items-center mb-4">
@@ -178,6 +182,7 @@ export default function Products({ productsData }: IProps) {
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
+        businessType={businessType}
       />
     </div>
   );

@@ -1,20 +1,27 @@
 import { serverRequest } from "@/lib/serverFetch";
 import Products from "@/src/components/Dashboard/Products/Products";
+import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TMeta, TResponse } from "@/src/types";
 import { TProduct, TProductsQueryParams } from "@/src/types/product.type";
 import { TTax } from "@/src/types/tax.type";
+import { TVendor } from "@/src/types/vendor.type";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
 };
 
 export default async function ProductsPage({ searchParams }: IProps) {
+  const vendorData: TVendor = await getProfileData();
+
   const queries = (await searchParams) || {};
   const limit = Number(queries?.limit || 20);
   const page = Number(queries.page || 1);
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
-  const availability = queries.status || "";
+  const availability =
+    (vendorData?.businessDetails?.businessType === "RESTAURANT" &&
+      queries.status) ||
+    "";
 
   const query: Partial<TProductsQueryParams> = {
     limit,
@@ -54,5 +61,10 @@ export default async function ProductsPage({ searchParams }: IProps) {
     console.log("Server fetch error:", err);
   }
 
-  return <Products productsData={productsData} />;
+  return (
+    <Products
+      productsData={productsData}
+      businessType={vendorData?.businessDetails?.businessType as string}
+    />
+  );
 }

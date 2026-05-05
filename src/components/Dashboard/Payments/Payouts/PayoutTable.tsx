@@ -15,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import { TPayout } from "@/src/types/payout.type";
+import { formatPrice } from "@/src/utils/formatPrice";
+import { generatePaymentPDF } from "@/src/utils/pdf/generatePaymentPDF";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import {
@@ -95,7 +97,7 @@ export default function PayoutTable({ payouts }: IProps) {
             <TableRow key={p._id}>
               <TableCell>{p.payoutId}</TableCell>
               <TableCell>{p.paymentMethod}</TableCell>
-              <TableCell>€{p.amount}</TableCell>
+              <TableCell>€{formatPrice(p.amount)}</TableCell>
               <TableCell>{p.status}</TableCell>
               <TableCell>{format(p.createdAt, "do MMM yyyy")}</TableCell>
               <TableCell className="text-right">
@@ -115,6 +117,9 @@ export default function PayoutTable({ payouts }: IProps) {
                       onClick={() => window.open(p.payoutProof, "_blank")}
                     >
                       Payout Proof
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => generatePaymentPDF(p)}>
+                      Download
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

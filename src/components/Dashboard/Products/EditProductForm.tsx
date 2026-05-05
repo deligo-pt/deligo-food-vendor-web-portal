@@ -40,10 +40,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ImageIcon,
-  InfoIcon,
   LayersIcon,
   PackageIcon,
-  PlusIcon,
   SaveIcon,
   StarIcon,
   TagIcon,
@@ -55,42 +53,12 @@ import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const tabs = [
-  {
-    name: "Basic Info",
-    icon: <PackageIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Images",
-    icon: <ImageIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Addons and Variants",
-    icon: <LayersIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Pricing",
-    icon: <TagIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Stock",
-    icon: <PackageIcon className="h-5 w-5" />,
-  },
-  {
-    name: "Attributes",
-    icon: <InfoIcon className="h-5 w-5" />,
-  },
-  {
-    name: "DeliGo Metadata",
-    icon: <StarIcon className="h-5 w-5" />,
-  },
-];
-
 type FormData = z.infer<typeof productValidation>;
 
 interface IProps {
   prevData: TProduct;
   closeModal: () => void;
+  businessType: string;
 }
 
 interface IData<T> {
@@ -98,9 +66,66 @@ interface IData<T> {
   meta?: TMeta;
 }
 
-export function EditProductForm({ prevData, closeModal }: IProps) {
+export function EditProductForm({
+  prevData,
+  closeModal,
+  businessType,
+}: IProps) {
   const router = useRouter();
+
   const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState(0);
+  const [lastTabIndex, setLastTabIndex] = useState(4);
+  const [options, setOptions] = useState<
+    { label: string; price: number; stockQuantity?: number }[]
+  >([]);
+
+  const tabs = [
+    {
+      name: t("basic_info"),
+      icon: <PackageIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("images"),
+      icon: <ImageIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("add_ons_and_variants"),
+      icon: <LayersIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("pricing"),
+      icon: <TagIcon className="h-5 w-5" />,
+    },
+    {
+      name: "DeliGo Metadata",
+      icon: <StarIcon className="h-5 w-5" />,
+    },
+  ];
+
+  if (businessType !== "RESTAURANT") {
+    const lastTab = tabs[tabs.length - 1];
+    tabs.push({
+      name: t("stock"),
+      icon: <PackageIcon className="h-5 w-5" />,
+    });
+    tabs.push(lastTab);
+    setLastTabIndex(5);
+  }
+
+  const [option, setOption] = useState<{
+    label: string;
+    price: string;
+    stockQuantity?: number;
+  }>({
+    label: "",
+    price: "",
+    ...(businessType !== "RESTAURANT" ? { stockQuantity: 0 } : {}),
+  });
+  const [variationName, setVariationName] = useState("");
+  const [images, setImages] = useState<{ file: File | null; url: string }[]>(
+    prevData?.images?.map((img) => ({ file: null, url: img })) || [],
+  );
 
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
@@ -109,28 +134,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
     IData<TProductCategory>
   >({ data: [] });
   const [taxesData, setTaxesData] = useState<IData<TTax>>({ data: [] });
-
-  const [activeTab, setActiveTab] = useState(0);
-
-  const [options, setOptions] = useState<
-    { label: string; price: number; stockQuantity: number }[]
-  >([]);
-  const [option, setOption] = useState<{
-    label: string;
-    price: string;
-    stockQuantity: number;
-  }>({
-    label: "",
-    price: "",
-    stockQuantity: 0,
-  });
-
-  const [variationName, setVariationName] = useState("");
-  const [images, setImages] = useState<{ file: File | null; url: string }[]>(
-    prevData?.images?.map((img) => ({ file: null, url: img })) || [],
-  );
-
-  const [tag, setTag] = useState("");
 
   const form = useForm<FormData>({
     resolver: zodResolver(productValidation),
@@ -146,59 +149,26 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
       quantity: prevData?.stock?.quantity || 0,
       unit: prevData?.stock?.unit || "",
       availabilityStatus: prevData?.stock?.availabilityStatus || "",
-      tags: prevData?.tags || [],
-      organic: (prevData?.attributes?.organic as boolean) || true,
-      weight: (prevData?.attributes?.weight as number) || 0,
-      packagingType: (prevData?.attributes?.packagingType as string) || "",
-      storageTemperature:
-        (prevData?.attributes?.storageTemperature as string) || "",
       isFeatured: prevData?.meta?.isFeatured || false,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
+      businessType,
     },
   });
 
-  const packagingTypes = [
-    t("plastic_bag"),
-    t("paper_bag"),
-    t("box"),
-    t("bottle"),
-    "Vacuum Sealed",
-    "Insulated Thermal Bag",
-    "Eco-Friendly/Compostable",
-    "Glass Jar",
-    "Corrugated Wrap",
-    "Tamper-Evident Seal",
-    t("others"),
-  ];
+  const [tabError, setTabError] = useState(
+    tabs.reduce(
+      (err, t) => {
+        err[t.name] = false;
+        return err;
+      },
+      {} as Record<string, boolean>,
+    ),
+  );
 
-  const storageTemperatures = [
-    t("room_temperature"),
-    t("refrigerated"),
-    t("frozen"),
-    t("cool_and_dry"),
-    "Warm/Ambient",
-    "Piping Hot ($65$°C+)",
-    "Constant Heat",
-    t("others"),
-  ];
-
-  const [watchTags, watchAddons, watchVariations] = useWatch({
+  const [watchAddons, watchVariations] = useWatch({
     control: form.control,
-    name: ["tags", "addonGroups", "variations"],
+    name: ["addonGroups", "variations"],
   });
-
-  const addTag = () => {
-    if (tag && !form?.getValues("tags")?.includes(tag)) {
-      const newTags = [...form?.getValues("tags"), tag];
-      form.setValue("tags", newTags);
-    }
-    setTag("");
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    const newTags = form?.getValues("tags")?.filter((t) => t !== tagToRemove);
-    form.setValue("tags", newTags);
-  };
 
   const addAddon = (id: string) => {
     if (!form?.getValues("addonGroups")?.includes(id)) {
@@ -222,10 +192,16 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
           {
             label: option.label,
             price: Number(option.price),
-            stockQuantity: option.stockQuantity,
+            ...(businessType !== "RESTAURANT"
+              ? { stockQuantity: option.stockQuantity }
+              : ""),
           },
         ]);
-        setOption({ label: "", price: "", stockQuantity: 0 });
+        setOption({
+          label: "",
+          price: "",
+          ...(businessType !== "RESTAURANT" ? { stockQuantity: 0 } : {}),
+        });
       }
     } else {
       toast.error("Option label and price are required");
@@ -272,24 +248,21 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
         discount: data.discount,
         taxId: data.taxId,
       },
-      stock: {
-        quantity: data.quantity,
-        unit: data.unit,
-        availabilityStatus: data.availabilityStatus,
-      },
       addonGroups: data.addonGroups,
       variations: data.variations,
-      tags: data.tags,
-      attributes: {
-        organic: data.organic,
-        weight: data.weight,
-        packagingType: data.packagingType,
-        storageTemperature: data.storageTemperature,
-      },
       meta: {
         isFeatured: data.isFeatured,
         isAvailableForPreOrder: data.isAvailableForPreOrder,
       },
+      ...(businessType !== "RESTAURANT"
+        ? {
+            stock: {
+              quantity: data.quantity,
+              unit: data.unit,
+              availabilityStatus: data.availabilityStatus,
+            },
+          }
+        : {}),
     };
 
     const filteredImages = images.filter((image) => !!image.file);
@@ -312,8 +285,8 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
 
     if (result.success) {
       toast.success("Product updated successfully!", { id: toastId });
-      form.reset();
       setActiveTab(0);
+      setTabError({});
       router.refresh();
       closeModal();
       return;
@@ -368,6 +341,45 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
     (() => getTaxes({ limit: 10 }))();
   }, []);
 
+  useEffect(() => {
+    const errors = Object.entries(form.formState?.errors)?.filter(
+      (er) => er?.[1]?.message,
+    );
+    if (errors.length > 0) {
+      const newErrors = tabs.reduce(
+        (err, t) => {
+          err[t.name] = false;
+          return err;
+        },
+        {} as Record<string, boolean>,
+      );
+
+      errors.forEach(([key]) => {
+        switch (key) {
+          case "name":
+          case "brand":
+          case "description":
+          case "category":
+            newErrors[t("basic_info")] = true;
+            return;
+          case "price":
+          case "discount":
+          case "taxId":
+            newErrors[t("pricing")] = true;
+            return;
+          case "quantity":
+          case "unit":
+          case "availabilityStatus":
+            newErrors[t("stock")] = true;
+            return;
+        }
+      });
+
+      setTabError(newErrors);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.formState?.errors]);
+
   return (
     <div className="">
       <motion.div
@@ -404,11 +416,14 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     scale: 0.98,
                   }}
                   onClick={() => setActiveTab(index)}
-                  className={`w-full flex items-center space-x-2 px-4 py-3 rounded-lg text-left ${
+                  className={cn(
+                    "w-full flex items-center space-x-2 px-4 py-3 rounded-lg text-left",
                     activeTab === index
                       ? "bg-[#DC3173] text-white"
-                      : "hover:bg-gray-100 text-gray-700"
-                  }`}
+                      : tabError[tab.name]
+                        ? "bg-destructive/20 text-destructive"
+                        : "hover:bg-gray-100 text-gray-700",
+                  )}
                 >
                   {tab.icon}
                   <span>{tab.name}</span>
@@ -529,70 +544,6 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                         </FormItem>
                       )}
                     />
-
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Tags
-                      </label>
-                      {watchTags?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-1">
-                          {watchTags?.map((tag) => (
-                            <motion.div
-                              key={tag}
-                              initial={{
-                                scale: 0,
-                              }}
-                              animate={{
-                                scale: 1,
-                              }}
-                              className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
-                            >
-                              <span>{tag}</span>
-                              <button
-                                type="button"
-                                onClick={() => removeTag(tag)}
-                                className="ml-2 text-white hover:text-[#CCC]"
-                              >
-                                <XIcon className="h-4 w-4" />
-                              </button>
-                            </motion.div>
-                          ))}
-                        </div>
-                      )}
-                      <FormField
-                        control={form.control}
-                        name="tags"
-                        render={() => (
-                          <FormItem className="gap-1">
-                            <FormControl>
-                              <div className="relative">
-                                <Input
-                                  type="text"
-                                  value={tag}
-                                  onChange={(e) => setTag(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                                  placeholder="Add a tag"
-                                  onKeyUp={(e) => {
-                                    if (e.key === "Enter") {
-                                      e.preventDefault();
-                                      addTag();
-                                    }
-                                  }}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={addTag}
-                                  className="bg-[#DC3173] text-white px-4 py-2 rounded-r-md hover:bg-[#B02458] transition-colors absolute top-0 right-0 h-full"
-                                >
-                                  <PlusIcon className="h-5 w-5" />
-                                </button>
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
                   </motion.div>
                 )}
                 {/* Images Tab */}
@@ -804,28 +755,30 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                               }}
                             />
                           </div>
-                          <div>
-                            <Label className="text-gray-700 mb-1">
-                              Stock Quantity
-                            </Label>
-                            <Input
-                              type="number"
-                              min={0}
-                              value={option.stockQuantity}
-                              onChange={(e) =>
-                                setOption({
-                                  ...option,
-                                  stockQuantity: Number(e.target.value),
-                                })
-                              }
-                              placeholder="Add stock quantity"
-                              onKeyUp={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
+                          {businessType !== "RESTAURANT" && (
+                            <div>
+                              <Label className="text-gray-700 mb-1">
+                                Stock Quantity
+                              </Label>
+                              <Input
+                                type="number"
+                                min={0}
+                                value={option.stockQuantity}
+                                onChange={(e) =>
+                                  setOption({
+                                    ...option,
+                                    stockQuantity: Number(e.target.value),
+                                  })
                                 }
-                              }}
-                            />
-                          </div>
+                                placeholder="Add stock quantity"
+                                onKeyUp={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                            </div>
+                          )}
                           <div className="text-right">
                             <Button
                               onClick={addOption}
@@ -934,7 +887,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                   </motion.div>
                 )}
                 {/* Stock Tab */}
-                {activeTab === 4 && (
+                {businessType !== "RESTAURANT" && activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -1042,169 +995,8 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     </div>
                   </motion.div>
                 )}
-                {/* Attributes Tab */}
-                {activeTab === 5 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      Product Attributes
-                    </h2>
-                    <FormField
-                      control={form.control}
-                      name="organic"
-                      render={({ field }) => (
-                        <FormItem className="gap-1">
-                          <FormControl>
-                            <div className="">
-                              <FormLabel
-                                htmlFor="organic"
-                                className="text-sm text-gray-700 flex items-center"
-                              >
-                                <Checkbox
-                                  id="organic"
-                                  checked={!!field.value}
-                                  onCheckedChange={(checked) =>
-                                    field.onChange(checked)
-                                  }
-                                  className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
-                                />
-                                Organic
-                              </FormLabel>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="weight"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="weight"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Weight (Grams)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="packagingType"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="packagingType"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Packaging Type
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300",
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select a packaging type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {packagingTypes.map((packagingType) => (
-                                    <SelectItem
-                                      key={packagingType}
-                                      value={packagingType}
-                                    >
-                                      {packagingType}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="storageTemperature"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="storageTemperature"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Storage Temperature
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300",
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select room temperature" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {storageTemperatures.map(
-                                    (storageTemperature) => (
-                                      <SelectItem
-                                        key={storageTemperature}
-                                        value={storageTemperature}
-                                      >
-                                        {storageTemperature}
-                                      </SelectItem>
-                                    ),
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </motion.div>
-                )}
                 {/* DeliGo Metadata Tab */}
-                {activeTab === 6 && (
+                {activeTab === lastTabIndex && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -1298,7 +1090,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>
                   </motion.button>
-                  {activeTab === 6 && (
+                  {activeTab === lastTabIndex && (
                     <motion.button
                       whileHover={{
                         scale: 1.05,
@@ -1313,7 +1105,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                       <span>{t("save_product")}</span>
                     </motion.button>
                   )}
-                  {activeTab < 6 && (
+                  {activeTab < lastTabIndex && (
                     <motion.button
                       whileHover={{
                         scale: 1.02,
@@ -1323,7 +1115,7 @@ export function EditProductForm({ prevData, closeModal }: IProps) {
                       }}
                       type="button"
                       onClick={() =>
-                        activeTab < 6 && setActiveTab(activeTab + 1)
+                        activeTab < lastTabIndex && setActiveTab(activeTab + 1)
                       }
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2"
                     >

@@ -2,15 +2,18 @@ export const dynamic = "force-dynamic";
 
 import { serverRequest } from "@/lib/serverFetch";
 import { ProductForm } from "@/src/components/Dashboard/Products/ProductForm";
+import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TProductCategory } from "@/src/types/category.type";
 import { TTax } from "@/src/types/tax.type";
+import { TVendor } from "@/src/types/vendor.type";
 
 export default async function AddItemPage() {
   let productCategoriesData: TProductCategory[] = [];
   let addonGroupsData: TAddonGroup[] = [];
   let taxesData: TTax[] = [];
+  const vendorData: TVendor = await getProfileData();
 
   try {
     const result = (await serverRequest.get(
@@ -53,6 +56,7 @@ export default async function AddItemPage() {
       productCategories={productCategoriesData}
       addonGroupsData={addonGroupsData}
       taxesData={taxesData}
+      businessType={vendorData?.businessDetails?.businessType as string}
     />
   );
 }

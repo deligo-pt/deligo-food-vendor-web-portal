@@ -8,28 +8,27 @@ export default async function UploadDocumentPage() {
   const accessToken = (await cookies()).get("accessToken")?.value || "";
   const decoded = jwtDecode(accessToken) as { userId: string };
 
-  const savedPreviews: Record<DocKey, FilePreview | null> = {} as Record<
+  const savedPreviews: Record<DocKey, FilePreview[] | null> = {} as Record<
     DocKey,
-    FilePreview | null
+    FilePreview[] | null
   >;
 
   try {
     const result = await serverRequest.get(`/vendors/${decoded.userId}`);
 
     if (result?.success) {
-      if (result?.success) {
-        const docs = result?.data?.documents || {};
-        (Object.keys(docs) as DocKey[]).forEach((key) => {
-          const url = docs[key];
-          if (url) {
-            savedPreviews[key] = {
-              file: null,
-              url: url || "",
-              isImage: /\.(jpg|jpeg|png|gif|webp)$/i.test(url),
-            };
-          }
-        });
-      }
+      const docs = result?.data?.documents || {};
+      (Object.keys(docs) as DocKey[]).forEach((key) => {
+        const urls = docs[key];
+
+        if (urls && Array.isArray(urls)) {
+          savedPreviews[key] = urls.map((url) => ({
+            file: null,
+            url: url || "",
+            isImage: /\.(jpg|jpeg|png|gif|webp)$/i.test(url),
+          }));
+        }
+      });
     }
   } catch (err) {
     console.log("Server fetch error:", err);

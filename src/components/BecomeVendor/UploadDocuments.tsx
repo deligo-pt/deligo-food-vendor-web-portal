@@ -10,6 +10,7 @@ import {
   File,
   FileText,
   ImageIcon,
+  Plus,
   UploadCloud,
 } from "lucide-react";
 import Image from "next/image";
@@ -24,8 +25,11 @@ import {
 } from "@/src/components/ui/card";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { submitForApprovalReq } from "@/src/services/becomeVendor/become-vendor";
-import { uploadDocumentsReq } from "@/src/services/becomeVendor/uploadDocumentsReq";
-import { TResponse } from "@/src/types";
+import {
+  deleteDocumentReq,
+  updateDocumentsReq,
+} from "@/src/services/becomeVendor/updateDocuments.service";
+import { uploadImagesReq } from "@/src/services/upload/upload.service";
 import { DocKey, FilePreview } from "@/src/types/documents.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -40,13 +44,32 @@ export default function UploadDocuments({
   savedPreviews,
   vendorId,
 }: {
-  savedPreviews: Record<DocKey, FilePreview | null>;
+  savedPreviews: Record<DocKey, FilePreview[] | null>;
   vendorId: string;
 }) {
   const { t } = useTranslation();
   // store one preview per doc key
-  const [previews, setPreviews] =
-    useState<Record<DocKey, FilePreview | null>>(savedPreviews);
+  const [previews, setPreviews] = useState<
+    Record<DocKey, FilePreview[] | null>
+  >({
+    businessLicenseDoc: Array.isArray(savedPreviews.businessLicenseDoc)
+      ? savedPreviews.businessLicenseDoc
+      : null,
+    taxDoc: Array.isArray(savedPreviews.taxDoc) ? savedPreviews.taxDoc : null,
+    idProofFront: Array.isArray(savedPreviews.idProofFront)
+      ? savedPreviews.idProofFront
+      : null,
+    idProofBack: Array.isArray(savedPreviews.idProofBack)
+      ? savedPreviews.idProofBack
+      : null,
+    storePhoto: Array.isArray(savedPreviews.storePhoto)
+      ? savedPreviews.storePhoto
+      : null,
+    menuUpload: Array.isArray(savedPreviews.menuUpload)
+      ? savedPreviews.menuUpload
+      : null,
+  });
+  // const [uploadedUrls, setUploadedUrls] = useState<Record<DocKey, string[] | null>>(null)
 
   // file input refs to trigger the browser picker
   const inputsRef = useRef<Record<string, HTMLInputElement | null>>({});
@@ -91,48 +114,96 @@ export default function UploadDocuments({
   // handle file selection (client-side only)
   const handleFileChange = async (key: DocKey, f?: File | null) => {
     if (!f) return;
-    const isImage = f.type.startsWith("image/");
-    const url = URL.createObjectURL(f);
-
-    const toastId = toast.loading("Uploading...");
-
-    const result = (await uploadDocumentsReq(
-      vendorId,
-      key,
-      f,
-    )) as unknown as TResponse<any>;
-
-    if (result.success) {
-      toast.success("File uploaded successfully!", { id: toastId });
-
-      // revoke previous url if present
-      const prev = previews[key];
-      if (prev && prev.url) URL.revokeObjectURL(prev.url);
-
-      setPreviews((p) => ({ ...p, [key]: { file: f, url, isImage } }));
-
-      if (inputsRef.current[key]) {
-        inputsRef.current[key]!.value = "";
-      }
-      return;
-    }
-
-    toast.error(result.message || "File upload failed", { id: toastId });
-    console.log(result);
-  };
-
-  // Remove selected file for a doc (and revoke URL)
-  const removeFile = (key: DocKey) => {
-    const prev = previews[key];
-    if (prev && prev.url) URL.revokeObjectURL(prev.url);
-    setPreviews((p) => ({ ...p, [key]: null }));
 
     if (inputsRef.current[key]) {
       inputsRef.current[key]!.value = "";
     }
 
-    setShowModal(false);
-    setConfettiRunning(false);
+    const toastId = toast.loading("Uploading...");
+
+    if (previews[key]?.length === 3) {
+      toast.error("You can only upload a maximum of 3 documents", {
+        id: toastId,
+      });
+      return;
+    }
+
+    const isImage = f.type.startsWith("image/");
+
+    const uploadResult = await uploadImagesReq([f]);
+
+    if (uploadResult.success) {
+      const prevUrls =
+        previews[key]?.filter((p) => p.url)?.map((p) => p.url) || [];
+
+      const updateResult = await updateDocumentsReq(vendorId, {
+        docImageTitle: key,
+        docImageUrls: [...prevUrls, uploadResult.data?.[0]],
+      });
+
+      if (updateResult.success) {
+        toast.success("File uploaded successfully!", { id: toastId });
+
+        setPreviews((p) => ({
+          ...p,
+          [key]: [
+            ...(p[key] || []),
+            { file: f, url: uploadResult.data?.[0], isImage },
+          ],
+        }));
+
+        return;
+      }
+
+      deleteDocumentReq(vendorId, {
+        docImageTitle: key,
+        imageUrl: uploadResult.data?.[0],
+      });
+
+      toast.error(updateResult.message || "File upload failed", {
+        id: toastId,
+      });
+      console.log(updateResult);
+      return;
+    }
+
+    toast.error(uploadResult.message || "File upload failed", { id: toastId });
+    console.log(uploadResult);
+  };
+
+  // Remove selected file for a doc (and revoke URL)
+  const removeFile = async (key: DocKey, index: number) => {
+    const prev = previews[key];
+
+    if (prev && prev[index]?.url) {
+      const toastId = toast.loading("Deleting...");
+
+      const result = await deleteDocumentReq(vendorId, {
+        docImageTitle: key,
+        imageUrl: prev[index].url,
+      });
+
+      if (result.success) {
+        toast.success("File deleted successfully!", { id: toastId });
+
+        setPreviews((p) => ({
+          ...p,
+          [key]: p[key]?.filter((_, i) => i !== index),
+        }));
+
+        if (inputsRef.current[key]) {
+          inputsRef.current[key]!.value = "";
+        }
+
+        setShowModal(false);
+        setConfettiRunning(false);
+
+        return;
+      }
+
+      toast.error(result.message || "File deletion failed", { id: toastId });
+      console.log(result);
+    }
   };
 
   // CONFETTI: simple canvas confetti implementation
@@ -234,7 +305,11 @@ export default function UploadDocuments({
   useEffect(() => {
     return () => {
       Object.values(previews).forEach((p) => {
-        if (p && p.url) URL.revokeObjectURL(p.url);
+        if (p) {
+          p.forEach((f) => {
+            if (f.url) URL.revokeObjectURL(f.url);
+          });
+        }
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -335,8 +410,61 @@ export default function UploadDocuments({
                         <div className="text-sm font-semibold text-gray-800">
                           {d.label}
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {preview ? (
+                        <div className="text-xs text-gray-500 mt-1 space-y-1">
+                          {preview?.map((f, i) => (
+                            <div className="flex items-center gap-2" key={i}>
+                              {f.isImage && f.url ? (
+                                <div className="flex items-center gap-2 border p-1 rounded-md">
+                                  <Image
+                                    src={f.url}
+                                    alt={
+                                      f.file?.name ||
+                                      getActualFileName(f.url || "")
+                                    }
+                                    width={56}
+                                    height={40}
+                                    className="object-cover rounded-md border"
+                                    unoptimized
+                                  />
+                                  <div className="truncate">
+                                    {f.file?.name ||
+                                      getActualFileName(f.url || "")}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <File className="w-4 h-4 text-gray-500" />
+                                  <div className="truncate">
+                                    {f.file?.name ||
+                                      getActualFileName(f.url || "")}
+                                  </div>
+                                </div>
+                              )}
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() =>
+                                    f.url
+                                      ? window.open(f.url, "_blank")
+                                      : alert(f.file?.name)
+                                  }
+                                  className="inline-flex items-center gap-2 px-2 py-1 rounded-md text-xs cursor-pointer"
+                                >
+                                  <Eye className="w-3 h-3 text-[#DC3173]" />{" "}
+                                  {t("viewCTA")}
+                                </button>
+
+                                <button
+                                  onClick={() => removeFile(d.key, i)}
+                                  className="px-2 py-1 rounded-md text-xs cursor-pointer"
+                                >
+                                  {t("removeCTA")}
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+
+                          {!isSelected && <span>{t("noFileSelected")}</span>}
+                          {/* {preview ? (
                             preview.isImage && preview.url ? (
                               <div className="flex items-center gap-2">
                                 <Image
@@ -366,7 +494,7 @@ export default function UploadDocuments({
                             )
                           ) : (
                             <span>{t("noFileSelected")}</span>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>
@@ -391,6 +519,13 @@ export default function UploadDocuments({
                       {preview ? (
                         <>
                           <button
+                            onClick={() => openPicker(d.key)}
+                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm border border-gray-200 hover:shadow"
+                          >
+                            <Plus className="w-4 h-4 text-[#DC3173]" /> Add More
+                          </button>
+
+                          {/* <button
                             onClick={() =>
                               preview.url
                                 ? window.open(preview.url, "_blank")
@@ -400,14 +535,14 @@ export default function UploadDocuments({
                           >
                             <Eye className="w-4 h-4 text-[#DC3173]" />{" "}
                             {t("viewCTA")}
-                          </button>
+                          </button> */}
 
-                          <button
+                          {/* <button
                             onClick={() => removeFile(d.key)}
                             className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-600 border border-gray-100 hover:bg-gray-50"
                           >
                             {t("removeCTA")}
-                          </button>
+                          </button> */}
                         </>
                       ) : (
                         <button
