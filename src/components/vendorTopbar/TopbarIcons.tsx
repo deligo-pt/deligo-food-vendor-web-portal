@@ -12,7 +12,6 @@ import { logoutReq } from "@/src/services/auth/auth";
 import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
-import { getFcmToken } from "@/src/utils/fcmToken";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle,
@@ -41,12 +40,7 @@ export default function TopbarIcons({ vendor }: IProps) {
   const logOut = async () => {
     const toastId = toast.loading("Logging out...");
 
-    const token = (await getFcmToken()) || "";
-
-    const result = await logoutReq({
-      email: vendor?.email || "",
-      token,
-    });
+    const result = await logoutReq();
 
     if (result?.success) {
       toast.success(result?.message || "Logout successful!", {
@@ -132,9 +126,8 @@ export default function TopbarIcons({ vendor }: IProps) {
           )}
           <ChevronDown
             size={16}
-            className={`text-gray-700 transition-transform hidden sm:inline ${
-              profileOpen ? "rotate-180" : ""
-            }`}
+            className={`text-gray-700 transition-transform hidden sm:inline ${profileOpen ? "rotate-180" : ""
+              }`}
           />
         </button>
 

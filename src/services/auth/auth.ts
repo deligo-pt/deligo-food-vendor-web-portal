@@ -45,11 +45,11 @@ export const verifyOtpReq = async (data: {
   });
 };
 
-export const logoutReq = async (data: { email: string; token: string }) => {
+export const logoutReq = async () => {
   const deviceId = (await cookies()).get(DEVICE_KEY)?.value || "";
   return catchAsync<null>(async () => {
     return await serverRequest.post("/auth/logout", {
-      data: { ...data, deviceId },
+      data: { deviceId },
     });
   });
 };
