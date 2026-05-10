@@ -1,6 +1,6 @@
 "use client";
 
-import ProfileDoc from "@/src/components/Profile/ProfileDoc";
+import ProfileDoc, { IVendorDocs } from "@/src/components/Profile/ProfileDoc";
 import { ProfileInfoRow } from "@/src/components/Profile/ProfileInfoRow";
 import ProfilePhotoUpload from "@/src/components/Profile/ProfilePhotoUpload";
 import { ProfileSection } from "@/src/components/Profile/ProfileSection";
@@ -47,9 +47,9 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
 
   const accountAge = Math.floor(
     (new Date().getTime() - new Date(vendor.createdAt).getTime()) /
-      (1000 * 60 * 60 * 24),
+    (1000 * 60 * 60 * 24),
   );
-
+  console.log("Vendor data:", vendor);
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       {/* Header with gradient */}
@@ -311,7 +311,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
             icon={FileTextIcon}
             delay={0.3}
           >
-            <ProfileDoc documents={vendor?.documents} />
+            <ProfileDoc documents={vendor?.documents as IVendorDocs} />
           </ProfileSection>
 
           {/* Activity */}
