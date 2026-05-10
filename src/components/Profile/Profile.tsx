@@ -49,7 +49,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
     (new Date().getTime() - new Date(vendor.createdAt).getTime()) /
     (1000 * 60 * 60 * 24),
   );
-  console.log("Vendor data:", vendor);
+
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       {/* Header with gradient */}

@@ -41,7 +41,7 @@ export default function ProfileDoc({ documents }: IProps) {
               {doc === "storePhoto" && "Store Photo"}
               {doc === "menuUpload" && "Menu / Brochure"}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               {files.map((file, index) => {
                 const isPdf = file.toLowerCase().endsWith(".pdf");
 

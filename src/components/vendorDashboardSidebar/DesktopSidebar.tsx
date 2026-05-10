@@ -3,8 +3,9 @@
 import { cn } from "@/lib/utils";
 import Sidebar from "@/src/components/vendorDashboardSidebar/vendorDashboardSidebar";
 import Topbar from "@/src/components/vendorTopbar/Topbar";
+import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function DesktopSidebar({
   children,
@@ -14,6 +15,13 @@ export default function DesktopSidebar({
   vendorData: TVendor;
 }) {
   const [open, setOpen] = useState(true);
+  const { setCategoryType } = useStore();
+  const categoryType = vendorData?.businessDetails?.businessType || "";
+  
+  useEffect(() => {
+    setCategoryType(categoryType);
+  }, [categoryType, setCategoryType]);
+
 
   return (
     <div className="hidden md:flex w-full">

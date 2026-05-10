@@ -5,6 +5,7 @@ import StockInput from "@/src/components/Dashboard/StockManagement/StockInput";
 import StockStatusBadge from "@/src/components/Dashboard/StockManagement/StockStatusBadge";
 import StockVariationOption from "@/src/components/Dashboard/StockManagement/StockVariationOption";
 import { updateStockPriceReq } from "@/src/services/dashboard/products/products";
+import { useStore } from "@/src/store/store";
 import { TProduct } from "@/src/types/product.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronUp, Layers } from "lucide-react";
@@ -18,6 +19,7 @@ interface IProps {
 }
 
 export default function StockProductCard({ product }: IProps) {
+  const { categoryType } = useStore();
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
   const [stockData, setStockData] = useState<{
@@ -30,7 +32,7 @@ export default function StockProductCard({ product }: IProps) {
     reduceQuantity: 0,
   });
 
-  const stockPercentage = Math.min((product.stock.quantity / 500) * 100, 100);
+  const stockPercentage = Math.min(((product?.stock?.quantity || 0) / 500) * 100, 100);
 
   const updateStock = async () => {
     const toastId = toast.loading("Updating stock...");
@@ -87,45 +89,48 @@ export default function StockProductCard({ product }: IProps) {
 
         {/* Info */}
         <div className="flex-1 w-full text-center md:text-left">
-          <h3 className="text-lg font-bold text-gray-900">{product.name}</h3>
+          <h3 className="text-lg font-bold text-gray-900">{product?.name || ""}</h3>
           <div>
             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-              {product.category.name}
+              {product?.category?.name || "Uncategorized"}
             </span>
           </div>
 
-          <div className="mb-3">
-            <StockStatusBadge
-              status={product.stock.availabilityStatus}
-              hasVariations={product.stock.hasVariations}
-            />
-          </div>
+          {categoryType !== "RESTAURANT" && (
+            <div className="mb-3">
+              <StockStatusBadge
+                status={product.stock.availabilityStatus}
+                hasVariations={product.stock.hasVariations}
+              />
+            </div>
+          )}
 
           {/* Progress Bar */}
-          <div className="w-full max-w-md h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <motion.div
-              initial={{
-                width: 0,
-              }}
-              animate={{
-                width: `${stockPercentage}%`,
-              }}
-              transition={{
-                duration: 1,
-                ease: "easeOut",
-              }}
-              className="h-full bg-[#DC3173] rounded-full"
-            />
-          </div>
+          {categoryType !== "RESTAURANT" && (
+            <div className="w-full max-w-md h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <motion.div
+                initial={{
+                  width: 0,
+                }}
+                animate={{
+                  width: `${stockPercentage}%`,
+                }}
+                transition={{
+                  duration: 1,
+                  ease: "easeOut",
+                }}
+                className="h-full bg-[#DC3173] rounded-full"
+              />
+            </div>)}
         </div>
 
         {/* Stock & Actions */}
-        <div className="flex flex-col items-center gap-2 min-w-[100px]">
+        {categoryType !== "RESTAURANT" && <div className="flex flex-col items-center gap-2 min-w-[100px]">
           <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
             Stock
           </span>
           <span className="text-3xl font-extrabold text-gray-900">
-            {product.stock.quantity}
+            {product?.stock?.quantity || 0}
           </span>
 
           <button
@@ -134,11 +139,11 @@ export default function StockProductCard({ product }: IProps) {
           >
             {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
           </button>
-        </div>
+        </div>}
       </div>
 
       {/* Expanded Section */}
-      <AnimatePresence>
+      {categoryType !== "RESTAURANT" && <AnimatePresence>
         {isExpanded && (
           <motion.div
             initial={{
@@ -269,7 +274,7 @@ export default function StockProductCard({ product }: IProps) {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>}
     </motion.div>
   );
 }
