@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -10,7 +9,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -76,9 +74,6 @@ export function EditProductForm({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   const [lastTabIndex, setLastTabIndex] = useState(4);
-  const [options, setOptions] = useState<
-    { label: string; price: number; stockQuantity?: number }[]
-  >([]);
 
   const tabs = [
     {
@@ -112,17 +107,6 @@ export function EditProductForm({
     tabs.push(lastTab);
     setLastTabIndex(5);
   }
-
-  const [option, setOption] = useState<{
-    label: string;
-    price: string;
-    stockQuantity?: number;
-  }>({
-    label: "",
-    price: "",
-    ...(businessType !== "RESTAURANT" ? { stockQuantity: 0 } : {}),
-  });
-  const [variationName, setVariationName] = useState("");
   const [images, setImages] = useState<{ file: File | null; url: string }[]>(
     prevData?.images?.map((img) => ({ file: null, url: img })) || [],
   );
@@ -184,58 +168,6 @@ export function EditProductForm({
     form.setValue("addonGroups", newAddonGroups);
   };
 
-  const addOption = () => {
-    if (option.label && option.price) {
-      if (!options.find((opt) => opt.label === option.label)) {
-        setOptions((prev) => [
-          ...prev,
-          {
-            label: option.label,
-            price: Number(option.price),
-            ...(businessType !== "RESTAURANT"
-              ? { stockQuantity: option.stockQuantity }
-              : ""),
-          },
-        ]);
-        setOption({
-          label: "",
-          price: "",
-          ...(businessType !== "RESTAURANT" ? { stockQuantity: 0 } : {}),
-        });
-      }
-    } else {
-      toast.error("Option label and price are required");
-    }
-  };
-
-  const removeOption = (optionToRemove: string) => {
-    setOptions(
-      (prev) => prev.filter((opt) => opt.label !== optionToRemove) || [],
-    );
-  };
-
-  const addVariation = () => {
-    if (variationName && options.length > 0) {
-      if (!form.getValues("variations").find((v) => v.name === variationName)) {
-        form.setValue("variations", [
-          ...form.getValues("variations"),
-          { name: variationName, options: options },
-        ]);
-        setVariationName("");
-        setOptions([]);
-      }
-    } else {
-      toast.error("Variation name and options are required");
-    }
-  };
-
-  const removeVariation = (nameToRemove: string) => {
-    form.setValue(
-      "variations",
-      form.getValues("variations").filter((v) => v.name !== nameToRemove),
-    );
-  };
-
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Updating product...");
 
@@ -244,12 +176,10 @@ export function EditProductForm({
       description: data.description,
       category: data.category,
       pricing: {
-        price: data.price,
         discount: data.discount,
         taxId: data.taxId,
       },
       addonGroups: data.addonGroups,
-      variations: data.variations,
       meta: {
         isFeatured: data.isFeatured,
         isAvailableForPreOrder: data.isAvailableForPreOrder,
@@ -656,7 +586,7 @@ export function EditProductForm({
                     <div className="space-y-2 ">
                       <label className="block mb-1">{t("variations")}</label>
                       <div>
-                        {watchVariations?.length > 0 &&
+                        {watchVariations?.length > 0 ? (
                           watchVariations?.map((variation, i) => (
                             <div
                               key={i}
@@ -679,127 +609,13 @@ export function EditProductForm({
                                   </div>
                                 ))}
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => removeVariation(variation.name)}
-                                className="ml-2 hover:text-[#333] absolute top-1 right-1"
-                              >
-                                <XIcon className="h-4 w-4" />
-                              </button>
                             </div>
-                          ))}
-                      </div>
-                      <div className="border rounded-md p-4 bg-gray-50 space-y-2">
-                        <div>
-                          <Label className="text-gray-700 mb-1">
-                            {t("name")}
-                          </Label>
-                          <Input
-                            type="text"
-                            value={variationName}
-                            onChange={(e) => setVariationName(e.target.value)}
-                            placeholder="Add a variation name"
-                          />
-                        </div>
-                        <Label className="text-gray-700">{t("options")}</Label>
-                        {options?.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-1">
-                            {options?.map((option) => (
-                              <div
-                                key={option.label}
-                                className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
-                              >
-                                <span>{option.label}</span>
-                                <span className="ml-2">(€{option.price})</span>
-                                <button
-                                  type="button"
-                                  onClick={() => removeOption(option.label)}
-                                  className="ml-2 text-white hover:text-[#CCC]"
-                                >
-                                  <XIcon className="h-4 w-4" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-gray-500">
+                            No variations added
+                          </p>
                         )}
-                        <div className="border border-dashed rounded-md p-4 bg-gray-100 space-y-2">
-                          <div>
-                            <Label className="text-gray-700 mb-1">
-                              {t("label")}
-                            </Label>
-                            <Input
-                              type="text"
-                              value={option.label}
-                              onChange={(e) =>
-                                setOption({ ...option, label: e.target.value })
-                              }
-                              placeholder="Add an option label"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-gray-700 mb-1">
-                              {t("price")}
-                            </Label>
-                            <Input
-                              type="number"
-                              min={0}
-                              value={option.price}
-                              onChange={(e) =>
-                                setOption({ ...option, price: e.target.value })
-                              }
-                              placeholder="Add an option price"
-                              onKeyUp={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
-                                }
-                              }}
-                            />
-                          </div>
-                          {businessType !== "RESTAURANT" && (
-                            <div>
-                              <Label className="text-gray-700 mb-1">
-                                Stock Quantity
-                              </Label>
-                              <Input
-                                type="number"
-                                min={0}
-                                value={option.stockQuantity}
-                                onChange={(e) =>
-                                  setOption({
-                                    ...option,
-                                    stockQuantity: Number(e.target.value),
-                                  })
-                                }
-                                placeholder="Add stock quantity"
-                                onKeyUp={(e) => {
-                                  if (e.key === "Enter") {
-                                    e.preventDefault();
-                                  }
-                                }}
-                              />
-                            </div>
-                          )}
-                          <div className="text-right">
-                            <Button
-                              onClick={addOption}
-                              type="button"
-                              size="sm"
-                              className="bg-[#DC3173] hover:bg-[#DC3173]/90"
-                            >
-                              {t("add_option")}
-                            </Button>
-                          </div>
-                        </div>
-                        <div>
-                          <Button
-                            onClick={addVariation}
-                            type="button"
-                            size="sm"
-                            className="bg-[#DC3173] hover:bg-[#DC3173]/90"
-                          >
-                            {t("add_variation")}
-                          </Button>
-                        </div>
                       </div>
                     </div>
                   </motion.div>

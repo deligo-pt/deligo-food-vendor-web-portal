@@ -12,7 +12,6 @@ import { logoutReq } from "@/src/services/auth/auth";
 import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
-import { getFcmToken } from "@/src/utils/fcmToken";
 import { ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -44,12 +43,7 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
   const logOut = async () => {
     const toastId = toast.loading("Logging out...");
 
-    const token = (await getFcmToken()) || "";
-
-    const result = await logoutReq({
-      email: vendorData?.email || "",
-      token,
-    });
+    const result = await logoutReq();
 
     if (result?.success) {
       toast.success(result?.message || "Logout successful!", {

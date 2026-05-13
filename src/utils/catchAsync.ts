@@ -3,7 +3,7 @@ import { TResponse } from "@/src/types";
 export const catchAsync = async <T>(
   fn: () => Promise<TResponse<T>>,
   customSuccessMsg?: string,
-  customErrMsg?: string
+  customErrMsg?: string,
 ) => {
   try {
     const result = await fn();
@@ -17,16 +17,23 @@ export const catchAsync = async <T>(
       };
     }
 
-    return { success: false, data: result.error, message: result.message };
+    return {
+      success: false,
+      data: result.error,
+      message: result.message || customErrMsg || "Something went wrong!",
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log(error?.response?.data);
+    console.log(error?.response?.data || error);
 
     return {
       success: false,
       data: error?.response?.data || null,
-      message: error?.response?.data?.message || customErrMsg,
+      message:
+        error?.response?.data?.message ||
+        customErrMsg ||
+        "Something went wrong!",
     };
   }
 };

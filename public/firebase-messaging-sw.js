@@ -17,18 +17,44 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message:",
-    payload,
-  );
+  // console.log(
+  //   "[firebase-messaging-sw.js] Received background message:",
+  //   payload,
+  // );
 
-  const notificationTitle = payload.notification?.title || "New Message";
+  const { title, body, orderId, channelId } = payload.data || {};
+
+  const url =
+    channelId === "order_notification" ? "/all-orders/" + orderId : "/";
+
+  const notificationTitle = title || "New Order Received";
   const notificationOptions = {
-    body: payload.notification?.body || "You have a new message",
-    icon: payload.notification?.icon || "/favicon.ico",
+    body: body || "Check your dashboard for details.",
+    icon: "/deligoLogo.png",
     badge: "/badge.png",
-    data: payload.data,
+    tag: orderId,
+    data: { url },
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || "/";
+
+  event.waitUntil(
+    clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        for (const client of clientList) {
+          if (new URL(client.url).pathname === targetUrl && "focus" in client) {
+            return client.focus();
+          }
+        }
+        if (clients.openWindow) {
+          return clients.openWindow(targetUrl);
+        }
+      }),
+  );
 });

@@ -36,7 +36,7 @@ type LocationFormType = {
   country: string;
 };
 
-const GOOGLE_API_URL = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBHT9ARgpTJIEdvsiaD72Gf7SUUXz-Xqfg&libraries=places`;
+const GOOGLE_API_URL = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_LOCATION_API_KEY!}&libraries=places`;
 
 const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
   const { t } = useTranslation();
@@ -87,16 +87,18 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
         if (c.types.includes("route")) address.streetAddress = c.long_name;
         if (c.types.includes("street_number"))
           address.streetNumber = c.long_name;
+        if (c.types.includes("administrative_area_level_1"))
+          address.state = c.long_name;
         if (c.types.includes("locality")) address.city = c.long_name;
         if (c.types.includes("postal_code")) address.postalCode = c.long_name;
         if (c.types.includes("country")) address.country = c.long_name;
       });
 
       Object.entries(address).forEach(([key, value]) =>
-        form.setValue(key as keyof LocationFormType, (value || "") as string)
+        form.setValue(key as keyof LocationFormType, (value || "") as string),
       );
     },
-    [form]
+    [form],
   );
 
   /** --- Update Marker Position --- */
@@ -154,12 +156,13 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
             updateMarker(map, loc);
             fillAddressFields(results[0].address_components);
           }
-        }
+        },
       );
     });
 
-    /** Load Saved Vendor Location */
-    const loc = vendor.businessLocation;
+    /** Load Saved Agent Location */
+
+    const loc = vendor?.businessLocation;
     form.reset({
       streetAddress: loc?.street || "",
       city: loc?.city || "",
@@ -170,7 +173,7 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
     if (loc?.latitude && loc?.longitude) {
       const savedLoc = new window.google.maps.LatLng(
         loc?.latitude,
-        loc?.longitude
+        loc?.longitude,
       );
       setLocationCoordinates({
         latitude: loc?.latitude,

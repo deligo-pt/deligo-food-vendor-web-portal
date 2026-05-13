@@ -76,7 +76,7 @@ export default function BusinessDetailsForm({
       businessLicenseNumber:
         vendor?.businessDetails?.businessLicenseNumber || "",
       NIF: vendor?.businessDetails?.NIF || "",
-      branches: vendor?.businessDetails?.totalBranches?.toString() || "",
+      totalBranches: vendor?.businessDetails?.totalBranches?.toString() || "",
       openingHours: vendor?.businessDetails?.openingHours || "",
       closingHours: vendor?.businessDetails?.closingHours || "",
       closingDays: vendor?.businessDetails?.closingDays || [],
@@ -92,7 +92,7 @@ export default function BusinessDetailsForm({
         ...data,
         NIF: data.NIF.toUpperCase(),
         businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
-        totalBranches: Number(data.branches),
+        totalBranches: Number(data.totalBranches),
       },
     };
 
@@ -268,7 +268,7 @@ export default function BusinessDetailsForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="branches"
+                    name="totalBranches"
                     render={({ field }) => (
                       <FormItem>
                         <div className="relative">

@@ -26,12 +26,12 @@ export const businessDetailsValidation = z
       .max(50, "NIF must be at most 50 characters long")
       .nonempty("NIF is required"),
 
-    branches: z
+    totalBranches: z
       .string()
       .nonempty("Number of branches is required")
       .refine(
         (val) => !isNaN(parseInt(val)),
-        "Number of branches must be a number"
+        "Number of branches must be a number",
       ),
 
     openingHours: z.string().nonempty("Opening hours is required"),
@@ -59,5 +59,5 @@ export const businessDetailsValidation = z
     {
       message: "Business must be open at least 6 hours",
       path: ["closingHours"],
-    }
+    },
   );
