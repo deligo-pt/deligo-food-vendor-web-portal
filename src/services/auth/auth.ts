@@ -53,3 +53,14 @@ export const logoutReq = async () => {
     });
   });
 };
+
+export const updateFcmTockenReq = async (data: {
+  token: string;
+  deviceId: string;
+}) => {
+  return catchAsync<{ accessToken: string; refreshToken: string }>(async () => {
+    return await serverRequest.post("/auth/update-fcm-token", {
+      data,
+    });
+  });
+};

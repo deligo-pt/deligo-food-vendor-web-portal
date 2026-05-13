@@ -12,20 +12,25 @@ export default function NotificationToast() {
     if (!messaging) return;
 
     const unsub = onMessage(messaging, (payload: MessagePayload) => {
-      console.log("Foreground message:", payload);
+      // console.log("Foreground message:", payload);
       audioRef.current?.play().catch((error) => {
         console.log("Error playing audio:", error);
       });
 
-      // Show notification with more details
-      toast.info(payload.notification?.title, {
-        description: payload.notification?.body,
+      const { title, body, orderId, channelId } = payload.data || {};
+
+      const url =
+        channelId === "order_notification"
+          ? "/vendor/all-orders/" + orderId
+          : "/vendor/dashboard";
+
+      toast.info(title || "New Notification", {
+        description: body || "Check your dashboard for details.",
         duration: 5000,
-        // Add action buttons if needed
-        action: payload.data?.url
+        action: url
           ? {
               label: "Open",
-              onClick: () => window.open(payload.data?.url, "_blank"),
+              onClick: () => window.open(url, "_blank"),
             }
           : undefined,
       });

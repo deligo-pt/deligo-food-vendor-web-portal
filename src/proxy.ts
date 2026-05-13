@@ -28,29 +28,34 @@ export async function proxy(req: NextRequest) {
   if (vendorResult) {
     const vendorInfo = vendorResult?.vendor;
     if (vendorInfo.role === USER_ROLE.VENDOR) {
-      
-        const currentDeviceId = req.cookies.get(DEVICE_KEY)?.value || "";
-        const isValidSession = vendorInfo?.loginDevices?.some(
-          (device) => currentDeviceId === device.deviceId,
-        );
+      const currentDeviceId = req.cookies.get(DEVICE_KEY)?.value || "";
+      const isValidSession = vendorInfo?.loginDevices?.some(
+        (device) => currentDeviceId === device.deviceId,
+      );
 
-        if (!isValidSession) {
-          req.cookies.delete("accessToken");
-          req.cookies.delete("refreshToken");
-          if (pathname !== "/login") {
-            loginUrl.searchParams.set("sessionExpired", "true");
-            return NextResponse.redirect(loginUrl);
-          } else {
-            return NextResponse.next();
-          }
+      if (!isValidSession) {
+        req.cookies.delete("accessToken");
+        req.cookies.delete("refreshToken");
+        if (pathname !== "/login") {
+          loginUrl.searchParams.set("sessionExpired", "true");
+          return NextResponse.redirect(loginUrl);
+        } else {
+          return NextResponse.next();
         }
+      }
+
+      if (
+        vendorInfo.businessDetails?.businessType === "RESTAURANT" &&
+        pathname === "/vendor/stock"
+      ) {
+        return NextResponse.redirect(new URL("/vendor/all-items", req.url));
+      }
 
       if (
         AUTH_PATHS.some(
           (path) => pathname === path || pathname.startsWith(`${path}`),
         )
       ) {
-
         if (
           pathname === "/login" ||
           pathname === "/become-vendor" ||
@@ -77,15 +82,15 @@ export async function proxy(req: NextRequest) {
               new URL("/become-vendor/registration-status", req.url),
             );
           }
-        } 
-      }else if (
-          pathname.startsWith("/vendor") &&
-          vendorInfo.status !== USER_STATUS.APPROVED
-        ) {
-          return NextResponse.redirect(
-            new URL("/become-vendor/registration-status", req.url),
-          );
         }
+      } else if (
+        pathname.startsWith("/vendor") &&
+        vendorInfo.status !== USER_STATUS.APPROVED
+      ) {
+        return NextResponse.redirect(
+          new URL("/become-vendor/registration-status", req.url),
+        );
+      }
     } else {
       req.cookies.delete("accessToken");
       req.cookies.delete("refreshToken");

@@ -25,11 +25,13 @@ messaging.onBackgroundMessage((payload) => {
   const { title, body, orderId, channelId } = payload.data || {};
 
   const url =
-    channelId === "order_notification" ? "/all-orders/" + orderId : "/";
+    channelId === "order_notification"
+      ? "/vendor/all-orders/" + orderId
+      : "/vendor/dashboard";
 
-  const notificationTitle = title || "New Order Received";
+  const notificationTitle = title || "New Message";
   const notificationOptions = {
-    body: body || "Check your dashboard for details.",
+    body: body || "You have a new message",
     icon: "/deligoLogo.png",
     badge: "/badge.png",
     tag: orderId,
