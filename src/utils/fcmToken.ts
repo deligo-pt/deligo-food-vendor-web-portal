@@ -57,6 +57,11 @@ export async function updateFcmToken(
 
 export async function getAndSaveFcmToken(accessToken: string): Promise<void> {
   try {
+    if (!accessToken) {
+      console.warn("No access token provided, skipping FCM token update");
+      return;
+    }
+
     const token = await getFcmToken();
     if (!token) return;
 
