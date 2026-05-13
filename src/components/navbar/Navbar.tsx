@@ -148,9 +148,9 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
               <>
                 {/* Dashboard Button */}
                 {vendorData?.status === "PENDING" ||
-                vendorData?.status === "SUBMITTED" ||
-                vendorData?.status === "REJECTED" ||
-                vendorData?.status === "BLOCKED" ? (
+                  vendorData?.status === "SUBMITTED" ||
+                  vendorData?.status === "REJECTED" ||
+                  vendorData?.status === "BLOCKED" ? (
                   <Link
                     href="/become-vendor/registration-status"
                     className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all"
@@ -283,27 +283,25 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
                       >
                         {item.name}
                         <ChevronDown
-                          className={`w-4 h-4 transition-transform ${
-                            (
-                              item.name === "Product"
-                                ? productSubOpen
-                                : toolsSubOpen
-                            )
-                              ? "rotate-180"
-                              : ""
-                          }`}
-                        />
-                      </button>
-                      <div
-                        className={`mt-2 pl-4 space-y-2 ${
-                          (
+                          className={`w-4 h-4 transition-transform ${(
                             item.name === "Product"
                               ? productSubOpen
                               : toolsSubOpen
                           )
-                            ? "block"
-                            : "hidden"
-                        }`}
+                            ? "rotate-180"
+                            : ""
+                            }`}
+                        />
+                      </button>
+                      <div
+                        className={`mt-2 pl-4 space-y-2 ${(
+                          item.name === "Product"
+                            ? productSubOpen
+                            : toolsSubOpen
+                        )
+                          ? "block"
+                          : "hidden"
+                          }`}
                       >
                         {item.submenu.map((sub) => (
                           <Link
