@@ -12,7 +12,6 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { logoutReq } from "@/src/services/auth/auth";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
-import { getFcmToken } from "@/src/utils/fcmToken";
 import { motion } from "framer-motion";
 import {
   Award,
@@ -38,12 +37,7 @@ export default function RegistrationStatus({ vendor }: IProps) {
   const logOut = async () => {
     const toastId = toast.loading("Logging out...");
 
-    const token = (await getFcmToken()) || "";
-
-    const result = await logoutReq({
-      email: vendor?.email || "",
-      token,
-    });
+    const result = await logoutReq();
 
     if (result?.success) {
       toast.success(result?.message || "Logout successful!", {
