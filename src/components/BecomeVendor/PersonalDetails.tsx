@@ -20,7 +20,6 @@ import {
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
-import {} from "@/src/services/auth/auth";
 import { updateVendorReq } from "@/src/services/becomeVendor/become-vendor";
 import { TVendor } from "@/src/types/vendor.type";
 import { personalDetailsValidation } from "@/src/validations/become-vendor/personal-details.validation";
