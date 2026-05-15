@@ -288,11 +288,6 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 icon={UserIcon}
               />
               <ProfileInfoRow
-                label="Account Number"
-                value={vendor.bankDetails?.accountNumber}
-                icon={CreditCardIcon}
-              />
-              <ProfileInfoRow
                 label={t("iban")}
                 value={vendor.bankDetails?.iban.replace(/(.{4})/g, "$1 ")}
                 icon={FileTextIcon}

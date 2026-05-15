@@ -380,7 +380,7 @@ export default function UploadDocuments({
             <div className="grid grid-cols-1 gap-4">
               {DOCUMENTS.map((d, idx) => {
                 const preview = previews[d.key];
-                const isSelected = !!preview;
+                const isSelected = !(!preview || preview?.length === 0);
                 return (
                   <motion.div
                     key={d.key}
@@ -423,7 +423,7 @@ export default function UploadDocuments({
                                     }
                                     width={56}
                                     height={40}
-                                    className="object-cover rounded-md border"
+                                    className="object-cover rounded-md border w-14 h-8"
                                     unoptimized
                                   />
                                   <div className="truncate">
@@ -516,13 +516,14 @@ export default function UploadDocuments({
                         }
                       />
 
-                      {preview ? (
+                      {isSelected ? (
                         <>
                           <button
                             onClick={() => openPicker(d.key)}
                             className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm border border-gray-200 hover:shadow"
                           >
-                            <Plus className="w-4 h-4 text-[#DC3173]" /> Add More
+                            <Plus className="w-4 h-4 text-[#DC3173]" />{" "}
+                            {t("addMoreCTA")}
                           </button>
 
                           {/* <button
@@ -564,7 +565,11 @@ export default function UploadDocuments({
             </div>
             <div className="pt-4">
               <Button
-                disabled={!DOCUMENTS.every((d) => !!previews[d.key])}
+                disabled={
+                  !DOCUMENTS.every(
+                    (d) => !(!previews[d.key] || previews[d.key]?.length === 0),
+                  )
+                }
                 onClick={handleContinue}
                 className="bg-[#DC3173] hover:bg-[#b72a63] text-white px-6 py-3 rounded-xl shadow-lg"
               >

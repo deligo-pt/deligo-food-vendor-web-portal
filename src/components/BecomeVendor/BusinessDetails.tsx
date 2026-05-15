@@ -84,6 +84,16 @@ export default function BusinessDetailsForm({
   });
   const router = useRouter();
 
+  // const daysOfWeek = [
+  //   t("sunday"),
+  //   t("monday"),
+  //   t("tuesday"),
+  //   t("wednesday"),
+  //   t("thursday"),
+  //   t("friday"),
+  //   t("saturday"),
+  // ];
+
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
 
@@ -376,7 +386,7 @@ export default function BusinessDetailsForm({
                                   : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
                               }`}
                             >
-                              {day}
+                              {t(day.toLowerCase())}
                             </motion.button>
                           ))}
                         </div>

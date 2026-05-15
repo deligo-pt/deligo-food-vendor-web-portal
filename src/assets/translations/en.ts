@@ -625,6 +625,14 @@ export const en = {
   openingTime: "Opening Time",
   closingTime: "Closing Time",
   closingDays: "Closing Days",
+  // days of week
+  sunday: "Sunday",
+  monday: "Monday",
+  tuesday: "Tuesday",
+  wednesday: "Wednesday",
+  thursday: "Thursday",
+  friday: "Friday",
+  saturday: "Saturday",
   // business-location
   streetAddress: "Street Address",
   city: "City",
@@ -643,6 +651,7 @@ export const en = {
   documentsLabel5: "Menu / Brochure",
   viewCTA: "View",
   removeCTA: "Remove",
+  addMoreCTA: "Add More",
   selectFileCTA: "Select file",
   tipDesc: "Tip: you can preview images and view filenames for selected PDFs",
   completeRegistrationCTA: "Complete Registration",

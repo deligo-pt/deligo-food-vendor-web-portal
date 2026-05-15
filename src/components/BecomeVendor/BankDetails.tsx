@@ -45,7 +45,6 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
     defaultValues: {
       bankName: vendor?.bankDetails?.bankName || "",
       accountHolderName: vendor?.bankDetails?.accountHolderName || "",
-      accountNumber: vendor?.bankDetails?.accountNumber || "",
       iban: vendor?.bankDetails?.iban || "",
       swiftCode: vendor?.bankDetails?.swiftCode || "",
     },
@@ -149,31 +148,6 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                             <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
                               <User className="w-4 h-4 text-[#DC3173]" />{" "}
                               {t("accountHolder")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Full name as on account"
-                                className="mt-2 w-full"
-                                {...field}
-                              />
-                            </FormControl>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div>
-                    <FormField
-                      control={form.control}
-                      name="accountNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="relative">
-                            <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                              <CreditCard className="w-4 h-4 text-[#DC3173]" />{" "}
-                              Account Number
                             </FormLabel>
                             <FormControl>
                               <Input

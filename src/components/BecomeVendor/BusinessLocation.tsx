@@ -112,7 +112,7 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
   const initializeMap = useCallback(async () => {
     if (!window.google?.maps) return;
 
-    const defaultLocation = { lat: 40.4168, lng: -3.7038 }; // Madrid
+    const defaultLocation = { lat: 38.7253, lng: -9.15 }; // Lisbon, Portugal
     const map = new window.google.maps.Map(mapRef.current, {
       center: defaultLocation,
       zoom: 12,

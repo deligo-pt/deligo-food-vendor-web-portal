@@ -633,6 +633,14 @@ export const pt = {
   openingTime: "Hora de Abertura",
   closingTime: "Hora de Encerramento",
   closingDays: "Dias de Encerramento",
+  // days of week
+  sunday: "Domingo",
+  monday: "Segunda-feira",
+  tuesday: "Terça-feira",
+  wednesday: "Quarta-feira",
+  thursday: "Quinta-feira",
+  friday: "Sexta-feira",
+  saturday: "Sábado",
   // business-location
   streetAddress: "Morada",
   city: "Cidade",
@@ -651,6 +659,7 @@ export const pt = {
   documentsLabel5: "Menu / Brochura",
   viewCTA: "Ver",
   removeCTA: "Remover",
+  addMoreCTA: "Adicionar Mais",
   selectFileCTA: "Selecionar ficheiro",
   tipDesc:
     "Dica: pode pré-visualizar imagens e ver os nomes dos ficheiros PDF selecionados",
