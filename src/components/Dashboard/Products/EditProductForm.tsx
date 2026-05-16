@@ -171,6 +171,11 @@ export function EditProductForm({
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Updating product...");
 
+    const filteredImages = images.filter((image) => !!image.file);
+    const filteredImageUrls = images
+      .filter((image) => !image.file)
+      .map((image) => image.url);
+
     const productData = {
       name: data.name,
       description: data.description,
@@ -180,6 +185,7 @@ export function EditProductForm({
         taxId: data.taxId,
       },
       addonGroups: data.addonGroups,
+      images: filteredImageUrls,
       meta: {
         isFeatured: data.isFeatured,
         isAvailableForPreOrder: data.isAvailableForPreOrder,
@@ -193,9 +199,8 @@ export function EditProductForm({
             },
           }
         : {}),
+      ...(filteredImageUrls.length > 0 ? { images: filteredImageUrls } : {}),
     };
-
-    const filteredImages = images.filter((image) => !!image.file);
 
     const result = await catchAsync<TProduct>(async () => {
       const formData = new FormData();

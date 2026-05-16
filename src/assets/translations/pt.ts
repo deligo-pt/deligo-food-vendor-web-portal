@@ -1,4 +1,8 @@
 export const pt = {
+  // languages
+  english: "Inglês",
+  portuguese: "Português",
+
   // navigation
   home: "Início",
   tools: "Ferramentas",
@@ -920,10 +924,16 @@ export const pt = {
     "Preencha os dados para adicionar um novo item alimentar ao seu menu.",
   basic_information: "Informações Básicas",
   product_name: "Nome do Produto",
+  product_name_placeholder: "Exemplo: Pizza de churrasco",
   brand: "Marca",
   description: "Descrição",
+  generated_product_description: "Gerar Descrição do Produto",
+  generate: "Gerar",
   product_category: "Categoria do Produto",
   product_images: "Imagens do Produto",
+  product_image: "Imagem do Produto",
+  select_category_placeholder: "Selecione uma categoria",
+  select_language_placeholder: "Selecione um idioma",
 
   // -> image uploader
   drag_drop_product_images: "Arraste e largue as imagens do produto aqui",
@@ -932,6 +942,18 @@ export const pt = {
   select_files: "Selecionar Ficheiros",
   uploaded_images: "Imagens Carregadas",
   main_image: "Imagem Principal",
+
+  // single image uploader
+  drag_drop_image_here: "Arraste e solte a imagem aqui",
+  or_click_browse: "Ou clique para procurar",
+  png_jpg_jpeg: "PNG, JPG, JPEG",
+  upload_image: "Carregar imagem",
+  upload_one_image_only: "Por favor, envie apenas ficheiros de imagem",
+  file_size_limit: "O ficheiro deve ter menos de 5 MB",
+  image_upload_success: "Imagem enviada com sucesso!",
+  image_upload_fail: "Falha ao carregar a imagem",
+  image_delete_success: "Imagem eliminada com sucesso!",
+  image_delete_fail: "Falha ao eliminar a imagem",
 
   pricing_information: "Informações de Preço",
   price_E: "Preço (€)",

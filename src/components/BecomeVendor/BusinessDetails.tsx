@@ -84,16 +84,6 @@ export default function BusinessDetailsForm({
   });
   const router = useRouter();
 
-  // const daysOfWeek = [
-  //   t("sunday"),
-  //   t("monday"),
-  //   t("tuesday"),
-  //   t("wednesday"),
-  //   t("thursday"),
-  //   t("friday"),
-  //   t("saturday"),
-  // ];
-
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
 

@@ -36,3 +36,16 @@ export const updateStockPriceReq = async (
     );
   });
 };
+
+export const generateProductDescriptionReq = async (data: {
+  productName: string;
+  productCategory: string;
+  productImageUrl: string;
+  language: string;
+}) => {
+  return catchAsync<{ description: string }>(async () => {
+    return await serverRequest.post("/ai/generate-product-description", {
+      data,
+    });
+  });
+};

@@ -1,4 +1,8 @@
 export const en = {
+  // languages
+  english: "English",
+  portuguese: "Portuguese",
+
   // navigation
   home: "Home",
   tools: "Tools",
@@ -884,10 +888,16 @@ export const en = {
     "Fill in the details to add a new food item to your menu.",
   basic_information: "Basic Information",
   product_name: "Product Name",
+  product_name_placeholder: "e.g. BBQ Pizza",
   brand: "Brand",
   description: "Description",
+  generated_product_description: "Generate Product Description",
+  generate: "Generate",
   product_category: "Product Category",
   product_images: "Product Images",
+  product_image: "Product Image",
+  select_category_placeholder: "Select a category",
+  select_language_placeholder: "Select a language",
   // -> image uploader
   drag_drop_product_images: "Drag & drop product images here",
   or_click: "or click to browse files",
@@ -895,6 +905,18 @@ export const en = {
   select_files: "Select Files",
   uploaded_images: "Uploaded Images",
   main_image: "Main Image",
+  upload_one_image_only: "Please upload only image file",
+
+  // single image uploader
+  drag_drop_image_here: "Drag & Drop your image here",
+  or_click_browse: "Or click to browse",
+  png_jpg_jpeg: "PNG, JPG, JPEG",
+  upload_image: "Upload Image",
+  file_size_limit: "File must be under 5MB",
+  image_upload_success: "Image uploaded successfully!",
+  image_upload_fail: "Failed to upload image",
+  image_delete_success: "Image deleteed successfully!",
+  image_delete_fail: "Failed to delete image",
 
   pricing_information: "Pricing Information",
   price_E: "Price (€)",

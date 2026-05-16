@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import DescriptionGeneratorDialog from "@/src/components/Dashboard/Products/DescriptionGeneratorDialog";
 import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
@@ -65,6 +66,8 @@ export function ProductForm({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   const [lastTabIndex, setLastTabIndex] = useState(4);
+  const [openDescriptionGenerator, setOpenDescriptionGenerator] =
+    useState(false);
   const [options, setOptions] = useState<
     { label: string; price: number; stockQuantity?: number }[]
   >([]);
@@ -432,6 +435,17 @@ export function ProductForm({
                               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0"
                             />
                           </FormControl>
+                          <div>
+                            <Button
+                              type="button"
+                              variant="link"
+                              size="sm"
+                              className="text-xs text-[#DC3173] hover:text-[#DC3173/80] p-0"
+                              onClick={() => setOpenDescriptionGenerator(true)}
+                            >
+                              {t("generated_product_description")}
+                            </Button>
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1182,6 +1196,16 @@ export function ProductForm({
             </Form>
           </div>
         </div>
+
+        {/* AI Product Description Generator Dialog */}
+        <DescriptionGeneratorDialog
+          open={openDescriptionGenerator}
+          onOpenChange={setOpenDescriptionGenerator}
+          productCategories={productCategories || []}
+          onGenerate={(description) => {
+            form.setValue("description", description);
+          }}
+        />
       </motion.div>
     </div>
   );
