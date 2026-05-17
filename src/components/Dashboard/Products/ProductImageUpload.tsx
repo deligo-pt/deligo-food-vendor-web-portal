@@ -1,25 +1,25 @@
 "use client";
 
 import { useTranslation } from "@/src/hooks/use-translation";
+import { uploadImagesReq } from "@/src/services/upload/upload.service";
 import { AnimatePresence, motion } from "framer-motion";
 import { ImageIcon, UploadIcon, XIcon } from "lucide-react";
 import Image from "next/image";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface IProps {
-  images: { file: File | null; url: string }[];
-  setImages: React.Dispatch<
-    React.SetStateAction<{ file: File | null; url: string }[]>
-  >;
+  images: string[];
+  onChange: (images: string[]) => void;
 }
 
-export function ImageUpload({ images, setImages }: IProps) {
+export function ImageUpload({ images, onChange }: IProps) {
   const { t } = useTranslation();
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleDrag = useCallback((e: React.DragEvent) => {
+  const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -27,64 +27,58 @@ export function ImageUpload({ images, setImages }: IProps) {
     } else if (e.type === "dragleave") {
       setDragActive(false);
     }
-  }, []);
+  };
 
-  const handleFiles = useCallback(
-    (files: FileList) => {
-      setError(null);
-      if (images.length + files.length > 5) {
-        setError("You can upload a maximum of 5 images");
+  const handleFiles = async (files: FileList) => {
+    setError(null);
+    if (images.length + files.length > 5) {
+      setError("You can upload a maximum of 5 images");
+      return;
+    }
+    Array.from(files).forEach((file) => {
+      if (!file.type.match("image.*")) {
+        setError("Please upload only image files");
         return;
       }
-      Array.from(files).forEach((file) => {
-        if (!file.type.match("image.*")) {
-          setError("Please upload only image files");
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (e.target?.result) {
-            setImages((prev) => [
-              ...prev,
-              { file, url: e.target!.result as string },
-            ]);
-          }
-        };
-        reader.readAsDataURL(file);
+    });
+
+    const toastId = toast.loading(t("Uploading images..."));
+
+    const result = await uploadImagesReq(Array.from(files));
+
+    if (result.success) {
+      toast.success(result.message || "Images uploaded successfully!", {
+        id: toastId,
       });
-    },
-    [images, setImages],
-  );
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragActive(false);
-      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        handleFiles(e.dataTransfer.files);
-      }
-    },
-    [handleFiles],
-  );
-
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      e.preventDefault();
-      if (e.target.files && e.target.files[0]) {
-        handleFiles(e.target.files);
-      }
-    },
-    [handleFiles],
-  );
-
-  const removeImage = useCallback(
-    (index: number) => {
-      setImages((prev) => prev.filter((_, i) => i !== index));
+      onChange([...images, ...(result.data || [])]);
       if (inputRef.current) inputRef.current.value = "";
-    },
-    [setImages],
-  );
+      return;
+    }
+
+    toast.error(result.message || "Image upload failed", { id: toastId });
+    console.log(result);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      handleFiles(e.target.files);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    onChange(images.filter((_, i) => i !== index));
+    if (inputRef.current) inputRef.current.value = "";
+  };
 
   return (
     <div className="space-y-4">
@@ -182,7 +176,7 @@ export function ImageUpload({ images, setImages }: IProps) {
                   className="relative group aspect-square"
                 >
                   <Image
-                    src={image.url}
+                    src={image}
                     alt={`Product image ${index + 1}`}
                     className="w-full h-full object-cover rounded-lg"
                     width={500}

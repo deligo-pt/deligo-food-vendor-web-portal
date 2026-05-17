@@ -37,6 +37,7 @@ import { motion } from "framer-motion";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  FileTextIcon,
   ImageIcon,
   LayersIcon,
   PackageIcon,
@@ -65,7 +66,7 @@ export function ProductForm({
 }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
-  const [lastTabIndex, setLastTabIndex] = useState(4);
+  const [lastTabIndex, setLastTabIndex] = useState(5);
   const [openDescriptionGenerator, setOpenDescriptionGenerator] =
     useState(false);
   const [options, setOptions] = useState<
@@ -80,6 +81,10 @@ export function ProductForm({
     {
       name: t("images"),
       icon: <ImageIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("description"),
+      icon: <FileTextIcon className="h-5 w-5" />,
     },
     {
       name: t("add_ons_and_variants"),
@@ -102,7 +107,7 @@ export function ProductForm({
       icon: <PackageIcon className="h-5 w-5" />,
     });
     tabs.push(lastTab);
-    setLastTabIndex(5);
+    setLastTabIndex(6);
   }
 
   const [option, setOption] = useState<{
@@ -115,13 +120,11 @@ export function ProductForm({
     ...(businessType !== "RESTAURANT" ? { stockQuantity: 0 } : {}),
   });
   const [variationName, setVariationName] = useState("");
-  const [images, setImages] = useState<{ file: File | null; url: string }[]>(
-    [],
-  );
   const form = useForm<FormData>({
     resolver: zodResolver(productValidation),
     defaultValues: {
       name: "",
+      images: [],
       description: "",
       category: "",
       price: 0,
@@ -226,6 +229,7 @@ export function ProductForm({
       name: data.name,
       description: data.description,
       category: data.category,
+      images: data.images,
       pricing: {
         price: data.price,
         discount: data.discount,
@@ -253,8 +257,8 @@ export function ProductForm({
       const formData = new FormData();
       formData.append("data", JSON.stringify(productData));
 
-      if (images.length > 0)
-        images.map((image) => formData.append("files", image.file as Blob));
+      // if (images.length > 0)
+      //   images.map((image) => formData.append("files", image.file as Blob));
 
       return (await postData("/products/create-product", formData, {
         headers: {
@@ -268,7 +272,6 @@ export function ProductForm({
         id: toastId,
       });
       form.reset();
-      setImages([]);
       setTabError({});
       setActiveTab(0);
       setOptions([]);
@@ -298,9 +301,11 @@ export function ProductForm({
         switch (key) {
           case "name":
           case "brand":
-          case "description":
           case "category":
             newErrors[t("basic_info")] = true;
+            return;
+          case "description":
+            newErrors[t("description")] = true;
             return;
           case "price":
           case "discount":
@@ -395,57 +400,23 @@ export function ProductForm({
                     <h2 className="text-xl font-semibold text-gray-800">
                       {t("basic_information")}
                     </h2>
-                    <div>
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="name"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("product_name")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
                     <FormField
                       control={form.control}
-                      name="description"
+                      name="name"
                       render={({ field }) => (
                         <FormItem className="gap-1">
                           <FormLabel
-                            htmlFor="description"
+                            htmlFor="name"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            {t("description")}
+                            {t("product_name")}
                           </FormLabel>
                           <FormControl>
-                            <Textarea
+                            <Input
                               {...field}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
                             />
                           </FormControl>
-                          <div>
-                            <Button
-                              type="button"
-                              variant="link"
-                              size="sm"
-                              className="text-xs text-[#DC3173] hover:text-[#DC3173/80] p-0"
-                              onClick={() => setOpenDescriptionGenerator(true)}
-                            >
-                              {t("generated_product_description")}
-                            </Button>
-                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -511,11 +482,76 @@ export function ProductForm({
                     <h2 className="text-xl font-semibold text-gray-800">
                       {t("product_images")}
                     </h2>
-                    <ImageUpload images={images} setImages={setImages} />
+                    <FormField
+                      control={form.control}
+                      name="images"
+                      render={({ field }) => (
+                        <FormItem className="gap-1">
+                          <FormControl>
+                            <ImageUpload
+                              images={field.value}
+                              onChange={(urls) => field.onChange(urls)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </motion.div>
+                )}
+                {/* Description Tab */}
+                {activeTab === 2 && (
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                    }}
+                    transition={{
+                      duration: 0.3,
+                    }}
+                    className="space-y-6"
+                  >
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      {t("description")}
+                    </h2>
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem className="gap-1">
+                          <FormLabel
+                            htmlFor="description"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            {t("description")}
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0"
+                            />
+                          </FormControl>
+                          <div>
+                            <Button
+                              type="button"
+                              variant="link"
+                              size="sm"
+                              className="text-xs text-[#DC3173] hover:text-[#DC3173/80] p-0"
+                              onClick={() => setOpenDescriptionGenerator(true)}
+                            >
+                              {t("generated_product_description")}
+                            </Button>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </motion.div>
                 )}
                 {/* Add-Ons & Variants Tab */}
-                {activeTab === 2 && (
+                {activeTab === 3 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -753,7 +789,7 @@ export function ProductForm({
                   </motion.div>
                 )}
                 {/* Pricing Tab */}
-                {activeTab === 3 && (
+                {activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -921,7 +957,7 @@ export function ProductForm({
                   </motion.div>
                 )}
                 {/* Stock Tab */}
-                {businessType !== "RESTAURANT" && activeTab === 4 && (
+                {businessType !== "RESTAURANT" && activeTab === 5 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -1202,6 +1238,11 @@ export function ProductForm({
           open={openDescriptionGenerator}
           onOpenChange={setOpenDescriptionGenerator}
           productCategories={productCategories || []}
+          prevValues={{
+            productName: form.getValues("name"),
+            productCategory: form.getValues("category"),
+            productImageUrl: form.getValues("images")?.[0],
+          }}
           onGenerate={(description) => {
             form.setValue("description", description);
           }}

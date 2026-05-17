@@ -107,9 +107,6 @@ export function EditProductForm({
     tabs.push(lastTab);
     setLastTabIndex(5);
   }
-  const [images, setImages] = useState<{ file: File | null; url: string }[]>(
-    prevData?.images?.map((img) => ({ file: null, url: img })) || [],
-  );
 
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
@@ -123,6 +120,7 @@ export function EditProductForm({
     resolver: zodResolver(productValidation),
     defaultValues: {
       name: prevData?.name || "",
+      images: prevData?.images || [],
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
       price: prevData?.pricing?.price || 0,
@@ -171,11 +169,6 @@ export function EditProductForm({
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Updating product...");
 
-    const filteredImages = images.filter((image) => !!image.file);
-    const filteredImageUrls = images
-      .filter((image) => !image.file)
-      .map((image) => image.url);
-
     const productData = {
       name: data.name,
       description: data.description,
@@ -185,7 +178,7 @@ export function EditProductForm({
         taxId: data.taxId,
       },
       addonGroups: data.addonGroups,
-      images: filteredImageUrls,
+      images: data.images,
       meta: {
         isFeatured: data.isFeatured,
         isAvailableForPreOrder: data.isAvailableForPreOrder,
@@ -199,17 +192,16 @@ export function EditProductForm({
             },
           }
         : {}),
-      ...(filteredImageUrls.length > 0 ? { images: filteredImageUrls } : {}),
     };
 
     const result = await catchAsync<TProduct>(async () => {
       const formData = new FormData();
       formData.append("data", JSON.stringify(productData));
 
-      if (filteredImages.length > 0)
-        filteredImages.map((image) =>
-          formData.append("files", image.file as Blob),
-        );
+      // if (data.images.length > 0)
+      //   data.images.map((image) =>
+      //     formData.append("files", image.file as Blob),
+      //   );
 
       return (await updateData(`/products/${prevData?.productId}`, formData, {
         headers: {
@@ -332,10 +324,8 @@ export function EditProductForm({
         className="bg-white overflow-hidden"
       >
         <div className="px-6 py-8 bg-linear-to-r from-[#DC3173] to-[#FF6B98] text-white">
-          <h1 className="text-3xl font-bold">Update Item</h1>
-          <p className="mt-2 text-pink-100">
-            Fill in the details to update the food product of your menu.
-          </p>
+          <h1 className="text-3xl font-bold">{t("update_item")}</h1>
+          <p className="mt-2 text-pink-100">{t("update_product_details")}</p>
         </div>
         <div className="flex flex-col md:flex-row">
           {/* Tabs */}
@@ -388,7 +378,7 @@ export function EditProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Basic Information
+                      {t("basic_information")}
                     </h2>
                     <div>
                       <FormField
@@ -400,7 +390,7 @@ export function EditProductForm({
                               htmlFor="name"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Product Name
+                              {t("product_name")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -422,7 +412,7 @@ export function EditProductForm({
                             htmlFor="description"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Description
+                            {t("description")}
                           </FormLabel>
                           <FormControl>
                             <Textarea
@@ -444,7 +434,7 @@ export function EditProductForm({
                             htmlFor="category"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Category
+                            {t("product_category")}
                           </FormLabel>
                           <FormControl>
                             <Select
@@ -496,9 +486,23 @@ export function EditProductForm({
                     className="space-y-6 mb-0"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Product Images
+                      {t("product_images")}
                     </h2>
-                    <ImageUpload images={images} setImages={setImages} />
+                    <FormField
+                      control={form.control}
+                      name="images"
+                      render={({ field }) => (
+                        <FormItem className="gap-1">
+                          <FormControl>
+                            <ImageUpload
+                              images={field.value}
+                              onChange={(urls) => field.onChange(urls)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </motion.div>
                 )}
                 {/* Add-Ons & Variants Tab */}
@@ -640,7 +644,7 @@ export function EditProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Pricing Information
+                      {t("pricing_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <FormField
@@ -652,7 +656,7 @@ export function EditProductForm({
                               htmlFor="discount"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Discount (%)
+                              {t("discount_2")}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -680,7 +684,7 @@ export function EditProductForm({
                               htmlFor="tax"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Tax (%)
+                              {t("tax_2")}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -722,7 +726,7 @@ export function EditProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Stock Information
+                      {t("stock_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <FormField
@@ -734,7 +738,7 @@ export function EditProductForm({
                               htmlFor="unit"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Unit
+                              {t("unit")}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -753,15 +757,20 @@ export function EditProductForm({
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="kg">
-                                    Kilogram (kg)
+                                    {t("kilogram")}
                                   </SelectItem>
-                                  <SelectItem value="g">Gram (g)</SelectItem>
-                                  <SelectItem value="l">Liter (l)</SelectItem>
+                                  <SelectItem value="g">{t("gram")}</SelectItem>
+                                  <SelectItem value="l">
+                                    {t("liter")}
+                                  </SelectItem>
                                   <SelectItem value="ml">
-                                    Milliliter (ml)
+                                    {t("milliliter")}
                                   </SelectItem>
                                   <SelectItem value="pcs">
-                                    Pieces (pcs)
+                                    {t("pieces")}
+                                  </SelectItem>
+                                  <SelectItem value="others">
+                                    {t("others")}
                                   </SelectItem>
                                 </SelectContent>
                               </Select>
@@ -779,7 +788,7 @@ export function EditProductForm({
                               htmlFor="availabilityStatus"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Availability Status
+                              {t("availability_status")}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -798,13 +807,13 @@ export function EditProductForm({
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="In Stock">
-                                    In Stock
+                                    {t("in_stock")}
                                   </SelectItem>
                                   <SelectItem value="Out of Stock">
-                                    Out of Stock
+                                    {t("out_of_stock")}
                                   </SelectItem>
                                   <SelectItem value="Limited">
-                                    Limited Stock
+                                    {t("limited")}
                                   </SelectItem>
                                 </SelectContent>
                               </Select>

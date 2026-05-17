@@ -950,6 +950,11 @@ export const en = {
   stock: "Stock",
   meta: "Meta",
 
+  // Update Product
+  update_item: "Update Item",
+  update_product_details:
+    "Fill in the details to update the food product of your menu.",
+
   // stock-management page
   update_product_stock_in_real_time: "Update product stock in real-time —",
   no_products_found: "No products found.",

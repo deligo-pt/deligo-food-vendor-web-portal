@@ -20,7 +20,14 @@ export const productValidation = z
       .max(50, "Category must be at most 50 characters")
       .nonempty("Category is required"),
 
-    // brand: z.string().optional(),
+    images: z
+      .array(
+        z
+          .url("Each image must be a valid URL")
+          .nonempty("Image URL is required"),
+      )
+      .min(1, "At least one image is required")
+      .max(5, "No more than 5 images are allowed"),
 
     price: z.number().optional(),
 

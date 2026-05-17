@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SingleImageUploader } from "@/src/components/SingleImageUploader/SingleImageUploader";
 import { Dialog, DialogContent } from "@/src/components/ui/dialog";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { generateProductDescriptionReq } from "@/src/services/dashboard/products/products";
@@ -23,18 +22,24 @@ import { TBusinessCategory } from "@/src/types/category.type";
 import { removeUnderscore } from "@/src/utils/formatter";
 import { descriptionGeneratorValidation } from "@/src/validations/product/description-generator.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+
+type TDescriptionGeneratorForm = z.infer<typeof descriptionGeneratorValidation>;
 
 interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   productCategories: TBusinessCategory[];
   onGenerate: (generatedText: string) => void;
+  prevValues: {
+    productName?: string;
+    productCategory?: string;
+    productImageUrl?: string;
+  };
 }
-
-type TDescriptionGeneratorForm = z.infer<typeof descriptionGeneratorValidation>;
 
 const languages = ["Portuguese", "English"];
 
@@ -43,14 +48,15 @@ export default function DescriptionGeneratorDialog({
   onOpenChange,
   productCategories,
   onGenerate,
+  prevValues,
 }: IProps) {
   const { t } = useTranslation();
   const form = useForm<TDescriptionGeneratorForm>({
     resolver: zodResolver(descriptionGeneratorValidation),
     defaultValues: {
-      productName: "",
-      productCategory: "",
-      productImageUrl: "",
+      productName: prevValues.productName || "",
+      productCategory: prevValues.productCategory || "",
+      productImageUrl: prevValues.productImageUrl || "",
       language: "Portuguese",
     },
   });
@@ -94,8 +100,10 @@ export default function DescriptionGeneratorDialog({
                       <FormLabel>{t("product_name")}</FormLabel>
                       <FormControl>
                         <Input
-                          {...field}
                           placeholder={t("product_name_placeholder")}
+                          value={field.value}
+                          onChange={() => {}}
+                          disabled
                         />
                       </FormControl>
                       <FormMessage />
@@ -110,8 +118,9 @@ export default function DescriptionGeneratorDialog({
                       <FormLabel>{t("product_category")}</FormLabel>
                       <FormControl>
                         <Select
-                          onValueChange={field.onChange}
+                          onValueChange={() => {}}
                           defaultValue={field.value}
+                          disabled
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue
@@ -137,16 +146,16 @@ export default function DescriptionGeneratorDialog({
                 <FormField
                   control={form.control}
                   name="productImageUrl"
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("product_image")}</FormLabel>
                       <FormControl>
-                        <SingleImageUploader
-                          url={field.value || null}
-                          onChange={(url: string | null) =>
-                            field.onChange(url || "")
-                          }
-                          isInvalid={fieldState.invalid}
+                        <Image
+                          src={field.value}
+                          alt={"Image Preview"}
+                          className="w-full h-full max-h-64! object-cover rounded-lg"
+                          width={500}
+                          height={500}
                         />
                       </FormControl>
                       <FormMessage />

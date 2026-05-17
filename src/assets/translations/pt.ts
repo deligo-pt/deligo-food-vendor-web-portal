@@ -993,6 +993,11 @@ export const pt = {
   attributes: "Atributos",
   meta: "Meta",
 
+  // Update Product
+  update_item: "Atualizar item",
+  update_product_details:
+    "Preencha os detalhes para atualizar o produto alimentar do seu menu.",
+
   // stock-management page
   update_product_stock_in_real_time:
     "Atualizar o stock dos produtos em tempo real —",
