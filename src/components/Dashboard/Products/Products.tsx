@@ -128,11 +128,14 @@ export default function Products({ productsData, businessType }: IProps) {
         <motion.div
           layout
           className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
+          key={
+            (productsData?.meta?.limit || 10) + (productsData?.meta?.page || 1)
+          }
         >
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {productsData?.data?.map((product) => (
               <ProductCard
-                key={product.productId}
+                key={product._id}
                 product={product}
                 onDelete={openDeleteDialog}
                 onEdit={onEditClick}

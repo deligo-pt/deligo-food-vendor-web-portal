@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "DeliGo Vendor Portal | Manage Orders, Menus & Growth",
   description:
     "DeliGo Vendor Portal empowers restaurants and business partners to manage menus, orders, delivery operations, payouts, analytics, and growth — all from one smart dashboard.",
+  other: {
+    google: "notranslate",
+  },
 };
 
 export default function RootLayout({
@@ -17,7 +20,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className="notranslate"
+      translate="no"
+      suppressHydrationWarning
+    >
       <body className={`antialiased`}>
         <RegisterFCMSW />
         {children}
