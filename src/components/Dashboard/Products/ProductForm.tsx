@@ -46,10 +46,11 @@ import {
   TagIcon,
   XIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import TitleHeader from "../../TitleHeader/TitleHeader";
 
 type FormData = z.infer<typeof productValidation>;
 
@@ -66,49 +67,52 @@ export function ProductForm({
 }) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
-  const [lastTabIndex, setLastTabIndex] = useState(5);
   const [openDescriptionGenerator, setOpenDescriptionGenerator] =
     useState(false);
   const [options, setOptions] = useState<
     { label: string; price: number; stockQuantity?: number }[]
   >([]);
 
-  const tabs = [
-    {
-      name: t("basic_info"),
-      icon: <PackageIcon className="h-5 w-5" />,
-    },
-    {
-      name: t("images"),
-      icon: <ImageIcon className="h-5 w-5" />,
-    },
-    {
-      name: t("description"),
-      icon: <FileTextIcon className="h-5 w-5" />,
-    },
-    {
-      name: t("add_ons_and_variants"),
-      icon: <LayersIcon className="h-5 w-5" />,
-    },
-    {
-      name: t("pricing"),
-      icon: <TagIcon className="h-5 w-5" />,
-    },
-    {
+  const tabs = useMemo(() => {
+    const baseTabs = [
+      {
+        name: t("basic_info"),
+        icon: <PackageIcon className="h-5 w-5" />,
+      },
+      {
+        name: t("images"),
+        icon: <ImageIcon className="h-5 w-5" />,
+      },
+      {
+        name: t("description"),
+        icon: <FileTextIcon className="h-5 w-5" />,
+      },
+      {
+        name: t("add_ons_and_variants"),
+        icon: <LayersIcon className="h-5 w-5" />,
+      },
+      {
+        name: t("pricing"),
+        icon: <TagIcon className="h-5 w-5" />,
+      },
+    ];
+
+    if (businessType !== "RESTAURANT") {
+      baseTabs.push({
+        name: t("stock"),
+        icon: <PackageIcon className="h-5 w-5" />,
+      });
+    }
+
+    baseTabs.push({
       name: "DeliGo Metadata",
       icon: <StarIcon className="h-5 w-5" />,
-    },
-  ];
-
-  if (businessType !== "RESTAURANT") {
-    const lastTab = tabs[tabs.length - 1];
-    tabs.push({
-      name: t("stock"),
-      icon: <PackageIcon className="h-5 w-5" />,
     });
-    tabs.push(lastTab);
-    setLastTabIndex(6);
-  }
+
+    return baseTabs;
+  }, [businessType, t]);
+
+  const lastTabIndex = tabs.length - 1;
 
   const [option, setOption] = useState<{
     label: string;
@@ -225,63 +229,76 @@ export function ProductForm({
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Creating product...");
 
-    const productData = {
-      name: data.name,
-      description: data.description,
-      category: data.category,
-      images: data.images,
-      pricing: {
-        price: data.price,
-        discount: data.discount,
-        taxId: data.taxId,
-        currency: "€",
-      },
-      addonGroups: data.addonGroups,
-      variations: data.variations,
-      meta: {
-        isFeatured: data.isFeatured,
-        isAvailableForPreOrder: data.isAvailableForPreOrder,
-      },
-      ...(businessType !== "RESTAURANT"
-        ? {
+    try {
+      const productData = {
+        name: data.name,
+        description: data.description,
+        category: data.category,
+        images: data.images,
+        pricing: {
+          price: data.price,
+          discount: data.discount,
+          taxId: data.taxId,
+          currency: "€",
+        },
+        addonGroups: data.addonGroups,
+        variations: data.variations,
+        meta: {
+          isFeatured: data.isFeatured,
+          isAvailableForPreOrder: data.isAvailableForPreOrder,
+        },
+        ...(businessType !== "RESTAURANT"
+          ? {
             stock: {
               quantity: data.quantity,
               unit: data.unit,
               availabilityStatus: data.availabilityStatus,
             },
           }
-        : {}),
-    };
+          : {}),
+      };
 
-    const result = await catchAsync<TProduct>(async () => {
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(productData));
+      const result = await catchAsync<TProduct>(async () => {
+        return (await postData(
+          "/products/create-product",
+          productData,
+        )) as unknown as TResponse<TProduct>;
+      });
 
-      // if (images.length > 0)
-      //   images.map((image) => formData.append("files", image.file as Blob));
+      if (result.success) {
+        toast.success(result.message || "Product created successfully!", {
+          id: toastId,
+        });
 
-      return (await postData("/products/create-product", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })) as unknown as TResponse<TProduct>;
-    });
+        form.reset();
 
-    if (result.success) {
-      toast.success(result.message || "Product created successfully!", {
+        setTabError({});
+        setActiveTab(0);
+        setOptions([]);
+
+        setOption({
+          label: "",
+          price: "",
+          ...(businessType !== "RESTAURANT"
+            ? { stockQuantity: 0 }
+            : {}),
+        });
+
+        setVariationName("");
+
+        return;
+      }
+
+      toast.error(result.message || "Product creation failed", {
         id: toastId,
       });
-      form.reset();
-      setTabError({});
-      setActiveTab(0);
-      setOptions([]);
-      setOption({ label: "", price: "", stockQuantity: 0 });
-      setVariationName("");
-      return;
-    }
+    } catch (error) {
+      console.error(error);
 
-    toast.error(result.message || "Product creation failed", { id: toastId });
-    console.log(result);
+      toast.error("Something went wrong", {
+        id: toastId,
+      });
+    }
   };
 
   useEffect(() => {
@@ -341,12 +358,10 @@ export function ProductForm({
         }}
         className="bg-white shadow-xl rounded-2xl overflow-hidden"
       >
-        <div className="px-6 py-8 bg-linear-to-r from-[#DC3173] to-[#FF6B98] text-white">
-          <h1 className="text-3xl font-bold">{t("add_new_item")}</h1>
-          <p className="mt-2 text-pink-100">
-            {t("fill_the_details_to_add_new_food_item")}
-          </p>
-        </div>
+        <TitleHeader
+          title={t("add_new_item")}
+          subtitle={t("fill_the_details_to_add_new_food_item")}
+        />
         <div className="flex flex-col md:flex-row">
           {/* Tabs */}
           <div className="md:w-52 lg:w-64 bg-gray-50 p-4">
@@ -885,7 +900,7 @@ export function ProductForm({
                                 <SelectContent>
                                   {taxesData?.map((tax) => (
                                     <SelectItem key={tax._id} value={tax._id}>
-                                      {tax.taxName}({}
+                                      {tax.taxName}({ }
                                       {tax.taxRate}%)
                                     </SelectItem>
                                   ))}
@@ -948,7 +963,7 @@ export function ProductForm({
                                 (taxesData?.find(
                                   (tax) => tax._id === watchTaxId,
                                 )?.taxRate || 0) /
-                                  100)
+                                100)
                             ).toFixed(2)}
                           </span>
                         </div>
@@ -1185,11 +1200,10 @@ export function ProductForm({
                     type="button"
                     onClick={() => activeTab > 0 && setActiveTab(activeTab - 1)}
                     disabled={activeTab === 0}
-                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${
-                      activeTab === 0
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                    }`}
+                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${activeTab === 0
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                      }`}
                   >
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>
