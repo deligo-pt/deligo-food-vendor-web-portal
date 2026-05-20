@@ -187,7 +187,8 @@ export default function Sidebar({ open, setOpen, vendor }: IProps) {
 
         {open && (
           <div className="border-t border-pink-200 py-3 px-3 text-center text-xs text-gray-500">
-            © 2025 <span style={{ color: PRIMARY }}>Vendor</span> Dashboard
+            © {new Date().getFullYear()}{" "}
+            <span style={{ color: PRIMARY }}>Vendor</span> Dashboard
           </div>
         )}
       </motion.aside>
