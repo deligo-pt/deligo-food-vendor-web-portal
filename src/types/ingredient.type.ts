@@ -7,6 +7,7 @@ export type TIngredient = {
   name: string;
   category: string;
   description?: string;
+  sku: string;
 
   price: number;
   stock: number;

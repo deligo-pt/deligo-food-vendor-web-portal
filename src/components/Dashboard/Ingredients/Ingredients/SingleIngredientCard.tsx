@@ -111,7 +111,7 @@ export default function SingleIngredientCard({
           ) : (
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1">
               <button
-                onClick={() => router.push(`/vendor/ingredients/${item._id}`)}
+                onClick={() => router.push(`/vendor/ingredients/${item?.sku}`)}
                 className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] transition-colors"
               >
                 <EyeIcon size={16} />
