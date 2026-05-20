@@ -126,11 +126,20 @@ export default function TopbarNotification() {
         </PopoverContent>
       </Popover>
 
-      <motion.span
+      {/* <motion.span
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-pink-600 rounded-full border-2 border-white"
-      />
+      /> */}
+      <motion.span
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        className="absolute -top-2 -right-2 min-w-5 h-5 px-1 flex items-center justify-center bg-[#DC3173] text-white text-[10px] font-bold rounded-full border-2 border-white"
+      >
+        {notificationsData?.data?.filter((n) => !n.isRead)?.length > 9
+          ? "9+"
+          : notificationsData?.data?.filter((n) => !n.isRead)?.length || 0}
+      </motion.span>
     </div>
   );
 }
