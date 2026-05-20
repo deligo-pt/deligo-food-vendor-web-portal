@@ -79,7 +79,7 @@ export default function Ingredients({ ingredientsData }: IProps) {
       <AllFilters sortOptions={sortOptions} />
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-5">
         {ingredientsData.data?.map((item) => (
           <SingleIngredientCard
             key={item._id}

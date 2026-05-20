@@ -40,7 +40,7 @@ export default function IngredientDetail({ ingredient }: IProps) {
   const decrement = () => setQuantity((q) => Math.max(0, q - 1));
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="mb-4">
         <Link
