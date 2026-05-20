@@ -15,7 +15,7 @@ import {
 
 type TFunction = (key: string) => string;
 
-export const getNavItems = (t: TFunction, isRestaurant?: boolean) => {
+export const getNavItems = (t: TFunction, businessType?: string) => {
   return [
     {
       id: "home",
@@ -47,7 +47,7 @@ export const getNavItems = (t: TFunction, isRestaurant?: boolean) => {
         { name: t("add_new_item"), path: "/vendor/add-item" },
         { name: t("all_items"), path: "/vendor/all-items" },
         { name: t("categories"), path: "/vendor/categories" },
-        ...(!isRestaurant
+        ...(businessType === "STORE"
           ? [{ name: t("stock_management"), path: "/vendor/stock" }]
           : []),
         { name: "Variation Management", path: "/vendor/variation-management" },

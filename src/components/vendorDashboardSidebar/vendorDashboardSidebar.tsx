@@ -22,10 +22,10 @@ const PRIMARY = "#DC3173";
 
 export default function Sidebar({ open, setOpen, vendor }: IProps) {
   const { t } = useTranslation();
-  const navItems = getNavItems(
-    t,
-    vendor?.businessDetails?.businessType === "RESTAURANT",
-  );
+const businessType =
+  vendor?.businessDetails?.businessType?.trim()?.toUpperCase();
+
+const navItems = getNavItems(t, businessType);
   const pathname = usePathname();
   const currentMenuId = navItems.find((menu) =>
     menu.items?.some((item) => pathname.includes(item.path)),

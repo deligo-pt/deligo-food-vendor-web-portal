@@ -32,7 +32,7 @@ export default function DesktopSidebar({
           open ? "lg:w-[20%] md:w-60" : "w-20"
         )}
       >
-        <Sidebar open={open} setOpen={setOpen} />
+        <Sidebar open={open} setOpen={setOpen} vendor={vendorData} />
       </div>
 
       {/* Content area */}
