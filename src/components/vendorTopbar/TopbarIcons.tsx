@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SOSModal from "@/src/components/Dashboard/SOS/SOSModal";
-import TopbarMessageIcon from "@/src/components/vendorTopbar/TopbarMessageIcon";
+// import TopbarMessageIcon from "@/src/components/vendorTopbar/TopbarMessageIcon";
 import TopbarNotification from "@/src/components/vendorTopbar/TopbarNotification";
 import { logoutReq } from "@/src/services/auth/auth";
 import { useStore } from "@/src/store/store";
@@ -101,7 +101,7 @@ export default function TopbarIcons({ vendor }: IProps) {
       <TopbarNotification />
 
       {/* Messages */}
-      <TopbarMessageIcon />
+      {/* <TopbarMessageIcon /> */}
 
       {/* Profile */}
       <div className="relative shrink-0 z-3000">
