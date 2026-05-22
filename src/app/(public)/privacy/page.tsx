@@ -146,12 +146,12 @@ export default function PrivacyPolicySection() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Email */}
           <div className="flex items-center gap-4 bg-white rounded-2xl p-6 hover:shadow-lg transition cursor-pointer w-full min-w-0">
-            <Mail className="w-6 h-6 text-[#DC3173] flex-shrink-0" />
-            <div className="text-left break-words min-w-0">
+            <Mail className="w-6 h-6 text-[#DC3173] shrink-0" />
+            <div className="text-left wrap-break-words min-w-0">
               <p className="text-gray-500 text-sm">Email</p>
               <a
                 href="mailto:support@deligo.pt"
-                className="text-gray-900 font-semibold hover:text-[#FF7EB3] transition break-words min-w-0"
+                className="text-gray-900 font-semibold hover:text-[#FF7EB3] transition wrap-break-words min-w-0"
               >
                 support@deligo.pt
               </a>

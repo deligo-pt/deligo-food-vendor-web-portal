@@ -4,6 +4,9 @@
 import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+const MotionLink = motion(Link);
 
 export default function JoinVendorCTA() {
   const { t } = useTranslation();
@@ -35,7 +38,7 @@ export default function JoinVendorCTA() {
           transition={{ delay: 0.2, duration: 0.8 }}
           className="text-4xl sm:text-5xl font-extrabold text-white mb-4"
         >
-          {t('joinVendorTitle')}
+          {t("joinVendorTitle")}
         </motion.h2>
 
         {/* Subtext */}
@@ -45,17 +48,20 @@ export default function JoinVendorCTA() {
           transition={{ delay: 0.4, duration: 0.8 }}
           className="text-white/90 text-lg sm:text-xl mb-8"
         >
-          {t('joinVendorSubTitle')}
+          {t("joinVendorSubTitle")}
         </motion.p>
 
         {/* CTA Button */}
-        <motion.a
-          href="/onboarding"
-          whileHover={{ scale: 1.05, boxShadow: "0 8px 25px rgba(255,126,179,0.45)" }}
+        <MotionLink
+          href="/become-vendor"
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0 8px 25px rgba(255,126,179,0.45)",
+          }}
           className="inline-flex items-center gap-3 px-8 py-4 bg-white text-[#DC3173] font-bold rounded-full text-lg shadow-md transition-all"
         >
-          {t('joinVendorCTA')} <ArrowRight className="w-5 h-5" />
-        </motion.a>
+          {t("joinVendorCTA")} <ArrowRight className="w-5 h-5" />
+        </MotionLink>
       </motion.div>
     </section>
   );

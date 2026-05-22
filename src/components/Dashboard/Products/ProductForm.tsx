@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import DescriptionGeneratorDialog from "@/src/components/Dashboard/Products/DescriptionGeneratorDialog";
 import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
@@ -65,13 +64,17 @@ export function ProductForm({
   taxesData: TTax[];
   businessType: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
-  const [openDescriptionGenerator, setOpenDescriptionGenerator] =
-    useState(false);
   const [options, setOptions] = useState<
     { label: string; price: number; stockQuantity?: number }[]
   >([]);
+
+  // State for inline AI description generator
+  const [generatingDescription, setGeneratingDescription] = useState(false);
+  const [descriptionLanguage, setDescriptionLanguage] = useState<"Portuguese" | "English">(
+    i18n?.language === "pt" ? "Portuguese" : "English"
+  );
 
   const tabs = useMemo(() => {
     const baseTabs = [
@@ -82,10 +85,6 @@ export function ProductForm({
       {
         name: t("images"),
         icon: <ImageIcon className="h-5 w-5" />,
-      },
-      {
-        name: t("description"),
-        icon: <FileTextIcon className="h-5 w-5" />,
       },
       {
         name: t("add_ons_and_variants"),
@@ -184,7 +183,7 @@ export function ProductForm({
             price: Number(option.price),
             ...(businessType !== "RESTAURANT"
               ? { stockQuantity: option.stockQuantity }
-              : ""),
+              : {}),
           },
         ]);
         setOption({
@@ -226,6 +225,50 @@ export function ProductForm({
     );
   };
 
+  // AI description generation
+  const generateDescription = async () => {
+    const productName = form.getValues("name");
+    const categoryId = form.getValues("category");
+    const productImageUrl = form.getValues("images")?.[0];
+
+    if (!productName) {
+      toast.error(t("product_name_required") || "Product name is required");
+      return;
+    }
+
+    setGeneratingDescription(true);
+    try {
+      const response = await fetch(
+        "https://api-food.deligo.pt/api/v1/ai/generate-product-description",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            productName,
+            productCategory: categoryId,
+            productImageUrl,
+            language: descriptionLanguage,
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+      const result = await response.json();
+      if (result.success && result.data?.description) {
+        form.setValue("description", result.data.description);
+        toast.success(t("description_generated") || "Description generated!");
+      } else {
+        throw new Error(result.message || "Failed to generate description");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(t("description_generation_failed") || "Failed to generate description");
+    } finally {
+      setGeneratingDescription(false);
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Creating product...");
 
@@ -249,12 +292,12 @@ export function ProductForm({
         },
         ...(businessType !== "RESTAURANT"
           ? {
-            stock: {
-              quantity: data.quantity,
-              unit: data.unit,
-              availabilityStatus: data.availabilityStatus,
-            },
-          }
+              stock: {
+                quantity: data.quantity,
+                unit: data.unit,
+                availabilityStatus: data.availabilityStatus,
+              },
+            }
           : {}),
       };
 
@@ -271,19 +314,14 @@ export function ProductForm({
         });
 
         form.reset();
-
         setTabError({});
         setActiveTab(0);
         setOptions([]);
-
         setOption({
           label: "",
           price: "",
-          ...(businessType !== "RESTAURANT"
-            ? { stockQuantity: 0 }
-            : {}),
+          ...(businessType !== "RESTAURANT" ? { stockQuantity: 0 } : {}),
         });
-
         setVariationName("");
 
         return;
@@ -294,7 +332,6 @@ export function ProductForm({
       });
     } catch (error) {
       console.error(error);
-
       toast.error("Something went wrong", {
         id: toastId,
       });
@@ -322,7 +359,7 @@ export function ProductForm({
             newErrors[t("basic_info")] = true;
             return;
           case "description":
-            newErrors[t("description")] = true;
+            newErrors[t("images")] = true;
             return;
           case "price":
           case "discount":
@@ -398,7 +435,6 @@ export function ProductForm({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-8"
               >
-                {/* Basic Info Tab */}
                 {activeTab === 0 && (
                   <motion.div
                     initial={{
@@ -429,7 +465,7 @@ export function ProductForm({
                           <FormControl>
                             <Input
                               {...field}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                             />
                           </FormControl>
                           <FormMessage />
@@ -454,7 +490,7 @@ export function ProductForm({
                             >
                               <SelectTrigger
                                 className={cn(
-                                  "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
+                                  "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10",
                                   fieldState.invalid
                                     ? "border-destructive"
                                     : "border-gray-300",
@@ -480,93 +516,101 @@ export function ProductForm({
                     />
                   </motion.div>
                 )}
-                {/* Images Tab */}
                 {activeTab === 1 && (
                   <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6 mb-0"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {t("product_images")}
-                    </h2>
-                    <FormField
-                      control={form.control}
-                      name="images"
-                      render={({ field }) => (
-                        <FormItem className="gap-1">
-                          <FormControl>
-                            <ImageUpload
-                              images={field.value}
-                              onChange={(urls) => field.onChange(urls)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </motion.div>
-                )}
-                {/* Description Tab */}
-                {activeTab === 2 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
                     className="space-y-6"
                   >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {t("description")}
-                    </h2>
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem className="gap-1">
-                          <FormLabel
-                            htmlFor="description"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            {t("description")}
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0"
-                            />
-                          </FormControl>
+                    <h2 className="text-xl font-semibold text-gray-800">{t("product_images")}</h2>
+                    <div className="flex flex-col lg:flex-row gap-6">
+                      <div className="flex-1">
+                        <FormField
+                          control={form.control}
+                          name="images"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <ImageUpload
+                                  images={field.value}
+                                  onChange={(urls) => field.onChange(urls)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="flex-1 border rounded-lg p-4 bg-gray-50">
+                        <div className="space-y-4">
                           <div>
-                            <Button
-                              type="button"
-                              variant="link"
-                              size="sm"
-                              className="text-xs text-[#DC3173] hover:text-[#DC3173/80] p-0"
-                              onClick={() => setOpenDescriptionGenerator(true)}
-                            >
-                              {t("generated_product_description")}
-                            </Button>
+                            <Label>{t("description")}</Label>
+                            <FormField
+                              control={form.control}
+                              name="description"
+                              render={({ field }) => (
+                                <FormItem className="mt-1">
+                                  <FormControl>
+                                    <Textarea
+                                      {...field}
+                                      placeholder={t("enter_product_description")}
+                                      className="min-h-[120px]"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                          <div className="border-t pt-4">
+                            <Label className="mb-2 block">
+                              {t("ai_generate_description") || "AI Generate Description"}
+                            </Label>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                              <Select
+                                value={descriptionLanguage}
+                                onValueChange={(val) =>
+                                  setDescriptionLanguage(val as "Portuguese" | "English")
+                                }
+                              >
+                                <SelectTrigger className="w-full sm:w-40">
+                                  <SelectValue placeholder="Language" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Portuguese">Português</SelectItem>
+                                  <SelectItem value="English">English</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                type="button"
+                                onClick={generateDescription}
+                                disabled={generatingDescription || !form.getValues("name")}
+                                className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                              >
+                                {generatingDescription ? (
+                                  <>
+                                    <span className="animate-spin mr-2">⏳</span>
+                                    {t("generating") || "Generating..."}
+                                  </>
+                                ) : (
+                                  <>
+                                    <FileTextIcon className="h-4 w-4 mr-2" />
+                                    {t("generate") || "Generate"}
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">
+                              {t("generate_description_hint")}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </motion.div>
                 )}
-                {/* Add-Ons & Variants Tab */}
-                {activeTab === 3 && (
+                {activeTab === 2 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -626,7 +670,7 @@ export function ProductForm({
                               <Select onValueChange={(val) => addAddon(val)}>
                                 <SelectTrigger
                                   className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
+                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10",
                                     fieldState.invalid
                                       ? "border-destructive"
                                       : "border-gray-300",
@@ -803,8 +847,7 @@ export function ProductForm({
                     </div>
                   </motion.div>
                 )}
-                {/* Pricing Tab */}
-                {activeTab === 4 && (
+                {activeTab === 3 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -842,7 +885,7 @@ export function ProductForm({
                                   onChange={(e) =>
                                     field.onChange(Number(e.target.value))
                                   }
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -871,7 +914,7 @@ export function ProductForm({
                                 onChange={(e) =>
                                   field.onChange(Number(e.target.value))
                                 }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                               />
                             </FormControl>
                             <FormMessage />
@@ -894,14 +937,13 @@ export function ProductForm({
                                 onValueChange={field.onChange}
                                 value={field.value}
                               >
-                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10">
+                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10">
                                   <SelectValue placeholder="Select tax" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {taxesData?.map((tax) => (
                                     <SelectItem key={tax._id} value={tax._id}>
-                                      {tax.taxName}({ }
-                                      {tax.taxRate}%)
+                                      {tax.taxName} ({tax.taxRate}%)
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -971,8 +1013,7 @@ export function ProductForm({
                     )}
                   </motion.div>
                 )}
-                {/* Stock Tab */}
-                {businessType !== "RESTAURANT" && activeTab === 5 && (
+                {businessType !== "RESTAURANT" && activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -1010,7 +1051,7 @@ export function ProductForm({
                                   onChange={(e) =>
                                     field.onChange(Number(e.target.value))
                                   }
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1036,7 +1077,7 @@ export function ProductForm({
                               >
                                 <SelectTrigger
                                   className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
+                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10",
                                     fieldState.invalid
                                       ? "border-destructive"
                                       : "border-gray-300",
@@ -1086,7 +1127,7 @@ export function ProductForm({
                               >
                                 <SelectTrigger
                                   className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
+                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10",
                                     fieldState.invalid
                                       ? "border-destructive"
                                       : "border-gray-300",
@@ -1114,7 +1155,6 @@ export function ProductForm({
                     </div>
                   </motion.div>
                 )}
-                {/* DeliGo Metadata Tab */}
                 {activeTab === lastTabIndex && (
                   <motion.div
                     initial={{
@@ -1200,10 +1240,11 @@ export function ProductForm({
                     type="button"
                     onClick={() => activeTab > 0 && setActiveTab(activeTab - 1)}
                     disabled={activeTab === 0}
-                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${activeTab === 0
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                      }`}
+                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${
+                      activeTab === 0
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                    }`}
                   >
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>
@@ -1246,21 +1287,6 @@ export function ProductForm({
             </Form>
           </div>
         </div>
-
-        {/* AI Product Description Generator Dialog */}
-        <DescriptionGeneratorDialog
-          open={openDescriptionGenerator}
-          onOpenChange={setOpenDescriptionGenerator}
-          productCategories={productCategories || []}
-          prevValues={{
-            productName: form.getValues("name"),
-            productCategory: form.getValues("category"),
-            productImageUrl: form.getValues("images")?.[0],
-          }}
-          onGenerate={(description) => {
-            form.setValue("description", description);
-          }}
-        />
       </motion.div>
     </div>
   );

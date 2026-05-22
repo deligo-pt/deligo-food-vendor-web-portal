@@ -160,7 +160,7 @@ const RecentOrders = ({ recentOrders }: IProps) => {
         ))}
       </motion.div>
       {recentOrders.length > 0 && (
-        <Link href="/vendor/new-orders">
+        <Link href="/vendor/all-orders">
           <Button
             variant="link"
             className="w-full mt-4 text-[#DC3173] text-sm font-medium hover:underline"
