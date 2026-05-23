@@ -73,7 +73,7 @@ export default function ContactSupportSection() {
             />
             <button
               type="submit"
-              className="w-full py-3 rounded-full bg-gradient-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-lg transition"
+              className="w-full py-3 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-lg transition"
             >
               Send Message
             </button>

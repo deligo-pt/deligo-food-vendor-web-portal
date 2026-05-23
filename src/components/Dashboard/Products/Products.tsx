@@ -74,13 +74,7 @@ export default function Products({ productsData, businessType }: IProps) {
     const toastId = toast.loading("Deleting product...");
     if (selectedProduct.id && selectedProduct.action === "delete") {
       const result = await deleteProductReq(selectedProduct.id);
-
-      // if (result.success) {
-      //   toast.success("Product deleted successfully", { id: toastId });
-      //   // await getProducts(queryParams);
-      //   setSelectedProduct({ id: null, action: null });
-      //   return;
-      // }
+      
       if (result.success) {
         setProducts((prev) =>
           prev.filter((product) => product.productId !== selectedProduct.id),
