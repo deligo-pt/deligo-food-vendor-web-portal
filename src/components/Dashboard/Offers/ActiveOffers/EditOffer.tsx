@@ -91,56 +91,37 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Updating offer...");
 
-    // const offerData = {
-    //   ...data,
-    //   isAutoApply: false,
-    //   ...(data.offerType === "BOGO"
-    //     ? {
-    //         bogo: {
-    //           buyQty: data.buyQty as number,
-    //           getQty: data.getQty as number,
-    //           productId: data.productId as string,
-    //         },
-    //       }
-    //     : {}),
-    //   ...(data.maxUsageCount
-    //     ? { maxUsageCount: Number(data.maxUsageCount) }
-    //     : {}),
-    //   ...(data.userUsageLimit
-    //     ? { userUsageLimit: Number(data.userUsageLimit) }
-    //     : {}),
-    // } as Partial<TOffer>;
     const offerData: Partial<TOffer> = {
-  title: data.title,
-  description: data.description,
-  offerType: data.offerType,
-  discountValue: data.discountValue,
-  maxDiscountAmount: data.maxDiscountAmount,
-  validFrom: data.validFrom,
-  expiresAt: data.expiresAt,
-  minOrderAmount: data.minOrderAmount,
-  code: data.code,
-  isAutoApply: false,
-  applicableProducts: data.applicableProducts,
+      title: data.title,
+      description: data.description,
+      offerType: data.offerType,
+      discountValue: data.discountValue,
+      maxDiscountAmount: data.maxDiscountAmount,
+      validFrom: data.validFrom,
+      expiresAt: data.expiresAt,
+      minOrderAmount: data.minOrderAmount,
+      code: data.code,
+      isAutoApply: false,
+      applicableProducts: data.applicableProducts,
 
-  ...(data.offerType === "BOGO"
-    ? {
-        bogo: {
-          buyQty: data.buyQty as number,
-          getQty: data.getQty as number,
-          productId: data.productId as string,
-        },
-      }
-    : {}),
+      ...(data.offerType === "BOGO"
+        ? {
+            bogo: {
+              buyQty: data.buyQty as number,
+              getQty: data.getQty as number,
+              productId: data.productId as string,
+            },
+          }
+        : {}),
 
-  ...(data.maxUsageCount
-    ? { maxUsageCount: Number(data.maxUsageCount) }
-    : {}),
+      ...(data.maxUsageCount
+        ? { maxUsageCount: Number(data.maxUsageCount) }
+        : {}),
 
-  ...(data.userUsageLimit
-    ? { userUsageLimit: Number(data.userUsageLimit) }
-    : {}),
-};
+      ...(data.userUsageLimit
+        ? { userUsageLimit: Number(data.userUsageLimit) }
+        : {}),
+    };
 
     if (isSelectedAllProducts) {
       delete offerData.applicableProducts;
