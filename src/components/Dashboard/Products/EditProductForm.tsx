@@ -73,41 +73,72 @@ export function EditProductForm({
 
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
-  const [lastTabIndex, setLastTabIndex] = useState(4);
+  // const [lastTabIndex, setLastTabIndex] = useState(4);
 
-  const tabs = [
-    {
-      name: t("basic_info"),
-      icon: <PackageIcon className="h-5 w-5" />,
-    },
-    {
-      name: t("images"),
-      icon: <ImageIcon className="h-5 w-5" />,
-    },
-    {
-      name: t("add_ons_and_variants"),
-      icon: <LayersIcon className="h-5 w-5" />,
-    },
-    {
-      name: t("pricing"),
-      icon: <TagIcon className="h-5 w-5" />,
-    },
-    {
-      name: "DeliGo Metadata",
-      icon: <StarIcon className="h-5 w-5" />,
-    },
-  ];
+  // const tabs = [
+  //   {
+  //     name: t("basic_info"),
+  //     icon: <PackageIcon className="h-5 w-5" />,
+  //   },
+  //   {
+  //     name: t("images"),
+  //     icon: <ImageIcon className="h-5 w-5" />,
+  //   },
+  //   {
+  //     name: t("add_ons_and_variants"),
+  //     icon: <LayersIcon className="h-5 w-5" />,
+  //   },
+  //   {
+  //     name: t("pricing"),
+  //     icon: <TagIcon className="h-5 w-5" />,
+  //   },
+  //   {
+  //     name: "DeliGo Metadata",
+  //     icon: <StarIcon className="h-5 w-5" />,
+  //   },
+  // ];
 
-  if (businessType !== "RESTAURANT") {
-    const lastTab = tabs[tabs.length - 1];
-    tabs.push({
-      name: t("stock"),
-      icon: <PackageIcon className="h-5 w-5" />,
-    });
-    tabs.push(lastTab);
-    setLastTabIndex(5);
-  }
+  // if (businessType !== "RESTAURANT") {
+  //   const lastTab = tabs[tabs.length - 1];
+  //   tabs.push({
+  //     name: t("stock"),
+  //     icon: <PackageIcon className="h-5 w-5" />,
+  //   });
+  //   tabs.push(lastTab);
+  //   setLastTabIndex(5);
+  // }
+const tabs = [
+  {
+    name: t("basic_info"),
+    icon: <PackageIcon className="h-5 w-5" />,
+  },
+  {
+    name: t("images"),
+    icon: <ImageIcon className="h-5 w-5" />,
+  },
+  {
+    name: t("add_ons_and_variants"),
+    icon: <LayersIcon className="h-5 w-5" />,
+  },
+  {
+    name: t("pricing"),
+    icon: <TagIcon className="h-5 w-5" />,
+  },
+  ...(businessType !== "RESTAURANT"
+    ? [
+        {
+          name: t("stock"),
+          icon: <PackageIcon className="h-5 w-5" />,
+        },
+      ]
+    : []),
+  {
+    name: "DeliGo Metadata",
+    icon: <StarIcon className="h-5 w-5" />,
+  },
+];
 
+const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
   });
