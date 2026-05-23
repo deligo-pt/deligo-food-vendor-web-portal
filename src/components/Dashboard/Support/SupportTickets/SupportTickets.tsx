@@ -12,14 +12,17 @@ import { getCookie } from "@/src/utils/cookies";
 import { removeUnderscore } from "@/src/utils/formatter";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ChevronRight, Clock, MessageSquare, Tag } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface IProps {
   ticket: TSupportTicket;
 }
 
 export default function SupportTickets({ ticket }: IProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChatSheetOpen, setIsChatSheetOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(
@@ -27,6 +30,21 @@ export default function SupportTickets({ ticket }: IProps) {
   );
 
   const accessToken = getCookie("accessToken");
+
+  const shouldOpenChatSheet = useMemo(
+    () => isChatSheetOpen || searchParams.get("openSupportChat") === "1",
+    [isChatSheetOpen, searchParams],
+  );
+
+  const handleTicketCreated = () => {
+    setIsChatSheetOpen(true);
+    router.replace("/vendor/chat-support?openSupportChat=1", { scroll: false });
+  };
+
+  const closeChatSheet = () => {
+    setIsChatSheetOpen(false);
+    router.replace("/vendor/chat-support", { scroll: false });
+  };
 
   const newMessageHandler = (msg: TSupportMessage) => {
     if (
@@ -153,16 +171,19 @@ export default function SupportTickets({ ticket }: IProps) {
       {/* Create Ticket Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <CreateNewTicket onClose={() => setIsModalOpen(false)} />
+          <CreateNewTicket
+            onClose={() => setIsModalOpen(false)}
+            onCreated={handleTicketCreated}
+          />
         )}
       </AnimatePresence>
 
       {/* Right-side Chat Sheet */}
       <AnimatePresence>
-        {isChatSheetOpen && (
+        {shouldOpenChatSheet && ticket.ticketId && (
           <SupportChatSheet
             ticket={ticket}
-            closeChatSheet={() => setIsChatSheetOpen(false)}
+            closeChatSheet={closeChatSheet}
           />
         )}
       </AnimatePresence>

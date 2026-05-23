@@ -24,6 +24,7 @@ import { ticketValidation } from "@/src/validations/support-ticket/support-ticke
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { USER_ROLE } from "@/src/consts/user.const";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -31,12 +32,15 @@ import z from "zod";
 
 interface IProps {
   onClose: () => void;
+  onCreated: () => void;
 }
 
 type TFormData = z.infer<typeof ticketValidation>;
 
-export default function CreateNewTicket({ onClose }: IProps) {
+export default function CreateNewTicket({ onClose, onCreated }: IProps) {
   const router = useRouter();
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [ordersData, setOrdersData] = useState<{
     data: TOrder[];
     meta?: TMeta;
@@ -61,23 +65,62 @@ export default function CreateNewTicket({ onClose }: IProps) {
   const { sendMessage } = useChatSocket({
     token: getCookie("accessToken") || "",
     onMessage: (msg) => {
-      console.log(msg);
+      if (!pendingMessage) return;
+
+      if (
+        msg.senderRole !== USER_ROLE.VENDOR ||
+        msg.message !== pendingMessage
+      ) {
+        return;
+      }
+
+      setIsSubmitting(false);
+      setPendingMessage(null);
+      form.reset({
+        category: "GENERAL",
+        message: "",
+        referenceOrderId: "",
+      });
+
+      onCreated();
+      onClose();
+      router.refresh();
     },
-    onError: (msg) => console.log(msg),
+    onError: (msg) => {
+      console.log(msg);
+
+      setIsSubmitting(false);
+      setPendingMessage(null);
+    },
   });
 
   const handleCreateTicket = (data: TFormData) => {
+    if (isSubmitting) return;
+
+    const message = data.message.trim();
     const payload = {
       category: data.category,
-      message: data.message,
+      message,
       messageType: "TEXT" as "TEXT" | "IMAGE" | "AUDIO" | "LOCATION" | "SYSTEM",
       ...(data.referenceOrderId && { referenceOrderId: data.referenceOrderId }),
     };
 
+    setPendingMessage(message);
+    setIsSubmitting(true);
+
     sendMessage(payload);
-    onClose();
-    router.refresh();
   };
+
+  useEffect(() => {
+    if (!isSubmitting || !pendingMessage) return;
+
+    const timeoutId = setTimeout(() => {
+      setPendingMessage(null);
+      setIsSubmitting(false);
+    }, 8000);
+
+    return () => clearTimeout(timeoutId);
+  }, [isSubmitting, pendingMessage]);
 
   const getOrders = async (limit = 100) => {
     const result = await getAllOrdersReq({ limit: String(limit) });
@@ -222,9 +265,10 @@ export default function CreateNewTicket({ onClose }: IProps) {
               </button>
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="px-6 py-2.5 bg-[#DC3173] text-white font-bold rounded-xl hover:bg-[#DC3173]/90 transition-colors shadow-lg shadow-[#DC3173]/20"
               >
-                Submit Ticket
+                {isSubmitting ? "Submitting..." : "Submit Ticket"}
               </button>
             </div>
           </form>

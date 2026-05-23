@@ -16,6 +16,7 @@ import {
   ShieldIcon,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface IProps {
   bankDetails: TVendor["bankDetails"];
@@ -70,6 +71,10 @@ export default function PaymentSettings({ bankDetails }: IProps) {
   const [bankName, setBankName] = useState(bankDetails?.bankName || "");
   const [swift, setSwift] = useState(bankDetails?.swiftCode || "");
   const [selectedSchedule, setSelectedSchedule] = useState("weekly");
+
+  const handleRequestChanges = () => {
+    toast.info("Please contact support to update payment information.");
+  };
 
   const containerVariants = {
     hidden: {
@@ -231,6 +236,7 @@ export default function PaymentSettings({ bankDetails }: IProps) {
                   <span>Changes require identity verification</span>
                 </div>
                 <motion.button
+                  onClick={handleRequestChanges}
                   whileHover={{
                     scale: 1.02,
                   }}
@@ -240,7 +246,7 @@ export default function PaymentSettings({ bankDetails }: IProps) {
                   className="flex items-center gap-2 bg-[#DC3173] text-white px-6 py-2.5 rounded-xl font-medium text-sm"
                 >
                   <CheckIcon className="w-4 h-4" />
-                  Save Changes
+                  Request Changes
                 </motion.button>
               </div>
             </motion.div>
@@ -322,6 +328,7 @@ export default function PaymentSettings({ bankDetails }: IProps) {
 
               <div className="flex justify-end mt-8 pt-6 border-t border-gray-100">
                 <motion.button
+                  onClick={handleRequestChanges}
                   whileHover={{
                     scale: 1.02,
                   }}
@@ -331,7 +338,7 @@ export default function PaymentSettings({ bankDetails }: IProps) {
                   className="flex items-center gap-2 bg-[#DC3173] text-white px-6 py-2.5 rounded-xl font-medium text-sm"
                 >
                   <CheckIcon className="w-4 h-4" />
-                  Save Schedule
+                  Request Changes
                 </motion.button>
               </div>
             </motion.div>

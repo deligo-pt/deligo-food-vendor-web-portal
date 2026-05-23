@@ -13,9 +13,7 @@ import {
   Clock,
   Info,
   Mail,
-  RefreshCcw,
 } from "lucide-react";
-import { useState } from "react";
 
 export type TVendorNotification = {
   _id: string;
@@ -92,20 +90,13 @@ export default function VendorNotificationsContent({
   meta,
 }: IProps) {
   const { t } = useTranslation();
-  const [notifications, setNotifications] = useState(initialNotifications);
-
-  const clearAll = () => setNotifications([]);
+  const notifications = initialNotifications;
 
   return (
     <div className="min-h-screen space-y-10">
       <TitleHeader
         title={t("notifications")}
         subtitle={t("Manage alerts system updates")}
-        buttonInfo={{
-          text: t("clear_all"),
-          icon: RefreshCcw,
-          onClick: clearAll,
-        }}
       />
 
       <div className="flex items-center justify-between text-sm text-slate-500 px-1">
@@ -124,8 +115,8 @@ export default function VendorNotificationsContent({
       <div className="space-y-4">
         <AnimatePresence>
           {notifications.map((notification, index) => {
-            const style = notificationStyles[notification.type] ||
-              notificationStyles.OTHER;
+            const style =
+              notificationStyles[notification.type] || notificationStyles.OTHER;
             const Icon = style.icon;
 
             return (
