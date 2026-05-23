@@ -21,6 +21,7 @@ interface IProps {
 
 export default function Products({ productsData, businessType }: IProps) {
   const { t } = useTranslation();
+  const [products, setProducts] = useState(productsData.data);
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
     action: "edit" | "delete" | null;
@@ -74,10 +75,21 @@ export default function Products({ productsData, businessType }: IProps) {
     if (selectedProduct.id && selectedProduct.action === "delete") {
       const result = await deleteProductReq(selectedProduct.id);
 
+      // if (result.success) {
+      //   toast.success("Product deleted successfully", { id: toastId });
+      //   // await getProducts(queryParams);
+      //   setSelectedProduct({ id: null, action: null });
+      //   return;
+      // }
       if (result.success) {
+        setProducts((prev) =>
+          prev.filter((product) => product.productId !== selectedProduct.id),
+        );
+
         toast.success("Product deleted successfully", { id: toastId });
-        // await getProducts(queryParams);
+
         setSelectedProduct({ id: null, action: null });
+
         return;
       }
 
@@ -124,7 +136,7 @@ export default function Products({ productsData, businessType }: IProps) {
         </div>
       )}
 
-      {productsData?.data?.length > 0 ? (
+     {products?.length > 0 ? (
         <motion.div
           layout
           className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
@@ -133,7 +145,7 @@ export default function Products({ productsData, businessType }: IProps) {
           }
         >
           <AnimatePresence mode="popLayout">
-            {productsData?.data?.map((product) => (
+            {products?.map((product) => (
               <ProductCard
                 key={product._id}
                 product={product}
