@@ -83,9 +83,19 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Creating offer...");
 
-    const offerData = {
-      ...data,
+    const offerData: Partial<TOffer> = {
+      title: data.title,
+      description: data.description,
+      offerType: data.offerType,
+      discountValue: data.discountValue,
+      maxDiscountAmount: data.maxDiscountAmount,
+      validFrom: data.validFrom,
+      expiresAt: data.expiresAt,
+      minOrderAmount: data.minOrderAmount,
+      code: data.code,
       isAutoApply: false,
+      applicableProducts: data.applicableProducts,
+
       ...(data.offerType === "BOGO"
         ? {
             bogo: {
@@ -95,13 +105,15 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
             },
           }
         : {}),
+
       ...(data.maxUsageCount
         ? { maxUsageCount: Number(data.maxUsageCount) }
         : {}),
+
       ...(data.userUsageLimit
         ? { userUsageLimit: Number(data.userUsageLimit) }
         : {}),
-    } as Partial<TOffer>;
+    };
 
     if (isSelectedAllProducts) {
       delete offerData.applicableProducts;
