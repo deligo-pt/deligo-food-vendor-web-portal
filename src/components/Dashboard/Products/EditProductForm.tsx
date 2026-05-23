@@ -73,72 +73,39 @@ export function EditProductForm({
 
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
-  // const [lastTabIndex, setLastTabIndex] = useState(4);
 
-  // const tabs = [
-  //   {
-  //     name: t("basic_info"),
-  //     icon: <PackageIcon className="h-5 w-5" />,
-  //   },
-  //   {
-  //     name: t("images"),
-  //     icon: <ImageIcon className="h-5 w-5" />,
-  //   },
-  //   {
-  //     name: t("add_ons_and_variants"),
-  //     icon: <LayersIcon className="h-5 w-5" />,
-  //   },
-  //   {
-  //     name: t("pricing"),
-  //     icon: <TagIcon className="h-5 w-5" />,
-  //   },
-  //   {
-  //     name: "DeliGo Metadata",
-  //     icon: <StarIcon className="h-5 w-5" />,
-  //   },
-  // ];
+  const tabs = [
+    {
+      name: t("basic_info"),
+      icon: <PackageIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("images"),
+      icon: <ImageIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("add_ons_and_variants"),
+      icon: <LayersIcon className="h-5 w-5" />,
+    },
+    {
+      name: t("pricing"),
+      icon: <TagIcon className="h-5 w-5" />,
+    },
+    ...(businessType !== "RESTAURANT"
+      ? [
+          {
+            name: t("stock"),
+            icon: <PackageIcon className="h-5 w-5" />,
+          },
+        ]
+      : []),
+    {
+      name: "DeliGo Metadata",
+      icon: <StarIcon className="h-5 w-5" />,
+    },
+  ];
 
-  // if (businessType !== "RESTAURANT") {
-  //   const lastTab = tabs[tabs.length - 1];
-  //   tabs.push({
-  //     name: t("stock"),
-  //     icon: <PackageIcon className="h-5 w-5" />,
-  //   });
-  //   tabs.push(lastTab);
-  //   setLastTabIndex(5);
-  // }
-const tabs = [
-  {
-    name: t("basic_info"),
-    icon: <PackageIcon className="h-5 w-5" />,
-  },
-  {
-    name: t("images"),
-    icon: <ImageIcon className="h-5 w-5" />,
-  },
-  {
-    name: t("add_ons_and_variants"),
-    icon: <LayersIcon className="h-5 w-5" />,
-  },
-  {
-    name: t("pricing"),
-    icon: <TagIcon className="h-5 w-5" />,
-  },
-  ...(businessType !== "RESTAURANT"
-    ? [
-        {
-          name: t("stock"),
-          icon: <PackageIcon className="h-5 w-5" />,
-        },
-      ]
-    : []),
-  {
-    name: "DeliGo Metadata",
-    icon: <StarIcon className="h-5 w-5" />,
-  },
-];
-
-const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
+  const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
   });
@@ -156,7 +123,7 @@ const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
       category: prevData?.category?._id || "",
       price: prevData?.pricing?.price || 0,
       discount: prevData?.pricing?.discount || 0,
-      taxId: prevData?.pricing?.taxId || "",
+      taxId: String(prevData?.pricing?.taxId || ""),
       addonGroups: prevData?.addonGroups || [],
       variations: prevData?.variations || [],
       quantity: prevData?.stock?.quantity || 0,
@@ -217,30 +184,39 @@ const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
       ...(businessType !== "RESTAURANT"
         ? {
             stock: {
-              quantity: data.quantity,
               unit: data.unit,
-              availabilityStatus: data.availabilityStatus,
             },
           }
         : {}),
     };
 
     const result = await catchAsync<TProduct>(async () => {
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(productData));
-
-      // if (data.images.length > 0)
-      //   data.images.map((image) =>
-      //     formData.append("files", image.file as Blob),
-      //   );
-
-      return (await updateData(`/products/${prevData?.productId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })) as unknown as TResponse<TProduct>;
+      return (await updateData(
+        `/products/${prevData?.productId}`,
+        productData,
+      )) as unknown as TResponse<TProduct>;
     });
 
+    if (result.success) {
+      const pricingResult = await catchAsync<unknown>(async () => {
+        return (await updateData(
+          `/products/update-inventory-and-pricing/${prevData?.productId}`,
+          {
+            newPrice: data.price,
+          },
+        )) as unknown as TResponse<unknown>;
+      });
+
+      if (pricingResult.success) {
+        toast.success("Product updated successfully!", { id: toastId });
+
+        setActiveTab(0);
+        setTabError({});
+        router.refresh();
+        closeModal();
+        return;
+      }
+    }
     if (result.success) {
       toast.success("Product updated successfully!", { id: toastId });
       setActiveTab(0);
@@ -251,7 +227,6 @@ const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
     }
 
     toast.error(result.message || "Product update failed", { id: toastId });
-    console.log(result);
   };
 
   const getAddonsGroups = async ({ limit = 10 }) => {
@@ -678,6 +653,35 @@ const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
                       {t("pricing_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="price"
+                        render={({ field }) => (
+                          <FormItem className="gap-1">
+                            <FormLabel
+                              htmlFor="price"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              {t("price")}
+                            </FormLabel>
+
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="number"
+                                min={0}
+                                value={String(field.value)}
+                                onChange={(e) =>
+                                  field.onChange(Number(e.target.value))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
+                              />
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name="discount"
