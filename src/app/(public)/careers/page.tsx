@@ -163,13 +163,13 @@ export default function CareersPage() {
           {t("careersCTADesc")}
         </motion.p>
 
-        <motion.button
+        {/* <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           className="px-8 py-3 bg-[#DC3173] text-white font-semibold rounded-full shadow-md hover:bg-[#b92561] transition"
         >
           {t("careersCTA")}
-        </motion.button>
+        </motion.button> */}
       </section>
     </div>
   );
