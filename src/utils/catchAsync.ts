@@ -19,7 +19,7 @@ export const catchAsync = async <T>(
 
     return {
       success: false,
-      data: result.error,
+      data: result,
       message: result.message || customErrMsg || "Something went wrong!",
     };
 
