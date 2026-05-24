@@ -1,36 +1,37 @@
-"use client"
+"use client";
 
-import { useTranslation } from '@/src/hooks/use-translation';
-import { motion } from 'framer-motion';
-import { UserPlus, Package, ShoppingCart, CreditCard } from 'lucide-react';
+import { useTranslation } from "@/src/hooks/use-translation";
+import { motion } from "framer-motion";
+import { UserPlus, Package, ShoppingCart, CreditCard } from "lucide-react";
+import Link from "next/link";
 
 export default function HowItWorksSection() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const steps = [
     {
       icon: UserPlus,
-      title: t('howItWorksStepTitle1'),
-      desc: t('howItWorksStepDesc1'),
-      color: 'from-[#DC3173] to-[#FF6F61]',
+      title: t("howItWorksStepTitle1"),
+      desc: t("howItWorksStepDesc1"),
+      color: "from-[#DC3173] to-[#FF6F61]",
     },
     {
       icon: Package,
-      title: t('howItWorksStepTitle2'),
-      desc: t('howItWorksStepDesc2'),
-      color: 'from-[#FF6F61] to-[#FF9980]',
+      title: t("howItWorksStepTitle2"),
+      desc: t("howItWorksStepDesc2"),
+      color: "from-[#FF6F61] to-[#FF9980]",
     },
     {
       icon: ShoppingCart,
-      title: t('howItWorksStepTitle3'),
-      desc: t('howItWorksStepDesc3'),
-      color: 'from-[#FFCC33] to-[#FFD966]',
+      title: t("howItWorksStepTitle3"),
+      desc: t("howItWorksStepDesc3"),
+      color: "from-[#FFCC33] to-[#FFD966]",
     },
     {
       icon: CreditCard,
-      title: t('howItWorksStepTitle4'),
-      desc: t('howItWorksStepDesc4'),
-      color: 'from-[#43CEA2] to-[#185A9D]',
+      title: t("howItWorksStepTitle4"),
+      desc: t("howItWorksStepDesc4"),
+      color: "from-[#43CEA2] to-[#185A9D]",
     },
   ];
 
@@ -49,7 +50,7 @@ export default function HowItWorksSection() {
           transition={{ duration: 0.8 }}
           className="text-4xl sm:text-5xl font-extrabold text-center text-white mb-16 tracking-tight"
         >
-          {t('howItWorksTitle')}
+          {t("howItWorksTitle")}
         </motion.h2>
 
         <div className="flex flex-col lg:flex-row justify-between items-center gap-12 lg:gap-6 relative">
@@ -63,11 +64,17 @@ export default function HowItWorksSection() {
                 transition={{ duration: 0.8, delay: i * 0.2 }}
                 className="relative group flex flex-col items-center text-center p-8 rounded-2xl bg-[#151F35]/70 backdrop-blur-md border border-white/10 shadow-xl hover:shadow-[#DC3173]/40 hover:scale-[1.05] transition-all duration-500"
               >
-                <div className={`flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-tr ${step.color} shadow-lg mb-5 group-hover:rotate-6 transition-transform`}>
+                <div
+                  className={`flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-tr ${step.color} shadow-lg mb-5 group-hover:rotate-6 transition-transform`}
+                >
                   <Icon className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-white mb-3">{step.title}</h3>
-                <p className="text-white/80 text-sm leading-relaxed">{step.desc}</p>
+                <h3 className="text-2xl font-semibold text-white mb-3">
+                  {step.title}
+                </h3>
+                <p className="text-white/80 text-sm leading-relaxed">
+                  {step.desc}
+                </p>
 
                 {/* Animated Dot Connector */}
                 {i < steps.length - 1 && (
@@ -79,15 +86,17 @@ export default function HowItWorksSection() {
         </div>
 
         <div className="mt-20 flex justify-center">
-          <motion.a
-            href="/signup"
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.96 }}
-            className="relative px-10 py-4 text-lg font-semibold rounded-full text-white bg-linear-to-tr from-[#DC3173] to-[#FF6F61] shadow-[0_0_25px_rgba(220,49,115,0.4)] hover:shadow-[0_0_40px_rgba(220,49,115,0.7)] transition-all duration-300 overflow-hidden"
-          >
-            <span className="relative z-10">{t('startNowCTA')}</span>
-            <div className="absolute inset-0 bg-linear-to-r from-[#FF6F61] to-[#DC3173] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700"></div>
-          </motion.a>
+          <Link href="/become-vendor">
+            <motion.div
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.96 }}
+              className="relative px-10 py-4 text-lg font-semibold rounded-full text-white bg-linear-to-tr from-[#DC3173] to-[#FF6F61] shadow-[0_0_25px_rgba(220,49,115,0.4)] hover:shadow-[0_0_40px_rgba(220,49,115,0.7)] transition-all duration-300 overflow-hidden"
+            >
+              <span className="relative z-10">{t("startNowCTA")}</span>
+
+              <div className="absolute inset-0 bg-linear-to-r from-[#FF6F61] to-[#DC3173] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700"></div>
+            </motion.div>
+          </Link>
         </div>
       </div>
     </section>
