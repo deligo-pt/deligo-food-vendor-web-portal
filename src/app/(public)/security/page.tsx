@@ -1,12 +1,16 @@
 // SecurityPage.tsx
 "use client";
 
-import { Shield, Lock, Key, UserCheck } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { Shield, Lock, Key, UserCheck, Mail, Phone, X } from "lucide-react";
+// import { Shield, Lock, Key, UserCheck } from "lucide-react";
+// import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/src/hooks/use-translation";
 
 export default function SecurityPage() {
   const { t } = useTranslation();
+  const [openModal, setOpenModal] = useState(false);
 
   const vendorFeatures = [
     {
@@ -67,10 +71,50 @@ export default function SecurityPage() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => setOpenModal(true)}
           className="mt-8 px-8 py-4 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] font-bold text-lg"
         >
           {t("securityButton")}
         </motion.button>
+
+        <AnimatePresence>
+          {openModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                className="relative bg-gray-900 rounded-3xl p-8 w-full max-w-md"
+              >
+                <button
+                  onClick={() => setOpenModal(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+
+                <h2 className="text-3xl font-bold text-center mb-6">
+                  Contact Security Team
+                </h2>
+
+                <div className="flex items-center gap-4 bg-gray-800 p-4 rounded-2xl">
+                  <Mail className="text-pink-400 w-6 h-6" />
+                  <span>contact@deligo.pt</span>
+                </div>
+
+                <div className="flex items-center gap-4 bg-gray-800 p-4 rounded-2xl mt-4">
+                  <Phone className="text-pink-400 w-6 h-6" />
+                  <span>+351 920 136 680</span>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Animated floating icons */}
         <motion.div
@@ -167,6 +211,7 @@ export default function SecurityPage() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => setOpenModal(true)}
           className="px-8 py-4 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] font-bold text-lg"
         >
           {t("securityCTA")}
