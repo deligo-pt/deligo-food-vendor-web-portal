@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { toast } from "sonner";
 
 export default function ContactUsPremium() {
   const { t } = useTranslation();
@@ -15,16 +16,49 @@ export default function ContactUsPremium() {
     message: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(formData);
-    // Here you can integrate your API / Email service
-  };
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   console.log(formData);
+  //   // Here you can integrate your API / Email service
+  // };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Message sent successfully!");
+
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        toast.error("Failed to send message");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
   return (
     <section className="py-24 px-6 sm:px-10 lg:px-20 bg-gray-900">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -36,11 +70,9 @@ export default function ContactUsPremium() {
           className="bg-linear-to-br from-gray-800 to-gray-900 rounded-3xl p-10 shadow-2xl"
         >
           <h2 className="text-4xl font-extrabold text-white mb-4">
-            {t('contactUsTitle')}
+            {t("contactUsTitle")}
           </h2>
-          <p className="text-gray-300 mb-8">
-            {t('contactUsDesc')}
-          </p>
+          <p className="text-gray-300 mb-8">{t("contactUsDesc")}</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
@@ -48,7 +80,7 @@ export default function ContactUsPremium() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder={t('nameFieldPlaceholder')}
+              placeholder={t("nameFieldPlaceholder")}
               required
               className="w-full px-5 py-3 rounded-2xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
             />
@@ -57,7 +89,7 @@ export default function ContactUsPremium() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder={t('emailFieldPlaceholder')}
+              placeholder={t("emailFieldPlaceholder")}
               required
               className="w-full px-5 py-3 rounded-2xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
             />
@@ -66,14 +98,14 @@ export default function ContactUsPremium() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder={t('phoneFieldPlaceholder')}
+              placeholder={t("phoneFieldPlaceholder")}
               className="w-full px-5 py-3 rounded-2xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
             />
             <textarea
               name="message"
               value={formData.message}
               onChange={handleChange}
-              placeholder={t('messageFieldPlaceholder')}
+              placeholder={t("messageFieldPlaceholder")}
               required
               rows={5}
               className="w-full px-5 py-3 rounded-2xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
@@ -82,7 +114,7 @@ export default function ContactUsPremium() {
               type="submit"
               className="w-full py-4 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-2xl transition"
             >
-              {t('formCTA')}
+              {t("formCTA")}
             </button>
           </form>
 
@@ -92,7 +124,10 @@ export default function ContactUsPremium() {
               <Phone className="w-6 h-6 text-pink-400" />
               <div>
                 <p className="text-gray-300 text-sm">WhatsApp</p>
-                <a href="https://wa.me/YOUR_NUMBER" className="text-white font-medium hover:text-pink-400 transition">
+                <a
+                  href="https://wa.me/YOUR_NUMBER"
+                  className="text-white font-medium hover:text-pink-400 transition"
+                >
                   +351 900 123 456
                 </a>
               </div>
@@ -112,17 +147,24 @@ export default function ContactUsPremium() {
             <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-4 hover:bg-[#DC3173]/10 transition cursor-pointer">
               <MessageCircle className="w-6 h-6 text-pink-400" />
               <div>
-                <p className="text-gray-300 text-sm">{t('contactUsLiveChat')}</p>
-                <a href="/live-chat" className="text-white font-medium hover:text-pink-400 transition">
-                  {t('contactUsStartChat')}
+                <p className="text-gray-300 text-sm">
+                  {t("contactUsLiveChat")}
+                </p>
+                <a
+                  href="/live-chat"
+                  className="text-white font-medium hover:text-pink-400 transition"
+                >
+                  {t("contactUsStartChat")}
                 </a>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-4 hover:bg-[#DC3173]/10 transition cursor-pointer">
               <MapPin className="w-6 h-6 text-pink-400" />
               <div>
-                <p className="text-gray-300 text-sm">{t('contactUsOffice')}</p>
-                <span className="text-white font-medium">{t('contactUsOfficeLocation')}</span>
+                <p className="text-gray-300 text-sm">{t("contactUsOffice")}</p>
+                <span className="text-white font-medium">
+                  {t("contactUsOfficeLocation")}
+                </span>
               </div>
             </div>
           </div>
