@@ -49,12 +49,12 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
         },
       }}
     >
-      <div className="relative h-48 overflow-hidden bg-gray-200">
+      <div className="relative h-48 flex items-center justify-center overflow-hidden">
         {product.images && product.images.length > 0 ? (
           <Image
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-fill"
             width={500}
             height={500}
           />
