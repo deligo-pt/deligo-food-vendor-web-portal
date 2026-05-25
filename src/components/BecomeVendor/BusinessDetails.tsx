@@ -225,7 +225,7 @@ export default function BusinessDetailsForm({
                           <FileCheck2 className="absolute left-3 top-3.5 text-[#DC3173]" />
                           <FormControl>
                             <Input
-                              placeholder="License Number"
+                              placeholder="Social Number"
                               className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60 uppercase"
                               {...field}
                             />

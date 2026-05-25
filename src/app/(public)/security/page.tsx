@@ -3,8 +3,6 @@
 
 import { useState } from "react";
 import { Shield, Lock, Key, UserCheck, Mail, Phone, X } from "lucide-react";
-// import { Shield, Lock, Key, UserCheck } from "lucide-react";
-// import { motion } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/src/hooks/use-translation";
 
