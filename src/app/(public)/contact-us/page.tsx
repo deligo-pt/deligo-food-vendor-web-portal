@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { toast } from "sonner";
@@ -21,12 +21,6 @@ export default function ContactUsPremium() {
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   console.log(formData);
-  //   // Here you can integrate your API / Email service
-  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +122,7 @@ export default function ContactUsPremium() {
                   href="https://wa.me/YOUR_NUMBER"
                   className="text-white font-medium hover:text-pink-400 transition"
                 >
-                  +351 900 123 456
+                  +351 920 136 680
                 </a>
               </div>
             </div>
@@ -136,15 +130,15 @@ export default function ContactUsPremium() {
               <Mail className="w-6 h-6 text-pink-400" />
               <div className="flex-1 min-w-0">
                 <a
-                  href="mailto:support@deligo.pt"
+                  href="mailto:contact@deligo.pt"
                   className="block text-white font-medium hover:text-pink-400 transition-all truncate"
-                  title="support@deligo.pt"
+                  title="contact@deligo.pt"
                 >
-                  support@deligo.pt
+                  contact@deligo.pt
                 </a>
               </div>
             </div>
-            <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-4 hover:bg-[#DC3173]/10 transition cursor-pointer">
+            {/* <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-4 hover:bg-[#DC3173]/10 transition cursor-pointer">
               <MessageCircle className="w-6 h-6 text-pink-400" />
               <div>
                 <p className="text-gray-300 text-sm">
@@ -157,7 +151,7 @@ export default function ContactUsPremium() {
                   {t("contactUsStartChat")}
                 </a>
               </div>
-            </div>
+            </div> */}
             <div className="flex items-center gap-3 bg-gray-800 rounded-2xl p-4 hover:bg-[#DC3173]/10 transition cursor-pointer">
               <MapPin className="w-6 h-6 text-pink-400" />
               <div>
