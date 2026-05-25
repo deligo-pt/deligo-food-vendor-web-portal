@@ -31,7 +31,7 @@ export default function FooterDeligoPremium() {
   ];
 
   const socials = [
-    { icon: Facebook, url: "https://facebook.com/deligoeu" },
+    { icon: Facebook, url: "https://www.facebook.com/deligo.pt" },
     { icon: Instagram, url: "https://www.instagram.com/deligo.pt" },
     { icon: Linkedin, url: "https://www.linkedin.com/in/deligopt" },
     { icon: Youtube, url: "https://www.youtube.com/@DeliGoPT" },
