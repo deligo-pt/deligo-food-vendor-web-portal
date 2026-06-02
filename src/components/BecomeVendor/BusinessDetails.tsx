@@ -42,7 +42,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -52,6 +52,23 @@ interface IProps {
 }
 
 type BusinessForm = z.infer<typeof businessDetailsValidation>;
+
+const restaurantCuisineOptions = [
+  "Portuguese Food",
+  "Sushi",
+  "Kebab",
+  "Barbecue",
+  "Indian Food",
+  "Italian Food",
+  "Vegetarian Food",
+  "Thai Food",
+  "Japanese Food",
+  "Ramen",
+  "Sea Food",
+  "Burger",
+  "Halal",
+  "Other",
+]
 
 const daysOfWeek = [
   "Sunday",
@@ -73,6 +90,8 @@ export default function BusinessDetailsForm({
     defaultValues: {
       businessName: vendor?.businessDetails?.businessName || "",
       businessType: vendor?.businessDetails?.businessType || "",
+      restaurantCuisineType:
+        vendor?.businessDetails?.restaurantCuisineType || "",
       businessLicenseNumber:
         vendor?.businessDetails?.businessLicenseNumber || "",
       NIF: vendor?.businessDetails?.NIF || "",
@@ -83,6 +102,11 @@ export default function BusinessDetailsForm({
     },
   });
   const router = useRouter();
+
+  const businessType = useWatch({
+    control: form.control,
+    name: "businessType",
+  });
 
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
@@ -214,6 +238,54 @@ export default function BusinessDetailsForm({
                       </FormItem>
                     )}
                   />
+
+                  {/* if business type is restaurant */}
+                  {businessType === "RESTAURANT" && (
+                    <FormField
+                      control={form.control}
+                      name="restaurantCuisineType"
+                      render={({ field, fieldState }) => (
+                        <FormItem>
+                          <div className="relative">
+                            <Briefcase className="absolute left-3 top-3.5 text-[#DC3173]/80" />
+                            <FormControl>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger
+                                  className={cn(
+                                    "pl-11 pr-4 h-12 w-full bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer  ",
+                                    fieldState.invalid
+                                      ? "border-destructive focus-visible:ring-destructive/20"
+                                      : "border-gray-300",
+                                  )}
+                                  style={{
+                                    height: "3rem",
+                                  }}
+                                >
+                                  <SelectValue placeholder="Select Restaurant Cuisine" />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                  {restaurantCuisineOptions.map((type, idx) => (
+                                    <SelectItem
+                                      key={idx}
+                                      value={type}
+                                      className="capitalize"
+                                    >
+                                      {type}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   {/* License */}
                   <FormField
@@ -370,11 +442,10 @@ export default function BusinessDetailsForm({
                                 );
                               }}
                               whileTap={{ scale: 0.95 }}
-                              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${
-                                field.value?.includes(day)
-                                  ? "bg-[#DC3173] text-white border-[#DC3173]"
-                                  : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
-                              }`}
+                              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${field.value?.includes(day)
+                                ? "bg-[#DC3173] text-white border-[#DC3173]"
+                                : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
+                                }`}
                             >
                               {t(day.toLowerCase())}
                             </motion.button>

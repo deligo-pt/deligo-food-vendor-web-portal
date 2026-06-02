@@ -47,6 +47,7 @@ export type TVendor = {
   businessDetails?: {
     businessName: string;
     businessType: string;
+    restaurantCuisineType?: string;
     businessLicenseNumber?: string;
     NIF?: string;
     totalBranches: number;
