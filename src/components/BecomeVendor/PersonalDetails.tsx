@@ -129,13 +129,17 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
+                        First Name <span className="text-red-500">*</span>
+                      </FormLabel>
+
                       <div className="relative">
                         <FormLabel className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                           <User className="text-gray-400 w-5 h-5" />
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="First Name"
+                            placeholder="Enter your first name"
                             className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
                             {...field}
                           />
@@ -152,13 +156,17 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
+                        Last Name <span className="text-red-500">*</span>
+                      </FormLabel>
+
                       <div className="relative">
                         <FormLabel className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                           <User className="text-gray-400 w-5 h-5" />
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Last Name"
+                            placeholder="Enter your last name"
                             className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
                             {...field}
                           />
@@ -175,6 +183,10 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
+                        Email <span className="text-red-500">*</span>
+                      </FormLabel>
+
                       <div className="relative">
                         <FormLabel className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                           <Mail className="text-gray-400 w-5 h-5" />
@@ -182,7 +194,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="Email Address"
+                            placeholder="Enter your email address"
                             className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
                             {...field}
                             disabled
@@ -195,71 +207,83 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                 />
 
                 {/* Phone */}
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-3 top-0 flex items-center pointer-events-none h-9">
-                    <Phone className="text-gray-400 w-5 h-5" />
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name="prefixPhoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="absolute left-9 z-10">
-                            <PhoneInput
-                              {...field}
-                              defaultCountry="pt"
-                              countrySelectorStyleProps={{
-                                buttonStyle: {
+                <div>
+                  <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
+                    Phone Number <span className="text-red-500">*</span>
+                  </FormLabel>
+
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-3 top-0 flex items-center pointer-events-none h-9">
+                      <Phone className="text-gray-400 w-5 h-5" />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="prefixPhoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="absolute left-9 z-10">
+                              <PhoneInput
+                                {...field}
+                                defaultCountry="pt"
+                                countrySelectorStyleProps={{
+                                  buttonStyle: {
+                                    border: "none",
+                                    backgroundColor: "transparent",
+                                    height: "36px",
+                                  },
+                                  dropdownStyleProps: {
+                                    style: {
+                                      bottom: "40px",
+                                      top: "auto",
+                                    },
+                                  },
+                                }}
+                                inputStyle={{
+                                  marginTop: "1px",
                                   border: "none",
-                                  height: "36px",
-                                  backgroundColor: "transparent",
-                                },
-                              }}
-                              inputStyle={{
-                                marginTop: "1px",
-                                border: "none",
-                                height: "34px",
-                                width: "48px",
-                                borderRadius: "0px",
-                                backgroundColor: "#ccc",
-                                zIndex: "-99",
-                                position: "relative",
-                              }}
-                              inputProps={{
-                                placeholder: "Phone Number",
-                                disabled: true,
+                                  height: "34px",
+                                  width: "48px",
+                                  borderRadius: "0px",
+                                  backgroundColor: "#ccc",
+                                  zIndex: "-99",
+                                  position: "relative",
+                                }}
+                                inputProps={{
+                                  placeholder: "Phone Number",
+                                  disabled: true,
+                                }}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              type="tel"
+                              className="pl-32 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl w-full"
+                              {...field}
+                              onChange={(e) => {
+                                const onlyDigits = e.target.value.replace(
+                                  /\D/g,
+                                  "",
+                                );
+                                field.onChange(onlyDigits);
                               }}
                             />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="tel"
-                            className="pl-32 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl w-full"
-                            {...field}
-                            onChange={(e) => {
-                              const onlyDigits = e.target.value.replace(
-                                /\D/g,
-                                "",
-                              );
-                              field.onChange(onlyDigits);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
 
                 {/* Submit Button */}

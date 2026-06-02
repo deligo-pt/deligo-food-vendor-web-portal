@@ -1,8 +1,29 @@
+// import { translations } from '@/src/assets/translations'
+// import { useStore } from '@/src/store/store'
+
+// export const useTranslation = () => {
+//     const lang = useStore((state) => state.lang)
+
+//     const t = (key: string): string => {
+//         return (
+//             translations[lang]?.[key as keyof typeof translations.en] ||
+//             translations.en[key as keyof typeof translations.en] ||
+//             key
+//         )
+//     }
+
+//     return { t }
+// }
+
 import { translations } from '@/src/assets/translations'
 import { useStore } from '@/src/store/store'
 
+// Infer allowed languages from translations keys
+type Language = keyof typeof translations
+
 export const useTranslation = () => {
     const lang = useStore((state) => state.lang)
+    const setLang = useStore((state) => state.setLang)
 
     const t = (key: string): string => {
         return (
@@ -12,5 +33,10 @@ export const useTranslation = () => {
         )
     }
 
-    return { t }
+    const i18n = {
+        language: lang,
+        changeLanguage: (newLang: Language) => setLang(newLang),
+    }
+
+    return { t, i18n }
 }

@@ -1591,7 +1591,7 @@ export const en = {
   reviews: "reviews",
   days_active: "days active",
   business_type: "Business Type",
-  license_mumber: "License Number",
+  license_mumber: "Social Number",
   nif: "NIF",
   number_of_branches: "Number of Branches",
   closing_hours: "Closing Hours",

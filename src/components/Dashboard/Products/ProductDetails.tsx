@@ -171,7 +171,7 @@ export default function ProductDetails({ product, businessType }: IProps) {
                   key={currentImageIndex}
                   src={product.images[currentImageIndex]}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-fill"
                   variants={imageVariants}
                   initial="hidden"
                   animate="visible"
@@ -202,7 +202,7 @@ export default function ProductDetails({ product, businessType }: IProps) {
                     <Image
                       src={image}
                       alt={`${product.name} - view ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-fill"
                       width={500}
                       height={500}
                     />

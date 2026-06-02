@@ -43,7 +43,15 @@ const serverRequestHelper = async (
       .catch((error: any) => {
         const status = error?.response?.status;
 
-        if (status === 401) {
+        const isLoginRoute = url.includes("/auth/login");
+
+        // if (status === 401) {
+        //   cookieStore.delete("accessToken");
+        //   cookieStore.delete("refreshToken");
+
+        //   redirect("/login?sessionExpired=true");
+        // }
+        if (status === 401 && !isLoginRoute) {
           cookieStore.delete("accessToken");
           cookieStore.delete("refreshToken");
 

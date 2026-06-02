@@ -29,19 +29,51 @@ export function useChatSocket({
   onRead,
 }: Props) {
   const socketRef = useRef<Socket | null>(null);
+  const handlersRef = useRef({
+    onMessage,
+    onClosed,
+    onError,
+    onTyping,
+    onRead,
+  });
+
+  useEffect(() => {
+    handlersRef.current = {
+      onMessage,
+      onClosed,
+      onError,
+      onTyping,
+      onRead,
+    };
+  }, [onClosed, onError, onMessage, onRead, onTyping]);
 
   useEffect(() => {
     const socket = getSupportSocket(token);
     socketRef.current = socket;
 
+    const handleMessage = (msg: TSupportMessage) => handlersRef.current.onMessage(msg);
+    const handleTyping = (data: TUserTypingPayload) =>
+      handlersRef.current.onTyping && handlersRef.current.onTyping(data);
+    const handleRead = (data: { ticketId: string; userId: string; time: string }) =>
+      handlersRef.current.onRead && handlersRef.current.onRead(data);
+    const handleClosed = () => handlersRef.current.onClosed && handlersRef.current.onClosed();
+    const handleError = (error: string) => handlersRef.current.onError(error);
+
     socket.emit("join-conversation", { ticketId });
 
-    socket.on("new-message", onMessage);
-    socket.on("user-typing", (data) => onTyping && onTyping(data));
-    socket.on("read-update", (data) => onRead && onRead(data));
-    socket.on("conversation-closed", () => onClosed && onClosed());
-    socket.on("chat-error", (e) => onError(e));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    socket.on("new-message", handleMessage);
+    socket.on("user-typing", handleTyping);
+    socket.on("read-update", handleRead);
+    socket.on("conversation-closed", handleClosed);
+    socket.on("chat-error", handleError);
+
+    return () => {
+      socket.off("new-message", handleMessage);
+      socket.off("user-typing", handleTyping);
+      socket.off("read-update", handleRead);
+      socket.off("conversation-closed", handleClosed);
+      socket.off("chat-error", handleError);
+    };
   }, [ticketId]);
 
   const sendMessage = (payload: {
@@ -86,16 +118,26 @@ export function useTopbarMessageIconSocket({
   onMessage,
 }: Props) {
   const socketRef = useRef<Socket | null>(null);
+  const onMessageRef = useRef(onMessage);
+
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+  }, [onMessage]);
 
   useEffect(() => {
     const socket = getTopbarMessageIconSocket(token);
     socketRef.current = socket;
 
+    const handleMessage = (msg: TSupportMessage) => onMessageRef.current(msg);
+
     socket.emit("join-conversation", { ticketId });
 
-    socket.on("new-message", onMessage);
+    socket.on("new-message", handleMessage);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      socket.off("new-message", handleMessage);
+    };
+
   }, [ticketId]);
 
   const leaveConversation = () => {

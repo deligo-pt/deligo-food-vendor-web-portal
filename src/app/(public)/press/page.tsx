@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Globe, Megaphone, Mail, Star, X } from "lucide-react";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { toast } from "sonner";
 
 export default function PressPage() {
   const { t } = useTranslation();
@@ -66,7 +67,9 @@ export default function PressPage() {
               className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl hover:-translate-y-2 transition-all"
             >
               <div className="mb-4 flex justify-center">{item.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {item.title}
+              </h3>
               <p className="text-gray-600">{item.desc}</p>
             </motion.div>
           ))}
@@ -116,15 +119,53 @@ export default function PressPage() {
 /* ---------------- Modal Component ---------------- */
 function ContactModal({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
-  const onSubmit = (data: any) => {
-    console.log("Media Inquiry:", data);
-    alert("Message sent successfully!");
-    reset();
-    onClose();
-  };
+  // const onSubmit = (data: any) => {
+  //   console.log("Media Inquiry:", data);
+  //   alert("Message sent successfully!");
+  //   reset();
+  //   onClose();
+  // };
+  const onSubmit = async (data: any) => {
+  const toastId = toast.loading("Sending message...");
 
+  try {
+    const response = await fetch("/api/media-contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      toast.success("Message sent successfully!", {
+        id: toastId,
+      });
+
+      reset();
+      onClose();
+    } else {
+      toast.error("Failed to send message", {
+        id: toastId,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+
+    toast.error("Something went wrong", {
+      id: toastId,
+    });
+  }
+};
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
@@ -154,7 +195,9 @@ function ContactModal({ onClose }: { onClose: () => void }) {
             placeholder="Full Name"
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#DC3173] outline-none"
           />
-          {errors.name && <p className="text-red-500 text-sm">{t("nameRequired")}</p>}
+          {errors.name && (
+            <p className="text-red-500 text-sm">{t("nameRequired")}</p>
+          )}
 
           <input
             {...register("email", { required: true })}
@@ -162,14 +205,18 @@ function ContactModal({ onClose }: { onClose: () => void }) {
             placeholder="Email Address"
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#DC3173] outline-none"
           />
-          {errors.email && <p className="text-red-500 text-sm">{t("emailRequired")}</p>}
+          {errors.email && (
+            <p className="text-red-500 text-sm">{t("emailRequired")}</p>
+          )}
 
           <input
             {...register("subject", { required: true })}
             placeholder="Subject"
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#DC3173] outline-none"
           />
-          {errors.subject && <p className="text-red-500 text-sm">{t("subjectRequired")}</p>}
+          {errors.subject && (
+            <p className="text-red-500 text-sm">{t("subjectRequired")}</p>
+          )}
 
           <textarea
             {...register("message", { required: true })}
@@ -177,7 +224,9 @@ function ContactModal({ onClose }: { onClose: () => void }) {
             rows={4}
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#DC3173] outline-none"
           />
-          {errors.message && <p className="text-red-500 text-sm">{t("messageRequired")}</p>}
+          {errors.message && (
+            <p className="text-red-500 text-sm">{t("messageRequired")}</p>
+          )}
 
           <button
             type="submit"

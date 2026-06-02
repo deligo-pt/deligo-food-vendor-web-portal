@@ -70,9 +70,9 @@ export default function HeroSectionNextLevel() {
           <Link href="/become-vendor" className="px-6 py-3 bg-[#DC3173] text-white font-semibold rounded-lg shadow-2xl hover:bg-[#a72b5c] transition-all duration-300 transform hover:scale-105 hover:shadow-3xl">
             {t('heroVendorCTA')}
           </Link>
-          <a href="#about" className="px-6 py-3 bg-[#F1FAEE] text-[#DC3173] font-semibold rounded-lg shadow-2xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-3xl">
+          <Link href="/about-us" className="px-6 py-3 bg-[#F1FAEE] text-[#DC3173] font-semibold rounded-lg shadow-2xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-3xl">
             {t('heroLearnMoreCTA')}
-          </a>
+          </Link>
         </motion.div>
       </div>
 

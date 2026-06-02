@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { CheckCircle, Headphones, Send, Upload } from "lucide-react";
+import { CheckCircle, Send, Upload } from "lucide-react";
 
 const PRIMARY = "#DC3173";
 const SHADOW = "0px 8px 24px rgba(0,0,0,0.06)";
@@ -140,26 +140,6 @@ export default function VendorReportIssuePage() {
               {t("submit_report")} <Send size={18} />
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* EXTRA HELP */}
-      <Card
-        className="rounded-3xl bg-white border shadow-md"
-        style={{ boxShadow: SHADOW }}
-      >
-        <CardContent className="p-6 flex flex-col items-center gap-3 text-center">
-          <Headphones size={40} className="text-pink-600" />
-          <h2 className="font-bold text-xl">{t("need_immediate_support")}</h2>
-          <p className="text-sm text-gray-600 max-w-[400px]">
-            {t("contact_support_team_via_live_chat")}
-          </p>
-          <Button
-            className="h-11 px-6 text-white rounded-xl"
-            style={{ background: PRIMARY }}
-          >
-            {t("open_live_chat")}
-          </Button>
         </CardContent>
       </Card>
     </div>

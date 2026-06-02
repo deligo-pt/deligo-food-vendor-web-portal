@@ -62,7 +62,7 @@ export default function VariationManagement({ productsData }: IProps) {
 
   return (
     <div className="min-h-screen bg-pink-50/50 pb-20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+      <div className="max-w-full ">
         {/* Header */}
         <TitleHeader
           title="Variation Management"

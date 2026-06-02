@@ -106,7 +106,7 @@ export default function ProductVariationCard({ product }: IProps) {
           <Image
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-fill"
             width={300}
             height={300}
           />

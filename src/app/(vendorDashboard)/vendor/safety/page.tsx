@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
@@ -156,27 +155,6 @@ export default function VendorSafetyPage() {
         </Card>
       </div>
 
-      {/* CTA */}
-      <Card
-        className="rounded-3xl bg-white border shadow-md"
-        style={{ boxShadow: SHADOW }}
-      >
-        <CardContent className="p-6 text-center space-y-3">
-          <HandHeart size={40} className="mx-auto text-pink-600" />
-          <h2 className="font-bold text-xl">
-            {t("need_help_safety_compliance")}
-          </h2>
-          <p className="text-sm text-gray-600 max-w-[450px] mx-auto">
-            {t("support_team_guide_through")}
-          </p>
-          <Button
-            className="h-11 px-6 text-white rounded-xl"
-            style={{ background: PRIMARY }}
-          >
-            {t("contact_safety_support")}
-          </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 }
