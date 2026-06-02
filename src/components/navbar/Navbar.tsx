@@ -12,7 +12,7 @@ import { logoutReq } from "@/src/services/auth/auth";
 import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,22 +21,12 @@ import { toast } from "sonner";
 
 export default function Navbar({ vendorData }: { vendorData: TVendor }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [productSubOpen, setProductSubOpen] = useState(false);
-  const [toolsSubOpen, setToolsSubOpen] = useState(false);
   const { lang, setLang } = useStore();
   const { t } = useTranslation();
   const router = useRouter();
 
   const navItems = [
     { name: t("home"), href: "/" },
-    {
-      name: t("tools"),
-      submenu: [
-        { name: t("promotions"), href: "/tools/promotions" },
-        { name: t("ads"), href: "/tools/ads" },
-        { name: t("manageProducts"), href: "/tools/manage-products" },
-      ],
-    },
     { name: t("contactUs"), href: "/contact-us" },
   ];
 
@@ -93,41 +83,14 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
           {/* Right: Nav Items */}
           <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
-              <div key={item.name} className="relative group">
-                {!item.submenu ? (
-                  <Link
-                    href={item.href}
-                    className="text-gray-700 hover:text-[#DC3173] transition-all font-medium"
-                  >
-                    {item.name}
-                  </Link>
-                ) : (
-                  <>
-                    <div className="relative group">
-                      {/* Button with arrow */}
-                      <button className="flex items-center text-gray-700 hover:text-[#DC3173] transition-all font-medium">
-                        {item.name}
-                        <ChevronDown className="ml-1 w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
-                      </button>
-
-                      {/* Dropdown */}
-                      <div className="absolute left-0 mt-2 w-48 bg-white shadow-xl rounded-lg opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-50">
-                        {item.submenu.map((sub) => (
-                          <Link
-                            key={sub.name}
-                            href={sub.href}
-                            className="block px-4 py-2 text-gray-700 hover:bg-[#DC3173]/10 hover:text-[#DC3173] transition-all"
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-gray-700 hover:text-[#DC3173] transition-all font-medium"
+              >
+                {item.name}
+              </Link>
             ))}
-
             {/* language switcher */}
             <Select
               value={lang}
@@ -148,9 +111,9 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
               <>
                 {/* Dashboard Button */}
                 {vendorData?.status === "PENDING" ||
-                  vendorData?.status === "SUBMITTED" ||
-                  vendorData?.status === "REJECTED" ||
-                  vendorData?.status === "BLOCKED" ? (
+                vendorData?.status === "SUBMITTED" ||
+                vendorData?.status === "REJECTED" ||
+                vendorData?.status === "BLOCKED" ? (
                   <Link
                     href="/become-vendor/registration-status"
                     className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all"
@@ -263,59 +226,13 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
 
             <nav className="px-6 space-y-4">
               {navItems.map((item) => (
-                <div key={item.name}>
-                  {!item.submenu ? (
-                    <Link
-                      href={item.href}
-                      className="block text-gray-700 hover:text-[#DC3173] font-medium"
-                    >
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() =>
-                          item.name === "Product"
-                            ? setProductSubOpen(!productSubOpen)
-                            : setToolsSubOpen(!toolsSubOpen)
-                        }
-                        className="flex justify-between w-full text-gray-700 font-medium hover:text-[#DC3173]"
-                      >
-                        {item.name}
-                        <ChevronDown
-                          className={`w-4 h-4 transition-transform ${(
-                            item.name === "Product"
-                              ? productSubOpen
-                              : toolsSubOpen
-                          )
-                            ? "rotate-180"
-                            : ""
-                            }`}
-                        />
-                      </button>
-                      <div
-                        className={`mt-2 pl-4 space-y-2 ${(
-                          item.name === "Product"
-                            ? productSubOpen
-                            : toolsSubOpen
-                        )
-                          ? "block"
-                          : "hidden"
-                          }`}
-                      >
-                        {item.submenu.map((sub) => (
-                          <Link
-                            key={sub.name}
-                            href={sub.href}
-                            className="block text-gray-600 hover:text-[#DC3173] font-medium"
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="block text-gray-700 hover:text-[#DC3173] font-medium"
+                >
+                  {item.name}
+                </Link>
               ))}
 
               {vendorData?.email ? (

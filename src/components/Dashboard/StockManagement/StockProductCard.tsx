@@ -81,7 +81,7 @@ export default function StockProductCard({ product }: IProps) {
           <Image
             src={product.images?.[0]}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-fill"
             width={80}
             height={80}
           />
@@ -195,7 +195,7 @@ export default function StockProductCard({ product }: IProps) {
                         Current Price
                       </label>
                       <div className="text-xl font-bold text-gray-900">
-                        ${product.pricing.price}
+                        €{product.pricing.price}
                       </div>
                     </div>
 
@@ -203,7 +203,7 @@ export default function StockProductCard({ product }: IProps) {
                       label="New Price"
                       type="number"
                       placeholder="0.00"
-                      suffix="$"
+                      suffix="€"
                       min={0}
                       value={stockData.newPrice}
                       onChange={(e) =>

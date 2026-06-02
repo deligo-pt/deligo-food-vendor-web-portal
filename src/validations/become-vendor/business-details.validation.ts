@@ -16,9 +16,9 @@ export const businessDetailsValidation = z
 
     businessLicenseNumber: z
       .string()
-      .min(2, "Business license number must be at least 2 characters long")
-      .max(50, "Business license number must be at most 50 characters long")
-      .nonempty("Business license number is required"),
+      .min(2, "Social number must be at least 2 characters long")
+      .max(50, "Social number must be at most 50 characters long")
+      .nonempty("Social number is required"),
 
     NIF: z
       .string()

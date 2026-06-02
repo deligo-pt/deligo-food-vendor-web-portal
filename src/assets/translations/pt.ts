@@ -1659,7 +1659,7 @@ export const pt = {
   reviews: "avaliações",
   days_active: "dias ativo",
   business_type: "Tipo de Negócio",
-  license_mumber: "Número de Licença",
+  license_mumber: "Número de Segurança Social",
   nif: "NIF",
   number_of_branches: "Número de Filiais",
   closing_hours: "Horário de Encerramento",
