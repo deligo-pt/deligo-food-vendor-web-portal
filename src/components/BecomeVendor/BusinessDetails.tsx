@@ -64,7 +64,7 @@ const restaurantCuisineOptions = [
   "Thai Food",
   "Japanese Food",
   "Ramen",
-  "Sea Food",
+  "Seafood",
   "Burger",
   "Halal",
   "Other",
