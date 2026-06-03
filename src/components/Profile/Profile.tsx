@@ -205,7 +205,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 value={vendor.businessDetails?.businessType}
                 icon={Building2Icon}
               />
-              {vendor?.businessDetails?.restaurantCuisineType && <ProfileInfoRow
+              {vendor?.businessDetails?.businessType === "RESTAURANT" && <ProfileInfoRow
                 label={t("restaurantCuisineType")}
                 value={vendor.businessDetails?.restaurantCuisineType}
                 icon={Building2Icon}
