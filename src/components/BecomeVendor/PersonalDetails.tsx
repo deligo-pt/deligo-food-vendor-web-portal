@@ -130,7 +130,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                        First Name <span className="text-red-500">*</span>
+                        {t("first_name")} <span className="text-red-500">*</span>
                       </FormLabel>
 
                       <div className="relative">
@@ -139,7 +139,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter your first name"
+                            placeholder={t("enter_first_name")}
                             className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
                             {...field}
                           />
@@ -157,7 +157,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                        Last Name <span className="text-red-500">*</span>
+                        {t("last_name")} <span className="text-red-500">*</span>
                       </FormLabel>
 
                       <div className="relative">
@@ -166,7 +166,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter your last name"
+                            placeholder={t("enter_last_name")}
                             className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
                             {...field}
                           />
@@ -184,7 +184,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                        Email <span className="text-red-500">*</span>
+                        {t("email")} <span className="text-red-500">*</span>
                       </FormLabel>
 
                       <div className="relative">
@@ -194,7 +194,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="Enter your email address"
+                            placeholder={t("enter_email")}
                             className="pl-10 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
                             {...field}
                             disabled
@@ -209,7 +209,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                 {/* Phone */}
                 <div>
                   <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                    Phone Number <span className="text-red-500">*</span>
+                    {t("phone_number")} <span className="text-red-500">*</span>
                   </FormLabel>
 
                   <div className="relative">

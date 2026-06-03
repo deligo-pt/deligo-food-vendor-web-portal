@@ -179,7 +179,7 @@ export default function BusinessDetailsForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          Business Name <span className="text-red-500">*</span>
+                          {t("businessName")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="relative">
                           <Building2 className="absolute left-3 top-3.5 text-[#DC3173]" />
@@ -203,7 +203,7 @@ export default function BusinessDetailsForm({
                     render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          Business Type <span className="text-red-500">*</span>
+                          {t("businessType")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="relative">
                           <Briefcase className="absolute left-3 top-3.5 text-[#DC3173]/80" />
@@ -252,6 +252,9 @@ export default function BusinessDetailsForm({
                       name="restaurantCuisineType"
                       render={({ field, fieldState }) => (
                         <FormItem>
+                          <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
+                            {t("restaurantCuisineType")} <span className="text-red-500">*</span>
+                          </FormLabel>
                           <div className="relative">
                             <Briefcase className="absolute left-3 top-3.5 text-[#DC3173]/80" />
                             <FormControl>
@@ -300,7 +303,7 @@ export default function BusinessDetailsForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          Social Number <span className="text-red-500">*</span>
+                          {t("socialNumber")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="relative">
                           <FileCheck2 className="absolute left-3 top-3.5 text-[#DC3173]" />
@@ -324,7 +327,7 @@ export default function BusinessDetailsForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          NIF <span className="text-red-500">*</span>
+                          {t("nif")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="relative">
                           <BadgeInfo className="absolute left-3 top-3.5 text-[#DC3173]" />
@@ -356,7 +359,7 @@ export default function BusinessDetailsForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          No. of Branches <span className="text-red-500">*</span>
+                          {t("no_of_branches")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="relative">
                           <MapPin className="absolute left-3 top-3.5 text-[#DC3173]/80" />

@@ -633,6 +633,11 @@ export const pt = {
     "Preencha as informações da sua empresa para concluir o registo",
   basicInformation: "🏢 Informação Básica",
   branchInformation: "📍 Informação da Sucursal",
+  businessName: "Nome da Empresa",
+  businessType: "Tipo de Empresa",
+  restaurantCuisineType: "Tipo de Cozinha do Restaurante",
+  socialNumber: "Número do Registro Social",
+  no_of_branches: "Nº de Filiais",
   workingHours: "⏰ Horário de Funcionamento",
   openingTime: "Hora de Abertura",
   closingTime: "Hora de Encerramento",
@@ -676,6 +681,11 @@ export const pt = {
   // personal details
   personalDetails: "Dados Pessoais",
   personalDetailsDesc: "Vamos começar com as suas informações básicas",
+  first_name: "Primeiro Nome",
+  enter_first_name: "Digite seu Primeiro Nome",
+  last_name: "Sobrenome",
+  enter_last_name: "Digite seu Sobrenome",
+  enter_email: "Digite seu endereço de e-mail",
   // registration-status
   submissionInProgress: "Submissão em Curso",
   submissionProgressDesc:
