@@ -625,6 +625,11 @@ export const en = {
     "Fill in your business information to complete registration",
   basicInformation: "🏢 Basic Information",
   branchInformation: "📍 Branch Information",
+  businessName: "Business Name",
+  businessType: "Business Type",
+  restaurantCuisineType: "Restaurant Cuisine Type",
+  socialNumber: "Social Number",
+  no_of_branches: "No. of Branches",
   workingHours: "⏰ Working Hours",
   openingTime: "Opening Time",
   closingTime: "Closing Time",
@@ -667,6 +672,11 @@ export const en = {
   // personal details
   personalDetails: "Personal Details",
   personalDetailsDesc: "Let’s start with your basic information",
+  first_name: "First Name",
+  enter_first_name: "Enter your First Name",
+  last_name: "Last Name",
+  enter_last_name: "Enter your Last Name",
+  enter_email: "Enter your email address",
   // registration-status
   submissionInProgress: "Submission in Progress",
   submissionProgressDesc:
