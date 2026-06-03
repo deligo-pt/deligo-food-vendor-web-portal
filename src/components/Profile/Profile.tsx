@@ -206,6 +206,11 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 icon={Building2Icon}
               />
               <ProfileInfoRow
+                label={t("restaurantCuisineType")}
+                value={vendor.businessDetails?.restaurantCuisineType}
+                icon={Building2Icon}
+              />
+              <ProfileInfoRow
                 label={t("license_mumber")}
                 value={vendor.businessDetails?.businessLicenseNumber}
                 icon={HashIcon}
