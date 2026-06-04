@@ -1,12 +1,14 @@
 import { serverRequest } from "@/lib/serverFetch";
 import UploadDocuments from "@/src/components/BecomeVendor/UploadDocuments";
 import { DocKey, FilePreview } from "@/src/types/documents.type";
-import { jwtDecode } from "jwt-decode";
-import { cookies } from "next/headers";
+import { getVendorInfo } from "@/src/utils/getVendorInfo";
 
 export default async function UploadDocumentPage() {
-  const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as { userId: string };
+  const vendorDetails = await getVendorInfo();
+
+  if (!vendorDetails) {
+    return <div className="p-4 text-center">Unable to fetch vendor details. Please try again later.</div>;
+  };
 
   const savedPreviews: Record<DocKey, FilePreview[] | null> = {} as Record<
     DocKey,
@@ -14,7 +16,7 @@ export default async function UploadDocumentPage() {
   >;
 
   try {
-    const result = await serverRequest.get(`/vendors/${decoded.userId}`);
+    const result = await serverRequest.get(`/vendors/${vendorDetails?.vendor?.userId}`);
 
     if (result?.success) {
       const docs = result?.data?.documents || {};
@@ -35,6 +37,6 @@ export default async function UploadDocumentPage() {
   }
 
   return (
-    <UploadDocuments savedPreviews={savedPreviews} vendorId={decoded.userId} />
+    <UploadDocuments savedPreviews={savedPreviews} vendor={vendorDetails?.vendor} />
   );
 }

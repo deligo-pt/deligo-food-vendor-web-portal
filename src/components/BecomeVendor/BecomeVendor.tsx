@@ -54,7 +54,7 @@ export default function BecomeVendor() {
   const onSubmit = async (data: FormValues) => {
     const toastId = toast.loading("Registering...");
 
-    const result = await registerVendorReq({email: data.email, password: data.password});
+    const result = await registerVendorReq({ email: data.email, password: data.password });
 
     if (result.success) {
       toast.success(result.message || "Registration successful!", {
@@ -135,14 +135,15 @@ export default function BecomeVendor() {
                   render={({ field }) => (
                     <FormItem>
                       <div className="relative">
-                        <FormLabel className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                          <Mail className="text-gray-400 w-5 h-5" />
+                        <FormLabel className="flex items-center pointer-events-none mb-2 mx-1">
+                          <Mail className="text-[#DC3173] w-5 h-5" />
+                          <span>{t("email")}</span>
                         </FormLabel>
                         <FormControl>
                           <Input
                             type="email"
                             placeholder="Enter your email"
-                            className="pl-12 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
+                            className="py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
                             {...field}
                           />
                         </FormControl>
@@ -159,21 +160,25 @@ export default function BecomeVendor() {
                   render={({ field }) => (
                     <FormItem>
                       <div className="relative">
+                        <FormLabel className="flex items-center pointer-events-none mb-2 mx-1]">
+                          <Lock className="text-[#DC3173] w-5 h-5" />
+                          <span>{t("password")}</span>
+                        </FormLabel>
                         <FormLabel className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                          <Lock className="text-gray-400 w-5 h-5" />
+                         
                         </FormLabel>
                         <FormControl>
                           <div>
                             <Input
                               type={showPassword ? "text" : "password"}
                               placeholder="Enter your password"
-                              className="pl-12 pr-12 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] rounded-xl transition-all duration-300"
+                              className="pr-12 py-3 text-base focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] rounded-xl transition-all duration-300"
                               {...field}
                             />
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-[#DC3173] transition"
+                              className="absolute inset-y-0 right-4 top-7 flex items-center text-gray-400 hover:text-[#DC3173] transition"
                             >
                               {showPassword ? (
                                 <EyeOff className="w-5 h-5" />
@@ -240,11 +245,10 @@ export default function BecomeVendor() {
                   <Button
                     type="submit"
                     disabled={!isFormFilled}
-                    className={`w-full font-semibold py-3 rounded-xl shadow-xl transition-all duration-300 ${
-                      isFormFilled
+                    className={`w-full font-semibold py-3 rounded-xl shadow-xl transition-all duration-300 ${isFormFilled
                         ? "bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white hover:shadow-pink-200 hover:brightness-110"
                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    }`}
+                      }`}
                   >
                     {t("confirmAndContinue")}
                   </Button>

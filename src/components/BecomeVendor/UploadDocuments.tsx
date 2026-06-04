@@ -33,6 +33,7 @@ import { uploadImagesReq } from "@/src/services/upload/upload.service";
 import { DocKey, FilePreview } from "@/src/types/documents.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { TVendor } from "@/src/types/vendor.type";
 
 interface IDoc {
   key: DocKey;
@@ -42,10 +43,10 @@ interface IDoc {
 
 export default function UploadDocuments({
   savedPreviews,
-  vendorId,
+  vendor,
 }: {
   savedPreviews: Record<DocKey, FilePreview[] | null>;
-  vendorId: string;
+  vendor: TVendor | null;
 }) {
   const { t } = useTranslation();
   // store one preview per doc key
@@ -119,6 +120,10 @@ export default function UploadDocuments({
     },
   ];
 
+  const visibleDocuments = DOCUMENTS.filter(
+    (doc) => !(vendor?.businessDetails?.businessType === "STORE" && doc.key === "agoserisHaccpCertificate")
+  );
+
   // handle file selection (client-side only)
   const handleFileChange = async (key: DocKey, f?: File | null) => {
     if (!f) return;
@@ -129,12 +134,15 @@ export default function UploadDocuments({
 
     const toastId = toast.loading("Uploading...");
 
-    if (key === "agoserisHaccpCertificate" && previews[key]?.length === 1) {
-      toast.error("You can only upload one AGOSERIS HACCP Certificate", {
-        id: toastId,
-      });
-      return;
-    } else {
+    if (vendor?.businessDetails?.businessType === 'RESTAURANT') {
+      if (key === "agoserisHaccpCertificate" && previews[key]?.length === 1) {
+        toast.error("You can only upload one AGOSERIS HACCP Certificate", {
+          id: toastId,
+        });
+        return;
+      }
+    }
+    else {
       if (previews[key]?.length === 3) {
         toast.error("You can only upload a maximum of 3 documents", {
           id: toastId,
@@ -151,7 +159,7 @@ export default function UploadDocuments({
       const prevUrls =
         previews[key]?.filter((p) => p.url)?.map((p) => p.url) || [];
 
-      const updateResult = await updateDocumentsReq(vendorId, {
+      const updateResult = await updateDocumentsReq(vendor?.userId as string, {
         docImageTitle: key,
         docImageUrls: [...prevUrls, uploadResult.data?.[0]],
       });
@@ -170,7 +178,7 @@ export default function UploadDocuments({
         return;
       }
 
-      deleteDocumentReq(vendorId, {
+      deleteDocumentReq(vendor?.userId as string, {
         docImageTitle: key,
         imageUrl: uploadResult.data?.[0],
       });
@@ -193,7 +201,7 @@ export default function UploadDocuments({
     if (prev && prev[index]?.url) {
       const toastId = toast.loading("Deleting...");
 
-      const result = await deleteDocumentReq(vendorId, {
+      const result = await deleteDocumentReq(vendor?.userId as string, {
         docImageTitle: key,
         imageUrl: prev[index].url,
       });
@@ -334,7 +342,7 @@ export default function UploadDocuments({
   const handleContinue = async () => {
     const toastId = toast.loading("Submitting...");
 
-    const result = await submitForApprovalReq(vendorId);
+    const result = await submitForApprovalReq(vendor?.userId as string);
 
     if (result.success) {
       toast.success("Request submitted successfully!", {
@@ -393,7 +401,7 @@ export default function UploadDocuments({
 
           <CardContent className="bg-white p-8 space-y-6">
             <div className="grid grid-cols-1 gap-4">
-              {DOCUMENTS.map((d, idx) => {
+              {visibleDocuments?.map((d, idx) => {
                 const preview = previews[d.key];
                 const isSelected = !(!preview || preview?.length === 0);
                 return (
@@ -477,37 +485,6 @@ export default function UploadDocuments({
                           ))}
 
                           {!isSelected && <span>{t("noFileSelected")}</span>}
-                          {/* {preview ? (
-                            preview.isImage && preview.url ? (
-                              <div className="flex items-center gap-2">
-                                <Image
-                                  src={preview.url}
-                                  alt={
-                                    preview.file?.name ||
-                                    getActualFileName(preview.url || "")
-                                  }
-                                  width={56}
-                                  height={40}
-                                  className="object-cover rounded-md border"
-                                  unoptimized
-                                />
-                                <div className="truncate">
-                                  {preview.file?.name ||
-                                    getActualFileName(preview.url || "")}
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <File className="w-4 h-4 text-gray-500" />
-                                <div className="truncate">
-                                  {preview.file?.name ||
-                                    getActualFileName(preview.url || "")}
-                                </div>
-                              </div>
-                            )
-                          ) : (
-                            <span>{t("noFileSelected")}</span>
-                          )} */}
                         </div>
                       </div>
                     </div>
@@ -538,25 +515,6 @@ export default function UploadDocuments({
                             <Plus className="w-4 h-4 text-[#DC3173]" />{" "}
                             {t("addMoreCTA")}
                           </button>
-
-                          {/* <button
-                            onClick={() =>
-                              preview.url
-                                ? window.open(preview.url, "_blank")
-                                : alert(preview.file?.name)
-                            }
-                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm border border-gray-200 hover:shadow"
-                          >
-                            <Eye className="w-4 h-4 text-[#DC3173]" />{" "}
-                            {t("viewCTA")}
-                          </button> */}
-
-                          {/* <button
-                            onClick={() => removeFile(d.key)}
-                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-600 border border-gray-100 hover:bg-gray-50"
-                          >
-                            {t("removeCTA")}
-                          </button> */}
                         </>
                       ) : (
                         <button
@@ -579,7 +537,7 @@ export default function UploadDocuments({
             <div className="pt-4">
               <Button
                 disabled={
-                  !DOCUMENTS.every(
+                  !visibleDocuments.every(
                     (d) => !(!previews[d.key] || previews[d.key]?.length === 0),
                   )
                 }
