@@ -9,6 +9,7 @@ export interface IVendorDocs {
   idProofBack?: string[];
   storePhoto?: string[];
   menuUpload?: string[];
+  agoserisHaccpCertificate?: string[];
 }
 
 interface IProps {
@@ -40,6 +41,7 @@ export default function ProfileDoc({ documents }: IProps) {
               {doc === "taxDoc" && "Tax Document"}
               {doc === "storePhoto" && "Store Photo"}
               {doc === "menuUpload" && "Menu / Brochure"}
+              {doc === "agoserisHaccpCertificate" && "AGOSERIS HACCP Certificate"}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               {files.map((file, index) => {

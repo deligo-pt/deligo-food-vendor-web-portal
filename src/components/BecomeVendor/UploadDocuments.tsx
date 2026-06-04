@@ -68,6 +68,9 @@ export default function UploadDocuments({
     menuUpload: Array.isArray(savedPreviews.menuUpload)
       ? savedPreviews.menuUpload
       : null,
+    agoserisHaccpCertificate: Array.isArray(savedPreviews.agoserisHaccpCertificate)
+      ? savedPreviews.agoserisHaccpCertificate
+      : null,
   });
   // const [uploadedUrls, setUploadedUrls] = useState<Record<DocKey, string[] | null>>(null)
 
@@ -97,8 +100,8 @@ export default function UploadDocuments({
       prefersImagePreview: false,
     }, // PDF/name
     { key: "taxDoc", label: t("documentsLabel2"), prefersImagePreview: false }, // PDF/name
-    { key: "idProofFront", label: "ID Proof Front", prefersImagePreview: true }, // image preview ok
-    { key: "idProofBack", label: "ID Proof Back ", prefersImagePreview: true }, // image preview ok
+    { key: "idProofFront", label: t("id_proof_front"), prefersImagePreview: true }, // image preview ok
+    { key: "idProofBack", label: t("id_proof_back"), prefersImagePreview: true }, // image preview ok
     {
       key: "storePhoto",
       label: t("documentsLabel4"),
@@ -107,6 +110,11 @@ export default function UploadDocuments({
     {
       key: "menuUpload",
       label: t("documentsLabel5"),
+      prefersImagePreview: true,
+    },
+    {
+      key: "agoserisHaccpCertificate",
+      label: t("agoserisHaccpCertificate"),
       prefersImagePreview: true,
     },
   ];
@@ -121,11 +129,18 @@ export default function UploadDocuments({
 
     const toastId = toast.loading("Uploading...");
 
-    if (previews[key]?.length === 3) {
-      toast.error("You can only upload a maximum of 3 documents", {
+    if (key === "agoserisHaccpCertificate" && previews[key]?.length === 1) {
+      toast.error("You can only upload one AGOSERIS HACCP Certificate", {
         id: toastId,
       });
       return;
+    } else {
+      if (previews[key]?.length === 3) {
+        toast.error("You can only upload a maximum of 3 documents", {
+          id: toastId,
+        });
+        return;
+      }
     }
 
     const isImage = f.type.startsWith("image/");
@@ -387,17 +402,15 @@ export default function UploadDocuments({
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.06 }}
-                    className={`flex items-center justify-between p-4 border rounded-xl shadow-sm hover:shadow-md transition-all ${
-                      isSelected
-                        ? "border-[#DC3173]/30 bg-[#FFF7FB]"
-                        : "bg-white"
-                    }`}
+                    className={`flex items-center justify-between p-4 border rounded-xl shadow-sm hover:shadow-md transition-all ${isSelected
+                      ? "border-[#DC3173]/30 bg-[#FFF7FB]"
+                      : "bg-white"
+                      }`}
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-14 h-14 rounded-lg flex items-center justify-center ${
-                          isSelected ? "bg-[#DC3173]/10" : "bg-gray-50"
-                        }`}
+                        className={`w-14 h-14 rounded-lg flex items-center justify-center ${isSelected ? "bg-[#DC3173]/10" : "bg-gray-50"
+                          }`}
                       >
                         {d.prefersImagePreview ? (
                           <ImageIcon className="w-6 h-6 text-[#DC3173]" />

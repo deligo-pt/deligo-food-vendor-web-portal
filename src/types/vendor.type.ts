@@ -78,11 +78,13 @@ export type TVendor = {
 
   // Documents & Verification
   documents?: {
-    businessLicenseDoc?: string;
-    taxDoc?: string;
-    idProof?: string;
-    storePhoto?: string;
-    menuUpload?: string;
+    businessLicenseDoc?: string[];
+    taxDoc?: string[];
+    idProofFront?: string[];
+    idProofBack?: string[];
+    storePhoto?: string[];
+    menuUpload?: string[];
+    agoserisHaccpCertificate?: string[];
   };
 
   // Security & Access Control

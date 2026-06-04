@@ -4,7 +4,8 @@ export type DocKey =
   | "idProofFront"
   | "idProofBack"
   | "storePhoto"
-  | "menuUpload";
+  | "menuUpload"
+  | "agoserisHaccpCertificate";
 
 export type FilePreview = {
   file: File | null;
