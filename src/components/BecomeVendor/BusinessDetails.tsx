@@ -91,7 +91,7 @@ export default function BusinessDetailsForm({
       businessName: vendor?.businessDetails?.businessName || "",
       businessType: vendor?.businessDetails?.businessType || "",
       restaurantCuisineType:
-        vendor?.businessDetails?.restaurantCuisineType || "",
+        vendor?.businessDetails?.restaurantCuisineType,
       businessLicenseNumber:
         vendor?.businessDetails?.businessLicenseNumber || "",
       NIF: vendor?.businessDetails?.NIF || "",
@@ -111,9 +111,15 @@ export default function BusinessDetailsForm({
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
 
+    const { restaurantCuisineType, ...restOfData } = data;
+
+    const processedData = businessType === "STORE"
+      ? restOfData
+      : { ...restOfData, restaurantCuisineType };
+
     const businessDetails = {
       businessDetails: {
-        ...data,
+        ...processedData,
         NIF: data.NIF.toUpperCase(),
         businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
         totalBranches: Number(data.totalBranches),
