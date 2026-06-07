@@ -2,7 +2,7 @@
 
 import ProfileDoc, { IVendorDocs } from "@/src/components/Profile/ProfileDoc";
 import { ProfileInfoRow } from "@/src/components/Profile/ProfileInfoRow";
-import ProfilePhotoUpload from "@/src/components/Profile/ProfilePhotoUpload";
+import ProfilePhoto from "@/src/components/Profile/ProfilePhoto";
 import { ProfileSection } from "@/src/components/Profile/ProfileSection";
 import { USER_STATUS } from "@/src/consts/user.const";
 import { useTranslation } from "@/src/hooks/use-translation";
@@ -90,7 +90,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
           }}
         >
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6">
-            <ProfilePhotoUpload currentPhoto={vendor.profilePhoto} />
+            <ProfilePhoto currentPhoto={vendor.profilePhoto} />
 
             <div className="flex-1 text-center lg:text-left">
               <div className="flex flex-col lg:flex-row lg:items-center gap-3 mb-2">
