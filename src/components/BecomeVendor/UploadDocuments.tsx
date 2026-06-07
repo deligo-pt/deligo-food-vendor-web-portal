@@ -53,6 +53,9 @@ export default function UploadDocuments({
   const [previews, setPreviews] = useState<
     Record<DocKey, FilePreview[] | null>
   >({
+    myPhoto: Array.isArray(savedPreviews.myPhoto)
+      ? savedPreviews.myPhoto
+      : null,
     businessLicenseDoc: Array.isArray(savedPreviews.businessLicenseDoc)
       ? savedPreviews.businessLicenseDoc
       : null,
@@ -95,6 +98,7 @@ export default function UploadDocuments({
   };
 
   const DOCUMENTS: IDoc[] = [
+    { key: "myPhoto", label: t("myPhoto"), prefersImagePreview: true },
     {
       key: "businessLicenseDoc",
       label: t("documentsLabel1"),
@@ -124,6 +128,18 @@ export default function UploadDocuments({
     (doc) => !(vendor?.businessDetails?.businessType === "STORE" && doc.key === "agoserisHaccpCertificate")
   );
 
+  const documentLimits: Partial<Record<DocKey, number>> = {
+    myPhoto: 1,
+    idProofFront: 1,
+    idProofBack: 1,
+    agoserisHaccpCertificate: 1,
+
+    businessLicenseDoc: 3,
+    taxDoc: 3,
+    storePhoto: 3,
+    menuUpload: 3,
+  };
+
   // handle file selection (client-side only)
   const handleFileChange = async (key: DocKey, f?: File | null) => {
     if (!f) return;
@@ -134,21 +150,26 @@ export default function UploadDocuments({
 
     const toastId = toast.loading("Uploading...");
 
-    if (vendor?.businessDetails?.businessType === 'RESTAURANT') {
-      if (key === "agoserisHaccpCertificate" && previews[key]?.length === 1) {
-        toast.error("You can only upload one AGOSERIS HACCP Certificate", {
-          id: toastId,
-        });
-        return;
-      }
+    const currentCount = previews[key]?.length || 0;
+
+    let maxFiles = documentLimits[key] ?? 3;
+
+    // HACCP only applies to restaurants
+    if (
+      key === "agoserisHaccpCertificate" &&
+      vendor?.businessDetails?.businessType !== "RESTAURANT"
+    ) {
+      maxFiles = 0;
     }
-    else {
-      if (previews[key]?.length === 3) {
-        toast.error("You can only upload a maximum of 3 documents", {
-          id: toastId,
-        });
-        return;
-      }
+
+    if (currentCount >= maxFiles) {
+      const message =
+        maxFiles === 1
+          ? `You can only upload one ${DOCUMENTS.find(d => d.key === key)?.label ?? "document"}`
+          : `You can only upload a maximum of ${maxFiles} documents`;
+
+      toast.error(message, { id: toastId });
+      return;
     }
 
     const isImage = f.type.startsWith("image/");

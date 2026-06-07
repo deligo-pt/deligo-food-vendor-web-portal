@@ -164,9 +164,6 @@ export default function BecomeVendor() {
                           <Lock className="text-[#DC3173] w-5 h-5" />
                           <span>{t("password")}</span>
                         </FormLabel>
-                        <FormLabel className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                         
-                        </FormLabel>
                         <FormControl>
                           <div>
                             <Input
