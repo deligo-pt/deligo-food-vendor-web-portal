@@ -52,6 +52,8 @@ export default function LoginForm({ redirect, sessionExpired }: IProps) {
     },
   });
 
+  const { formState: { isSubmitting } } = form;
+
   const login = async (payload: {
     email: string;
     password: string;
@@ -113,7 +115,7 @@ export default function LoginForm({ redirect, sessionExpired }: IProps) {
   };
 
   const onSubmit = async (data: FormData) => {
-    login(data);
+    await login(data);
   };
 
   const clearSession = async () => {
@@ -215,9 +217,10 @@ export default function LoginForm({ redirect, sessionExpired }: IProps) {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-lg transition"
+              disabled={isSubmitting}
+              className={`w-full py-3 rounded-full bg-linear-to-r from-[#FF7EB3] to-[#DC3173] text-white font-bold text-lg hover:scale-105 hover:shadow-lg transition ${isSubmitting ? "cursor-not-allowed opacity-70" : ""}`}
             >
-              {t("loginCTA")}
+              {isSubmitting ? "Logging in..." : t("loginCTA")}
             </button>
           </form>
         </Form>
