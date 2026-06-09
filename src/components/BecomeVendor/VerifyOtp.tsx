@@ -30,6 +30,7 @@ export default function VerifyOtp({ email }: { email: string }) {
   const router = useRouter();
   const [timer, setTimer] = useState(getExpiryTime() || 0);
   const [otp, setOtp] = useState(["", "", "", ""]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const canResend = timer <= 0;
 
@@ -64,6 +65,7 @@ export default function VerifyOtp({ email }: { email: string }) {
     const finalOtp = otp.join("");
     const deviceDetails = await getDeviceInfo();
 
+    setIsSubmitting(true);
     if (finalOtp.length === 4) {
       const toastId = toast.loading("Verifying OTP...");
 
@@ -97,6 +99,7 @@ export default function VerifyOtp({ email }: { email: string }) {
     } else {
       toast.error("Please enter a valid 4-digit OTP");
     }
+    setIsSubmitting(false);
   };
 
   const resendOtp = async () => {
@@ -106,6 +109,7 @@ export default function VerifyOtp({ email }: { email: string }) {
       email,
     });
 
+    setIsSubmitting(true);
     if (result.success) {
       setTimer(300);
       setLocalOtpExpiry();
@@ -118,6 +122,7 @@ export default function VerifyOtp({ email }: { email: string }) {
 
     toast.error(result.message || "OTP resend failed", { id: toastId });
     console.log(result);
+    setIsSubmitting(false);
   };
 
   // Format time as MM:SS
@@ -190,11 +195,10 @@ export default function VerifyOtp({ email }: { email: string }) {
                   type="button"
                   onClick={resendOtp}
                   disabled={!canResend}
-                  className={`flex items-center gap-1 font-medium ${
-                    canResend
-                      ? "text-[#DC3173] hover:text-[#a72b5c]"
-                      : "text-gray-400 cursor-not-allowed"
-                  } transition-colors`}
+                  className={`flex items-center gap-1 font-medium ${canResend
+                    ? "text-[#DC3173] hover:text-[#a72b5c]"
+                    : "text-gray-400 cursor-not-allowed"
+                    } transition-colors`}
                 >
                   <RefreshCcw className="w-4 h-4" />
                   {t("resendOTP")}
@@ -204,9 +208,10 @@ export default function VerifyOtp({ email }: { email: string }) {
               {/* Verify Button */}
               <Button
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full bg-[#DC3173] hover:bg-[#a72b5c] transition-all duration-300 text-white text-lg font-medium py-2 rounded-lg shadow-md hover:shadow-lg"
               >
-                {t("verify")}
+                {isSubmitting ? "Verifying..." : t("verify")}
               </Button>
             </form>
           </CardContent>

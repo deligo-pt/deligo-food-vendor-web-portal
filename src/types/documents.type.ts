@@ -1,4 +1,5 @@
 export type DocKey =
+  | "myPhoto"
   | "businessLicenseDoc"
   | "taxDoc"
   | "idProofFront"

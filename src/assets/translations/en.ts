@@ -603,6 +603,7 @@ export const en = {
   processTitle5: "Complete",
   processSubTitle5: "Finish Setup",
   joinPartnerNetwork: "Join our partner network and grow with us",
+  password: "Password",
   iAcceptThe: "I accept the",
   termCondition: "Terms & Conditions",
   and: "and",

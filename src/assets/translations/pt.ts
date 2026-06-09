@@ -611,6 +611,7 @@ export const pt = {
   processTitle5: "Concluído",
   processSubTitle5: "Finalizar Configuração",
   joinPartnerNetwork: "Junte-se à nossa rede de parceiros e cresça connosco",
+  password: "Senha",
   iAcceptThe: "Aceito os",
   termCondition: "Termos e Condições",
   and: "e",
