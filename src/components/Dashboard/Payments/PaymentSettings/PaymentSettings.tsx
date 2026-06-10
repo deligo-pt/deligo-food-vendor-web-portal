@@ -61,8 +61,6 @@ const scheduleOptions = [
 export default function PaymentSettings({ bankDetails }: IProps) {
   const { t } = useTranslation();
 
-  console.log("Bank Details:", bankDetails);
-
   const [activeTab, setActiveTab] = useState("bank");
   const [iban, setIban] = useState(bankDetails?.iban || "");
   const [accountHolder, setAccountHolder] = useState(

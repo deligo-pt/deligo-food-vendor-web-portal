@@ -143,6 +143,8 @@ export function ProductForm({
       businessType,
     },
   });
+  const { formState: { isSubmitting } } = form;
+
   const [tabError, setTabError] = useState(
     tabs.reduce(
       (err, t) => {
@@ -292,12 +294,12 @@ export function ProductForm({
         },
         ...(businessType !== "RESTAURANT"
           ? {
-              stock: {
-                quantity: data.quantity,
-                unit: data.unit,
-                availabilityStatus: data.availabilityStatus,
-              },
-            }
+            stock: {
+              quantity: data.quantity,
+              unit: data.unit,
+              availabilityStatus: data.availabilityStatus,
+            },
+          }
           : {}),
       };
 
@@ -1240,11 +1242,10 @@ export function ProductForm({
                     type="button"
                     onClick={() => activeTab > 0 && setActiveTab(activeTab - 1)}
                     disabled={activeTab === 0}
-                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${
-                      activeTab === 0
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                    }`}
+                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${activeTab === 0
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                      }`}
                   >
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>
@@ -1258,6 +1259,7 @@ export function ProductForm({
                         scale: 0.98,
                       }}
                       type="submit"
+                      disabled={isSubmitting}
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2 shadow-lg shadow-pink-200/50"
                     >
                       <SaveIcon className="h-5 w-5" />

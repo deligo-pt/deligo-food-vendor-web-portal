@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -74,6 +75,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       applicableProducts: [],
     },
   });
+  const { formState: { isSubmitting } } = form;
 
   const [watchOfferType, watchApplicableProducts] = useWatch({
     control: form.control,
@@ -83,62 +85,76 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Creating offer...");
 
-    const offerData: Partial<TOffer> = {
-      title: data.title,
-      description: data.description,
-      offerType: data.offerType,
-      discountValue: data.discountValue,
-      maxDiscountAmount: data.maxDiscountAmount,
-      validFrom: data.validFrom,
-      expiresAt: data.expiresAt,
-      minOrderAmount: data.minOrderAmount,
-      code: data.code,
-      isAutoApply: false,
-      applicableProducts: data.applicableProducts,
+    try {
+      const offerData: Partial<TOffer> = {
+        title: data.title,
+        description: data.description,
+        offerType: data.offerType,
+        discountValue: data.discountValue,
+        maxDiscountAmount: data.maxDiscountAmount,
+        validFrom: data.validFrom,
+        expiresAt: data.expiresAt,
+        minOrderAmount: data.minOrderAmount,
+        code: data.code,
+        isAutoApply: false,
+        applicableProducts: data.applicableProducts,
 
-      ...(data.offerType === "BOGO"
-        ? {
+        ...(data.offerType === "BOGO"
+          ? {
             bogo: {
               buyQty: data.buyQty as number,
               getQty: data.getQty as number,
               productId: data.productId as string,
             },
           }
-        : {}),
+          : {}),
 
-      ...(data.maxUsageCount
-        ? { maxUsageCount: Number(data.maxUsageCount) }
-        : {}),
+        ...(data.maxUsageCount
+          ? { maxUsageCount: Number(data.maxUsageCount) }
+          : {}),
 
-      ...(data.userUsageLimit
-        ? { userUsageLimit: Number(data.userUsageLimit) }
-        : {}),
-    };
+        ...(data.userUsageLimit
+          ? { userUsageLimit: Number(data.userUsageLimit) }
+          : {}),
+      };
 
-    if (isSelectedAllProducts) {
-      delete offerData.applicableProducts;
+      if (isSelectedAllProducts) {
+        delete offerData.applicableProducts;
+      }
+
+      if (data.maxUsageCount === "") {
+        delete offerData.maxUsageCount;
+      }
+
+      if (data.userUsageLimit === "") {
+        delete offerData.userUsageLimit;
+      }
+
+      const result = await createOfferReq(offerData);
+
+      if (result.success) {
+        toast.success(
+          result.message || "Offer created successfully!",
+          { id: toastId }
+        );
+        form.reset();
+        return;
+      }
+
+      toast.error(
+        result.message || "Offer creation failed",
+        { id: toastId }
+      );
+    } catch (error: any) {
+      console.error(error);
+
+      toast.error(
+        error?.response?.data?.message ||
+        error?.message ||
+        "Offer creation failed",
+        { id: toastId }
+      );
     }
-
-    if (data.maxUsageCount === "") {
-      delete offerData.maxUsageCount;
-    }
-
-    if (data.userUsageLimit === "") {
-      delete offerData.userUsageLimit;
-    }
-
-    const result = await createOfferReq(offerData);
-
-    if (result.success) {
-      toast.success(result.message || "Offer created successfully!", {
-        id: toastId,
-      });
-      form.reset();
-      return;
-    }
-
-    toast.error(result.message || "Offer creation failed", { id: toastId });
-    console.log(result);
   };
 
   return (
@@ -692,6 +708,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                 <Button
                   className="h-12 px-6 text-base text-white"
                   style={{ background: PRIMARY }}
+                  disabled={isSubmitting}
                 >
                   {t("create_offer")}
                 </Button>

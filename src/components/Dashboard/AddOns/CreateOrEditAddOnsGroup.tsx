@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -73,6 +74,8 @@ export default function CreateOrEditAddOnsGroup({
         })) || [],
     },
   });
+  const { formState: { isSubmitting } } = form;
+
   const [optionName, setOptionName] = useState("");
   const [optionPrice, setOptionPrice] = useState(0);
   const [optionTax, setOptionTax] = useState("");
@@ -110,42 +113,56 @@ export default function CreateOrEditAddOnsGroup({
   };
 
   const handleAddOrEditGroup = async (data: TAddonGroupForm) => {
-    if (actionType === "create") {
-      const toastId = toast.loading("Creating add-on group...");
+    if (isSubmitting) return;
 
-      const result = await createAddOnsGroup(data);
-      if (result.success) {
-        form.reset();
-        toast.success(result.message || "Add-on group created successfully!", {
-          id: toastId,
-        });
-        router.refresh();
-        onOpenChange(false);
-        return;
+    try {
+      if (actionType === "create") {
+        const toastId = toast.loading("Creating add-on group...");
+
+        const result = await createAddOnsGroup(data);
+
+        if (result.success) {
+          form.reset();
+          toast.success(
+            result.message || "Add-on group created successfully!",
+            { id: toastId }
+          );
+          router.refresh();
+          onOpenChange(false);
+          return;
+        }
+
+        toast.error(
+          result.message || "Failed to create add-on group.",
+          { id: toastId }
+        );
+      } else {
+        const toastId = toast.loading("Updating add-on group...");
+
+        const result = await updateAddOnsGroup(
+          prevValues?._id as string,
+          data
+        );
+
+        if (result.success) {
+          form.reset();
+          toast.success(
+            result.message || "Add-on group updated successfully!",
+            { id: toastId }
+          );
+          router.refresh();
+          onOpenChange(false);
+          return;
+        }
+
+        toast.error(
+          result.message || "Failed to update add-on group.",
+          { id: toastId }
+        );
       }
-
-      toast.error(result.message || "Failed to create add-on group.", {
-        id: toastId,
-      });
-      console.log(result);
-    } else if (actionType === "edit") {
-      const toastId = toast.loading("Updating add-on group...");
-
-      const result = await updateAddOnsGroup(prevValues?._id as string, data);
-      if (result.success) {
-        form.reset();
-        toast.success(result.message || "Add-on group updated successfully!", {
-          id: toastId,
-        });
-        router.refresh();
-        onOpenChange(false);
-        return;
-      }
-
-      toast.error(result.message || "Failed to update add-on group.", {
-        id: toastId,
-      });
-      console.log(result);
+    } catch (error: any) {
+      toast.error(error?.message || "Something went wrong");
+      console.error(error);
     }
   };
 
@@ -336,6 +353,7 @@ export default function CreateOrEditAddOnsGroup({
                 className="w-full"
                 style={{ background: PRIMARY }}
                 form="creatAddOnsForm"
+                disabled={isSubmitting}
               >
                 {actionType === "create" ? "Create" : "Update"}
               </Button>
