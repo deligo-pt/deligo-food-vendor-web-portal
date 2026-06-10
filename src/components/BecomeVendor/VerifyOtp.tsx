@@ -105,11 +105,11 @@ export default function VerifyOtp({ email }: { email: string }) {
   const resendOtp = async () => {
     const toastId = toast.loading("Resending OTP...");
 
+    setIsSubmitting(true);
     const result = await resendOtpReq({
       email,
     });
 
-    setIsSubmitting(true);
     if (result.success) {
       setTimer(300);
       setLocalOtpExpiry();

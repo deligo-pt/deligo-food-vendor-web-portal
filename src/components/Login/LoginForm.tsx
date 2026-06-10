@@ -250,6 +250,7 @@ export default function LoginForm({ redirect, sessionExpired }: IProps) {
 
       <ClearSessionModal
         open={showModal}
+        isSubmitting={isSubmitting}
         onOpenChange={(open) => setShowModal(open)}
         onRemove={clearSession}
       />

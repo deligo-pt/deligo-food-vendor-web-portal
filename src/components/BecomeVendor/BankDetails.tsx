@@ -50,6 +50,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
     },
   });
   const router = useRouter();
+  const { formState: { isSubmitting } } = form;
 
   const onSubmit = async (data: TBankForm) => {
     const toastId = toast.loading("Updating...");
@@ -219,7 +220,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                     type="submit"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    disabled={form.formState.isSubmitting}
+                    disabled={isSubmitting}
                     className="w-full sm:w-auto inline-flex items-center gap-3 justify-center px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-60"
                   >
                     <Save className="w-5 h-5" />
