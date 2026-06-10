@@ -1,8 +1,10 @@
+const FIREBASE_VERSION = "12.7.0";   // ← Temporary fallback
+
 importScripts(
-  "https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js",
+  `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-app-compat.js`
 );
 importScripts(
-  "https://www.gstatic.com/firebasejs/10.11.0/firebase-messaging-compat.js",
+  `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-messaging-compat.js`
 );
 
 firebase.initializeApp({
@@ -17,19 +19,12 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  // console.log(
-  //   "[firebase-messaging-sw.js] Received background message:",
-  //   payload,
-  // );
-
   const { title, body, orderId, channelId } = payload.data || {};
 
-  const url =
-    channelId === "order_notification"
-      ? "/vendor/all-orders/" + orderId
-      : "/vendor/dashboard";
+  const url = channelId === "order_notification"
+    ? `/vendor/all-orders/${orderId}`
+    : "/vendor/dashboard";
 
-  const notificationTitle = title || "New Message";
   const notificationOptions = {
     body: body || "You have a new message",
     icon: "/deligoLogo.png",
@@ -38,7 +33,7 @@ messaging.onBackgroundMessage((payload) => {
     data: { url },
   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  self.registration.showNotification(title || "New Message", notificationOptions);
 });
 
 self.addEventListener("notificationclick", (event) => {
@@ -46,17 +41,13 @@ self.addEventListener("notificationclick", (event) => {
   const targetUrl = event.notification.data?.url || "/";
 
   event.waitUntil(
-    clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientList) => {
-        for (const client of clientList) {
-          if (new URL(client.url).pathname === targetUrl && "focus" in client) {
-            return client.focus();
-          }
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes(targetUrl) && "focus" in client) {
+          return client.focus();
         }
-        if (clients.openWindow) {
-          return clients.openWindow(targetUrl);
-        }
-      }),
+      }
+      if (clients.openWindow) return clients.openWindow(targetUrl);
+    })
   );
 });
