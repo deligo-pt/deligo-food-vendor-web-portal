@@ -1,7 +1,6 @@
 import { verifyTokens } from "@/src/utils/verifyTokens";
 import axios, { AxiosRequestConfig } from "axios";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 const backendUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1";
@@ -41,23 +40,6 @@ const serverRequestHelper = async (
       .then((res) => res.data)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .catch((error: any) => {
-        const status = error?.response?.status;
-
-        const isLoginRoute = url.includes("/auth/login");
-
-        // if (status === 401) {
-        //   cookieStore.delete("accessToken");
-        //   cookieStore.delete("refreshToken");
-
-        //   redirect("/login?sessionExpired=true");
-        // }
-        if (status === 401 && !isLoginRoute) {
-          cookieStore.delete("accessToken");
-          cookieStore.delete("refreshToken");
-
-          redirect("/login?sessionExpired=true");
-        }
-
         throw error;
       })
   );

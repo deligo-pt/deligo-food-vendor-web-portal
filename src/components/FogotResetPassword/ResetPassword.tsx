@@ -44,6 +44,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
     const resetData = {
       email: data.email,
       newPassword: data.password,
+      role: "VENDOR",
       token,
     };
 

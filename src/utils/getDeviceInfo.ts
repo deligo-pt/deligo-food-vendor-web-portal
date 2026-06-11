@@ -7,10 +7,9 @@ import { getFcmToken } from "./fcmToken";
 export const getDeviceInfo = async () => {
   const parser = new UAParser();
   const result = parser.getResult();
-  // const token = await getFcmToken();
+  const token = await getFcmToken();
 
   let deviceId = Cookies.get(DEVICE_KEY);
-
   if (!deviceId) {
     deviceId = uuidv4();
     Cookies.set(DEVICE_KEY, deviceId);
@@ -20,7 +19,7 @@ export const getDeviceInfo = async () => {
     deviceId,
     deviceType: "browser",
     deviceName: `${result.browser.name} ${result.browser.version}`,
-    // fcmToken: token,
+    fcmToken: token ? token : "",
     isLoggedIn: true,
     userAgent: navigator.userAgent,
   };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -47,33 +48,41 @@ export default function ChangePassword() {
     },
   });
   const router = useRouter();
+  const { formState: { isSubmitting } } = form;
 
   const onSubmit = async (data: ChangePasswordData) => {
+    if (isSubmitting) return;
     const toastId = toast.loading("Updating Password...");
 
-    const changePasswordData = {
-      oldPassword: data.oldPassword,
-      newPassword: data.newPassword,
-    };
+    try {
+      const changePasswordData = {
+        oldPassword: data.oldPassword,
+        newPassword: data.newPassword,
+      };
 
-    const result = await changePasswordReq(changePasswordData);
+      const result = await changePasswordReq(changePasswordData);
 
-    if (result.success) {
-      toast.success("Password Updated Successfully!", { id: toastId });
+      if (result.success) {
+        toast.success("Password Updated Successfully!", { id: toastId });
 
-      setSuccess(true);
-      removeCookie("accessToken");
-      removeCookie("refreshToken");
+        setSuccess(true);
+        removeCookie("accessToken");
+        removeCookie("refreshToken");
 
-      setTimeout(() => {
-        router.push("/login");
-      }, 500);
+        setTimeout(() => {
+          router.push("/login");
+        }, 500);
 
-      return;
+        return;
+      }
+
+      toast.error(result.message || "Password Update Failed", { id: toastId });
+    } catch (error: any) {
+      toast.error(
+        error?.message || "Failed to update password",
+        { id: toastId }
+      );
     }
-
-    toast.error(result.message || "Password Update Failed", { id: toastId });
-    console.log(result);
   };
 
   return (
@@ -211,8 +220,9 @@ export default function ChangePassword() {
               <div className="flex justify-end">
                 <Button
                   className="h-12 px-6 text-white rounded-xl"
+                  disabled={isSubmitting}
                   style={{ background: PRIMARY }}
-                  // onClick={updatePassword}
+                // onClick={updatePassword}
                 >
                   {t("update_password")}
                 </Button>

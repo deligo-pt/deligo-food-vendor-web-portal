@@ -49,6 +49,7 @@ export default function UploadDocuments({
   vendor: TVendor | null;
 }) {
   const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // store one preview per doc key
   const [previews, setPreviews] = useState<
     Record<DocKey, FilePreview[] | null>
@@ -362,6 +363,7 @@ export default function UploadDocuments({
   // Continue button handler: stop confetti and close modal (later you can trigger API)
   const handleContinue = async () => {
     const toastId = toast.loading("Submitting...");
+    setIsSubmitting(true);
 
     const result = await submitForApprovalReq(vendor?.userId as string);
 
@@ -378,6 +380,7 @@ export default function UploadDocuments({
       id: toastId,
     });
     console.log(result);
+    setIsSubmitting(false);
   };
 
   function getActualFileName(url: string): string {
@@ -560,7 +563,7 @@ export default function UploadDocuments({
                 disabled={
                   !visibleDocuments.every(
                     (d) => !(!previews[d.key] || previews[d.key]?.length === 0),
-                  )
+                  ) || isSubmitting
                 }
                 onClick={handleContinue}
                 className="bg-[#DC3173] hover:bg-[#b72a63] text-white px-6 py-3 rounded-xl shadow-lg"

@@ -40,9 +40,9 @@ type PersonalForm = {
 };
 
 export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
-  const phone = parsePhoneNumberFromString(vendor.contactNumber || "");
-
   const { t } = useTranslation();
+  const phone = parsePhoneNumberFromString(vendor.contactNumber || "");
+  const router = useRouter();
   const form = useForm<PersonalForm>({
     resolver: zodResolver(personalDetailsValidation),
     defaultValues: {
@@ -55,7 +55,8 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
       phoneNumber: phone?.nationalNumber || "",
     },
   });
-  const router = useRouter();
+
+  const { formState: { isSubmitting } } = form;
 
   const onSubmit = async (data: PersonalForm) => {
     const toastId = toast.loading("Updating...");
@@ -293,7 +294,8 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
                 >
                   <Button
                     type="submit"
-                    className="w-full font-semibold py-3 rounded-xl bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white shadow-lg shadow-pink-200 hover:brightness-110 transition-all duration-300"
+                    disabled={isSubmitting}
+                    className={`w-full font-semibold py-3 rounded-xl bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white shadow-lg shadow-pink-200 hover:brightness-110 transition-all duration-300 ${isSubmitting ? "cursor-not-allowed opacity-70" : ""}`}
                   >
                     {t("saveContinue")}
                   </Button>

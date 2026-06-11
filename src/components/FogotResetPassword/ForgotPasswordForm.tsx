@@ -42,7 +42,12 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (data: ForgotPasswordForm) => {
     const toastId = toast.loading("Sending Recovery Email...");
 
-    const result = await forgotPasswordReq(data);
+    const payload = {
+      ...data,
+      role: "VENDOR",
+    }
+
+    const result = await forgotPasswordReq(payload);
     if (result.success) {
       toast.success(result.message || "Recovery Email Sent Successfully!", {
         id: toastId,
