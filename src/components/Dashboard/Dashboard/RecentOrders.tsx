@@ -115,12 +115,12 @@ const RecentOrders = ({ recentOrders }: IProps) => {
         initial="hidden"
         animate="show"
       >
-        {recentOrders.length === 0 && (
+        {recentOrders?.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <p className="text-sm text-gray-500">{t("no_recent_orders")}</p>
           </div>
         )}
-        {recentOrders.map((order, index) => (
+        {recentOrders && recentOrders?.map((order, index) => (
           <motion.div
             key={index}
             className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
@@ -159,7 +159,7 @@ const RecentOrders = ({ recentOrders }: IProps) => {
           </motion.div>
         ))}
       </motion.div>
-      {recentOrders.length > 0 && (
+      {recentOrders && recentOrders?.length > 0 && (
         <Link href="/vendor/all-orders">
           <Button
             variant="link"

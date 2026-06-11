@@ -54,6 +54,18 @@ export default function TopbarIcons({ vendor }: IProps) {
 
     toast.error(result?.message || "Logout failed", { id: toastId });
     console.log(result);
+
+    if (result?.statusCode === 401 && result?.success === false) {
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    } else if (result?.statusCode === 404 && result?.success === false) {
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    }
   };
 
   return (

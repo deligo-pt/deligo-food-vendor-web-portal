@@ -23,13 +23,12 @@ import { jwtDecode } from "jwt-decode";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 interface IProps {
   redirect?: string;
-  sessionExpired?: boolean;
 }
 
 type FormData = {
@@ -37,7 +36,7 @@ type FormData = {
   password: string;
 };
 
-export default function LoginForm({ redirect, sessionExpired }: IProps) {
+export default function LoginForm({ redirect }: IProps) {
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -126,22 +125,6 @@ export default function LoginForm({ redirect, sessionExpired }: IProps) {
     });
   };
 
-  useEffect(() => {
-    if (sessionExpired) {
-      const timer = setTimeout(() => {
-        toast.error(
-          "Your session has expired as this device is no longer authorized.",
-          {
-            description: "Please log in again to continue.",
-            duration: 5000,
-          },
-        );
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#FF7EB3]/20 to-[#DC3173]/20 p-6">
