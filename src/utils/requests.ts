@@ -32,7 +32,7 @@ api.interceptors.response.use(
       Cookies.remove("accessToken");
       Cookies.remove("refreshToken");
 
-      window.location.href = "/login?sessionExpired=true";
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);
