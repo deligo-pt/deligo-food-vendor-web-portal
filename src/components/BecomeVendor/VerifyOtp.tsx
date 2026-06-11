@@ -71,6 +71,7 @@ export default function VerifyOtp({ email }: { email: string }) {
 
       const result = await verifyOtpReq({
         email,
+        role: "VENDOR",
         otp: finalOtp,
         deviceDetails,
       });
@@ -108,6 +109,7 @@ export default function VerifyOtp({ email }: { email: string }) {
     setIsSubmitting(true);
     const result = await resendOtpReq({
       email,
+      role: "VENDOR",
     });
 
     if (result.success) {

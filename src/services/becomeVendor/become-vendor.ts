@@ -6,7 +6,7 @@ import { catchAsync } from "@/src/utils/catchAsync";
 
 export const registerVendorReq = async (data: Partial<TVendor>) => {
   return catchAsync<TVendor>(async () => {
-    return await serverRequest.post("/auth/register/create-vendor", {
+    return await serverRequest.post("/auth/register", {
       data,
     });
   });

@@ -25,7 +25,7 @@ export const loginReq = async (data: {
   });
 };
 
-export const resendOtpReq = async (data: { email: string }) => {
+export const resendOtpReq = async (data: { email: string, role: "VENDOR", }) => {
   return catchAsync<null>(async () => {
     return await serverRequest.post("/auth/resend-otp", {
       data,
@@ -36,6 +36,7 @@ export const resendOtpReq = async (data: { email: string }) => {
 export const verifyOtpReq = async (data: {
   email: string;
   otp: string;
+  role: "VENDOR";
   deviceDetails: TDeviceDetails;
 }) => {
   return catchAsync<{ accessToken: string; refreshToken: string }>(async () => {

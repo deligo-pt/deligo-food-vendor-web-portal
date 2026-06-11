@@ -56,7 +56,7 @@ export default function BecomeVendor() {
   const onSubmit = async (data: FormValues) => {
     const toastId = toast.loading("Registering...");
 
-    const result = await registerVendorReq({ email: data.email, password: data.password });
+    const result = await registerVendorReq({ email: data.email, role: "VENDOR", password: data.password });
 
     if (result.success) {
       toast.success(result.message || "Registration successful!", {
