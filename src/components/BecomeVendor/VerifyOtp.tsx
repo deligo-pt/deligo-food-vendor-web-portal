@@ -31,6 +31,7 @@ export default function VerifyOtp({ email }: { email: string }) {
   const [timer, setTimer] = useState(getExpiryTime() || 0);
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResendSubmitting, setIsResendSubmitting] = useState(false);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const canResend = timer <= 0;
 
@@ -106,7 +107,7 @@ export default function VerifyOtp({ email }: { email: string }) {
   const resendOtp = async () => {
     const toastId = toast.loading("Resending OTP...");
 
-    setIsSubmitting(true);
+    setIsResendSubmitting(true);
     const result = await resendOtpReq({
       email,
       role: "VENDOR",
@@ -124,7 +125,7 @@ export default function VerifyOtp({ email }: { email: string }) {
 
     toast.error(result.message || "OTP resend failed", { id: toastId });
     console.log(result);
-    setIsSubmitting(false);
+    setIsResendSubmitting(false);
   };
 
   // Format time as MM:SS
@@ -210,7 +211,7 @@ export default function VerifyOtp({ email }: { email: string }) {
               {/* Verify Button */}
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isResendSubmitting}
                 className="w-full bg-[#DC3173] hover:bg-[#a72b5c] transition-all duration-300 text-white text-lg font-medium py-2 rounded-lg shadow-md hover:shadow-lg"
               >
                 {isSubmitting ? "Verifying..." : t("verify")}
