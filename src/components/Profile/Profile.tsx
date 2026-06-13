@@ -50,6 +50,22 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
     (1000 * 60 * 60 * 24),
   );
 
+  const convertTo12HourFormat = (timeStr: string): string => {
+    const [hoursStr, minutesStr] = timeStr.split(":");
+
+    let hours = parseInt(hoursStr, 10);
+    const minutes = minutesStr;
+
+    // Determine AM or PM
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    const formattedHours = hours < 10 ? `0${hours}` : hours;
+    return `${formattedHours}:${minutes} ${ampm}`;
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       {/* Header with gradient */}
@@ -227,12 +243,14 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
               />
               <ProfileInfoRow
                 label={t("opening_hours")}
-                value={vendor.businessDetails?.openingHours}
+                // value={vendor.businessDetails?.openingHours}
+                value={convertTo12HourFormat(vendor.businessDetails?.openingHours as string)}
                 icon={DoorOpenIcon}
               />
               <ProfileInfoRow
                 label={t("closing_hours")}
-                value={vendor.businessDetails?.closingHours}
+                value={convertTo12HourFormat(vendor.businessDetails?.closingHours as string)}
+                // value={vendor.businessDetails?.closingHours}
                 icon={DoorClosedIcon}
               />
               {vendor.businessDetails?.closingDays && (
