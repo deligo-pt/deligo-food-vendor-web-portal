@@ -62,7 +62,6 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       icon: <EuroIcon size={18} />,
       items: [
         { name: t("earnings_summary"), path: "/vendor/earnings" },
-        { name: t("payment_settings"), path: "/vendor/payment-settings" },
         { name: t("payouts"), path: "/vendor/payouts" },
         { name: t("transaction_history"), path: "/vendor/transactions" },
       ],
