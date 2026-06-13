@@ -2,6 +2,8 @@ import { serverRequest } from "@/lib/serverFetch";
 import VariationManagement from "@/src/components/Dashboard/Products/VariationManagement/VariationManagement";
 import { TMeta, TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
+import { TVendor } from "@/src/types/vendor.type";
+import { getVendorInfo } from "@/src/utils/getVendorInfo";
 
 interface IProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -10,6 +12,7 @@ interface IProps {
 export default async function VariationManagementPage({
   searchParams,
 }: IProps) {
+  const vendorInfo = await getVendorInfo();
   const queries = (await searchParams) || {};
   const limit = Number(queries?.limit || 10);
   const page = Number(queries.page || 1);
@@ -40,5 +43,5 @@ export default async function VariationManagementPage({
     console.log("Server fetch error:", err);
   }
 
-  return <VariationManagement productsData={initialData} />;
+  return <VariationManagement productsData={initialData} vendor={(vendorInfo?.vendor as TVendor) || {}} />;
 }

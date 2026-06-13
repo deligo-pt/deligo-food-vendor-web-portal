@@ -6,14 +6,16 @@ import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
+import { TVendor } from "@/src/types/vendor.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { Layers, Package, Tag } from "lucide-react";
 
 interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
+  vendor: TVendor;
 }
 
-export default function VariationManagement({ productsData }: IProps) {
+export default function VariationManagement({ productsData, vendor }: IProps) {
   const { t } = useTranslation();
 
   const sortOptions = [
@@ -51,14 +53,23 @@ export default function VariationManagement({ productsData }: IProps) {
   ];
 
   const totalVariations = productsData.data?.reduce(
-    (sum, p) => sum + p.variations.length,
-    0,
-  );
+    (sum, p) => sum + (p?.variations?.length || 0),
+    0
+  ) || 0;
 
   const totalOptions = productsData.data?.reduce(
-    (sum, p) => sum + p.variations.reduce((s, v) => s + v.options.length, 0),
-    0,
-  );
+    (sum, p) => {
+      const variationsList = p?.variations || [];
+
+      const productOptionsCount = variationsList.reduce(
+        (s, v) => s + (v?.options?.length || 0),
+        0
+      );
+
+      return sum + productOptionsCount;
+    },
+    0
+  ) || 0;
 
   return (
     <div className="min-h-screen bg-pink-50/50 pb-20">
@@ -130,7 +141,7 @@ export default function VariationManagement({ productsData }: IProps) {
                   delay: index * 0.05,
                 }}
               >
-                <ProductVariationCard product={product} />
+                <ProductVariationCard product={product} businessType={vendor?.businessDetails?.businessType as "STORE" | "RESTAURANT"} />
               </motion.div>
             ))}
           </AnimatePresence>

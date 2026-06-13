@@ -7,6 +7,7 @@ import VariationInlineEdit from "@/src/components/Dashboard/Products/VariationMa
 import {
   removeVariationReq,
   renameVariationReq,
+  updateVariationPrice,
 } from "@/src/services/dashboard/products/variation";
 import { TProduct } from "@/src/types/product.type";
 import { AnimatePresence, motion } from "framer-motion";
@@ -25,18 +26,19 @@ import { toast } from "sonner";
 
 interface IProps {
   product: TProduct;
+  businessType: "STORE" | "RESTAURANT";
 }
 
-export default function ProductVariationCard({ product }: IProps) {
+export default function ProductVariationCard({ product, businessType }: IProps) {
   const router = useRouter();
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAddVariation, setShowAddVariation] = useState(false);
   const [addingOptionFor, setAddingOptionFor] = useState<string | null>(null);
 
-  const variationCount = product.variations.length;
-  const optionCount = product.variations.reduce(
-    (sum, v) => sum + v.options.length,
+  const variationCount = product?.variations?.length || 0;
+  const optionCount = (product?.variations || [])?.reduce(
+    (sum, v) => sum + (v?.options?.length || 0),
     0,
   );
 
@@ -58,6 +60,37 @@ export default function ProductVariationCard({ product }: IProps) {
     }
 
     toast.error(result.message || "Failed to rename variation.", {
+      id: toastId,
+    });
+    console.log(result);
+  };
+
+  const updatePrice = async (variation: {
+    newPrice: string;
+    variationSku: string;
+  }) => {
+    const cleanPriceStr = variation.newPrice.replace(/[^0-9.]/g, "");
+
+    const numericPrice = parseFloat(cleanPriceStr);
+
+    const toastId = toast.loading("Updating variation price...");
+
+    const payload = {
+      newPrice: numericPrice,
+      variationSku: variation.variationSku
+    }
+
+    const result = await updateVariationPrice(product.productId, payload);
+
+    if (result.success) {
+      toast.success(result.message || "Variation price updated successfully!", {
+        id: toastId,
+      });
+      router.refresh();
+      return;
+    }
+
+    toast.error(result.message || "Failed to update variation price.", {
       id: toastId,
     });
     console.log(result);
@@ -196,7 +229,7 @@ export default function ProductVariationCard({ product }: IProps) {
               </AnimatePresence>
 
               {/* Variation Groups */}
-              {product.variations.length === 0 && !showAddVariation && (
+              {product?.variations?.length === 0 && !showAddVariation && (
                 <div className="text-center py-8">
                   <div className="inline-flex p-3 bg-white rounded-full text-gray-300 mb-3 shadow-sm">
                     <LayersIcon size={28} />
@@ -211,7 +244,7 @@ export default function ProductVariationCard({ product }: IProps) {
               )}
 
               <AnimatePresence mode="popLayout">
-                {product.variations.map((variation, vIdx) => (
+                {product?.variations?.map((variation, vIdx) => (
                   <motion.div
                     key={`${vIdx}-${variation.name}`}
                     layout
@@ -305,14 +338,24 @@ export default function ProductVariationCard({ product }: IProps) {
                             />
 
                             <span className="text-xs text-gray-500 shrink-0">
-                              €{option.price.toFixed(2)}
+                              <VariationInlineEdit
+                                title="Option Price"
+                                value={`€${option.price.toFixed(2)}`}
+                                onSave={(newPrice) =>
+                                  updatePrice({
+                                    newPrice,
+                                    variationSku: option?.sku,
+                                  })
+                                }
+                                className="text-sm font-medium text-gray-800 min-w-20"
+                              />
                             </span>
 
-                            <span className="text-xs text-gray-500 shrink-0">
+                            {businessType === "STORE" && <span className="text-xs text-gray-500 shrink-0">
                               Stock: {option.stockQuantity}
-                            </span>
+                            </span>}
 
-                            {option.isOutOfStock && (
+                            {(businessType === "STORE" && option.isOutOfStock) && (
                               <span className="text-xs font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded shrink-0">
                                 Out of Stock
                               </span>
@@ -352,6 +395,7 @@ export default function ProductVariationCard({ product }: IProps) {
                             productId={product.productId}
                             variationName={addingOptionFor}
                             onCancel={() => setAddingOptionFor(null)}
+                            businessType={businessType}
                           />
                         </div>
                       )}
