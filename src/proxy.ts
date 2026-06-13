@@ -33,11 +33,9 @@ export async function proxy(req: NextRequest) {
 
   // 1. CRITICAL FIX: Handle the explicit clear session flag safely in Middleware
   if (pathname === "/login" && searchParams.get("clearSession") === "true") {
-    console.log("hit here");
     const response = NextResponse.redirect(new URL("/login", req.url));
     response.cookies.delete("accessToken");
     response.cookies.delete("refreshToken");
-    console.log("Middleware: Expired tokens wiped successfully.");
     return response;
   }
 
