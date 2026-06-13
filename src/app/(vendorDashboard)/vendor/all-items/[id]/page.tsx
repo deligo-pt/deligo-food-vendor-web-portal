@@ -4,6 +4,7 @@ import { getProfileData } from "@/src/services/dashboard/profile/profile.service
 import { TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 import { TVendor } from "@/src/types/vendor.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function ProductDetailsPage({
   params,
@@ -24,6 +25,7 @@ export default async function ProductDetailsPage({
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   const vendorData: TVendor = await getProfileData();

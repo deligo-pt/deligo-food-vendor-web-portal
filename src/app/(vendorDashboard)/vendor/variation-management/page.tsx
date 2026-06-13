@@ -4,6 +4,7 @@ import { TMeta, TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 import { TVendor } from "@/src/types/vendor.type";
 import { getVendorInfo } from "@/src/utils/getVendorInfo";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 interface IProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -41,6 +42,7 @@ export default async function VariationManagementPage({
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <VariationManagement productsData={initialData} vendor={(vendorInfo?.vendor as TVendor) || {}} />;

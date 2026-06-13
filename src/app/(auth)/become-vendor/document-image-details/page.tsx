@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import UploadDocuments from "@/src/components/BecomeVendor/UploadDocuments";
 import { DocKey, FilePreview } from "@/src/types/documents.type";
 import { getVendorInfo } from "@/src/utils/getVendorInfo";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function UploadDocumentPage() {
   const vendorDetails = await getVendorInfo();
@@ -34,6 +35,7 @@ export default async function UploadDocumentPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return (

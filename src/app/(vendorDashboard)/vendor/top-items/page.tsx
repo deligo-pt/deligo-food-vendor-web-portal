@@ -1,6 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import TopPerformingItems from "@/src/components/Dashboard/Analytics/TopPerformingItems/TopPerformingItems";
 import { TTopPerformingItems } from "@/src/types/analytics.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function TopPerformingItemsPage() {
   let data: TTopPerformingItems = {} as TTopPerformingItems;
@@ -13,6 +14,7 @@ export default async function TopPerformingItemsPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <TopPerformingItems topPerformingItemsData={data} />;

@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import PayoutDetails from "@/src/components/Dashboard/Payments/Payouts/PayoutDetails";
 import { TResponse } from "@/src/types";
 import { TPayout } from "@/src/types/payout.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function PayoutDetailsPage({
   params,
@@ -21,6 +22,7 @@ export default async function PayoutDetailsPage({
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <PayoutDetails payout={initialData} />;

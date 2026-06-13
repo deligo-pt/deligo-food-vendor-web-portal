@@ -3,6 +3,7 @@ import BusinessLocation from "@/src/components/BecomeVendor/BusinessLocation";
 import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
 import { jwtDecode } from "jwt-decode";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 
 export default async function BusinessLocationPage() {
@@ -22,6 +23,7 @@ export default async function BusinessLocationPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.log("Server fetch error:", err?.response?.data);
+    if (isRedirectError(err)) throw err;
   }
 
   return <BusinessLocation vendor={vendor} />;

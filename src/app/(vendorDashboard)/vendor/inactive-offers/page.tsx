@@ -4,6 +4,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import ActiveOffers from "@/src/components/Dashboard/Offers/ActiveOffers/ActiveOffers";
 import { TMeta, TResponse } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -38,6 +39,7 @@ export default async function InactiveOffersPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <ActiveOffers offersResult={initialData} title="Inactive" />;

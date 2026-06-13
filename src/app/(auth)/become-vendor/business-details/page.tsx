@@ -4,6 +4,7 @@ import { TResponse } from "@/src/types";
 import { TBusinessCategory } from "@/src/types/category.type";
 import { TVendor } from "@/src/types/vendor.type";
 import { jwtDecode } from "jwt-decode";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 
 export default async function BusinessDetailsPage() {
@@ -23,6 +24,7 @@ export default async function BusinessDetailsPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   try {
@@ -35,6 +37,7 @@ export default async function BusinessDetailsPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return (

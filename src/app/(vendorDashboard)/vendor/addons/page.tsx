@@ -5,6 +5,7 @@ import AddOns from "@/src/components/Dashboard/AddOns/AddOns";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TTax } from "@/src/types/tax.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -46,6 +47,7 @@ export default async function AddOnsPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <AddOns addOnsResult={addOnsData} taxes={taxData} />;

@@ -1,6 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import CustomerInsights from "@/src/components/Dashboard/Analytics/CustomerInsights/CustomerInsights";
 import { TCustomerInsights } from "@/src/types/analytics.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function CustomerInsightsPage() {
   let data: TCustomerInsights = {} as TCustomerInsights;
@@ -13,6 +14,7 @@ export default async function CustomerInsightsPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <CustomerInsights insights={data} />;

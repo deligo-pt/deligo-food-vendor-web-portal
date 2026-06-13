@@ -1,6 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import OrderTrends from "@/src/components/Dashboard/Analytics/OrderTrends/OrderTrends";
 import { TOrderTrends } from "@/src/types/analytics.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function OrderTrendsPage() {
   let data: TOrderTrends = {} as TOrderTrends;
@@ -13,6 +14,7 @@ export default async function OrderTrendsPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <OrderTrends orderTrends={data} />;

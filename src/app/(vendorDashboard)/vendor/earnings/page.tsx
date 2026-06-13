@@ -1,6 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import EarningsSummary from "@/src/components/Dashboard/Payments/EarningsSummary/EarningsSummary";
 import { TEarningsAnalytics } from "@/src/types/analytics.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function EarningsSummaryPage() {
   let analyticsData: TEarningsAnalytics = {} as TEarningsAnalytics;
@@ -16,6 +17,7 @@ export default async function EarningsSummaryPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <EarningsSummary analyticsData={analyticsData} />;

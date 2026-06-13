@@ -4,6 +4,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import RatingSummary from "@/src/components/Dashboard/Reviews/RatingSummary";
 import { TResponse } from "@/src/types";
 import { TRatingSummary } from "@/src/types/review.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -34,6 +35,7 @@ export default async function RatingSummaryPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <RatingSummary summaryResult={initialData} />;
