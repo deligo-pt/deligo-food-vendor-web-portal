@@ -111,7 +111,6 @@ export default function TransactionTable({ transactions }: IProps) {
                     >
                       View
                     </DropdownMenuItem>
-                    <DropdownMenuItem>Download Invoice</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

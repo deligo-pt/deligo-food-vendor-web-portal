@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import Dashboard from "@/src/components/Dashboard/Dashboard/Dashboard";
 import { TAnalytics } from "@/src/types/analytics.type";
 import { jwtDecode } from "jwt-decode";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 
 export default async function DashboardPage() {
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return (

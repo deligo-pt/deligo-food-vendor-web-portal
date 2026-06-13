@@ -8,6 +8,7 @@ import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TProductCategory } from "@/src/types/category.type";
 import { TTax } from "@/src/types/tax.type";
 import { TVendor } from "@/src/types/vendor.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function AddItemPage() {
   let productCategoriesData: TProductCategory[] = [];
@@ -25,6 +26,7 @@ export default async function AddItemPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   try {
@@ -37,6 +39,7 @@ export default async function AddItemPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   try {
@@ -49,6 +52,7 @@ export default async function AddItemPage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return (

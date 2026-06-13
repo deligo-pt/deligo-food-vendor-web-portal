@@ -36,6 +36,21 @@ export const renameVariationReq = async (
   });
 };
 
+export const updateVariationPrice = async (
+  productId: string,
+  data: {
+    variationSku: string;
+    newPrice: number;
+  },
+) => {
+  return catchAsync<null>(async () => {
+    return await serverRequest.patch(
+      `/products/update-inventory-and-pricing/${productId}`,
+      { data },
+    );
+  });
+};
+
 export const removeVariationReq = async (
   productId: string,
   data: {

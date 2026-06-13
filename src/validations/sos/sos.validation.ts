@@ -4,14 +4,13 @@ import z from "zod";
 export const createSosValidationSchema = z.object({
   userNote: z
     .string()
-    .max(200, "User note must be at most 200 characters")
-    .optional(),
+    .min(1, { message: "User note is required" })
+    .max(200, "User note must be at most 200 characters"),
   issueTags: z
     .array(
-      z.enum(
-        SOS_ISSUE_TAGS,
-        "Issue tags must be one of the following: Accident, Medical Emergency, Fire, Crime, Natural Disaster, Other",
-      ),
-    )
-    .optional(),
+      z.enum(SOS_ISSUE_TAGS, {
+        message:
+          "Issue tags must be one of the following",
+      }),
+    ).min(1, { message: "Please select at least one issue tag" }),
 });

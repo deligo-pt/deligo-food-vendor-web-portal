@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import CustomerReport from "@/src/components/Dashboard/Reports/CustomerReport/CustomerReport";
 import { TMeta, TResponse } from "@/src/types";
 import { TCustomerReport } from "@/src/types/report.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -42,6 +43,7 @@ export default async function CustomerReportPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <CustomerReport customerReportData={initialData} />;

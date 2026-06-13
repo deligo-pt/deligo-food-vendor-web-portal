@@ -22,6 +22,7 @@ interface IProps {
   productId: string;
   variationName: string;
   onCancel: () => void;
+  businessType: "STORE" | "RESTAURANT"
 }
 
 type TOptionForm = z.infer<typeof variationOptionValidation>;
@@ -30,6 +31,7 @@ export default function AddVaritionOptionForm({
   productId,
   variationName,
   onCancel,
+  businessType
 }: IProps) {
   const router = useRouter();
 
@@ -126,7 +128,7 @@ export default function AddVaritionOptionForm({
               )}
             />
           </div>
-          <div className="w-24">
+          {businessType === "STORE" && <div className="w-24">
             <FormField
               control={form.control}
               name="stockQuantity"
@@ -148,7 +150,7 @@ export default function AddVaritionOptionForm({
                 </FormItem>
               )}
             />
-          </div>
+          </div>}
           <div className="flex items-center gap-2">
             <button className="px-4 py-1.5 bg-[#DC3173] text-white rounded-lg text-sm font-bold hover:bg-[#DC3173]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               Add

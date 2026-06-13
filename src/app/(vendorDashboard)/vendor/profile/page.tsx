@@ -1,6 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import Profile from "@/src/components/Profile/Profile";
 import { TVendor } from "@/src/types/vendor.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function ProfilePage() {
   let vendorData: TVendor = {} as TVendor;
@@ -13,6 +14,7 @@ export default async function ProfilePage() {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <Profile vendor={vendorData} />;

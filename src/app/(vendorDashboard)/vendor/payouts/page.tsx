@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import Payouts from "@/src/components/Dashboard/Payments/Payouts/Payouts";
 import { TMeta, TResponse } from "@/src/types";
 import { TPayout } from "@/src/types/payout.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -36,6 +37,7 @@ export default async function PayoutsPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <Payouts payoutsResult={initialData} />;

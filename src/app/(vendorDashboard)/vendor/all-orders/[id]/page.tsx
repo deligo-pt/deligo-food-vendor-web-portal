@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import OrderDetails from "@/src/components/Dashboard/Orders/OrderDetails/OrderDetails";
 import { TResponse } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function ProductDetailsPage({
   params,
@@ -21,6 +22,7 @@ export default async function ProductDetailsPage({
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <OrderDetails order={initialData} />;

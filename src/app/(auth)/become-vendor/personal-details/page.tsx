@@ -3,6 +3,7 @@ import PersonalDetails from "@/src/components/BecomeVendor/PersonalDetails";
 import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
 import { jwtDecode } from "jwt-decode";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 
 export default async function PersonalDetailsPage() {
@@ -22,6 +23,7 @@ export default async function PersonalDetailsPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.log("Server fetch error:", err?.response?.data);
+    if (isRedirectError(err)) throw err;
   }
 
   return <PersonalDetails vendor={vendor} />;

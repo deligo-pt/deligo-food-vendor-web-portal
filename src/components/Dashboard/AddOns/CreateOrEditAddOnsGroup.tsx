@@ -132,10 +132,15 @@ export default function CreateOrEditAddOnsGroup({
           return;
         }
 
-        toast.error(
-          result.message || "Failed to create add-on group.",
-          { id: toastId }
-        );
+        const errorSources = result?.data?.errorSources;
+        if (errorSources?.length > 0) {
+          toast.error(errorSources?.map((err: { path: string, message: string }) => err?.message), { id: toastId })
+        } else {
+          toast.error(
+            result.message || "Failed to update add-on group.",
+            { id: toastId }
+          );
+        }
       } else {
         const toastId = toast.loading("Updating add-on group...");
 
@@ -155,10 +160,17 @@ export default function CreateOrEditAddOnsGroup({
           return;
         }
 
-        toast.error(
-          result.message || "Failed to update add-on group.",
-          { id: toastId }
-        );
+        const errorSources = result?.data?.errorSources;
+        if (errorSources?.length > 0) {
+          errorSources?.map((err: any) => {
+            toast.error(err?.message, { id: toastId })
+          })
+        } else {
+          toast.error(
+            result.message || "Failed to update add-on group.",
+            { id: toastId }
+          );
+        }
       }
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");

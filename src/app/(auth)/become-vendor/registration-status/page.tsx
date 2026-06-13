@@ -4,6 +4,7 @@ import { USER_STATUS } from "@/src/consts/user.const";
 import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
 import { jwtDecode } from "jwt-decode";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 
 export default async function RegistrationStatusPage() {
@@ -26,6 +27,7 @@ export default async function RegistrationStatusPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.log("Server fetch error:", err?.response?.data);
+    if (isRedirectError(err)) throw err;
   }
 
   return <RegistrationStatus vendor={vendor} />;

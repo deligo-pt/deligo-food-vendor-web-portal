@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { verifyTokens } from "@/src/utils/verifyTokens";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const backendUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1";
@@ -10,12 +13,12 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-const serverRequestHelper = async (
+
+export const serverRequestHelper = async (
   url: string,
   options?: AxiosRequestConfig,
 ) => {
   const cookieStore = await cookies();
-
   const cookieStr = cookieStore.toString();
   const accessToken = cookieStore.get("accessToken")?.value || "";
 
@@ -23,8 +26,8 @@ const serverRequestHelper = async (
     await verifyTokens();
   }
 
-  return (
-    axiosInstance({
+  try {
+    const res = await axiosInstance({
       url,
       ...options,
       headers: {
@@ -36,13 +39,26 @@ const serverRequestHelper = async (
           cookie: cookieStr,
         }),
       },
-    })
-      .then((res) => res.data)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .catch((error: any) => {
-        throw error;
-      })
-  );
+    });
+
+    return res.data;
+  } catch (error: any) {
+
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    const err = error as AxiosError;
+
+    if (err.response?.status === 401) {
+      console.log("Unauthorized! Redirecting to login...");
+
+      redirect('/login?clearSession=true');
+    }
+
+
+    throw error;
+  }
 };
 
 export const serverRequest = {

@@ -318,6 +318,7 @@ export default function BusinessDetailsForm({
                           <FormControl>
                             <Input
                               placeholder="Social Number"
+                              type="number"
                               className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60 uppercase"
                               {...field}
                             />
@@ -342,6 +343,7 @@ export default function BusinessDetailsForm({
                           <FormControl>
                             <Input
                               placeholder="NIF"
+                              type="number"
                               className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60 uppercase"
                               {...field}
                             />

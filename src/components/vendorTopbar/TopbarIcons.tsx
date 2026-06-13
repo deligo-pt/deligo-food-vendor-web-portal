@@ -51,9 +51,18 @@ export default function TopbarIcons({ vendor }: IProps) {
       router.push("/login");
       return;
     }
+    if (result?.message === "NEXT_REDIRECT") {
+      toast.success("Logout successful!", {
+        id: toastId,
+      });
+
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    }
 
     toast.error(result?.message || "Logout failed", { id: toastId });
-    console.log(result);
 
     if (result?.statusCode === 401 && result?.success === false) {
       removeCookie("accessToken");

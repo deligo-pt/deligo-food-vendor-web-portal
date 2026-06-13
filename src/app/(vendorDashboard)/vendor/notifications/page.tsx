@@ -3,6 +3,7 @@ import VendorNotificationsContent, {
   TVendorNotification,
 } from "@/src/components/vendorNotifications/VendorNotificationsContent";
 import { TMeta, TResponse } from "@/src/types";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -28,6 +29,7 @@ export default async function VendorNotificationsPage({ searchParams }: IProps) 
     }
   } catch (err) {
     console.log("Server fetch notifications error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return (

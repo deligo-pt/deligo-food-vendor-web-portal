@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import VendorCreateOffer from "@/src/components/Dashboard/Offers/CreateOffer/CreateOffer";
 import { TMeta, TResponse } from "@/src/types";
 import { TProduct, TProductsQueryParams } from "@/src/types/product.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -36,6 +37,7 @@ export default async function CreateOfferPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
   return <VendorCreateOffer itemsResult={initialData} />;
 }

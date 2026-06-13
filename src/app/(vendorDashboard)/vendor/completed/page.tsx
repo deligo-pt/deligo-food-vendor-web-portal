@@ -3,6 +3,7 @@ import Orders from "@/src/components/Dashboard/Orders/Orders";
 import { ORDER_STATUS } from "@/src/consts/order.const";
 import { TMeta, TResponse } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -36,6 +37,7 @@ export default async function AllOrdersPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return (

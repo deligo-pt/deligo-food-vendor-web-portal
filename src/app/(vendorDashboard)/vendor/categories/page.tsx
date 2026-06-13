@@ -2,6 +2,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import Categories from "@/src/components/Dashboard/Categories/Categories";
 import { TMeta, TResponse } from "@/src/types";
 import { TProductCategory } from "@/src/types/category.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 interface IProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -36,6 +37,7 @@ export default async function page({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return <Categories categoriesResult={initialData} />;
