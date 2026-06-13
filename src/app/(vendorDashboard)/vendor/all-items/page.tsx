@@ -5,6 +5,7 @@ import { TMeta, TResponse } from "@/src/types";
 import { TProduct, TProductsQueryParams } from "@/src/types/product.type";
 import { TTax } from "@/src/types/tax.type";
 import { TVendor } from "@/src/types/vendor.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -45,6 +46,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetchProducts error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   try {
@@ -59,6 +61,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
     }
   } catch (err) {
     console.log("Server fetch error:", err);
+    if (isRedirectError(err)) throw err;
   }
 
   return (

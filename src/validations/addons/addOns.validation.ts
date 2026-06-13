@@ -9,32 +9,44 @@ export const createAddonOptionValidationSchema = z.object({
 export const createAddonGroupValidationSchema = z
   .object({
     title: z
-      .string("Group title is required (e.g., Extra Cheese)")
-      .min(2, "Group title must be at least 2 character")
-      .max(50, "Group title must be at most 50 characters")
-      .nonempty("Group title is required"),
+      .string("Group title is required")
+      .trim()
+      .min(2, "Group title must be at least 2 characters")
+      .max(50, "Group title must be at most 50 characters"),
+
     minSelectable: z
       .number("Minimum selection must be a number")
       .min(0, "Minimum selection cannot be negative"),
+
     maxSelectable: z
       .number("Maximum selection must be a number")
       .min(1, "Maximum selection must be at least 1"),
+
     options: z
       .array(
         z.object({
-          name: z.string(),
+          name: z.string().trim().min(1, "Option name is required"),
           price: z
             .number("Price must be a number")
             .min(0, "Price cannot be negative"),
-          tax: z.string(),
-        }),
+          tax: z.string().min(1, "Tax selection is required"),
+        })
       )
       .min(1, "At least one option must be provided in the group"),
     optionName: z.string().optional(),
     optionPrice: z.number().min(0).optional(),
     optionTax: z.string().optional(),
   })
+  .refine((data) => data.minSelectable <= data.maxSelectable, {
+    message: "Minimum selection cannot be greater than maximum selection",
+    path: ["minSelectable"],
+  })
+  .refine((data) => data.maxSelectable <= data.options.length, {
+    message: "Max selection cannot exceed the number of available options",
+    path: ["maxSelectable"],
+  })
   .refine((data) => data.options.length >= 1, {
     message: "At least one option must be provided in the group",
     path: ["optionTax"],
   });
+

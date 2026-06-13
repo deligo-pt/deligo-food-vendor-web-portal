@@ -20,7 +20,7 @@ const PROTECTED_REGISTRATION_PATHS = [
 ];
 
 export async function proxy(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const { pathname, searchParams } = req.nextUrl;
 
   // Skip Server Actions & POST requests (critical for forms)
   if (
@@ -29,6 +29,16 @@ export async function proxy(req: NextRequest) {
     req.method === "POST"
   ) {
     return NextResponse.next();
+  }
+
+  // 1. CRITICAL FIX: Handle the explicit clear session flag safely in Middleware
+  if (pathname === "/login" && searchParams.get("clearSession") === "true") {
+    console.log("hit here");
+    const response = NextResponse.redirect(new URL("/login", req.url));
+    response.cookies.delete("accessToken");
+    response.cookies.delete("refreshToken");
+    console.log("Middleware: Expired tokens wiped successfully.");
+    return response;
   }
 
   const accessToken = req.cookies.get("accessToken")?.value;
