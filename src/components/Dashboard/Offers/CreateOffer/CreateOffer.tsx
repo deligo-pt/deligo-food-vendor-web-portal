@@ -412,9 +412,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             <Input
                               type="date"
                               className="h-12"
-                              value={format(field.value, "yyyy-MM-dd")}
+                              min={format(new Date(), "yyyy-MM-dd")}
+                              value={field.value ? format(new Date(field.value), "yyyy-MM-dd") : ""}
                               onChange={(e) =>
-                                field.onChange(new Date(e.target.value))
+                                field.onChange(e.target.value ? new Date(e.target.value) : null)
                               }
                             />
                           </div>
@@ -436,9 +437,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             <Input
                               type="date"
                               className="h-12"
-                              value={format(field.value, "yyyy-MM-dd")}
+                              min={format(new Date(), "yyyy-MM-dd")}
+                              value={field.value ? format(new Date(field.value), "yyyy-MM-dd") : ""}
                               onChange={(e) =>
-                                field.onChange(new Date(e.target.value))
+                                field.onChange(e.target.value ? new Date(e.target.value) : null)
                               }
                             />
                           </div>
