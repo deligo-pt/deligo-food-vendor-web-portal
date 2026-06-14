@@ -29,6 +29,7 @@ import {
   MoreVertical,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface IProps {
   payouts: TPayout[];
@@ -36,6 +37,22 @@ interface IProps {
 
 export default function PayoutTable({ payouts }: IProps) {
   const router = useRouter();
+
+  const handleDownloadInvoice = (p: TPayout) => {
+    if (p.status === "PAID") {
+      generatePaymentPDF(p)
+    } else {
+      toast.error(`Your payment status is ${p.status}. You cannot able to download the invoice.`)
+    }
+  }
+
+  const handlePayoutProof = (p: TPayout) => {
+    if (p.status === "PAID") {
+      window.open(p.payoutProof, "_blank")
+    } else {
+      toast.error(`Your payment status is ${p.status}. You don't have anything to show as proof.`)
+    }
+  }
 
   return (
     <motion.div
@@ -114,11 +131,11 @@ export default function PayoutTable({ payouts }: IProps) {
                       View
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => window.open(p.payoutProof, "_blank")}
+                      onClick={() => handlePayoutProof(p)}
                     >
                       Payout Proof
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => generatePaymentPDF(p)}>
+                    <DropdownMenuItem onClick={() => handleDownloadInvoice(p)}>
                       Download
                     </DropdownMenuItem>
                   </DropdownMenuContent>
