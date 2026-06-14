@@ -636,6 +636,17 @@ export function EditProductForm({
                           </p>
                         )}
                       </div>
+                      {(prevData?.variations || prevData?.variations?.length !== 0) && <div className="flex items-start gap-3 p-4 rounded-xl border border-[#DC3173] bg-[#DC3173]/20">
+                        <div className="flex-shrink-0 mt-0.5">
+                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#DC3173] text-white text-xs font-bold select-none">
+                            !
+                          </span>
+                        </div>
+
+                        <p className="text-[#DC3173] text-sm font-medium italic leading-relaxed">
+                          For updating variation prices,Please visit Variation Management page
+                        </p>
+                      </div>}
                     </div>
                   </motion.div>
                 )}
