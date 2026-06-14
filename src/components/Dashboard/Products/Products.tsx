@@ -11,7 +11,7 @@ import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface IProps {
@@ -91,6 +91,10 @@ export default function Products({ productsData, businessType }: IProps) {
       console.log(result);
     }
   };
+
+  useEffect(() => {
+    setProducts(productsData.data);
+  }, [productsData])
 
   return (
     <div className="w-full">
@@ -191,9 +195,6 @@ export default function Products({ productsData, businessType }: IProps) {
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
-        setUpdatedData={(updatedProduct: TProduct) =>
-          setSelectedProduct(prev => ({ ...prev, product: updatedProduct }))
-        }
         businessType={businessType}
       />
     </div>

@@ -55,7 +55,6 @@ type FormData = z.infer<typeof productValidation>;
 
 interface IProps {
   prevData: TProduct;
-  setUpdatedData: (value: TProduct) => void;
   closeModal: () => void;
   businessType: string;
 }
@@ -67,7 +66,6 @@ interface IData<T> {
 
 export function EditProductForm({
   prevData,
-  setUpdatedData,
   closeModal,
   businessType,
 }: IProps) {
@@ -200,30 +198,29 @@ export function EditProductForm({
     });
 
     if (result.success) {
-      const pricingResult = await catchAsync<unknown>(async () => {
-        return (await updateData(
-          `/products/update-inventory-and-pricing/${prevData?.productId}`,
-          {
-            newPrice: data.price,
-          },
-        )) as unknown as TResponse<unknown>;
-      });
+      if (result?.data?.variations?.length === 0 || !result?.data?.variations) {
+        const pricingResult = await catchAsync<unknown>(async () => {
+          return (await updateData(
+            `/products/update-inventory-and-pricing/${prevData?.productId}`,
+            {
+              newPrice: data.price,
+            },
+          )) as unknown as TResponse<unknown>;
+        });
 
-      if (pricingResult.success) {
-        toast.success("Product updated successfully!", { id: toastId });
+        if (pricingResult.success) {
+          toast.success("Product updated successfully!", { id: toastId });
 
-        setUpdatedData(result?.data);
+          setActiveTab(0);
+          setTabError({});
+          router.refresh();
+          closeModal();
+          return;
+        }
+      };
 
-        setActiveTab(0);
-        setTabError({});
-        router.refresh();
-        closeModal();
-        return;
-      }
-    }
-    if (result.success) {
       toast.success("Product updated successfully!", { id: toastId });
-      setUpdatedData(result?.data);
+
       setActiveTab(0);
       setTabError({});
       router.refresh();
@@ -658,7 +655,7 @@ export function EditProductForm({
                       {t("pricing_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <FormField
+                      {(!prevData?.variations || prevData?.variations?.length === 0) && <FormField
                         control={form.control}
                         name="price"
                         render={({ field }) => (
@@ -686,7 +683,7 @@ export function EditProductForm({
                             <FormMessage />
                           </FormItem>
                         )}
-                      />
+                      />}
                       <FormField
                         control={form.control}
                         name="discount"
