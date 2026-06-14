@@ -45,9 +45,32 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
       router.push("/login");
       return;
     }
+    if (result?.message === "NEXT_REDIRECT") {
+      toast.success("Logout successful!", {
+        id: toastId,
+      });
+
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    }
 
     toast.error(result?.message || "Logout failed", { id: toastId });
-    console.log(result);
+
+    if (result?.statusCode === 401 && result?.success === false) {
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    } else if (result?.statusCode === 404 && result?.success === false) {
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    } else {
+      toast.dismiss();
+    }
   };
 
   return (
@@ -111,9 +134,9 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
               <>
                 {/* Dashboard Button */}
                 {vendorData?.status === "PENDING" ||
-                vendorData?.status === "SUBMITTED" ||
-                vendorData?.status === "REJECTED" ||
-                vendorData?.status === "BLOCKED" ? (
+                  vendorData?.status === "SUBMITTED" ||
+                  vendorData?.status === "REJECTED" ||
+                  vendorData?.status === "BLOCKED" ? (
                   <Link
                     href="/become-vendor/registration-status"
                     className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all"
