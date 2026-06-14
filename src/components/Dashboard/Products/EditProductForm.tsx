@@ -70,7 +70,7 @@ export function EditProductForm({
   businessType,
 }: IProps) {
   const router = useRouter();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
 
@@ -93,11 +93,11 @@ export function EditProductForm({
     },
     ...(businessType !== "RESTAURANT"
       ? [
-          {
-            name: t("stock"),
-            icon: <PackageIcon className="h-5 w-5" />,
-          },
-        ]
+        {
+          name: t("stock"),
+          icon: <PackageIcon className="h-5 w-5" />,
+        },
+      ]
       : []),
     {
       name: "DeliGo Metadata",
@@ -166,6 +166,7 @@ export function EditProductForm({
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Updating product...");
+    setIsSubmitting(true);
 
     const productData = {
       name: data.name,
@@ -183,10 +184,10 @@ export function EditProductForm({
       },
       ...(businessType !== "RESTAURANT"
         ? {
-            stock: {
-              unit: data.unit,
-            },
-          }
+          stock: {
+            unit: data.unit,
+          },
+        }
         : {}),
     };
 
@@ -198,27 +199,29 @@ export function EditProductForm({
     });
 
     if (result.success) {
-      const pricingResult = await catchAsync<unknown>(async () => {
-        return (await updateData(
-          `/products/update-inventory-and-pricing/${prevData?.productId}`,
-          {
-            newPrice: data.price,
-          },
-        )) as unknown as TResponse<unknown>;
-      });
+      if (result?.data?.variations?.length === 0 || !result?.data?.variations) {
+        const pricingResult = await catchAsync<unknown>(async () => {
+          return (await updateData(
+            `/products/update-inventory-and-pricing/${prevData?.productId}`,
+            {
+              newPrice: data.price,
+            },
+          )) as unknown as TResponse<unknown>;
+        });
 
-      if (pricingResult.success) {
-        toast.success("Product updated successfully!", { id: toastId });
+        if (pricingResult.success) {
+          toast.success("Product updated successfully!", { id: toastId });
 
-        setActiveTab(0);
-        setTabError({});
-        router.refresh();
-        closeModal();
-        return;
-      }
-    }
-    if (result.success) {
+          setActiveTab(0);
+          setTabError({});
+          router.refresh();
+          closeModal();
+          return;
+        }
+      };
+
       toast.success("Product updated successfully!", { id: toastId });
+
       setActiveTab(0);
       setTabError({});
       router.refresh();
@@ -227,6 +230,7 @@ export function EditProductForm({
     }
 
     toast.error(result.message || "Product update failed", { id: toastId });
+    setIsSubmitting(false);
   };
 
   const getAddonsGroups = async ({ limit = 10 }) => {
@@ -632,6 +636,17 @@ export function EditProductForm({
                           </p>
                         )}
                       </div>
+                      {(prevData?.variations || prevData?.variations?.length !== 0) && <div className="flex items-start gap-3 p-4 rounded-xl border border-[#DC3173] bg-[#DC3173]/20">
+                        <div className="flex-shrink-0 mt-0.5">
+                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#DC3173] text-white text-xs font-bold select-none">
+                            !
+                          </span>
+                        </div>
+
+                        <p className="text-[#DC3173] text-sm font-medium italic leading-relaxed">
+                          For updating variation prices,Please visit Variation Management page
+                        </p>
+                      </div>}
                     </div>
                   </motion.div>
                 )}
@@ -653,7 +668,7 @@ export function EditProductForm({
                       {t("pricing_information")}
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <FormField
+                      {(!prevData?.variations || prevData?.variations?.length === 0) && <FormField
                         control={form.control}
                         name="price"
                         render={({ field }) => (
@@ -681,7 +696,7 @@ export function EditProductForm({
                             <FormMessage />
                           </FormItem>
                         )}
-                      />
+                      />}
                       <FormField
                         control={form.control}
                         name="discount"
@@ -732,7 +747,7 @@ export function EditProductForm({
                                 <SelectContent>
                                   {taxesData?.data?.map((tax) => (
                                     <SelectItem key={tax._id} value={tax._id}>
-                                      {tax.taxName}({}
+                                      {tax.taxName}({ }
                                       {tax.taxRate}%)
                                     </SelectItem>
                                   ))}
@@ -946,11 +961,10 @@ export function EditProductForm({
                     type="button"
                     onClick={() => activeTab > 0 && setActiveTab(activeTab - 1)}
                     disabled={activeTab === 0}
-                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${
-                      activeTab === 0
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                    }`}
+                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${activeTab === 0
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                      }`}
                   >
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>
@@ -964,6 +978,7 @@ export function EditProductForm({
                         scale: 0.98,
                       }}
                       type="submit"
+                      disabled={isSubmitting}
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2 shadow-lg shadow-pink-200/50"
                     >
                       <SaveIcon className="h-5 w-5" />

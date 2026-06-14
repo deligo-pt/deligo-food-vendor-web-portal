@@ -24,6 +24,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface IProps {
@@ -33,9 +34,11 @@ interface IProps {
 export default function RegistrationStatus({ vendor }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const logOut = async () => {
     const toastId = toast.loading("Logging out...");
+    setIsSubmitting(true);
 
     const result = await logoutReq();
 
@@ -52,6 +55,7 @@ export default function RegistrationStatus({ vendor }: IProps) {
 
     toast.error(result?.message || "Logout failed", { id: toastId });
     console.log(result);
+    setIsSubmitting(false);
   };
 
   return (
@@ -236,6 +240,7 @@ export default function RegistrationStatus({ vendor }: IProps) {
                   </Button>
                   <Button
                     variant="outline"
+                    disabled={isSubmitting}
                     className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
                     onClick={logOut}
                   >
@@ -257,6 +262,7 @@ export default function RegistrationStatus({ vendor }: IProps) {
                   </Button>
                   <Button
                     variant="outline"
+                    disabled={isSubmitting}
                     className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
                     onClick={logOut}
                   >
@@ -278,6 +284,7 @@ export default function RegistrationStatus({ vendor }: IProps) {
                   </Button>
                   <Button
                     variant="outline"
+                    disabled={isSubmitting}
                     className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
                     onClick={logOut}
                   >
@@ -302,6 +309,7 @@ export default function RegistrationStatus({ vendor }: IProps) {
                   </Button>
                   <Button
                     variant="outline"
+                    disabled={isSubmitting}
                     className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
                     onClick={logOut}
                   >

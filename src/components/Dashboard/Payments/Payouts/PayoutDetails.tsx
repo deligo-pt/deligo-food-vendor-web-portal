@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 // const timeline = [
 //   {
@@ -85,6 +86,22 @@ export default function PayoutDetails({ payout }: IProps) {
     },
   } as Variants;
 
+  const handleDownloadInvoice = (p: TPayout) => {
+    if (p.status === "PAID") {
+      generatePaymentPDF(p)
+    } else {
+      toast.error(`Your payment status is ${p.status}. You cannot able to download the invoice.`)
+    }
+  }
+
+  const handlePayoutProof = (p: TPayout) => {
+    if (p.status === "PAID") {
+      window.open(p.payoutProof, "_blank")
+    } else {
+      toast.error(`Your payment status is ${p.status}. You don't have anything to show as proof.`)
+    }
+  }
+
   return (
     <motion.div
       className="min-h-screen p-6 space-y-6"
@@ -112,13 +129,13 @@ export default function PayoutDetails({ payout }: IProps) {
       <div className="flex justify-end gap-4">
         <Button
           className="bg-[#DC3173] hover:bg-[#DC3173]/90"
-          onClick={() => generatePaymentPDF(payout)}
+          onClick={() => handleDownloadInvoice(payout)}
         >
           Download Statement
         </Button>
         <Button
           className="bg-indigo-500 hover:bg-indigo-600"
-          onClick={() => window.open(payout.payoutProof, "_blank")}
+          onClick={() => handlePayoutProof(payout)}
         >
           View Proof
         </Button>

@@ -36,6 +36,12 @@ export default function VerifyOtp({ email }: { email: string }) {
   const canResend = timer <= 0;
 
   useEffect(() => {
+    if (inputRefs.current[0]) {
+      inputRefs.current[0].focus();
+    }
+  }, []);
+
+  useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => setTimer((t) => t - 1), 1000);
       return () => clearInterval(interval);
@@ -104,6 +110,24 @@ export default function VerifyOtp({ email }: { email: string }) {
     setIsSubmitting(false);
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").trim();
+
+    if (/^\d+$/.test(pastedData)) {
+      const codeDigits = pastedData.slice(0, 4).split("");
+
+      const newOtp = [...otp];
+      for (let i = 0; i < 4; i++) {
+        newOtp[i] = codeDigits[i] || "";
+      }
+      setOtp(newOtp);
+
+      const targetIndex = Math.min(codeDigits.length, 3);
+      inputRefs.current[targetIndex]?.focus();
+    }
+  };
+
   const resendOtp = async () => {
     const toastId = toast.loading("Resending OTP...");
 
@@ -168,10 +192,11 @@ export default function VerifyOtp({ email }: { email: string }) {
                       value={digit}
                       onChange={(e) => handleChange(e.target.value, index)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
+                      onPaste={handlePaste}
                       ref={(el) => {
                         inputRefs.current[index] = el;
                       }}
-                      autoFocus={true}
+                      // autoFocus={index === 0}
                       className="w-14 h-14 text-center text-2xl font-bold rounded-xl border border-gray-300 shadow-sm bg-white focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173] group-hover:border-[#DC3173]/50 transition-all duration-300"
                     />
 
@@ -211,8 +236,8 @@ export default function VerifyOtp({ email }: { email: string }) {
               {/* Verify Button */}
               <Button
                 type="submit"
-                disabled={isSubmitting || isResendSubmitting}
-                className="w-full bg-[#DC3173] hover:bg-[#a72b5c] transition-all duration-300 text-white text-lg font-medium py-2 rounded-lg shadow-md hover:shadow-lg"
+                disabled={isSubmitting || isResendSubmitting || otp.join("").length !== 4}
+                className="w-full bg-[#DC3173] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-[#a72b5c] transition-all duration-300 text-white text-lg font-medium py-2 rounded-lg shadow-md hover:shadow-lg"
               >
                 {isSubmitting ? "Verifying..." : t("verify")}
               </Button>

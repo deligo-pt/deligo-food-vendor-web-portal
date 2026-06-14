@@ -11,7 +11,7 @@ import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface IProps {
@@ -74,7 +74,7 @@ export default function Products({ productsData, businessType }: IProps) {
     const toastId = toast.loading("Deleting product...");
     if (selectedProduct.id && selectedProduct.action === "delete") {
       const result = await deleteProductReq(selectedProduct.id);
-      
+
       if (result.success) {
         setProducts((prev) =>
           prev.filter((product) => product.productId !== selectedProduct.id),
@@ -91,6 +91,10 @@ export default function Products({ productsData, businessType }: IProps) {
       console.log(result);
     }
   };
+
+  useEffect(() => {
+    setProducts(productsData.data);
+  }, [productsData])
 
   return (
     <div className="w-full">
@@ -130,7 +134,7 @@ export default function Products({ productsData, businessType }: IProps) {
         </div>
       )}
 
-     {products?.length > 0 ? (
+      {products?.length > 0 ? (
         <motion.div
           layout
           className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"

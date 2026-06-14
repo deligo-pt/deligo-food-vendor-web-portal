@@ -27,6 +27,7 @@ import z from "zod";
 interface IProps {
   productId: string;
   onCancel: () => void;
+  businessType: "STORE" | "RESTAURANT";
 }
 
 interface IOption {
@@ -37,7 +38,7 @@ interface IOption {
 
 type TVariationForm = z.infer<typeof variationValidation>;
 
-export default function AddVariationForm({ productId, onCancel }: IProps) {
+export default function AddVariationForm({ productId, onCancel, businessType }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -182,7 +183,7 @@ export default function AddVariationForm({ productId, onCancel }: IProps) {
               placeholder="Add an option price"
             />
           </div>
-          <div>
+          {businessType === "STORE" && <div>
             <Label className="text-gray-700 mb-1">Stock Quantity</Label>
             <Input
               type="number"
@@ -196,7 +197,7 @@ export default function AddVariationForm({ productId, onCancel }: IProps) {
               }
               placeholder="Add stock quantity"
             />
-          </div>
+          </div>}
           {form.formState.errors.options && (
             <p className="text-destructive text-sm">
               {form.formState.errors.options.message}

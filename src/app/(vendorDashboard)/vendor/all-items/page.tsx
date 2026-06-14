@@ -1,7 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import Products from "@/src/components/Dashboard/Products/Products";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
-import { TMeta, TResponse } from "@/src/types";
+import { TMeta } from "@/src/types";
 import { TProduct, TProductsQueryParams } from "@/src/types/product.type";
 import { TTax } from "@/src/types/tax.type";
 import { TVendor } from "@/src/types/vendor.type";
@@ -12,62 +12,60 @@ type IProps = {
 };
 
 export default async function ProductsPage({ searchParams }: IProps) {
-  const vendorData: TVendor = await getProfileData();
-
   const queries = (await searchParams) || {};
   const limit = Number(queries?.limit || 20);
   const page = Number(queries.page || 1);
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
-  const availability =
-    (vendorData?.businessDetails?.businessType === "RESTAURANT" &&
-      queries.status) ||
-    "";
 
-  const query: Partial<TProductsQueryParams> = {
-    limit,
-    page,
-    sortBy,
-    ...(searchTerm ? { searchTerm: searchTerm } : {}),
-    ...(availability ? { "stock.availabilityStatus": availability } : {}),
-  };
-
+  let vendorData: TVendor | null = null;
   const productsData: { data: TProduct[]; meta?: TMeta } = { data: [] };
   const taxesData: { data: TTax[]; meta?: TMeta } = { data: [] };
 
   try {
-    const result = (await serverRequest.get("/products", {
-      params: query,
-    })) as TResponse<TProduct[]>;
+    vendorData = await getProfileData();
 
-    if (result?.success) {
-      productsData.data = result.data;
-      productsData.meta = result.meta;
+    const availability =
+      (vendorData?.businessDetails?.businessType === "RESTAURANT" &&
+        queries.status) ||
+      "";
+
+    const query: Partial<TProductsQueryParams> = {
+      limit,
+      page,
+      sortBy,
+      ...(searchTerm ? { searchTerm } : {}),
+      ...(availability ? { "stock.availabilityStatus": availability } : {}),
+    };
+
+    const [productsResult, taxesResult] = await Promise.all([
+      serverRequest.get("/products", { params: query }),
+      serverRequest.get("/taxes"),
+    ]);
+
+
+    if (productsResult?.success) {
+      productsData.data = productsResult.data;
+      productsData.meta = productsResult.meta;
     }
-  } catch (err) {
-    console.log("Server fetchProducts error:", err);
-    if (isRedirectError(err)) throw err;
-  }
 
-  try {
-    const result = (await serverRequest.get("/taxes")) as TResponse<{
-      data: TTax[];
-      meta?: TMeta;
-    }>;
-
-    if (result?.success) {
-      taxesData.data = result.data?.data;
-      taxesData.meta = result.data?.meta;
+    if (taxesResult?.success) {
+      taxesData.data = taxesResult.data?.data || [];
+      taxesData.meta = taxesResult.data?.meta;
     }
+
   } catch (err) {
-    console.log("Server fetch error:", err);
-    if (isRedirectError(err)) throw err;
+    console.log("Server Page Data Fetch Error:", err);
+
+    if (isRedirectError(err)) {
+      throw err;
+    }
   }
 
   return (
     <Products
       productsData={productsData}
-      businessType={vendorData?.businessDetails?.businessType as string}
+      businessType={(vendorData?.businessDetails?.businessType as string) || ""}
     />
   );
 }
