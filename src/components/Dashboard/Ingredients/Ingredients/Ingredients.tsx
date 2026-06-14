@@ -33,11 +33,6 @@ export default function Ingredients({ ingredientsData }: IProps) {
     { label: t("oldest_first"), value: "createdAt" },
   ];
 
-  // const handlePlaceOrder = async () => {
-  //   setIsOrdering(true);
-
-  // };
-
   const purchaseIngredient = async (paymentMethod: string) => {
     setIsOrdering(true);
     const toastId = toast.loading("Proccessing payment...");

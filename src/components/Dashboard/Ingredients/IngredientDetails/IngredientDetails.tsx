@@ -1,7 +1,8 @@
 "use client";
 
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
-import { TIngredient } from "@/src/types/ingredient.type";
+import { createIngredientPaymentIntentReq } from "@/src/services/dashboard/ingredient/ingredient.service";
+import { TIngredient, TIngredientPaymentIntentPayload } from "@/src/types/ingredient.type";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -16,6 +17,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
+import PaymentMethodSelectModal from "../Ingredients/PaymentMethodSelectModal";
 
 interface IProps {
   ingredient: TIngredient;
@@ -23,21 +25,43 @@ interface IProps {
 
 export default function IngredientDetail({ ingredient }: IProps) {
   const [quantity, setQuantity] = useState(ingredient.minOrder || 1);
-  const [isAdding, setIsAdding] = useState(false);
-
-  const handleBuy = async () => {
-    setIsAdding(true);
-    const toastId = toast.loading("Buying...");
-
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    toast.success("Successfully bought", { id: toastId });
-    setIsAdding(false);
-    setQuantity(ingredient.minOrder || 1);
-  };
+  const [isOrdering, setIsOrdering] = useState(false);
+  const [orderDetails, setOrderDetails] = useState<{
+    ingredient: string;
+    totalQuantity: number;
+  } | null>(null);
 
   const increment = () => setQuantity((q) => Math.min(ingredient.stock, q + 1));
   const decrement = () => setQuantity((q) => Math.max(0, q - 1));
+
+  const purchaseIngredient = async (paymentMethod: string) => {
+    setIsOrdering(true);
+    const toastId = toast.loading("Proccessing payment...");
+
+    const payload = {
+      orderDetails,
+      paymentMethod,
+    } as TIngredientPaymentIntentPayload;
+
+    const result = await createIngredientPaymentIntentReq(payload);
+
+    setIsOrdering(false);
+
+    if (result.success) {
+      toast.success(
+        "Payment processed successfully! Redirecting to payment page",
+        {
+          id: toastId,
+        },
+      );
+      setOrderDetails(null);
+      window.location.href = result.data?.redirectUrl;
+      return;
+    }
+
+    toast.error(result.message || "Failed to place order", { id: toastId });
+    console.log(result);
+  };
 
   return (
     <div className="min-h-screen">
@@ -162,18 +186,18 @@ export default function IngredientDetail({ ingredient }: IProps) {
             </div>
 
             <button
-              onClick={handleBuy}
-              disabled={isAdding}
-              className={`w-full py-4 bg-[#DC3173] text-white rounded-xl font-bold text-lg shadow-lg shadow-[#DC3173]/20 hover:bg-[#DC3173]/90 transition-all flex items-center justify-center gap-2 ${isAdding ? "opacity-70 cursor-wait" : ""}`}
+              onClick={() =>
+                setOrderDetails({
+                  ingredient: ingredient?._id,
+                  totalQuantity: quantity,
+                })
+              }
+              className={`w-full py-4 bg-[#DC3173] text-white rounded-xl font-bold text-lg shadow-lg shadow-[#DC3173]/20 hover:bg-[#DC3173]/90 transition-all flex items-center justify-center gap-2`}
             >
-              {isAdding ? (
-                "Adding..."
-              ) : (
-                <>
-                  <ShoppingCart size={22} />
-                  Buy Now
-                </>
-              )}
+              <>
+                <ShoppingCart size={22} />
+                Buy Now
+              </>
             </button>
           </div>
 
@@ -189,6 +213,14 @@ export default function IngredientDetail({ ingredient }: IProps) {
           </div>
         </motion.div>
       </div>
+
+      {/* Payment Method Select Modal */}
+      <PaymentMethodSelectModal
+        open={!!orderDetails?.ingredient}
+        onOpenChange={(open) => !open && setOrderDetails(null)}
+        onPurchase={purchaseIngredient}
+        isOrdering={isOrdering}
+      />
     </div>
   );
 }
