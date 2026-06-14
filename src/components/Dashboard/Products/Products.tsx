@@ -74,7 +74,7 @@ export default function Products({ productsData, businessType }: IProps) {
     const toastId = toast.loading("Deleting product...");
     if (selectedProduct.id && selectedProduct.action === "delete") {
       const result = await deleteProductReq(selectedProduct.id);
-      
+
       if (result.success) {
         setProducts((prev) =>
           prev.filter((product) => product.productId !== selectedProduct.id),
@@ -130,7 +130,7 @@ export default function Products({ productsData, businessType }: IProps) {
         </div>
       )}
 
-     {products?.length > 0 ? (
+      {products?.length > 0 ? (
         <motion.div
           layout
           className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
@@ -191,6 +191,9 @@ export default function Products({ productsData, businessType }: IProps) {
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
+        setUpdatedData={(updatedProduct: TProduct) =>
+          setSelectedProduct(prev => ({ ...prev, product: updatedProduct }))
+        }
         businessType={businessType}
       />
     </div>

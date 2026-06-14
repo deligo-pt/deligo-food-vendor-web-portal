@@ -65,6 +65,12 @@ export default function TopPerformingItems({ topPerformingItemsData }: IProps) {
       />
 
       {/* Items Grid */}
+      {topPerformingItemsData?.topItems?.length < 1 && (
+        <div className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 rounded-xl border border-dashed w-full">
+          <p className="text-gray-500 text-lg font-medium">No items available to show</p>
+          <p className="text-gray-400 text-sm mt-0.5">Your top performing items will appear here once orders are processed.</p>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {topPerformingItemsData.topItems?.map((item, index) => (
           <motion.div

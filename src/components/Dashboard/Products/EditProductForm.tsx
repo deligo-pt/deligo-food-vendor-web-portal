@@ -55,6 +55,7 @@ type FormData = z.infer<typeof productValidation>;
 
 interface IProps {
   prevData: TProduct;
+  setUpdatedData: (value: TProduct) => void;
   closeModal: () => void;
   businessType: string;
 }
@@ -66,6 +67,7 @@ interface IData<T> {
 
 export function EditProductForm({
   prevData,
+  setUpdatedData,
   closeModal,
   businessType,
 }: IProps) {
@@ -93,11 +95,11 @@ export function EditProductForm({
     },
     ...(businessType !== "RESTAURANT"
       ? [
-          {
-            name: t("stock"),
-            icon: <PackageIcon className="h-5 w-5" />,
-          },
-        ]
+        {
+          name: t("stock"),
+          icon: <PackageIcon className="h-5 w-5" />,
+        },
+      ]
       : []),
     {
       name: "DeliGo Metadata",
@@ -183,10 +185,10 @@ export function EditProductForm({
       },
       ...(businessType !== "RESTAURANT"
         ? {
-            stock: {
-              unit: data.unit,
-            },
-          }
+          stock: {
+            unit: data.unit,
+          },
+        }
         : {}),
     };
 
@@ -210,6 +212,8 @@ export function EditProductForm({
       if (pricingResult.success) {
         toast.success("Product updated successfully!", { id: toastId });
 
+        setUpdatedData(result?.data);
+
         setActiveTab(0);
         setTabError({});
         router.refresh();
@@ -219,6 +223,7 @@ export function EditProductForm({
     }
     if (result.success) {
       toast.success("Product updated successfully!", { id: toastId });
+      setUpdatedData(result?.data);
       setActiveTab(0);
       setTabError({});
       router.refresh();
@@ -732,7 +737,7 @@ export function EditProductForm({
                                 <SelectContent>
                                   {taxesData?.data?.map((tax) => (
                                     <SelectItem key={tax._id} value={tax._id}>
-                                      {tax.taxName}({}
+                                      {tax.taxName}({ }
                                       {tax.taxRate}%)
                                     </SelectItem>
                                   ))}
@@ -946,11 +951,10 @@ export function EditProductForm({
                     type="button"
                     onClick={() => activeTab > 0 && setActiveTab(activeTab - 1)}
                     disabled={activeTab === 0}
-                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${
-                      activeTab === 0
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                    }`}
+                    className={`px-6 py-2 rounded-lg flex items-center space-x-2 ${activeTab === 0
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                      }`}
                   >
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>
