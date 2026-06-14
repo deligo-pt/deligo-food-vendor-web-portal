@@ -70,7 +70,7 @@ export function EditProductForm({
   businessType,
 }: IProps) {
   const router = useRouter();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
 
@@ -166,6 +166,7 @@ export function EditProductForm({
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Updating product...");
+    setIsSubmitting(true);
 
     const productData = {
       name: data.name,
@@ -229,6 +230,7 @@ export function EditProductForm({
     }
 
     toast.error(result.message || "Product update failed", { id: toastId });
+    setIsSubmitting(false);
   };
 
   const getAddonsGroups = async ({ limit = 10 }) => {
@@ -965,6 +967,7 @@ export function EditProductForm({
                         scale: 0.98,
                       }}
                       type="submit"
+                      disabled={isSubmitting}
                       className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2 shadow-lg shadow-pink-200/50"
                     >
                       <SaveIcon className="h-5 w-5" />
