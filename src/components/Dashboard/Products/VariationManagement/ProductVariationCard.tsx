@@ -224,6 +224,7 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
                   <AddVariationForm
                     productId={product.productId}
                     onCancel={() => setShowAddVariation(false)}
+                    businessType={businessType}
                   />
                 )}
               </AnimatePresence>
