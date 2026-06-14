@@ -183,8 +183,7 @@ export default function IngredientDetail({ ingredient }: IProps) {
             <div>
               <h4 className="font-bold mb-1">Fast Delivery</h4>
               <p className="text-sm text-blue-600/80">
-                Orders placed before 2 PM are processed same-day. Standard
-                delivery takes 2-3 business days.
+                Standard delivery takes 2-3 business days.
               </p>
             </div>
           </div>

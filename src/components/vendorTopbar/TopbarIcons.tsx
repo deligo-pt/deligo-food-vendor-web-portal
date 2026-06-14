@@ -74,6 +74,8 @@ export default function TopbarIcons({ vendor }: IProps) {
       removeCookie("refreshToken");
       router.push("/login");
       return;
+    } else {
+      toast.dismiss();
     }
   };
 
