@@ -106,12 +106,12 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
 
       ...(data.offerType === "BOGO"
         ? {
-            bogo: {
-              buyQty: data.buyQty as number,
-              getQty: data.getQty as number,
-              productId: data.productId as string,
-            },
-          }
+          bogo: {
+            buyQty: data.buyQty as number,
+            getQty: data.getQty as number,
+            productId: data.productId as string,
+          },
+        }
         : {}),
 
       ...(data.maxUsageCount
@@ -413,9 +413,10 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                           <Input
                             type="date"
                             className="h-12"
-                            value={format(new Date(field.value), "yyyy-MM-dd")}
+                            min={format(new Date(), "yyyy-MM-dd")}
+                            value={field.value ? format(new Date(field.value), "yyyy-MM-dd") : ""}
                             onChange={(e) =>
-                              field.onChange(new Date(e.target.value))
+                              field.onChange(e.target.value ? new Date(e.target.value) : null)
                             }
                           />
                         </div>
@@ -437,9 +438,10 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                           <Input
                             type="date"
                             className="h-12"
-                            value={format(new Date(field.value), "yyyy-MM-dd")}
+                            min={format(new Date(), "yyyy-MM-dd")}
+                            value={field.value ? format(new Date(field.value), "yyyy-MM-dd") : ""}
                             onChange={(e) =>
-                              field.onChange(new Date(e.target.value))
+                              field.onChange(e.target.value ? new Date(e.target.value) : null)
                             }
                           />
                         </div>
