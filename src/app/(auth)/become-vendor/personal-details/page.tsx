@@ -2,13 +2,16 @@ import { serverRequest } from "@/lib/serverFetch";
 import PersonalDetails from "@/src/components/BecomeVendor/PersonalDetails";
 import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
-import { jwtDecode } from "jwt-decode";
+import { getDecodedToken } from "@/src/utils/getDecodedToken";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function PersonalDetailsPage() {
-  const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as { userId: string };
+  const decoded = await getDecodedToken();
+
+  if (!decoded) {
+    redirect("/login");
+  }
 
   let vendor = {} as TVendor;
 

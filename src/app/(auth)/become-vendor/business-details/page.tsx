@@ -3,13 +3,16 @@ import BusinessDetailsForm from "@/src/components/BecomeVendor/BusinessDetails";
 import { TResponse } from "@/src/types";
 import { TBusinessCategory } from "@/src/types/category.type";
 import { TVendor } from "@/src/types/vendor.type";
-import { jwtDecode } from "jwt-decode";
+import { getDecodedToken } from "@/src/utils/getDecodedToken";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function BusinessDetailsPage() {
-  const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as { userId: string };
+  const decoded = await getDecodedToken();
+
+  if (!decoded) {
+    redirect("/login");
+  }
 
   let businessCategories: TBusinessCategory[] = [];
   let vendor = {} as TVendor;

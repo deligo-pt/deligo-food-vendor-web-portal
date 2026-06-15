@@ -1,18 +1,17 @@
 import { serverRequest } from "@/lib/serverFetch";
 import RegistrationStatus from "@/src/components/BecomeVendor/RegistrationStatus";
-import { USER_STATUS } from "@/src/consts/user.const";
 import { TResponse } from "@/src/types";
 import { TVendor } from "@/src/types/vendor.type";
-import { jwtDecode } from "jwt-decode";
+import { getDecodedToken } from "@/src/utils/getDecodedToken";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function RegistrationStatusPage() {
-  const accessToken = (await cookies()).get("accessToken")?.value || "";
-  const decoded = jwtDecode(accessToken) as {
-    userId: string;
-    status: keyof typeof USER_STATUS;
-  };
+  const decoded = await getDecodedToken();
+
+  if (!decoded) {
+    redirect("/login");
+  }
 
   let vendor = {} as TVendor;
 
