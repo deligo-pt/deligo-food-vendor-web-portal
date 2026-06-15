@@ -38,7 +38,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -59,8 +59,8 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
     data: TProduct[];
     meta?: TMeta;
   }>({ data: [] });
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [isSelectedAllProducts, setIsSelectedAllProducts] = useState(true);
-  const [filteredItems, setFilteredItems] = useState<TProduct[]>([]);
   const form = useForm<TOfferForm>({
     resolver: zodResolver(offerValidation),
     values: {
@@ -79,7 +79,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
       isAutoApply: offer?.isAutoApply || false,
       maxUsageCount: offer?.maxUsageCount ? String(offer.maxUsageCount) : "",
       userUsageLimit: offer?.userUsageLimit ? String(offer.userUsageLimit) : "",
-      applicableProducts: [],
+      applicableProducts: offer?.applicableProducts ? (offer?.applicableProducts as string[]) : [],
     },
   });
 
@@ -152,21 +152,38 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
   };
 
   const getItems = async ({ limit = 10 }) => {
-    const result = await getAllProductsReq({ limit });
-    if (result.success) {
-      setItemsResult({ data: result.data, meta: result.meta });
-      setFilteredItems(
-        (result.data as TProduct[]).filter((item) =>
-          watchApplicableProducts?.includes(item._id as string),
-        ),
-      );
+    try {
+      setIsLoadingProducts(true);
+
+      const result = await getAllProductsReq({ limit });
+
+      if (result.success) {
+        setItemsResult({
+          data: result.data,
+          meta: result.meta,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingProducts(false);
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applicableProducts = watchApplicableProducts || [];
+
+  const filteredItems = useMemo(() => {
+    return itemsResult.data.filter(
+      (item) => !applicableProducts.includes(item._id as string)
+    );
+  }, [itemsResult.data, applicableProducts]);
+
   useEffect(() => {
-    (() => getItems({ limit: 30 }))();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!isSelectedAllProducts) {
+      getItems({ limit: 50 });
+    }
+  }, [isSelectedAllProducts]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -578,15 +595,15 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                         <button
                           type="button"
                           onClick={() => {
-                            setFilteredItems((prev) => {
-                              const removedItem = itemsResult.data.find(
-                                (i) => i._id === itemId,
-                              );
-                              if (removedItem) {
-                                return [...prev, removedItem];
-                              }
-                              return prev;
-                            });
+                            // setFilteredItems((prev) => {
+                            //   const removedItem = itemsResult.data.find(
+                            //     (i) => i._id === itemId,
+                            //   );
+                            //   if (removedItem) {
+                            //     return [...prev, removedItem];
+                            //   }
+                            //   return prev;
+                            // });
                             form.setValue(
                               "applicableProducts",
                               watchApplicableProducts.filter(
@@ -615,9 +632,6 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                             onValueChange={(value) => {
                               const newValue = [...(field.value || []), value];
                               field.onChange(newValue);
-                              setFilteredItems((prev) =>
-                                prev.filter((item) => item._id !== value),
-                              );
                             }}
                             value="select_products"
                           >
@@ -626,16 +640,15 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="select_products">
-                                Select Products
+                                {isLoadingProducts ? "Loading..." : "Select Products"}
                               </SelectItem>
-                              {filteredItems?.map((item: TProduct) => (
-                                <SelectItem
-                                  key={item._id}
-                                  value={item._id as string}
-                                >
-                                  {item.name}
-                                </SelectItem>
-                              ))}
+
+                              {!isLoadingProducts &&
+                                filteredItems.map((item) => (
+                                  <SelectItem key={item._id} value={item._id as string}>
+                                    {item.name}
+                                  </SelectItem>
+                                ))}
                             </SelectContent>
                           </Select>
                         </div>

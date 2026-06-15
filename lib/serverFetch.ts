@@ -50,7 +50,9 @@ export const serverRequestHelper = async (
 
     const err = error as AxiosError;
 
-    if (err.response?.status === 401) {
+    const respData = err.response?.data as any;
+
+    if (respData?.err?.statusCode === 401 && respData?.message === 'You have been logged out from this device. Please log in again.') {
       console.log("Unauthorized! Redirecting to login...");
 
       redirect('/login?clearSession=true');

@@ -277,12 +277,6 @@ export default function RegistrationStatus({ vendor }: IProps) {
               {vendor.status === USER_STATUS.APPROVED && (
                 <>
                   <Button
-                    className="px-8 py-3 bg-[#DC3173] hover:bg-[#b72a63] text-white rounded-xl text-lg font-medium shadow-lg transition-all duration-300"
-                    onClick={() => router.push("/vendor/dashboard")}
-                  >
-                    Go to Dashboard
-                  </Button>
-                  <Button
                     variant="outline"
                     disabled={isSubmitting}
                     className="px-8 py-3 border-destructive text-destructive hover:text-white hover:bg-destructive rounded-xl text-lg font-medium shadow-lg transition-all duration-300 ml-2"
@@ -292,8 +286,7 @@ export default function RegistrationStatus({ vendor }: IProps) {
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    Your application has been approved. You can now visit your
-                    dashboard.
+                    Your application has been approved. Please logout to visit your dashboard.
                   </p>
                 </>
               )}

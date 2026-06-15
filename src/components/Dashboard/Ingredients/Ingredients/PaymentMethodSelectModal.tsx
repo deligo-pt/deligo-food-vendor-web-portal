@@ -41,19 +41,30 @@ export default function PaymentMethodSelectModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <form>
+      <form onSubmit={(e) => e.preventDefault()}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Select Payment Method</DialogTitle>
             <DialogDescription>
               Choose your preferred payment method to complete your order.
             </DialogDescription>
+
+            <div className="mt-3 p-3 rounded-lg border border-[#DC3173]/60 bg-[#DC3173]/20 text-xs text-black space-y-1">
+              <h4 className="font-semibold text-sm">Delivery Charges Notification</h4>
+              <p>
+                • If your location is under <span className="text-[#DC3173] font-medium">Lisbon</span>, the delivery charge will be <span className="font-medium text-[#DC3173]">20€</span>.
+              </p>
+              <p>
+                • If your location is <span className="text-[#DC3173] font-medium">outside of Lisbon</span>, the delivery charge will be <span className="font-medium text-[#DC3173]">30€</span>.
+              </p>
+            </div>
           </DialogHeader>
-          <div id="paymentMethodSelectForm" className="grid grid-cols-2 gap-4">
+
+          <div id="paymentMethodSelectForm" className="grid grid-cols-2 gap-4 pt-2">
             {paymentMethods.map((method) => (
               <label
                 key={method}
-                className="flex items-center space-x-3 mb-4 cursor-pointer"
+                className="flex items-center space-x-3 cursor-pointer p-2 rounded-md transition-colors"
                 htmlFor={method}
               >
                 <input
@@ -61,7 +72,7 @@ export default function PaymentMethodSelectModal({
                   name="paymentMethod"
                   value={method}
                   id={method}
-                  className="cursor-pointer"
+                  className="cursor-pointer accent-[#DC3173]"
                   onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                   checked={selectedPaymentMethod === method}
                 />
@@ -76,7 +87,9 @@ export default function PaymentMethodSelectModal({
               </label>
             ))}
           </div>
+
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
@@ -84,13 +97,12 @@ export default function PaymentMethodSelectModal({
               </Button>
             </DialogClose>
             <Button
-              form="paymentMethodSelectForm"
               onClick={handlePurchase}
-              className="bg-[#DC3173] hover:bg-[#DC3173]/90"
-              type="submit"
+              className="bg-[#DC3173] hover:bg-[#DC3173]/90 text-white"
+              type="button"
               disabled={isOrdering}
             >
-              Purchase
+              {isOrdering ? "Processing..." : "Purchase"}
             </Button>
           </DialogFooter>
         </DialogContent>
