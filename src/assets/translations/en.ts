@@ -1620,4 +1620,24 @@ export const en = {
   last_login: "Last Login",
   account_created: "Account Created",
   two_factor_auth: "Two-Factor Auth",
+
+
+  // all sos alerts
+  all_sos_alerts: "All SOS Alerts",
+  updates_all_your_sos_alerts: "Update of all of your sos alerts",
+  info: "Info",
+  emergency_type: "Emergency Type",
+  time_triggered: "Time Triggered",
+  status: "Status",
+  actions: "Actions",
+  no_alerts_found: "No alerts found",
+  alert_details: "Alert Details",
+  triggered_by: "Triggered By",
+  location: "Location",
+  load_map: "Load Map",
+  click_to_view_location: "Click to view location",
+  latitude: "Latitude",
+  longitude: "Longitude",
+  incident_description: "Incident Description",
 };
+

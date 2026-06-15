@@ -1,4 +1,5 @@
 import {
+  AlertCircle,
   BarChart2,
   EuroIcon,
   FileText,
@@ -125,13 +126,16 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
         { name: t("contact_support"), path: "/vendor/contact-support" },
       ],
     },
-    // {
-    //   id: "sos",
-    //   title: t("sos_emergency"),
-    //   icon: <AlertCircle size={18} />,
-    //   items: [
-
-    //   ],
-    // },
+    {
+      id: "sos",
+      title: t("sos_emergency"),
+      icon: <AlertCircle size={18} />,
+      items: [
+        {
+          name: t("all_sos_alerts"),
+          path: "/vendor/all-sos-alerts",
+        },
+      ],
+    },
   ];
 };

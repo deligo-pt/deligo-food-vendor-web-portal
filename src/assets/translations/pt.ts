@@ -1688,4 +1688,22 @@ export const pt = {
   last_login: "Último Acesso",
   account_created: "Conta Criada em",
   two_factor_auth: "Autenticação de Dois Fatores",
+
+  // all sos alerts
+  all_sos_alerts: "Todos os Alertas de SOS",
+  updates_all_your_sos_alerts: "Atualizações de todos os seus alertas de SOS",
+  info: "Informações",
+  emergency_type: "Tipo de Emergência",
+  time_triggered: "Hora do Acionamento",
+  status: "Status",
+  actions: "Ações",
+  no_alerts_found: "Nenhum alerta encontrado",
+  alert_details: "Detalhes do Alerta",
+  triggered_by: "Acionado Por",
+  location: "Localização",
+  load_map: "Carregar Mapa",
+  click_to_view_location: "Clique para ver a localização",
+  latitude: "Latitude",
+  longitude: "Longitude",
+  incident_description: "Descrição do Incidente",
 };
