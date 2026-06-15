@@ -106,7 +106,6 @@ export default function LoginForm({ redirect }: IProps) {
     }
 
     toast.error(result.message || "Login failed", { id: toastId });
-    console.log(result);
 
     if (result.message === "LIMIT_EXCEEDED") {
       setShowModal(true);

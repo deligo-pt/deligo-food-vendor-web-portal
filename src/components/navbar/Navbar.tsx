@@ -56,22 +56,21 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
       return;
     }
 
+    if (result?.success === false) {
+      toast.success("Logout successful!", {
+        id: toastId,
+      });
+
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      return;
+    }
+
     toast.error(result?.message || "Logout failed", { id: toastId });
 
-    if (result?.statusCode === 401 && result?.success === false) {
-      removeCookie("accessToken");
-      removeCookie("refreshToken");
-      router.push("/login");
-      return;
-    } else if (result?.statusCode === 404 && result?.success === false) {
-      removeCookie("accessToken");
-      removeCookie("refreshToken");
-      router.push("/login");
-      return;
-    } else {
-      toast.dismiss();
-    }
   };
+
 
   return (
     <nav className="bg-white shadow-md fixed w-full z-50">
@@ -257,6 +256,12 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
                   {item.name}
                 </Link>
               ))}
+              <Link
+                href="/login"
+                className="ml-4 px-5 py-2 bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
+              >
+                {t("login")}
+              </Link>
 
               {vendorData?.email ? (
                 <>
