@@ -140,6 +140,7 @@ export default function VerifyOtp({ email }: { email: string }) {
     if (result.success) {
       setTimer(300);
       setLocalOtpExpiry();
+      setIsResendSubmitting(false);
 
       toast.success(result.message || "OTP resent successfully!", {
         id: toastId,
