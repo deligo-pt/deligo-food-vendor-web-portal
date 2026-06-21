@@ -24,9 +24,9 @@ export default function Ingredients({ ingredientsData }: IProps) {
   const { t } = useTranslation();
   const [isOrdering, setIsOrdering] = useState(false);
   const [orderDetails, setOrderDetails] = useState<{
-    ingredient: string;
-    totalQuantity: number;
-  } | null>(null);
+    ingredientId: string;
+    quantity: number;
+  }[]>([]);
 
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
@@ -34,8 +34,10 @@ export default function Ingredients({ ingredientsData }: IProps) {
   ];
 
   const purchaseIngredient = async (paymentMethod: string) => {
+    if (orderDetails.length === 0) return;
+
     setIsOrdering(true);
-    const toastId = toast.loading("Proccessing payment...");
+    const toastId = toast.loading("Processing payment...");
 
     const payload = {
       orderDetails,
@@ -43,23 +45,19 @@ export default function Ingredients({ ingredientsData }: IProps) {
     } as TIngredientPaymentIntentPayload;
 
     const result = await createIngredientPaymentIntentReq(payload);
-
     setIsOrdering(false);
 
     if (result.success) {
       toast.success(
         "Payment processed successfully! Redirecting to payment page",
-        {
-          id: toastId,
-        },
+        { id: toastId }
       );
-      setOrderDetails(null);
+      setOrderDetails([]);
       window.location.href = result.data?.redirectUrl;
       return;
     }
 
     toast.error(result.message || "Failed to place order", { id: toastId });
-    console.log(result);
   };
 
   return (
@@ -99,8 +97,8 @@ export default function Ingredients({ ingredientsData }: IProps) {
 
       {/* Payment Method Select Modal */}
       <PaymentMethodSelectModal
-        open={!!orderDetails?.ingredient}
-        onOpenChange={(open) => !open && setOrderDetails(null)}
+        open={orderDetails.length > 0}
+        onOpenChange={(open) => !open && setOrderDetails([])}
         onPurchase={purchaseIngredient}
         isOrdering={isOrdering}
       />

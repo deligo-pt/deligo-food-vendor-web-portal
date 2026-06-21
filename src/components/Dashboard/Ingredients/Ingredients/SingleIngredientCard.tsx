@@ -11,9 +11,9 @@ interface IProps {
   item: TIngredient;
   setOrderDetails: React.Dispatch<
     React.SetStateAction<{
-      ingredient: string;
-      totalQuantity: number;
-    } | null>
+      ingredientId: string;
+      quantity: number;
+    }[]>
   >;
 }
 
@@ -27,26 +27,17 @@ export default function SingleIngredientCard({
   const [quantity, setQuantity] = useState(item.minOrder || 1);
 
   const increment = () => setQuantity((q) => Math.min(item.stock, q + 1));
-
-  const decrement = () =>
-    setQuantity((q) => Math.max(item.minOrder || 1, q - 1));
+  const decrement = () => setQuantity((q) => Math.max(item.minOrder || 1, q - 1));
 
   return (
     <motion.div
-      key={item._id}
-      initial={{
-        opacity: 0,
-        y: 20,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
     >
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
-          <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-3xl">
+          <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-3xl overflow-hidden">
             <Image
               src={item.image}
               alt={item.name}
@@ -73,6 +64,7 @@ export default function SingleIngredientCard({
           {isBuying ? (
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1">
               <button
+                type="button"
                 onClick={decrement}
                 className="p-1.5 bg-white rounded-md text-[#DC3173] shadow-sm transition-all cursor-pointer hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                 disabled={quantity <= (item.minOrder || 1)}
@@ -83,6 +75,7 @@ export default function SingleIngredientCard({
                 {quantity}
               </span>
               <button
+                type="button"
                 onClick={increment}
                 className="p-1.5 bg-white rounded-md text-[#DC3173] shadow-sm transition-all cursor-pointer hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                 disabled={quantity >= item.stock}
@@ -90,20 +83,23 @@ export default function SingleIngredientCard({
                 <PlusIcon size={14} />
               </button>
               <button
+                type="button"
                 onClick={() =>
-                  setOrderDetails({
-                    ingredient: item._id,
-                    totalQuantity: quantity,
-                  })
+                  setOrderDetails([
+                    {
+                      ingredientId: item._id,
+                      quantity: quantity,
+                    },
+                  ])
                 }
-                className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] hover:bg-[#DC3173]/90 transition-colors"
-                // disabled={isOrdering}
+                className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] hover:bg-[#DC3173]/90 transition-colors cursor-pointer"
               >
                 Order
               </button>
               <button
+                type="button"
                 onClick={() => setIsBuying(false)}
-                className="p-1.5 bg-white rounded-md text-[#DC3173] shadow-sm transition-all"
+                className="p-1.5 bg-white rounded-md text-[#DC3173] shadow-sm transition-all cursor-pointer"
               >
                 <XIcon size={14} />
               </button>
@@ -111,15 +107,17 @@ export default function SingleIngredientCard({
           ) : (
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1">
               <button
+                type="button"
                 onClick={() => router.push(`/vendor/ingredients/${item?.sku}`)}
-                className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] transition-colors cursor-pointer"
               >
                 <EyeIcon size={16} />
                 View
               </button>
               <button
+                type="button"
                 onClick={() => setIsBuying(true)}
-                className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] transition-colors cursor-pointer"
               >
                 <ShoppingBag size={16} />
                 Buy
