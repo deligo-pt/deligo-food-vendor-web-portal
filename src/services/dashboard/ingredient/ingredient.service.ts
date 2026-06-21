@@ -79,7 +79,7 @@ export const createIngredientOrderReq = async (
   data: TIngredientOrderPayload,
 ) => {
   return await catchAsync<TIngredient>(async () => {
-    return await serverRequest.post("/ingredients-order", { data });
+    return await serverRequest.post("/ingredients-order/create-order", { data });
   });
 };
 
