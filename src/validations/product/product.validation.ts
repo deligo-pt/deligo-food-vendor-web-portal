@@ -1,67 +1,75 @@
 import { z } from "zod";
 
-export const productValidation = z
-  .object({
-    name: z
-      .string()
-      .min(2, "Name must be at least 2 character")
-      .max(50, "Name must be at most 50 characters")
-      .nonempty("Name is required"),
+const localizedTextSchema = z.object({
+  en: z.string(),
+  pt: z.string(),
+});
 
-    description: z
-      .string()
-      .min(1, "Description is required")
-      .max(500, "Description must be at most 500 characters")
-      .nonempty("Description is required"),
+export const productValidation = z.object({
+  //   name: z
+  // .string()
+  // .min(2, "Name must be at least 2 character")
+  // .max(50, "Name must be at most 50 characters")
+  // .nonempty("Name is required"),
 
-    category: z
-      .string()
-      .min(2, "Category must be at least 2 characters")
-      .max(50, "Category must be at most 50 characters")
-      .nonempty("Category is required"),
+  // description: z
+  //   .string()
+  //   .min(1, "Description is required")
+  //   .max(500, "Description must be at most 500 characters")
+  //   .nonempty("Description is required"),
 
-    images: z
-      .array(
-        z
-          .url("Each image must be a valid URL")
-          .nonempty("Image URL is required"),
-      )
-      .min(1, "At least one image is required")
-      .max(5, "No more than 5 images are allowed"),
+  name: localizedTextSchema,
 
-    price: z.number().optional(),
+  description: localizedTextSchema,
 
-    taxId: z.string().nonempty("Tax is required"),
+  category: z
+    .string()
+    .min(2, "Category must be at least 2 characters")
+    .max(50, "Category must be at most 50 characters")
+    .nonempty("Category is required"),
 
-    discount: z.number().min(0).max(100),
+  images: z
+    .array(
+      z
+        .url("Each image must be a valid URL")
+        .nonempty("Image URL is required"),
+    )
+    .min(1, "At least one image is required")
+    .max(5, "No more than 5 images are allowed"),
 
-    quantity: z.number().optional(),
+  price: z.number().optional(),
 
-    unit: z.string().optional(),
+  taxId: z.string().nonempty("Tax is required"),
 
-    availabilityStatus: z.string().optional(),
+  discount: z.number().min(0).max(100),
 
-    addonGroups: z.array(z.string()),
+  quantity: z.number().optional(),
 
-    variations: z.array(
-      z.object({
-        name: z.string(),
-        options: z.array(
-          z.object({
-            label: z.string(),
-            price: z.number().min(0),
-            stockQuantity: z.number().optional(),
-          }),
-        ),
-      }),
-    ),
+  unit: z.string().optional(),
 
-    isFeatured: z.boolean().optional(),
+  availabilityStatus: z.string().optional(),
 
-    isAvailableForPreOrder: z.boolean().optional(),
+  addonGroups: z.array(z.string()),
 
-    businessType: z.string(),
-  })
+  variations: z.array(
+    z.object({
+      name: localizedTextSchema,
+      options: z.array(
+        z.object({
+          label: localizedTextSchema,
+          price: z.number().min(0),
+          stockQuantity: z.number().optional(),
+        }),
+      ),
+    }),
+  ),
+
+  isFeatured: z.boolean().optional(),
+
+  isAvailableForPreOrder: z.boolean().optional(),
+
+  businessType: z.string(),
+})
   .refine(
     (data) => {
       if (data.variations.length === 0 && !data.price) {

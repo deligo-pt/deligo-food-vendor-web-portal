@@ -968,6 +968,9 @@ export const pt = {
   image_upload_fail: "Falha ao carregar a imagem",
   image_delete_success: "Imagem eliminada com sucesso!",
   image_delete_fail: "Falha ao eliminar a imagem",
+  generate_description_hint: "Gerar dica de descrição",
+  ai_generate_description: "Gerar descrição por IA",
+  enter_product_description: "Insira a descrição do produto",
 
   pricing_information: "Informações de Preço",
   price_E: "Preço (€)",
@@ -991,12 +994,14 @@ export const pt = {
   quantity: "Quantidade",
   unit: "Unidade",
 
-  meta_information: "Informações Meta",
+  deligo_metadata: "Metadados da Deligo",
+  deligo_metadata_information: "Informações dos Metadados da Deligo",
   featured_product: "Produto em Destaque",
   available_for_pre_order: "Disponível para Pré-Encomenda",
 
   previous: "Anterior",
   save_product: "Guardar Produto",
+  translate_en: "Traduzir para EN e Salvar Produto",
   next: "Seguinte",
 
   // -> tabs
