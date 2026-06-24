@@ -14,7 +14,7 @@ export const businessDetailsValidation = z
       .max(50, "Business type must be at most 50 characters long")
       .nonempty("Business type is required"),
 
-    restaurantCuisineType: z.string().optional(),
+    restaurantCuisineType: z.array(z.string()).optional(),
 
     businessLicenseNumber: z
       .string()
@@ -64,14 +64,17 @@ export const businessDetailsValidation = z
     },
   )
   .superRefine((data, ctx) => {
-    if (
-      data.businessType === "RESTAURANT" &&
-      !data.restaurantCuisineType
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["restaurantCuisineType"],
-        message: "Restaurant cuisine type is required",
-      });
+    if (data.businessType === "RESTAURANT") {
+      if (
+        !data.restaurantCuisineType ||
+        !Array.isArray(data.restaurantCuisineType) ||
+        data.restaurantCuisineType.length === 0
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["restaurantCuisineType"],
+          message: "Restaurant cuisine type is required",
+        });
+      }
     }
   });
