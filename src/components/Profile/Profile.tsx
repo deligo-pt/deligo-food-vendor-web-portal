@@ -221,11 +221,21 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 value={vendor.businessDetails?.businessType}
                 icon={Building2Icon}
               />
-              {vendor?.businessDetails?.businessType === "RESTAURANT" && <ProfileInfoRow
-                label={t("restaurantCuisineType")}
-                value={vendor.businessDetails?.restaurantCuisineType}
-                icon={Building2Icon}
-              />}
+              {vendor?.businessDetails?.businessType === "RESTAURANT" && (() => {
+                const cuisineData = vendor?.businessDetails?.restaurantCuisineType;
+
+                if (!cuisineData) return null;
+
+                const cuisinesArray = Array.isArray(cuisineData) ? cuisineData : [cuisineData];
+
+                return (
+                  <ProfileInfoRow
+                    label={t("restaurantCuisineType")}
+                    value={cuisinesArray.join(", ")}
+                    icon={Building2Icon}
+                  />
+                );
+              })()}
               <ProfileInfoRow
                 label={t("license_mumber")}
                 value={vendor.businessDetails?.businessLicenseNumber}
