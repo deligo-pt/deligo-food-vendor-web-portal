@@ -1,5 +1,6 @@
 import { serverRequest } from "@/lib/serverFetch";
 import BusinessDetailsForm from "@/src/components/BecomeVendor/BusinessDetails";
+import { getAllCuisines } from "@/src/services/dashboard/cuisine/cuisine.service";
 import { TResponse } from "@/src/types";
 import { TBusinessCategory } from "@/src/types/category.type";
 import { TVendor } from "@/src/types/vendor.type";
@@ -8,6 +9,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
 
 export default async function BusinessDetailsPage() {
+  const { data: cuisines } = await getAllCuisines();
   const decoded = await getDecodedToken();
 
   if (!decoded) {
@@ -46,6 +48,7 @@ export default async function BusinessDetailsPage() {
   return (
     <BusinessDetailsForm
       businessCategories={businessCategories}
+      cuisines={cuisines}
       vendor={vendor}
     />
   );
