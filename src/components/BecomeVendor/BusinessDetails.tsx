@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Form,
   FormControl,
@@ -27,6 +28,7 @@ import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { updateVendorReq } from "@/src/services/becomeVendor/become-vendor";
 import { TBusinessCategory } from "@/src/types/category.type";
+import { TCuisine } from "@/src/types/cuisine.type";
 import { TVendor } from "@/src/types/vendor.type";
 import { businessDetailsValidation } from "@/src/validations/become-vendor/business-details.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,6 +42,7 @@ import {
   Clock,
   FileCheck2,
   MapPin,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
@@ -48,27 +51,11 @@ import z from "zod";
 
 interface IProps {
   businessCategories: TBusinessCategory[];
+  cuisines: TCuisine[];
   vendor: TVendor;
 }
 
 type BusinessForm = z.infer<typeof businessDetailsValidation>;
-
-const restaurantCuisineOptions = [
-  "Portuguese Food",
-  "Sushi",
-  "Kebab",
-  "Barbecue",
-  "Indian Food",
-  "Italian Food",
-  "Vegetarian Food",
-  "Thai Food",
-  "Japanese Food",
-  "Ramen",
-  "Seafood",
-  "Burger",
-  "Halal",
-  "Other",
-]
 
 const daysOfWeek = [
   "Sunday",
@@ -82,6 +69,7 @@ const daysOfWeek = [
 
 export default function BusinessDetailsForm({
   businessCategories,
+  cuisines,
   vendor,
 }: IProps) {
   const { t } = useTranslation();
@@ -91,10 +79,8 @@ export default function BusinessDetailsForm({
     defaultValues: {
       businessName: vendor?.businessDetails?.businessName || "",
       businessType: vendor?.businessDetails?.businessType || "",
-      restaurantCuisineType:
-        vendor?.businessDetails?.restaurantCuisineType,
-      businessLicenseNumber:
-        vendor?.businessDetails?.businessLicenseNumber || "",
+      restaurantCuisineType: vendor?.businessDetails?.restaurantCuisineType || [],
+      businessLicenseNumber: vendor?.businessDetails?.businessLicenseNumber || "",
       NIF: vendor?.businessDetails?.NIF || "",
       totalBranches: vendor?.businessDetails?.totalBranches?.toString() || "",
       openingHours: vendor?.businessDetails?.openingHours || "",
@@ -131,16 +117,12 @@ export default function BusinessDetailsForm({
     const result = await updateVendorReq(vendor?.userId, businessDetails);
 
     if (result && result?.success) {
-      toast.success("Business details updated successfully!", {
-        id: toastId,
-      });
+      toast.success("Business details updated successfully!", { id: toastId });
       router.push("/become-vendor/business-location");
       return;
     }
 
-    toast.error(result?.message || "Business details update failed", {
-      id: toastId,
-    });
+    toast.error(result?.message || "Business details update failed", { id: toastId });
     console.log(result);
   };
 
@@ -253,57 +235,6 @@ export default function BusinessDetailsForm({
                     )}
                   />
 
-                  {/* if business type is restaurant */}
-                  {businessType === "RESTAURANT" && (
-                    <FormField
-                      control={form.control}
-                      name="restaurantCuisineType"
-                      render={({ field, fieldState }) => (
-                        <FormItem>
-                          <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                            {t("restaurantCuisineType")} <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <div className="relative">
-                            <Briefcase className="absolute left-3 top-3.5 text-[#DC3173]/80" />
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "pl-11 pr-4 h-12 w-full bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer  ",
-                                    fieldState.invalid
-                                      ? "border-destructive focus-visible:ring-destructive/20"
-                                      : "border-gray-300",
-                                  )}
-                                  style={{
-                                    height: "3rem",
-                                  }}
-                                >
-                                  <SelectValue placeholder="Select Restaurant Cuisine" />
-                                </SelectTrigger>
-
-                                <SelectContent>
-                                  {restaurantCuisineOptions.map((type, idx) => (
-                                    <SelectItem
-                                      key={idx}
-                                      value={type}
-                                      className="capitalize"
-                                    >
-                                      {type}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
                   {/* License */}
                   <FormField
                     control={form.control}
@@ -354,6 +285,105 @@ export default function BusinessDetailsForm({
                     )}
                   />
                 </div>
+
+                {/* if business type is restaurant */}
+                {businessType === "RESTAURANT" && (
+                  <FormField
+                    control={form.control}
+                    name="restaurantCuisineType"
+                    render={({ field, fieldState }) => {
+                      const selectedCuisines = Array.isArray(field.value) ? field.value : [];
+
+                      // remove cuisine
+                      const handleRemoveCuisine = (cuisineToRemove: string) => {
+                        const updatedCuisines = selectedCuisines.filter(
+                          (item) => item !== cuisineToRemove
+                        );
+                        field.onChange(updatedCuisines);
+                      };
+
+                      // add cuisine
+                      const handleSelectCuisine = (cuisineToAdd: string) => {
+                        if (!selectedCuisines.includes(cuisineToAdd)) {
+                          field.onChange([...selectedCuisines, cuisineToAdd]);
+                        }
+                      };
+
+                      return (
+                        <FormItem>
+                          <FormLabel className="mb-2 block text-sm font-medium text-gray-700 mt-5">
+                            {t("restaurantCuisineType")} <span className="text-red-500">*</span>
+                          </FormLabel>
+
+                          {/* 4. Display Selected Badges ABOVE the Select Dropdown */}
+                          {selectedCuisines.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-3 p-2 border border-dashed rounded-lg bg-gray-50/50">
+                              {selectedCuisines.map((cuisine) => (
+                                <Badge
+                                  key={cuisine}
+                                  variant="secondary"
+                                  className="flex items-center gap-1 bg-[#DC3173]/10 text-[#DC3173] hover:bg-[#DC3173]/20 transition-all capitalize px-3 py-1 text-sm font-medium"
+                                >
+                                  {cuisine}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveCuisine(cuisine)}
+                                    className="rounded-full outline-none hover:bg-[#DC3173]/20 p-0.5"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="relative">
+                            <Briefcase className="absolute left-3 top-3.5 text-[#DC3173]/80" />
+                            <FormControl>
+                              <Select
+                                value=""
+                                onValueChange={handleSelectCuisine}
+                              >
+                                <SelectTrigger
+                                  className={cn(
+                                    "pl-11 pr-4 h-12 w-full bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer",
+                                    fieldState.invalid ? "border-destructive focus-visible:ring-destructive/20" : "border-gray-300"
+                                  )}
+                                  style={{ height: "3rem" }}
+                                >
+                                  <SelectValue placeholder="Select Multiple Cuisine" />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                  {cuisines?.length < 1 ? (
+                                    <div className="p-2 text-sm text-gray-500">
+                                      {t("no_items_found")}
+                                    </div>
+                                  ) : (
+                                    cuisines?.map((type, idx) => {
+                                      const isAlreadySelected = selectedCuisines.includes(type?.name);
+                                      return (
+                                        <SelectItem
+                                          key={idx}
+                                          value={type?.name}
+                                          className="capitalize"
+                                          disabled={isAlreadySelected}
+                                        >
+                                          {type?.name} {isAlreadySelected && "✓"}
+                                        </SelectItem>
+                                      );
+                                    })
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                )}
               </div>
 
               {/* ========== Section 2: Branch Info ========== */}
