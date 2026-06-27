@@ -11,7 +11,7 @@ export const getNewAccessToken = async () => {
 
   const decoded = await verifyJWT(refreshToken, true);
 
-  if (decoded?.success && decoded?.data?.role === "VENDOR") {
+  if (!decoded?.success || decoded?.data?.role !== "VENDOR") {
     return null;
   };
 
