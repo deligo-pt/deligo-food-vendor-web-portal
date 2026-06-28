@@ -38,6 +38,7 @@ import { postData } from "@/src/utils/requests";
 import { TProduct } from "@/src/types/product.type";
 import { TResponse } from "@/src/types";
 import { useStore } from "@/src/store/store";
+import { translateObject } from "@/src/utils/translation/translationObject";
 
 type FormData = z.infer<typeof productValidation>;
 
@@ -137,34 +138,35 @@ export function ProductForm({
       name: ["price", "discount", "taxId", "addonGroups", "variations"],
     });
 
-  const translateContent = async (data: FormData) => {
-    const response = await fetch(
-      "/api/translate-product",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify({
-          data,
-          selectedLanguage: lang
-        }),
-      }
-    );
+  // const translateContent = async (data: FormData) => {
+  //   const response = await fetch(
+  //     "/api/translate-product",
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type":
+  //           "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         data,
+  //         selectedLanguage: lang
+  //       }),
+  //     }
+  //   );
 
-    const result = await response.json();
+  //   const result = await response.json();
 
-    const translated = result.data;
+  //   const translated = result.data;
 
-    return translated;
-  }
+  //   return translated;
+  // }
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Translating and Creating product...");
 
     try {
-      const translated = await translateContent(data);
+      const translated = await translateObject(data, lang);
+      console.log("translated", translated);
 
       const productData = {
         name: translated.name,
