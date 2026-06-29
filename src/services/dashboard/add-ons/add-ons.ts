@@ -31,7 +31,7 @@ export const updateAddOnsGroup = async (
 
 export const addOptionInGroup = async (
   groupId: string,
-  data: { name: string; price: number },
+  data: { name: { en?: string; pt?: string }; price: number, tax: string },
 ) => {
   return catchAsync<null>(async () => {
     return await serverRequest.patch(`/add-ons/${groupId}/add-option`, {

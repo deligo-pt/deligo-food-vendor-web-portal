@@ -1029,6 +1029,7 @@ export const pt = {
   max: "Máx",
   add_addon: "Adicionar Extra",
   edit: "Editar",
+  no_add_ons_found: "Nenhum extra encontrado",
 
   // payouts page
   vendor_payouts: "Pagamentos ao Vendedor",

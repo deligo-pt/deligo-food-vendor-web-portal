@@ -21,6 +21,7 @@ import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TTax } from "@/src/types/tax.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useStore } from "@/src/store/store";
 
 const SHADOW =
   "0px 6px 24px rgba(0,0,0,0.06), inset 0px 0px 10px rgba(0,0,0,0.03)";
@@ -32,6 +33,7 @@ interface IProps {
 
 export default function AddOns({ addOnsResult, taxes }: IProps) {
   const { t } = useTranslation();
+  const { lang } = useStore();
   const router = useRouter();
 
   const sortOptions = [
@@ -103,7 +105,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                 animate={{ opacity: 1 }}
                 className="py-12 text-center text-gray-500"
               >
-                {t("no_orders_match_query")}
+                {t("no_add_ons_found")}
               </motion.div>
             )}
 
@@ -124,7 +126,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                     {/* GROUP HEADER */}
                     <div className="flex items-center justify-between p-5 border-b">
                       <div>
-                        <h2 className="text-xl font-bold">{group.title}</h2>
+                        <h2 className="text-xl font-bold">{group.title?.[lang]}</h2>
 
                         <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
                           <span>{t("min")}:</span>
@@ -194,7 +196,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                           <div className="flex items-center gap-2 text-gray-800">
                             <Dot size={24} className="text-gray-400" />
                             <span className="text-base font-medium">
-                              {option.name}
+                              {option?.name?.[lang]}
                             </span>
                           </div>
 

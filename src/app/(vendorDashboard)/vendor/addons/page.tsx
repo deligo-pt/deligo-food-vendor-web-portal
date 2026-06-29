@@ -29,12 +29,10 @@ export default async function AddOnsPage({ searchParams }: IProps) {
   const addOnsData: { data: TAddonGroup[]; meta?: TMeta } = { data: [] };
 
   try {
-    const taxResult = (await serverRequest.get("/taxes")) as TResponse<{
-      data: TTax[];
-    }>;
+    const taxResult = (await serverRequest.get("/taxes"));
 
     if (taxResult) {
-      taxData = taxResult.data?.data || [];
+      taxData = taxResult.data || [];
     }
 
     const addonsResult = (await serverRequest.get("/add-ons", {

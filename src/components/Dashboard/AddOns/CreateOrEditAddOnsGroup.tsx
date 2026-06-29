@@ -37,9 +37,11 @@ import { createAddonGroupValidationSchema } from "@/src/validations/addons/addOn
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { useStore } from "@/src/store/store";
+import { translateObject } from "@/src/utils/translation/translationObject";
 
 const PRIMARY = "#DC3173";
 
@@ -60,18 +62,27 @@ export default function CreateOrEditAddOnsGroup({
   taxes,
   actionType = "create",
 }: IProps) {
+  const { lang } = useStore();
   const form = useForm<TAddonGroupForm>({
     resolver: zodResolver(createAddonGroupValidationSchema),
-    values: {
-      title: prevValues?.title || "",
+    defaultValues: {
+      title: {
+        en: prevValues?.title?.en || "",
+        pt: prevValues?.title?.pt || ""
+      },
       minSelectable: prevValues?.minSelectable || 0,
       maxSelectable: prevValues?.maxSelectable || 1,
       options:
         prevValues?.options?.map((option) => ({
-          name: option.name,
+          name: {
+            en: option?.name?.en || "",
+            pt: option?.name?.pt || ""
+          },
           price: option.price,
           tax: (option.tax as TTax)?._id,
         })) || [],
+
+      currentLang: lang
     },
   });
   const { formState: { isSubmitting } } = form;
@@ -82,23 +93,26 @@ export default function CreateOrEditAddOnsGroup({
 
   const router = useRouter();
 
-  const [watchOptions] = useWatch({
+  const { fields: optionsFields, append } = useFieldArray({
     control: form.control,
-    name: ["options"],
-  });
+    name: "options",
+  })
 
   const addOption = () => {
     if (
-      optionPrice &&
-      optionPrice >= 0 &&
       optionName.trim() !== "" &&
+      optionPrice >= 0 &&
       optionTax !== ""
     ) {
-      const newOptions = [
-        ...form?.getValues("options"),
-        { name: optionName, price: optionPrice, tax: optionTax },
-      ];
-      form.setValue("options", newOptions);
+      append({
+        name: {
+          en: lang === "en" ? optionName.trim() : "",
+          pt: lang === "pt" ? optionName.trim() : "",
+        },
+        price: Number(optionPrice),
+        tax: optionTax,
+      });
+
       setOptionName("");
       setOptionPrice(0);
       setOptionTax("");
@@ -114,12 +128,25 @@ export default function CreateOrEditAddOnsGroup({
 
   const handleAddOrEditGroup = async (data: TAddonGroupForm) => {
     if (isSubmitting) return;
+    const payload = {
+      title: data.title,
+      options: data.options,
+      maxSelectable: data.maxSelectable,
+      minSelectable: data.minSelectable
+    };
 
     try {
       if (actionType === "create") {
         const toastId = toast.loading("Creating add-on group...");
+        const translated = await translateObject(payload, lang);
 
-        const result = await createAddOnsGroup(data);
+        const addonsPayload = {
+          ...payload,
+          title: translated.title,
+          options: translated.options
+        };
+
+        const result = await createAddOnsGroup(addonsPayload);
 
         if (result.success) {
           form.reset();
@@ -143,10 +170,17 @@ export default function CreateOrEditAddOnsGroup({
         }
       } else {
         const toastId = toast.loading("Updating add-on group...");
+        const translated = await translateObject(payload, lang);
+
+        const addonsPayload = {
+          ...payload,
+          title: translated.title,
+          options: translated.options
+        };
 
         const result = await updateAddOnsGroup(
           prevValues?._id as string,
-          data
+          addonsPayload
         );
 
         if (result.success) {
@@ -193,9 +227,9 @@ export default function CreateOrEditAddOnsGroup({
             className="space-y-4 mt-4"
             id="creatAddOnsForm"
           >
-            <FormField
+            {lang === 'en' && <FormField
               control={form.control}
-              name="title"
+              name="title.en"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Group Title</FormLabel>
@@ -205,7 +239,20 @@ export default function CreateOrEditAddOnsGroup({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            />}
+            {lang === 'pt' && <FormField
+              control={form.control}
+              name="title.pt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Group Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Drinks Upgrade" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />}
 
             <FormField
               control={form.control}
@@ -249,14 +296,14 @@ export default function CreateOrEditAddOnsGroup({
 
             <div className="space-y-2 ">
               <label className="block mb-1">Options</label>
-              {watchOptions?.length > 0 && (
+              {optionsFields?.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-1">
-                  {watchOptions?.map((option) => (
+                  {optionsFields?.map((option) => (
                     <div
-                      key={option.name}
+                      key={option.name?.[lang]}
                       className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
                     >
-                      <span>{option.name}</span>
+                      <span>{option.name?.[lang]}</span>
                       <span className="ml-2 text-xs text-slate-200">
                         Price: (€{option.price})
                         {option.tax
@@ -266,7 +313,10 @@ export default function CreateOrEditAddOnsGroup({
                       </span>
                       <button
                         type="button"
-                        onClick={() => removeOption(option.name)}
+                        onClick={() => {
+                          const name = option.name?.[lang];
+                          if (name) removeOption(name);
+                        }}
                         className="ml-2 text-white hover:text-[#CCC]"
                       >
                         <XIcon className="h-4 w-4" />

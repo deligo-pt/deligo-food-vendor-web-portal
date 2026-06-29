@@ -984,6 +984,7 @@ export const en = {
   max: "Max",
   add_addon: "Add Add-On",
   edit: "Edit",
+  no_add_ons_found: "No add ons found",
 
   // payouts page
   vendor_payouts: "Vendor Payouts",
