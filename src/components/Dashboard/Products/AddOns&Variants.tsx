@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useStore } from '@/src/store/store';
+import { TVariations } from '@/src/types/product.type';
 
 interface IProps {
     form: any;
@@ -74,7 +75,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
     const removeAddon = (idToRemove: string) => {
         const newAddonGroups = form
             ?.getValues("addonGroups")
-            ?.filter((id) => id !== idToRemove);
+            ?.filter((id: string) => id !== idToRemove);
         form.setValue("addonGroups", newAddonGroups);
     };
 
@@ -131,7 +132,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
 
     const addVariation = () => {
         if (variationName[selectedLanguage] && options.length > 0) {
-            if (!form.getValues("variations").find((v) => v.name[selectedLanguage] ===
+            if (!form.getValues("variations").find((v : TVariations) => v.name[selectedLanguage] ===
                 variationName[selectedLanguage])) {
                 form.setValue("variations", [
                     ...form.getValues("variations"),
@@ -157,7 +158,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
     const removeVariation = (nameToRemove: string) => {
         form.setValue(
             "variations",
-            form.getValues("variations").filter((v) =>
+            form.getValues("variations").filter((v: TVariations) =>
                 v.name[selectedLanguage] !==
                 nameToRemove),
         );
@@ -253,7 +254,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
                 <label className="block mb-1">{t("variations")}</label>
                 <div>
                     {watchVariations?.length > 0 &&
-                        watchVariations?.map((variation, i) => (
+                        watchVariations?.map((variation: TVariations, i: number) => (
                             <div
                                 key={i}
                                 className="relative p-4 border rounded-md bg-gray-50 mb-4"
@@ -277,7 +278,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
                                 </div>
                                 <button
                                     type="button"
-                                    onClick={() => removeVariation(variation.name)}
+                                    onClick={() => removeVariation(variation?.name?.[lang] as string)}
                                     className="ml-2 hover:text-[#333] absolute top-1 right-1"
                                 >
                                     <XIcon className="h-4 w-4" />

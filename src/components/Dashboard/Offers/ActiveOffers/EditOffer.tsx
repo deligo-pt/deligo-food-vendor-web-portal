@@ -30,6 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { updateOfferReq } from "@/src/services/dashboard/offers/offers";
 import { getAllProductsReq } from "@/src/services/dashboard/products/products";
+import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
@@ -55,6 +56,7 @@ interface IProps {
 
 export default function EditOffer({ offer, open, onOpenChange }: IProps) {
   const router = useRouter();
+  const { lang } = useStore();
   const [itemsResult, setItemsResult] = useState<{
     data: TProduct[];
     meta?: TMeta;
@@ -347,7 +349,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                                   key={item._id}
                                   value={item._id as string}
                                 >
-                                  {item.name}
+                                  {item.name?.[lang]}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -590,7 +592,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                       >
                         <span>
                           {itemsResult.data.find((i) => i._id === itemId)
-                            ?.name || "-"}
+                            ?.name?.[lang] || "-"}
                         </span>
                         <button
                           type="button"
@@ -646,7 +648,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                               {!isLoadingProducts &&
                                 filteredItems.map((item) => (
                                   <SelectItem key={item._id} value={item._id as string}>
-                                    {item.name}
+                                    {item.name?.[lang]}
                                   </SelectItem>
                                 ))}
                             </SelectContent>

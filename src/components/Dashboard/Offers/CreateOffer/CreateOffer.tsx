@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { createOfferReq } from "@/src/services/dashboard/offers/offers";
+import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
@@ -48,6 +49,7 @@ interface IProps {
 
 export default function VendorCreateOffer({ itemsResult }: IProps) {
   const { t } = useTranslation();
+  const { lang } = useStore();
 
   const [isSelectedAllProducts, setIsSelectedAllProducts] = useState(true);
   const [filteredItems, setFilteredItems] = useState<TProduct[]>(
@@ -329,7 +331,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                     key={item._id}
                                     value={item._id as string}
                                   >
-                                    {item.name}
+                                    {item.name?.[lang]}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -625,7 +627,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         >
                           <span>
                             {itemsResult.data.find((i) => i._id === itemId)
-                              ?.name || "-"}
+                              ?.name?.[lang] || "-"}
                           </span>
                           <button
                             type="button"
@@ -688,7 +690,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                     key={item._id}
                                     value={item._id as string}
                                   >
-                                    {item.name}
+                                    {item.name?.[lang]}
                                   </SelectItem>
                                 ))}
                               </SelectContent>

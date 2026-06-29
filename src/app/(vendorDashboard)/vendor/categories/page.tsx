@@ -1,7 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import Categories from "@/src/components/Dashboard/Categories/Categories";
 import { TMeta, TResponse } from "@/src/types";
-import { TProductCategory } from "@/src/types/category.type";
+import { TProductCategoryResponse } from "@/src/types/category.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 interface IProps {
@@ -24,12 +24,12 @@ export default async function page({ searchParams }: IProps) {
     ...(availability ? { "stock.availabilityStatus": availability } : {}),
   };
 
-  const initialData: { data: TProductCategory[]; meta?: TMeta } = { data: [] };
+  const initialData: { data: TProductCategoryResponse[]; meta?: TMeta } = { data: [] };
 
   try {
     const result = (await serverRequest.get("/categories/productCategory", {
       params: query,
-    })) as unknown as TResponse<{ data: TProductCategory[]; meta?: TMeta }>;
+    })) as unknown as TResponse<{ data: TProductCategoryResponse[]; meta?: TMeta }>;
 
     if (result?.success) {
       initialData.data = result?.data?.data;
