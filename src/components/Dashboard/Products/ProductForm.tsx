@@ -138,32 +138,8 @@ export function ProductForm({
       name: ["price", "discount", "taxId", "addonGroups", "variations"],
     });
 
-  // const translateContent = async (data: FormData) => {
-  //   const response = await fetch(
-  //     "/api/translate-product",
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type":
-  //           "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         data,
-  //         selectedLanguage: lang
-  //       }),
-  //     }
-  //   );
-
-  //   const result = await response.json();
-
-  //   const translated = result.data;
-
-  //   return translated;
-  // }
-
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Translating and Creating product...");
-    
     
     try {
       const translated = await translateObject(data, lang);
