@@ -1,7 +1,12 @@
+type LocalizedType = {
+  en?: string;
+  pt?: string;
+}
+
 export type TVariations = {
-  name: string;
+  name: LocalizedType;
   options: {
-    label: string;
+    label: LocalizedType;
     price: number;
     stockQuantity: number;
     sku: string;
@@ -14,16 +19,16 @@ export type TProduct = {
   _id: string;
   productId: string;
   sku: string;
-  name: string;
+  name: LocalizedType;
   slug: string;
-  description: string;
+  description: LocalizedType;
   isDeleted: boolean;
   isApproved: boolean;
   remarks?: string;
 
   category: {
     _id: string;
-    name: string;
+    name: LocalizedType;
   };
   subCategory?: string;
   // brand?: string;

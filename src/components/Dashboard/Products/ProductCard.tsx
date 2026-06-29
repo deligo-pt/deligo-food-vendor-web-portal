@@ -1,5 +1,6 @@
 "use client";
 
+import { useStore } from "@/src/store/store";
 import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
 import { Clock, ShoppingBag, Star } from "lucide-react";
@@ -13,6 +14,7 @@ interface IProps {
 }
 
 export default function ProductCard({ product, onEdit, onDelete }: IProps) {
+  const { lang } = useStore();
   const router = useRouter();
 
   const statusColors = {
@@ -26,7 +28,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
     "Out of Stock": "bg-red-100 text-red-800",
     Limited: "bg-yellow-100 text-yellow-800",
   };
-
+  console.log("product", product)
   return (
     <motion.div
       className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100"
@@ -53,7 +55,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
         {product.images && product.images.length > 0 ? (
           <Image
             src={product.images[0]}
-            alt={product.name}
+            alt={product?.name?.[lang] as string}
             className="w-full h-full object-fill"
             width={500}
             height={500}
@@ -69,9 +71,8 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
           </div>
         )}
         <div
-          className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${
-            statusColors[product.isDeleted ? "DELETED" : product.meta.status]
-          }`}
+          className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${statusColors[product.isDeleted ? "DELETED" : product.meta.status]
+            }`}
         >
           {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
@@ -79,7 +80,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-bold text-gray-900 truncate">
-            {product.name}
+            {product.name?.[lang]}
           </h3>
           <div className="flex items-center">
             <Star
@@ -92,7 +93,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
           </div>
         </div>
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-          {product.description}
+          {product.description?.[lang]}
         </p>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
@@ -115,9 +116,8 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
           </div>
           {product.stock?.availabilityStatus && (
             <div
-              className={`text-xs px-2 py-1 rounded-full ${
-                availabilityColors[product.stock.availabilityStatus]
-              }`}
+              className={`text-xs px-2 py-1 rounded-full ${availabilityColors[product.stock.availabilityStatus]
+                }`}
             >
               {product.stock.availabilityStatus}
             </div>

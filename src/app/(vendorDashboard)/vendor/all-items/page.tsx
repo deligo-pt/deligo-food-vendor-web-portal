@@ -50,8 +50,8 @@ export default async function ProductsPage({ searchParams }: IProps) {
     }
 
     if (taxesResult?.success) {
-      taxesData.data = taxesResult.data?.data || [];
-      taxesData.meta = taxesResult.data?.meta;
+      taxesData.data = taxesResult?.data || [];
+      taxesData.meta = taxesResult?.meta;
     }
 
   } catch (err) {
