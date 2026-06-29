@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { TBusinessCategory } from "@/src/types/category.type";
+import { TProductCategory } from "@/src/types/category.type";
 import { motion } from "framer-motion";
 import type { UseFormReturn } from "react-hook-form";
 
@@ -29,7 +29,7 @@ type BasicInfoFormValues = {
 
 interface IProps {
     form: UseFormReturn<BasicInfoFormValues>;
-    productCategories: TBusinessCategory[];
+    productCategories: TProductCategory[];
     selectedLanguage: "en" | "pt";
 }
 
@@ -106,7 +106,7 @@ const BasicInfoForm = ({ form, productCategories, selectedLanguage }: IProps) =>
                                             key={category?._id}
                                             value={category?._id}
                                         >
-                                            {category?.name}
+                                            {category?.name?.[selectedLanguage]}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

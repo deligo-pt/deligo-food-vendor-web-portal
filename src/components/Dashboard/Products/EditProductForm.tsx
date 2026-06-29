@@ -27,11 +27,12 @@ import { getAllTaxesReq } from "@/src/services/dashboard/taxes/taxes";
 import { useStore } from "@/src/store/store";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
-import { TProductCategory } from "@/src/types/category.type";
+import { TProductCategoryResponse } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 import { TTax } from "@/src/types/tax.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 import { updateData } from "@/src/utils/requests";
+import { translateObject } from "@/src/utils/translation/translationObject";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -111,10 +112,8 @@ export function EditProductForm({
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
   });
-  const [productCategoriesData, setProductCategoriesData] = useState<
-    IData<TProductCategory>
-  >({ data: [] });
-  const [taxesData, setTaxesData] = useState<IData<TTax>>({ data: [] });
+  const [productCategoriesData, setProductCategoriesData] = useState<TProductCategoryResponse[]>([]);
+  const [taxesData, setTaxesData] = useState<TTax[]>([]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(productValidation),
@@ -170,9 +169,17 @@ export function EditProductForm({
     const toastId = toast.loading("Updating product...");
     setIsSubmitting(true);
 
+    const translated = await translateObject(data, lang);
+
+    if (!translated) {
+      toast.error("Translation failed!", { id: toastId });
+      setIsSubmitting(false);
+      return;
+    }
+
     const productData = {
-      name: data.name,
-      description: data.description,
+      name: translated.name,
+      description: translated.description,
       category: data.category,
       pricing: {
         discount: data.discount,
@@ -251,10 +258,10 @@ export function EditProductForm({
   };
 
   const getProductCategories = async ({ limit = 10 }) => {
-    const result = await catchAsync<TProductCategory[]>(async () => {
+    const result = await catchAsync<TProductCategoryResponse[]>(async () => {
       return (await getAllProductCategoriesReq({
         limit,
-      })) as unknown as TResponse<TProductCategory[]>;
+      })) as unknown as TResponse<TProductCategoryResponse[]>;
     });
 
     if (result.success) {
@@ -263,10 +270,8 @@ export function EditProductForm({
   };
 
   const getTaxes = async ({ limit = 10 }) => {
-    const result = await catchAsync<TProductCategory[]>(async () => {
-      return (await getAllTaxesReq({ limit })) as unknown as TResponse<
-        TProductCategory[]
-      >;
+    const result = await catchAsync(async () => {
+      return await getAllTaxesReq({ limit })
     });
 
     if (result.success) {
@@ -395,11 +400,11 @@ export function EditProductForm({
                     <div>
                       <FormField
                         control={form.control}
-                        name="name"
+                        name={`name.${lang}`}
                         render={({ field }) => (
                           <FormItem className="gap-1">
                             <FormLabel
-                              htmlFor="name"
+                              htmlFor={`name.${lang}`}
                               className="block text-sm font-medium text-gray-700"
                             >
                               {t("product_name")}
@@ -417,11 +422,11 @@ export function EditProductForm({
                     </div>
                     <FormField
                       control={form.control}
-                      name="description"
+                      name={`description.${lang}`}
                       render={({ field }) => (
                         <FormItem className="gap-1">
                           <FormLabel
-                            htmlFor="description"
+                            htmlFor={`description.${lang}`}
                             className="block text-sm font-medium text-gray-700"
                           >
                             {t("description")}
@@ -464,7 +469,7 @@ export function EditProductForm({
                                 <SelectValue placeholder="Select a category" />
                               </SelectTrigger>
                               <SelectContent>
-                                {productCategoriesData?.data?.map(
+                                {productCategoriesData?.map(
                                   (category) => (
                                     <SelectItem
                                       key={category?._id}
@@ -555,7 +560,7 @@ export function EditProductForm({
                                 {
                                   addonGroupsData?.data?.find(
                                     (group) => group._id === id,
-                                  )?.title
+                                  )?.title?.[lang]
                                 }
                               </span>
                               <button
@@ -592,7 +597,7 @@ export function EditProductForm({
                                       key={group._id}
                                       value={group._id}
                                     >
-                                      {group.title}
+                                      {group.title?.[lang]}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -614,7 +619,7 @@ export function EditProductForm({
                               className="relative p-4 border rounded-md bg-gray-50 mb-4"
                             >
                               <div>
-                                {t("name")}: {variation.name}
+                                {t("name")}: {variation.name?.[lang]}
                               </div>
                               <div className="flex flex-wrap gap-2 items-center">
                                 {t("options")}:{" "}
@@ -623,7 +628,7 @@ export function EditProductForm({
                                     key={i2}
                                     className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
                                   >
-                                    <span>{option.label}</span>
+                                    <span>{option.label?.[lang]}</span>
                                     <span className="ml-2">
                                       (€{option.price})
                                     </span>
@@ -639,7 +644,7 @@ export function EditProductForm({
                         )}
                       </div>
                       {(prevData?.variations || prevData?.variations?.length !== 0) && <div className="flex items-start gap-3 p-4 rounded-xl border border-[#DC3173] bg-[#DC3173]/20">
-                        <div className="flex-shrink-0 mt-0.5">
+                        <div className="shrink-0 mt-0.5">
                           <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#DC3173] text-white text-xs font-bold select-none">
                             !
                           </span>
@@ -747,7 +752,7 @@ export function EditProductForm({
                                   <SelectValue placeholder="Select tax" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {taxesData?.data?.map((tax) => (
+                                  {taxesData?.map((tax) => (
                                     <SelectItem key={tax._id} value={tax._id}>
                                       {tax.taxName}({ }
                                       {tax.taxRate}%)

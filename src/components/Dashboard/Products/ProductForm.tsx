@@ -7,7 +7,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TAddonGroup } from "@/src/types/add-ons.type";
-import { TBusinessCategory } from "@/src/types/category.type";
+import { TProductCategory } from "@/src/types/category.type";
 import { TTax } from "@/src/types/tax.type";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,7 +48,7 @@ export function ProductForm({
   taxesData,
   businessType,
 }: {
-  productCategories: TBusinessCategory[];
+  productCategories: TProductCategory[];
   addonGroupsData: TAddonGroup[];
   taxesData: TTax[];
   businessType: string;
@@ -140,9 +140,14 @@ export function ProductForm({
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Translating and Creating product...");
-    
+
     try {
       const translated = await translateObject(data, lang);
+
+      if (!translated) {
+        toast.error("Translation failed!", { id: toastId });
+        return;
+      }
 
       const productData = {
         name: translated.name,
