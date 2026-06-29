@@ -17,6 +17,7 @@ export default async function AddOnsPage({ searchParams }: IProps) {
   const page = Number(queries.page || 1);
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
+  const lang = queries.lang || "en";
 
   const query = {
     limit,
@@ -37,6 +38,9 @@ export default async function AddOnsPage({ searchParams }: IProps) {
 
     const addonsResult = (await serverRequest.get("/add-ons", {
       params: query,
+      headers: {
+        "Accept-Language": lang
+      }
     })) as TResponse<TAddonGroup[]>;
 
     if (addonsResult?.success) {

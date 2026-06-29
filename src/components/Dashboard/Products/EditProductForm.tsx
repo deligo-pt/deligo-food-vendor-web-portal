@@ -24,6 +24,7 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { getAddOnsGroupReq } from "@/src/services/dashboard/add-ons/add-ons";
 import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
 import { getAllTaxesReq } from "@/src/services/dashboard/taxes/taxes";
+import { useStore } from "@/src/store/store";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TProductCategory } from "@/src/types/category.type";
@@ -72,6 +73,7 @@ export function EditProductForm({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useTranslation();
+  const { lang } = useStore();
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = [
@@ -235,7 +237,7 @@ export function EditProductForm({
 
   const getAddonsGroups = async ({ limit = 10 }) => {
     const result = await catchAsync<TAddonGroup[]>(async () => {
-      return (await getAddOnsGroupReq({ limit })) as unknown as TResponse<
+      return (await getAddOnsGroupReq({ limit }, lang)) as unknown as TResponse<
         TAddonGroup[]
       >;
     });

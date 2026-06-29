@@ -4,9 +4,14 @@ import { serverRequest } from "@/lib/serverFetch";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 
-export const getAddOnsGroupReq = async ({ limit = 10 }) => {
+export const getAddOnsGroupReq = async ({ limit = 10 }, lang: "en" | "pt") => {
   return catchAsync<TAddonGroup>(async () => {
-    return await serverRequest.get("/add-ons", { params: { limit } });
+    return await serverRequest.get("/add-ons", {
+      params: { limit },
+      headers: {
+        "Accept-Language": lang
+      }
+    });
   });
 };
 
