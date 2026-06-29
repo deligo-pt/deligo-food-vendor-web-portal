@@ -1,23 +1,11 @@
 import { z } from "zod";
 
 const localizedTextSchema = z.object({
-  en: z.string(),
-  pt: z.string(),
+  en: z.string().optional(),
+  pt: z.string().optional(),
 });
 
 export const productValidation = z.object({
-  //   name: z
-  // .string()
-  // .min(2, "Name must be at least 2 character")
-  // .max(50, "Name must be at most 50 characters")
-  // .nonempty("Name is required"),
-
-  // description: z
-  //   .string()
-  //   .min(1, "Description is required")
-  //   .max(500, "Description must be at most 500 characters")
-  //   .nonempty("Description is required"),
-
   name: localizedTextSchema,
 
   description: localizedTextSchema,

@@ -8,16 +8,21 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function ProductDetailsPage({
   params,
+  searchParams
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ lang?: string }>;
 }) {
   const { id } = await params;
+  const { lang } = await searchParams;
 
   let initialData: TProduct = {} as TProduct;
 
   try {
     const result = (await serverRequest.get(
-      `/products/${id}`,
+      `/products/${id}`, {
+      headers: { "Accept-Language": lang }
+    }
     )) as TResponse<TProduct>;
 
     if (result?.success) {

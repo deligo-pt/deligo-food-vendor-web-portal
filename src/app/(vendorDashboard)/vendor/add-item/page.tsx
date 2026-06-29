@@ -5,13 +5,13 @@ import { ProductForm } from "@/src/components/Dashboard/Products/ProductForm";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
-import { TProductCategory } from "@/src/types/category.type";
+import { TProductCategoryResponse } from "@/src/types/category.type";
 import { TTax } from "@/src/types/tax.type";
 import { TVendor } from "@/src/types/vendor.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function AddItemPage() {
-  let productCategoriesData: TProductCategory[] = [];
+  let productCategoriesData: TProductCategoryResponse[] = [];
   let addonGroupsData: TAddonGroup[] = [];
   let taxesData: TTax[] = [];
   const vendorData: TVendor = await getProfileData();

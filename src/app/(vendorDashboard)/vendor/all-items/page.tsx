@@ -17,6 +17,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
   const page = Number(queries.page || 1);
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
+  const lang = queries.lang || "en";
 
   let vendorData: TVendor | null = null;
   const productsData: { data: TProduct[]; meta?: TMeta } = { data: [] };
@@ -39,8 +40,8 @@ export default async function ProductsPage({ searchParams }: IProps) {
     };
 
     const [productsResult, taxesResult] = await Promise.all([
-      serverRequest.get("/products", { params: query }),
-      serverRequest.get("/taxes"),
+      serverRequest.get("/products", { params: query, headers: { "Accept-Language": lang } }),
+      serverRequest.get("/taxes", { headers: { "Accept-Language": lang } }),
     ]);
 
 
