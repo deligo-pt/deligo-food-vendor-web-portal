@@ -19,10 +19,10 @@ export default async function AddItemPage() {
   try {
     const result = (await serverRequest.get(
       "/categories/productCategory",
-    )) as TResponse<{ data: TProductCategory[] }>;
+    ));
 
     if (result?.success) {
-      productCategoriesData = result?.data?.data || [];
+      productCategoriesData = result?.data || [];
     }
   } catch (err) {
     console.log("Server fetch error:", err);
@@ -43,12 +43,10 @@ export default async function AddItemPage() {
   }
 
   try {
-    const result = (await serverRequest.get("/taxes")) as TResponse<{
-      data: TTax[];
-    }>;
+    const result = (await serverRequest.get("/taxes"));
 
     if (result?.success) {
-      taxesData = result?.data?.data || [];
+      taxesData = result?.data || [];
     }
   } catch (err) {
     console.log("Server fetch error:", err);

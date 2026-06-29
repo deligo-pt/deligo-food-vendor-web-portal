@@ -23,6 +23,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useStore } from '@/src/store/store';
 
 interface IProps {
     form: any;
@@ -34,7 +35,7 @@ interface IProps {
 }
 
 const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariations, watchAddons, selectedLanguage }: IProps) => {
-
+    const { lang } = useStore();
     const { t } = useTranslation();
     const [variationName, setVariationName] = useState({
         en: "",
@@ -199,7 +200,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
                                     {
                                         addonGroupsData?.find(
                                             (group) => group._id === id,
-                                        )?.title
+                                        )?.title?.[lang]
                                     }
                                 </span>
                                 <button
@@ -236,7 +237,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
                                                 key={group._id}
                                                 value={group._id}
                                             >
-                                                {group.title}
+                                                {group.title?.[lang]}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

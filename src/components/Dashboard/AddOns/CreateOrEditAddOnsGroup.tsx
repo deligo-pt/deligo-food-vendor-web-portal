@@ -65,7 +65,7 @@ export default function CreateOrEditAddOnsGroup({
   const { lang } = useStore();
   const form = useForm<TAddonGroupForm>({
     resolver: zodResolver(createAddonGroupValidationSchema),
-    defaultValues: {
+    values: {
       title: {
         en: prevValues?.title?.en || "",
         pt: prevValues?.title?.pt || ""

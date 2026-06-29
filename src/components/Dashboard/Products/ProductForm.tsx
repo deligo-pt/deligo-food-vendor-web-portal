@@ -163,10 +163,10 @@ export function ProductForm({
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Translating and Creating product...");
-
+    
+    
     try {
       const translated = await translateObject(data, lang);
-      console.log("translated", translated);
 
       const productData = {
         name: translated.name,
