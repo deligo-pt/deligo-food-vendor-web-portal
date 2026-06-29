@@ -13,9 +13,10 @@ interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  isDeleting: boolean;
 }
 
-const DeleteModal = ({ open, onOpenChange, onConfirm }: IProps) => {
+const DeleteModal = ({ open, onOpenChange, onConfirm, isDeleting }: IProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form>
@@ -33,7 +34,7 @@ const DeleteModal = ({ open, onOpenChange, onConfirm }: IProps) => {
                 Cancel
               </Button>
             </DialogClose>
-            <Button variant="destructive" onClick={onConfirm} type="submit">
+            <Button variant="destructive" onClick={onConfirm} type="submit" disabled={isDeleting}>
               Delete
             </Button>
           </DialogFooter>

@@ -42,11 +42,11 @@ export const addOptionInGroup = async (
 
 export const deleteOptionFromGroup = async (
   groupId: string,
-  optionId: string,
+  optionSku: string,
 ) => {
   return catchAsync<null>(async () => {
     return await serverRequest.delete(`/add-ons/${groupId}/delete-option`, {
-      data: { optionId },
+      data: { optionSku },
     });
   });
 };

@@ -9,6 +9,7 @@ type LocalizedType = {
 export type TAddonOption = {
   _id?: string;
   name: LocalizedType;
+  sku?: string;
   price: number;
   tax: TTax | string;
   isActive?: boolean;

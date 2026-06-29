@@ -42,11 +42,14 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
   ];
   const [deleteOptionInfo, setDeleteOptionInfo] = useState<{
     groupId: string;
-    optionId: string;
-  }>({ groupId: "", optionId: "" });
+    optionSku: string;
+  }>({ groupId: "", optionSku: "" });
+
   const [selectedGroupForEdit, setSelectedGroupForEdit] = useState<
     TAddonGroup | undefined
   >(undefined);
+
+  const [isDeleting, setIsDeleting] = useState(false);
   const [openCreateForm, setOpenCreateForm] = useState<boolean>(false);
   const [selectedGroupForAddOption, setSelectedGroupForAddOption] = useState<
     TAddonGroup | undefined
@@ -56,20 +59,23 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
 
   const handleDeleteOption = async () => {
     const toastId = toast.loading("Deleting option...");
+    setIsDeleting(true);
 
-    const { groupId, optionId } = deleteOptionInfo;
-    const result = await deleteOptionFromGroup(groupId, optionId);
+    const { groupId, optionSku } = deleteOptionInfo;
+    const result = await deleteOptionFromGroup(groupId, optionSku);
 
     if (result.success) {
       toast.success(result.message || "Option deleted successfully!", {
         id: toastId,
       });
       router.refresh();
-      setDeleteOptionInfo({ groupId: "", optionId: "" });
+      setDeleteOptionInfo({ groupId: "", optionSku: "" });
+      setIsDeleting(false);
       return;
     }
 
     toast.error(result.message || "Failed to delete option", { id: toastId });
+    setIsDeleting(false);
     console.log(result);
   };
 
@@ -222,7 +228,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                                 onClick={() =>
                                   setDeleteOptionInfo({
                                     groupId: group._id,
-                                    optionId: option._id as string,
+                                    optionSku: option.sku as string,
                                   })
                                 }
                               >
@@ -241,11 +247,12 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
         </div>
 
         <DeleteModal
-          open={!!deleteOptionInfo.optionId && !!deleteOptionInfo.groupId}
+          open={!!deleteOptionInfo.optionSku && !!deleteOptionInfo.groupId}
           onOpenChange={(open) =>
-            !open && setDeleteOptionInfo({ groupId: "", optionId: "" })
+            !open && setDeleteOptionInfo({ groupId: "", optionSku: "" })
           }
           onConfirm={() => handleDeleteOption()}
+          isDeleting={isDeleting}
         />
 
         {/* PAGINATION */}

@@ -36,6 +36,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
   const router = useRouter();
   const [editOffer, setEditOffer] = useState<TOffer | null>(null);
   const [deleteId, setDeleteId] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
@@ -62,6 +63,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
   const deleteOffer = async () => {
     const toastId = toast.loading("Deleting offer...");
+    setIsDeleting(true);
 
     const result = await deleteOfferReq(deleteId);
     if (result.success) {
@@ -70,12 +72,14 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
         id: toastId,
       });
       setDeleteId("");
+      setIsDeleting(false);
       return;
     }
 
     toast.error(result.message || "Offer deletion failed", {
       id: toastId,
     });
+    setIsDeleting(false);
     console.log(result);
   };
 
@@ -218,6 +222,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId("")}
         onConfirm={() => deleteOffer()}
+        isDeleting={isDeleting}
       />
 
       {/* Edit Offer Modal */}
