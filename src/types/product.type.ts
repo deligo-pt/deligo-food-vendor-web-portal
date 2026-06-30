@@ -1,7 +1,4 @@
-type LocalizedType = {
-  en?: string;
-  pt?: string;
-}
+import { LocalizedType } from ".";
 
 export type TVariations = {
   name: LocalizedType;

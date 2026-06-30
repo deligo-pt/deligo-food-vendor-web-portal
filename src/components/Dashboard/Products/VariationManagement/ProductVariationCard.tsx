@@ -9,7 +9,10 @@ import {
   renameVariationReq,
   updateVariationPrice,
 } from "@/src/services/dashboard/products/variation";
+import { useStore } from "@/src/store/store";
+import { LocalizedType } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
+import { translateObject } from "@/src/utils/translation/translationObject";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircleIcon,
@@ -30,11 +33,12 @@ interface IProps {
 }
 
 export default function ProductVariationCard({ product, businessType }: IProps) {
+  const { lang } = useStore();
   const router = useRouter();
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAddVariation, setShowAddVariation] = useState(false);
-  const [addingOptionFor, setAddingOptionFor] = useState<string | null>(null);
+  const [addingOptionFor, setAddingOptionFor] = useState<LocalizedType>({});
 
   const variationCount = product?.variations?.length || 0;
   const optionCount = (product?.variations || [])?.reduce(
@@ -44,12 +48,14 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
 
   const renameVariation = async (data: {
     oldName: string;
-    newName?: string;
+    newName?: { en: string; pt: string };
     oldLabel?: string;
-    newLabel?: string;
+    newLabel?: { en: string; pt: string };
   }) => {
     const toastId = toast.loading("Renaming variation...");
-    const result = await renameVariationReq(product.productId, data);
+    const translated = await translateObject(data, lang);
+
+    const result = await renameVariationReq(product.productId, translated);
 
     if (result.success) {
       toast.success(result.message || "Variation renamed successfully!", {
@@ -138,7 +144,7 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
         <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-100">
           <Image
             src={product.images[0]}
-            alt={product.name}
+            alt={product.name?.[lang] as string}
             className="w-full h-full object-fill"
             width={300}
             height={300}
@@ -148,7 +154,7 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-base font-bold text-gray-900 truncate">
-              {product.name}
+              {product.name?.[lang]}
             </h3>
           </div>
           <div className="flex items-center gap-2 mt-1.5">
@@ -164,7 +170,7 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
               </span>
             )}
             <span className="text-xs text-gray-400">
-              {product.category.name}
+              {product.category.name?.[lang]}
             </span>
           </div>
         </div>
@@ -271,11 +277,14 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
                         </div>
                         <VariationInlineEdit
                           title="Variation Name"
-                          value={variation.name}
+                          value={variation.name?.[lang] as string}
                           onSave={(newName) =>
                             renameVariation({
-                              oldName: variation.name,
-                              newName,
+                              oldName: variation.name?.en as string,
+                              newName: {
+                                en: lang === 'en' ? newName : (variation.name?.en as string),
+                                pt: lang === 'pt' ? newName : (variation.name?.pt as string),
+                              },
                             })
                           }
                           className="text-sm font-bold text-gray-900"
@@ -295,7 +304,7 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
                         </button>
                         <VariationDeleteButton
                           onConfirm={() =>
-                            deleteVariation({ name: variation.name })
+                            deleteVariation({ name: variation.name?.[lang] as string })
                           }
                           label="Delete variation"
                         />
@@ -327,12 +336,15 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
 
                             <VariationInlineEdit
                               title="Option Label"
-                              value={option.label}
+                              value={option.label?.[lang] as string}
                               onSave={(newLabel) =>
                                 renameVariation({
-                                  oldName: variation.name,
-                                  oldLabel: option.label,
-                                  newLabel,
+                                  oldName: variation.name?.en as string,
+                                  oldLabel: option.label?.en,
+                                  newLabel: {
+                                    en: lang === 'en' ? newLabel : (option.label?.en as string),
+                                    pt: lang === 'pt' ? newLabel : (option.label?.pt as string),
+                                  }
                                 })
                               }
                               className="text-sm font-medium text-gray-800 min-w-20"
@@ -367,8 +379,8 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
                             <VariationDeleteButton
                               onConfirm={() =>
                                 deleteVariation({
-                                  name: variation.name,
-                                  labelToRemove: option.label,
+                                  name: variation.name?.[lang] as string,
+                                  labelToRemove: option.label?.[lang],
                                 })
                               }
                               label="Delete option"
@@ -390,12 +402,12 @@ export default function ProductVariationCard({ product, businessType }: IProps) 
 
                     {/* Add Option Form */}
                     <AnimatePresence>
-                      {!!addingOptionFor && (
+                      {(addingOptionFor.en || addingOptionFor.pt) && (
                         <div className="px-4 pb-3">
                           <AddVaritionOptionForm
                             productId={product.productId}
                             variationName={addingOptionFor}
-                            onCancel={() => setAddingOptionFor(null)}
+                            onCancel={() => setAddingOptionFor({en : "", pt : ""})}
                             businessType={businessType}
                           />
                         </div>

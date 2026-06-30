@@ -117,21 +117,13 @@ export const productValidation = z.object({
   );
 
 export const variationOptionValidation = z.object({
-  label: z
-    .string()
-    .min(2, "Label must be at least 2 characters")
-    .max(50, "Label must be at most 50 characters")
-    .nonempty("Label is required"),
+  label: localizedTextSchema,
   price: z.number().min(0, "Price must be at least 0"),
   stockQuantity: z.number().min(0, "Stock quantity must be at least 0"),
 });
 
 export const variationValidation = z.object({
-  name: z
-    .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name must be at most 50 characters")
-    .nonempty("Name is required"),
+  name: localizedTextSchema,
   options: z
     .array(variationOptionValidation)
     .min(1, "At least one option is required"),

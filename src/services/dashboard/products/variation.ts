@@ -6,6 +6,10 @@ import { variationValidation } from "@/src/validations/product/product.validatio
 import z from "zod";
 
 type TVariationForm = z.infer<typeof variationValidation>;
+type LocalizedType = {
+  en?: string;
+  pt?: string;
+}
 
 export const addVariationReq = async (
   productId: string,
@@ -23,9 +27,9 @@ export const renameVariationReq = async (
   productId: string,
   data: {
     oldName: string;
-    newName?: string;
+    newName?: LocalizedType;
     oldLabel?: string;
-    newLabel?: string;
+    newLabel?: LocalizedType;
   },
 ) => {
   return catchAsync<null>(async () => {

@@ -20,6 +20,7 @@ export default async function VariationManagementPage({
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
   const availability = queries.status || "";
+  const lang = queries.lang || "en";
 
   const query = {
     limit,
@@ -34,6 +35,9 @@ export default async function VariationManagementPage({
   try {
     const result = (await serverRequest.get("/products", {
       params: query,
+      headers: {
+        "Accept-Language": lang
+      }
     })) as unknown as TResponse<TProduct[]>;
 
     if (result?.success) {
