@@ -48,6 +48,7 @@ export default function TopbarIcons({ vendor }: IProps) {
 
   const handleLangChange = (value: "en" | "pt") => {
     setLang(value);
+    document.cookie = `lang=${value}; path=/`;
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("lang", value);
