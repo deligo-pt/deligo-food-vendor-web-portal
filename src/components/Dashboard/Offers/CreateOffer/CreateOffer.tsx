@@ -104,7 +104,8 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       const translated = await translateObject(transPayload, lang);
 
       if (!translated) {
-        toast.error("Translation failed!", translated);
+        toast.error("Translation failed!", { id: toastId });
+        return;
       }
 
       const offerData: Partial<TOffer> = {

@@ -34,6 +34,7 @@ import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
+import { translateObject } from "@/src/utils/translation/translationObject";
 import { offerValidation } from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -82,8 +83,11 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
       maxUsageCount: offer?.maxUsageCount ? String(offer.maxUsageCount) : "",
       userUsageLimit: offer?.userUsageLimit ? String(offer.userUsageLimit) : "",
       applicableProducts: offer?.applicableProducts ? (offer?.applicableProducts as string[]) : [],
+      currentLang: lang
     },
   });
+  const { formState: { isSubmitting } } = form;
+  const [isAutoApply, setIsAutoApply] = useState(false);
 
   const [watchOfferType, watchApplicableProducts] = useWatch({
     control: form.control,
@@ -93,9 +97,21 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Updating offer...");
 
-    const offerData: Partial<TOffer> = {
+    const transPayload = {
       title: data.title,
-      description: data.description,
+      description: data.description
+    };
+    console.log("trans pay", transPayload);
+    const translated = await translateObject(transPayload, lang);
+
+    if (!translated) {
+      toast.error("Translation failed!", { id: toastId });
+      return;
+    }
+
+    const offerData: Partial<TOffer> = {
+      title: translated.title ? translated.title : data.title,
+      description: translated.description ? translated.description : data.description,
       offerType: data.offerType,
       discountValue: data.discountValue,
       maxDiscountAmount: data.maxDiscountAmount,
@@ -103,7 +119,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
       expiresAt: data.expiresAt,
       minOrderAmount: data.minOrderAmount,
       code: data.code,
-      isAutoApply: false,
+      isAutoApply: data.isAutoApply,
       applicableProducts: data.applicableProducts,
 
       ...(data.offerType === "BOGO"
@@ -203,7 +219,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
 
               <FormField
                 control={form.control}
-                name="title"
+                name={`title.${lang}`}
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -220,7 +236,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
 
               <FormField
                 control={form.control}
-                name="description"
+                name={`description.${lang}`}
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -511,10 +527,16 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                           {...field}
                           checked={field.value ? true : false}
                           value={"true"}
-                          onChange={(e) => field.onChange(e.target.checked)}
+                          onChange={(e) => {
+                            field.onChange(e.target.checked);
+                            setIsAutoApply(e.target.checked);
+                          }}
                         />
                         <span
-                          onClick={() => field.onChange(!field.value)}
+                          onClick={() => {
+                            field.onChange(!field.value);
+                            setIsAutoApply(!field.value)
+                          }}
                           className="font-medium text-sm text-gray-700"
                         >
                           Will Auto Apply?
@@ -528,7 +550,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
             </div>
 
             {/* PROMO CODE */}
-            <div className="space-y-4">
+            {!isAutoApply && <div className="space-y-4">
               <h2 className="font-bold text-lg">Promo Code</h2>
               <Separator />
               <FormField
@@ -547,7 +569,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                   </FormItem>
                 )}
               />
-            </div>
+            </div>}
 
             {/* APPLICABLE PRODUCTS */}
             <div className="space-y-4">
@@ -676,6 +698,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
               <Button
                 className="h-12 px-6 text-base text-white"
                 style={{ background: PRIMARY }}
+                disabled={isSubmitting}
               >
                 Update
               </Button>

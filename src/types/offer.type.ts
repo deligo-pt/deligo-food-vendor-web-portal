@@ -5,7 +5,7 @@ export type TOffer = {
   title: LocalizedType;
   description: LocalizedType;
   // Offer type
-  offerType: "PERCENT" | "FLAT" | "FREE_DELIVERY" | "BOGO";
+  offerType: "PERCENT" | "FLAT"  | "BOGO";
   // Discount values
   discountValue?: number;
   maxDiscountAmount?: number;

@@ -12,6 +12,7 @@ import {
   deleteOfferReq,
   toggleOfferStatusReq,
 } from "@/src/services/dashboard/offers/offers";
+import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { format } from "date-fns";
@@ -33,6 +34,7 @@ interface IProps {
 
 export default function ActiveOffers({ offersResult, title }: IProps) {
   const { t } = useTranslation();
+  const { lang } = useStore();
   const router = useRouter();
   const [editOffer, setEditOffer] = useState<TOffer | null>(null);
   const [deleteId, setDeleteId] = useState<string>("");
@@ -125,7 +127,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
                     <div>
                       <h2 className="text-2xl font-bold text-gray-800">
-                        {offer.title}
+                        {offer.title?.[lang]}
                       </h2>
 
                       <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
