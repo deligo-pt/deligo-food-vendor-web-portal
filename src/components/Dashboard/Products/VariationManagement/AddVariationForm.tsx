@@ -63,6 +63,7 @@ export default function AddVariationForm({ productId, onCancel, businessType }: 
         pt: ""
       },
       options: [],
+      currentLang: lang
     },
   });
   const { formState: { isSubmitting } } = form;
@@ -94,7 +95,12 @@ export default function AddVariationForm({ productId, onCancel, businessType }: 
     const toastId = toast.loading("Adding variation...");
     const translated = await translateObject(data, lang);
 
-    const result = await addVariationReq(productId, translated);
+    const payload = {
+      name: translated.name,
+      options: translated.options
+    };
+
+    const result = await addVariationReq(productId, payload);
 
     onCancel();
     if (result.success) {

@@ -53,6 +53,10 @@ export default function AddVaritionOptionForm({
   const { formState: { isSubmitting } } = form;
 
   const onSubmit = async (data: TOptionForm) => {
+    if (!data.label?.[lang]) {
+      toast.error("Please put option label");
+      return;
+    }
     const toastId = toast.loading("Adding option...");
 
     const translated = await translateObject(data, lang);

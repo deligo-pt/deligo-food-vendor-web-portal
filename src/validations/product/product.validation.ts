@@ -146,4 +146,15 @@ export const variationValidation = z.object({
   options: z
     .array(variationOptionValidation)
     .min(1, "At least one option is required"),
-});
+
+  currentLang: z.enum(["en", "pt"]),
+
+}).superRefine((data, ctx) => {
+  validateLocalizedField(
+    data.name,
+    data.currentLang,
+    ctx,
+    ["name"],
+    "Name is required"
+  );
+})
