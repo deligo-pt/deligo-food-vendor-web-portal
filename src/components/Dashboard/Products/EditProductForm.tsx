@@ -133,6 +133,7 @@ export function EditProductForm({
       isFeatured: prevData?.meta?.isFeatured || false,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
       businessType,
+      currentLang : lang
     },
   });
 

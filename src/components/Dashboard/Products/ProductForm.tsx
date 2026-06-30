@@ -118,6 +118,7 @@ export function ProductForm({
       isFeatured: false,
       isAvailableForPreOrder: false,
       businessType,
+      currentLang: lang
     },
   });
   const { formState: { isSubmitting } } = form;

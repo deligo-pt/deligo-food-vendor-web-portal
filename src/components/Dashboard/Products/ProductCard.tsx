@@ -28,7 +28,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
     "Out of Stock": "bg-red-100 text-red-800",
     Limited: "bg-yellow-100 text-yellow-800",
   };
-  console.log("product", product)
+
   return (
     <motion.div
       className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100"

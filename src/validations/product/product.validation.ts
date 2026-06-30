@@ -1,3 +1,4 @@
+import { validateLocalizedField } from "@/src/consts/validation.const";
 import { z } from "zod";
 
 const localizedTextSchema = z.object({
@@ -57,7 +58,25 @@ export const productValidation = z.object({
   isAvailableForPreOrder: z.boolean().optional(),
 
   businessType: z.string(),
+  currentLang: z.enum(["en", "pt"]),
 })
+  .superRefine((data, ctx) => {
+    validateLocalizedField(
+      data.name,
+      data.currentLang,
+      ctx,
+      ["name"],
+      "Name is required"
+    );
+
+    validateLocalizedField(
+      data.description,
+      data.currentLang,
+      ctx,
+      ["description"],
+      "Description is required"
+    );
+  })
   .refine(
     (data) => {
       if (data.variations.length === 0 && !data.price) {
