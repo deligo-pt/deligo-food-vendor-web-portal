@@ -1,7 +1,9 @@
+import { LocalizedType } from ".";
+
 export type TOffer = {
   _id: string;
-  title: string;
-  description?: string;
+  title: LocalizedType;
+  description: LocalizedType;
   // Offer type
   offerType: "PERCENT" | "FLAT" | "FREE_DELIVERY" | "BOGO";
   // Discount values

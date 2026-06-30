@@ -1,6 +1,6 @@
 import { serverRequest } from "@/lib/serverFetch";
 import Categories from "@/src/components/Dashboard/Categories/Categories";
-import { TMeta, TResponse } from "@/src/types";
+import { TMeta } from "@/src/types";
 import { TProductCategoryResponse } from "@/src/types/category.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
@@ -29,11 +29,11 @@ export default async function page({ searchParams }: IProps) {
   try {
     const result = (await serverRequest.get("/categories/productCategory", {
       params: query,
-    })) as unknown as TResponse<{ data: TProductCategoryResponse[]; meta?: TMeta }>;
+    }));
 
     if (result?.success) {
-      initialData.data = result?.data?.data;
-      initialData.meta = result?.data?.meta;
+      initialData.data = result?.data;
+      initialData.meta = result?.meta;
     }
   } catch (err) {
     console.log("Server fetch error:", err);
