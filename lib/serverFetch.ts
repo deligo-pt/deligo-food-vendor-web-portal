@@ -2,7 +2,7 @@
 import { verifyTokens } from "@/src/utils/verifyTokens";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 const backendUrl =
@@ -21,6 +21,27 @@ export const serverRequestHelper = async (
   const cookieStore = await cookies();
   const cookieStr = cookieStore.toString();
   const accessToken = cookieStore.get("accessToken")?.value || "";
+  let activeLang = "en";
+
+  try {
+    const targetUrlParams = new URLSearchParams(url.split("?")[1]);
+    if (targetUrlParams.has("lang")) {
+      activeLang = targetUrlParams.get("lang") || "en";
+    } else {
+      const headersList = await headers();
+      const referer = headersList.get("referer");
+
+      if (referer) {
+        const refererUrl = new URL(referer);
+        const langQuery = refererUrl.searchParams.get("lang");
+        if (langQuery === "en" || langQuery === "pt") {
+          activeLang = langQuery;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse language query, defaulting to 'en'", e);
+  }
 
   if (url !== "/auth/refresh-token") {
     await verifyTokens();
@@ -32,6 +53,7 @@ export const serverRequestHelper = async (
       ...options,
       headers: {
         ...(options?.headers || {}),
+        "Accept-Language": activeLang,
         ...(accessToken && {
           authorization: `Bearer ${accessToken}`,
         }),

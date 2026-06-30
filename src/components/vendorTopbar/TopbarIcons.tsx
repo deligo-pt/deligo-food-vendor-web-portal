@@ -20,8 +20,8 @@ import {
   UserIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const PRIMARY = "#DC3173";
@@ -34,7 +34,26 @@ export default function TopbarIcons({ vendor }: IProps) {
   const { lang, setLang } = useStore();
   const [profileOpen, setProfileOpen] = useState(false);
   const [openSosModal, setOpenSosModal] = useState(false);
+
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const urlLang = searchParams.get("lang");
+    if (urlLang === "en" || urlLang === "pt") {
+      setLang(urlLang);
+    }
+  }, [searchParams, setLang]);
+
+  const handleLangChange = (value: "en" | "pt") => {
+    setLang(value);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("lang", value);
+
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const logOut = async () => {
     const toastId = toast.loading("Logging out...");
@@ -83,9 +102,7 @@ export default function TopbarIcons({ vendor }: IProps) {
       <div className="relative z-1002">
         <Select
           value={lang}
-          onValueChange={(value: "en" | "pt") => {
-            setLang(value);
-          }}
+          onValueChange={(value: "en" | "pt") => handleLangChange(value)}
         >
           <SelectTrigger className="w-[70px] hover:border hover:border-[#DC3173]">
             <SelectValue placeholder="Language" />
