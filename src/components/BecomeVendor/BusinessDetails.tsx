@@ -44,7 +44,6 @@ import {
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -74,7 +73,6 @@ export default function BusinessDetailsForm({
 }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [businessType, setBusinessType] = useState<string>();
   const form = useForm<BusinessForm>({
     resolver: zodResolver(businessDetailsValidation),
     defaultValues: {
@@ -91,29 +89,29 @@ export default function BusinessDetailsForm({
 
   const { formState: { isSubmitting } } = form;
 
-  // const businessType = useWatch({
-  //   control: form.control,
-  //   name: "businessType",
-  // });
-  const type = "STORE";
+  const businessType = useWatch({
+    control: form.control,
+    name: "businessType",
+  });
+
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
 
     const { restaurantCuisineType, ...restOfData } = data;
 
-    const processedData = type === "STORE"
+    const processedData = businessType === "store"
       ? restOfData
       : { ...restOfData, restaurantCuisineType };
 
     const businessDetails = {
       businessDetails: {
         ...processedData,
-        businessType : "STORE",
+        businessType: data.businessType,
         NIF: data.NIF.toUpperCase(),
         totalBranches: Number(data.totalBranches),
       },
     };
-    // console.log("businessDetails", businessDetails);
+
     const result = await updateVendorReq(vendor?.userId, businessDetails);
 
     if (result && result?.success) {
@@ -201,10 +199,7 @@ export default function BusinessDetailsForm({
                             <Select
                               {...field}
                               value={field.value}
-                              onValueChange={(value) => {
-                                field.onChange(value);
-                                setBusinessType(value);
-                              }}
+                              onValueChange={(value) => field.onChange(value)}
                             >
                               <SelectTrigger
                                 className={cn(
@@ -223,8 +218,7 @@ export default function BusinessDetailsForm({
                                 {businessCategories.map((category) => (
                                   <SelectItem
                                     key={category?._id}
-                                    value={category?.name}
-                                    onClick={() => setBusinessType(category?.slug)}
+                                    value={category?.slug}
                                     className="capitalize"
                                   >
                                     {category?.name}
@@ -266,7 +260,7 @@ export default function BusinessDetailsForm({
                 </div>
 
                 {/* if business type is restaurant */}
-                {businessType === "RESTAURANT" && (
+                {businessType === "restaurant" && (
                   <FormField
                     control={form.control}
                     name="restaurantCuisineType"
@@ -344,7 +338,7 @@ export default function BusinessDetailsForm({
                                       return (
                                         <SelectItem
                                           key={idx}
-                                          value={type?.name}
+                                          value={type?.slug}
                                           className="capitalize"
                                           disabled={isAlreadySelected}
                                         >
