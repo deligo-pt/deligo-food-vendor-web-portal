@@ -20,6 +20,7 @@ import { MapPin } from "lucide-react";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
+import { useStore } from "@/src/store/store";
 
 interface IProps {
   open: boolean;
@@ -33,6 +34,7 @@ export default function OrderDetailsSheet({
   selectedOrder,
 }: IProps) {
   const { t } = useTranslation();
+  const { lang } = useStore();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -79,36 +81,36 @@ export default function OrderDetailsSheet({
             {/* Partner */}
             {(selectedOrder?.deliveryPartnerId?.name?.firstName ||
               selectedOrder?.deliveryPartnerId?.name?.lastName) && (
-              <>
-                <Separator />
+                <>
+                  <Separator />
 
-                <h3 className="text-lg font-semibold mb-2">Delivery Partner</h3>
-                <div className="flex items-center gap-3">
-                  <Avatar className="w-14 h-14">
-                    <AvatarImage
-                      src={selectedOrder?.deliveryPartnerId?.profilePhoto}
-                    />
-                    <AvatarFallback>
-                      {selectedOrder?.deliveryPartnerId?.name?.firstName?.charAt(
-                        0,
-                      )}
-                      {selectedOrder?.deliveryPartnerId?.name?.lastName?.charAt(
-                        0,
-                      )}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-lg">
-                      {selectedOrder?.deliveryPartnerId?.name?.firstName}{" "}
-                      {selectedOrder?.deliveryPartnerId?.name?.lastName}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {selectedOrder?.deliveryPartnerId?.address?.city}
-                    </p>
+                  <h3 className="text-lg font-semibold mb-2">Delivery Partner</h3>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-14 h-14">
+                      <AvatarImage
+                        src={selectedOrder?.deliveryPartnerId?.profilePhoto}
+                      />
+                      <AvatarFallback>
+                        {selectedOrder?.deliveryPartnerId?.name?.firstName?.charAt(
+                          0,
+                        )}
+                        {selectedOrder?.deliveryPartnerId?.name?.lastName?.charAt(
+                          0,
+                        )}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-lg">
+                        {selectedOrder?.deliveryPartnerId?.name?.firstName}{" "}
+                        {selectedOrder?.deliveryPartnerId?.name?.lastName}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {selectedOrder?.deliveryPartnerId?.address?.city}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
 
             <Separator />
 
@@ -124,7 +126,7 @@ export default function OrderDetailsSheet({
                 <p className="font-semibold">
                   {selectedOrder?.items?.map((item, i) => (
                     <span key={i}>
-                      {item?.productId?.name} x {item?.quantity}
+                      {item?.productId?.name?.[lang]} x {item?.quantity}
                     </span>
                   ))}
                 </p>
@@ -150,12 +152,12 @@ export default function OrderDetailsSheet({
                 </li>
                 {(selectedOrder?.deliveryPartnerId?.name?.firstName ||
                   selectedOrder?.deliveryPartnerId?.name?.lastName) && (
-                  <li>
-                    • {t("rider")}:{" "}
-                    {selectedOrder?.deliveryPartnerId?.name?.firstName}{" "}
-                    {selectedOrder?.deliveryPartnerId?.name?.lastName}
-                  </li>
-                )}
+                    <li>
+                      • {t("rider")}:{" "}
+                      {selectedOrder?.deliveryPartnerId?.name?.firstName}{" "}
+                      {selectedOrder?.deliveryPartnerId?.name?.lastName}
+                    </li>
+                  )}
                 {selectedOrder?.deliveredAt && (
                   <li>
                     • {t("delivered")}:{" "}

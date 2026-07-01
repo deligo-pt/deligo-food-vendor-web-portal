@@ -1,5 +1,6 @@
 "use client";
 
+import { useStore } from "@/src/store/store";
 import { TOrder } from "@/src/types/order.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { motion, Variants } from "framer-motion";
@@ -10,6 +11,7 @@ interface IProps {
 }
 
 export default function OrderItemsTable({ items }: IProps) {
+  const { lang } = useStore();
   const containerVariants = {
     hidden: {
       opacity: 0,
@@ -71,7 +73,7 @@ export default function OrderItemsTable({ items }: IProps) {
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
                     <span className="font-medium text-gray-900">
-                      {item.productId.name}
+                      {item.productId.name?.[lang]}
                     </span>
                     <span className="text-xs text-gray-400">
                       ID: {item.productId.productId}

@@ -14,6 +14,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/src/components/ui/avatar";
+import { useStore } from "@/src/store/store";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -34,6 +35,7 @@ interface IProps {
 }
 
 export default function SalesReportOrderTable({ orders }: IProps) {
+  const { lang } = useStore();
   const router = useRouter();
 
   return (
@@ -125,7 +127,7 @@ export default function SalesReportOrderTable({ orders }: IProps) {
               <TableCell>
                 {order.items?.map((i, index) => (
                   <span key={index}>
-                    {i.productId?.name} x {i.itemSummary?.quantity}
+                    {i.productId?.name?.[lang]} x {i.itemSummary?.quantity}
                   </span>
                 ))}
               </TableCell>
