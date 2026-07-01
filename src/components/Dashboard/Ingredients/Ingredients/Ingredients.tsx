@@ -73,6 +73,11 @@ export default function Ingredients({ ingredientsData }: IProps) {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-5">
+        {ingredientsData.data?.length === 0 && (
+          <div className="col-span-full text-center text-gray-500">
+            {t("no_ingredients_found")}
+          </div>
+        )}
         {ingredientsData.data?.map((item) => (
           <SingleIngredientCard
             key={item._id}

@@ -22,10 +22,10 @@ export default async function BusinessDetailsPage() {
   try {
     const result = (await serverRequest.get(
       "/categories/businessCategory"
-    )) as unknown as TResponse<{ data: TBusinessCategory[] }>;
+    )) as unknown as TResponse<TBusinessCategory[]>;
 
     if (result?.success) {
-      businessCategories = result?.data?.data;
+      businessCategories = result?.data;
     }
   } catch (err) {
     console.log("Server fetch error:", err);

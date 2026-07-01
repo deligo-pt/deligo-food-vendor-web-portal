@@ -14,6 +14,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/src/components/ui/avatar";
+import { useStore } from "@/src/store/store";
 import { TOrder } from "@/src/types/order.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { format } from "date-fns";
@@ -37,6 +38,7 @@ interface IProps {
 
 export default function OrderTable({ orders }: IProps) {
   const router = useRouter();
+  const { lang } = useStore();
 
   return (
     <motion.div
@@ -127,7 +129,7 @@ export default function OrderTable({ orders }: IProps) {
               <TableCell>
                 {order.items?.map((i, index) => (
                   <span key={index}>
-                    {i.productId?.name} x {i.itemSummary?.quantity}
+                    {i.productId?.name?.[lang]} x {i.itemSummary?.quantity}
                   </span>
                 ))}
               </TableCell>
@@ -135,8 +137,8 @@ export default function OrderTable({ orders }: IProps) {
                 €
                 {formatPrice(
                   (order?.payoutSummary?.vendor?.vendorNetPayout || 0) +
-                    (order?.payoutSummary?.deliGoCommission?.totalDeduction ||
-                      0),
+                  (order?.payoutSummary?.deliGoCommission?.totalDeduction ||
+                    0),
                 )}
               </TableCell>
               <TableCell>{format(order.createdAt, "do MMM yyyy")}</TableCell>

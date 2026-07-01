@@ -41,6 +41,20 @@ interface IDoc {
   prefersImagePreview: boolean;
 }
 
+const OPTIONAL_DOCS: DocKey[] = [
+  "myPhoto",
+  "storePhoto",
+  "menuUpload",
+  "agoserisHaccpCertificate",
+];
+
+const REQUIRED_DOCS: DocKey[] = [
+  "businessLicenseDoc",
+  "taxDoc",
+  "idProofFront",
+  "idProofBack",
+];
+
 export default function UploadDocuments({
   savedPreviews,
   vendor,
@@ -77,7 +91,6 @@ export default function UploadDocuments({
       ? savedPreviews.agoserisHaccpCertificate
       : null,
   });
-  // const [uploadedUrls, setUploadedUrls] = useState<Record<DocKey, string[] | null>>(null)
 
   // file input refs to trigger the browser picker
   const inputsRef = useRef<Record<string, HTMLInputElement | null>>({});
@@ -128,6 +141,8 @@ export default function UploadDocuments({
   const visibleDocuments = DOCUMENTS.filter(
     (doc) => !(vendor?.businessDetails?.businessType === "STORE" && doc.key === "agoserisHaccpCertificate")
   );
+
+  const isFormValid = REQUIRED_DOCS.every((key) => previews[key] !== null);
 
   const documentLimits: Partial<Record<DocKey, number>> = {
     myPhoto: 1,
@@ -453,7 +468,7 @@ export default function UploadDocuments({
 
                       <div className="min-w-0">
                         <div className="text-sm font-semibold text-gray-800">
-                          {d.label}
+                          {d.label} {REQUIRED_DOCS.includes(d.key) && <span className="text-[#DC3173]">*</span>}
                         </div>
                         <div className="text-xs text-gray-500 mt-1 space-y-1">
                           {preview?.map((f, i) => (
@@ -563,7 +578,7 @@ export default function UploadDocuments({
                 disabled={
                   !visibleDocuments.every(
                     (d) => !(!previews[d.key] || previews[d.key]?.length === 0),
-                  ) || isSubmitting
+                  ) || isSubmitting || isFormValid
                 }
                 onClick={handleContinue}
                 className="bg-[#DC3173] hover:bg-[#b72a63] text-white px-6 py-3 rounded-xl shadow-lg"
