@@ -123,7 +123,8 @@ export function EditProductForm({
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
       price: prevData?.pricing?.price || 0,
-      discount: prevData?.pricing?.discount || 0,
+      discountType: prevData?.pricing?.discountType ?? "",
+      discount: prevData?.pricing?.discount ?? 0,
       taxId: String(prevData?.pricing?.taxId || ""),
       addonGroups: prevData?.addonGroups || [],
       variations: prevData?.variations || [],
@@ -133,7 +134,7 @@ export function EditProductForm({
       isFeatured: prevData?.meta?.isFeatured || false,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
       businessType,
-      currentLang : lang
+      currentLang: lang
     },
   });
 
@@ -184,6 +185,7 @@ export function EditProductForm({
       category: data.category,
       pricing: {
         discount: data.discount,
+        discountType: data.discountType,
         taxId: data.taxId,
       },
       addonGroups: data.addonGroups,
@@ -675,7 +677,7 @@ export function EditProductForm({
                     <h2 className="text-xl font-semibold text-gray-800">
                       {t("pricing_information")}
                     </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       {(!prevData?.variations || prevData?.variations?.length === 0) && <FormField
                         control={form.control}
                         name="price"
@@ -705,6 +707,37 @@ export function EditProductForm({
                           </FormItem>
                         )}
                       />}
+                      <FormField
+                        control={form.control}
+                        name="discountType"
+                        render={({ field }) => (
+                          <FormItem className="gap-1">
+                            <FormLabel
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Select Discount Type
+                            </FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="w-full h-10">
+                                    <SelectValue placeholder="Select Discount Type" />
+                                  </SelectTrigger>
+                                </FormControl>
+
+                                <SelectContent>
+                                  <SelectItem value="PERCENTAGE">PERCENTAGE</SelectItem>
+                                  <SelectItem value="FLAT">FLAT</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name="discount"

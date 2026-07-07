@@ -108,6 +108,7 @@ export function ProductForm({
       },
       category: "",
       price: 0,
+      discountType: "PERCENTAGE",
       discount: 0,
       taxId: "",
       quantity: 0,
@@ -133,10 +134,10 @@ export function ProductForm({
     ),
   );
 
-  const [watchPrice, watchDiscount, watchTaxId, watchAddons, watchVariations] =
+  const [watchPrice, watchDiscount, watchDiscountType, watchTaxId, watchAddons, watchVariations] =
     useWatch({
       control: form.control,
-      name: ["price", "discount", "taxId", "addonGroups", "variations"],
+      name: ["price", "discount", "discountType", "taxId", "addonGroups", "variations"],
     });
 
   const onSubmit = async (data: FormData) => {
@@ -157,6 +158,7 @@ export function ProductForm({
         images: data.images,
         pricing: {
           price: data.price,
+          discountType: data.discountType,
           discount: data.discount,
           taxId: data.taxId,
           currency: "€",
@@ -336,6 +338,7 @@ export function ProductForm({
                     watchPrice={watchPrice}
                     watchVariations={watchVariations}
                     watchTaxId={watchTaxId}
+                    watchDiscountType={watchDiscountType}
                   />
                 )}
                 {businessType !== "RESTAURANT" && activeTab === 4 && (

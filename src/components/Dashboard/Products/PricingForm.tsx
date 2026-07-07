@@ -25,11 +25,27 @@ interface IProps {
     watchPrice: any;
     watchDiscount: any;
     watchTaxId: any;
+    watchDiscountType: any;
     taxesData: TTax[];
 }
 
-const PricingForm = ({ form, watchVariations, watchPrice, watchDiscount, watchTaxId, taxesData }: IProps) => {
+const PricingForm = ({ form, watchVariations, watchPrice, watchDiscountType, watchDiscount, watchTaxId, taxesData }: IProps) => {
     const { t } = useTranslation();
+
+    const inputPrice = watchPrice;
+    const taxRate = taxesData?.find((tax) => tax._id === watchTaxId)?.taxRate || 0;
+
+    const discountAmount =
+        watchDiscountType === "PERCENTAGE"
+            ? inputPrice * (watchDiscount / 100)
+            : Math.min(watchDiscount, inputPrice);
+
+    const finalPrice = Math.max(inputPrice - discountAmount, 0);
+
+    const taxAmount = finalPrice * (taxRate / 100);
+
+    const basePrice = finalPrice - taxAmount;
+
 
     return (
         <motion.div
@@ -47,7 +63,7 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscount, watchTa
             <h2 className="text-xl font-semibold text-gray-800">
                 {t("pricing_information")}
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                 {watchVariations.length === 0 && (
                     <FormField
                         control={form.control}
@@ -77,6 +93,36 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscount, watchTa
                         )}
                     />
                 )}
+
+                <FormField
+                    control={form.control}
+                    name="discountType"
+                    render={({ field }) => (
+                        <FormItem className="gap-1">
+                            <FormLabel
+                                className="block text-sm font-medium text-gray-700"
+                            >
+                                Select Discount Type
+                            </FormLabel>
+                            <FormControl>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                >
+                                    <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10">
+                                        <SelectValue placeholder="Select type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="PERCENTAGE" defaultChecked>PERCENTAGE</SelectItem>
+                                        <SelectItem value="FLAT">FLAT</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
                 <FormField
                     control={form.control}
                     name="discount"
@@ -93,11 +139,21 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscount, watchTa
                                     {...field}
                                     type="number"
                                     min={0}
-                                    max={100}
-                                    value={String(field.value)}
-                                    onChange={(e) =>
-                                        field.onChange(Number(e.target.value))
+                                    max={
+                                        watchDiscountType === "PERCENTAGE"
+                                            ? 100
+                                            : watchPrice || undefined
                                     }
+                                    value={String(field.value)}
+                                    onChange={(e) => {
+                                        const value = Number(e.target.value);
+
+                                        if (watchDiscountType === "PERCENTAGE") {
+                                            field.onChange(Math.min(value, 100));
+                                        } else {
+                                            field.onChange(Math.min(value, watchPrice || 0));
+                                        }
+                                    }}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                                 />
                             </FormControl>
@@ -139,58 +195,53 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscount, watchTa
                 />
             </div>
             {!!watchPrice && watchPrice > 0 && watchDiscount >= 0 && (
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                     <div className="flex justify-between">
                         <span className="text-gray-700">
                             {t("original_price")}:
                         </span>
-                        <span className="font-medium">€ {watchPrice}</span>
+                        <span className="font-medium">
+                            € {inputPrice.toFixed(2)}
+                        </span>
                     </div>
+
                     <div className="flex justify-between">
                         <span className="text-gray-700">
-                            {t("discount")} ({watchDiscount}%):
+                            {t("discount")} (
+                            {watchDiscountType === "PERCENTAGE"
+                                ? `${watchDiscount}%`
+                                : `€ ${watchDiscount.toFixed(2)}`}
+                            ):
                         </span>
                         <span className="font-medium text-red-500">
-                            - €{" "}
-                            {((watchPrice * watchDiscount) / 100).toFixed(2)}
+                            - € {discountAmount.toFixed(2)}
                         </span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-700">
-                            {t("tax")} (
-                            {
-                                taxesData?.find((tax) => tax._id === watchTaxId)
-                                    ?.taxRate
-                            }
-                            %):
-                        </span>
-                        <span className="font-medium">
-                            + €{" "}
-                            {(
-                                (watchPrice *
-                                    (1 - watchDiscount / 100) *
-                                    (taxesData?.find(
-                                        (tax) => tax._id === watchTaxId,
-                                    )?.taxRate || 0)) /
-                                100
-                            ).toFixed(2)}
-                        </span>
-                    </div>
-                    <div className="border-t mt-2 pt-2 flex justify-between">
+
+                    <div className="flex justify-between border-t pt-2">
                         <span className="font-semibold">
-                            {t("final_price")}:
+                            {t("final_price_including_tax")}:
                         </span>
                         <span className="font-bold text-[#DC3173]">
-                            €{" "}
-                            {(
-                                watchPrice *
-                                (1 - watchDiscount / 100) *
-                                (1 +
-                                    (taxesData?.find(
-                                        (tax) => tax._id === watchTaxId,
-                                    )?.taxRate || 0) /
-                                    100)
-                            ).toFixed(2)}
+                            € {finalPrice.toFixed(2)}
+                        </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                        <span className="text-gray-700">
+                            {t("tax")} ({taxRate}%):
+                        </span>
+                        <span className="font-medium">
+                            € {taxAmount.toFixed(2)}
+                        </span>
+                    </div>
+
+                    <div className="flex justify-between border-t pt-2">
+                        <span className="font-semibold">
+                            {t("base_price")}:
+                        </span>
+                        <span className="font-bold">
+                            € {basePrice.toFixed(2)}
                         </span>
                     </div>
                 </div>

@@ -943,6 +943,7 @@ export const en = {
   discount: "Discount",
   tax: "Tax",
   final_price: "Final Price",
+  base_price: "Base Price",
   add_ons_and_variants: "Add-Ons & Variants",
   variations: "Variations",
   name: "Name",

@@ -28,6 +28,8 @@ export const productValidation = z.object({
 
   price: z.number().optional(),
 
+  discountType: z.enum(["PERCENTAGE", "FLAT"]),
+
   taxId: z.string().nonempty("Tax is required"),
 
   discount: z.number().min(0).max(100),
@@ -76,6 +78,29 @@ export const productValidation = z.object({
       ["description"],
       "Description is required"
     );
+
+    // discount type and value validation
+    // if (
+    //   data.discountType === "PERCENTAGE" &&
+    //   data.discount > 100
+    // ) {
+    //   ctx.addIssue({
+    //     code: "custom",
+    //     path: ["discount"],
+    //     message: "Percentage discount cannot exceed 100%.",
+    //   });
+    // }
+
+    // if (data?.price &&
+    //   data.discountType === "FLAT" &&
+    //   data?.discount > data.price
+    // ) {
+    //   ctx.addIssue({
+    //     code: "custom",
+    //     path: ["discount"],
+    //     message: "Flat discount cannot exceed the product price.",
+    //   });
+    // }
   })
   .refine(
     (data) => {
