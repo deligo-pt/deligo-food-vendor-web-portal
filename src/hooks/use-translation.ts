@@ -27,7 +27,7 @@ export const useTranslation = () => {
 
     const t = (key: string): string => {
         return (
-            translations[lang]?.[key as keyof typeof translations.en] ||
+            translations[lang]?.[key as keyof (typeof translations)[Language]] ||
             translations.en[key as keyof typeof translations.en] ||
             key
         )
