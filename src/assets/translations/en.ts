@@ -937,11 +937,12 @@ export const en = {
 
   pricing_information: "Pricing Information",
   price_E: "Price (€)",
-  discount_2: "Discount (%)",
+  discount_2: "Discount",
   tax_2: "Tax (%)",
   original_price: "Original Price",
   discount: "Discount",
   tax: "Tax",
+  incl : "incl.",
   final_price: "Final Price",
   base_price: "Base Price",
   add_ons_and_variants: "Add-Ons & Variants",

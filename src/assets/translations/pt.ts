@@ -974,8 +974,9 @@ export const pt = {
 
   pricing_information: "Informações de Preço",
   price_E: "Preço (€)",
-  discount_2: "Desconto (%)",
+  discount_2: "Desconto",
   tax_2: "Imposto (%)",
+  incl: "incl.",
   original_price: "Preço Original",
   discount: "Desconto",
   tax: "Imposto",

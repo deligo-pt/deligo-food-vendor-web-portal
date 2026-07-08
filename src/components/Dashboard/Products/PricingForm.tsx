@@ -44,7 +44,7 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscountType, wat
 
     const taxAmount = finalPrice * (taxRate / 100);
 
-    const basePrice = finalPrice - taxAmount;
+    // const basePrice = finalPrice - taxAmount;
 
 
     return (
@@ -132,7 +132,7 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscountType, wat
                                 htmlFor="discount"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                {t("discount_2")}
+                                {t("discount_2")} {watchDiscountType === "PERCENTAGE" ? "(%)" : "(€)" }
                             </FormLabel>
                             <FormControl>
                                 <Input
@@ -220,14 +220,14 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscountType, wat
 
                     <div className="flex justify-between border-t pt-2">
                         <span className="font-semibold">
-                            {t("final_price_including_tax")}:
+                            {t("final_price")} <span className="text-sm">(incl. {t("tax")} ({taxRate}%), €{taxAmount.toFixed(2)}) </span>:
                         </span>
                         <span className="font-bold text-[#DC3173]">
                             € {finalPrice.toFixed(2)}
                         </span>
                     </div>
 
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                         <span className="text-gray-700">
                             {t("tax")} ({taxRate}%):
                         </span>
@@ -243,7 +243,7 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscountType, wat
                         <span className="font-bold">
                             € {basePrice.toFixed(2)}
                         </span>
-                    </div>
+                    </div> */}
                 </div>
             )}
         </motion.div>
