@@ -52,7 +52,7 @@ export default function Transactions({ transactionsResult }: IProps) {
       </div>
 
       {/* Transaction Table */}
-      <TransactionTable transactions={transactionsResult?.data || []} />
+      <TransactionTable transactions={transactionsResult?.data || []} t={t} />
 
       {/* Pagination */}
       <div className="print:hidden">

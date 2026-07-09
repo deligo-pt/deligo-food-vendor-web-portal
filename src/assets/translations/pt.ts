@@ -1192,6 +1192,9 @@ export const pt = {
   payout_completed: "Pagamento Concluído",
   processing: "Em Processamento",
   all: "Todos",
+  payout_id: "ID do Pagamento",
+  payout_proof: "Comprovante de Pagamento",
+  download: "Baixar",
   no_payouts_found: "Nenhum pagamento encontrado",
 
   portugal_payment_rules: "Regras de Pagamento em Portugal",
@@ -1211,13 +1214,18 @@ export const pt = {
     "Os pagamentos são enviados para o IBAN registado. Atualize os dados bancários em Definições > Finanças.",
 
   // earnings-summary page
+  overview_of_your_earnings_sales: "Visão geral dos seus ganhos e vendas",
   performance_overview:
     "Visão geral de desempenho — receitas, pedidos e tendências",
   range: "Período",
   export_report: "Exportar Relatório",
   total_earnings: "Ganhos Totais",
+  today_earnings: "Ganhos de Hoje",
   since_joining_the_platform: "Desde que aderiu à plataforma",
   this_week: "Esta Semana",
+  this_month: "Este Mês",
+  earnings_overview: "Visão Geral dos Ganhos",
+  earnings_trend_over_last_6_months: "Tendência de ganhos nos últimos 6 meses",
   vs_last_week: "vs Semana Anterior",
   last_week: "Semana Anterior",
   reference: "Referência",
@@ -1266,6 +1274,8 @@ export const pt = {
   fees: "Taxas",
   refunds: "Reembolsos",
   id: "ID",
+  transaction_id: "ID da Transação",
+  type: "Tipo",
   no_transactions_found: "Nenhuma transação encontrada.",
   summary: "Resumo",
   positive_values_revenue_from_orders:
