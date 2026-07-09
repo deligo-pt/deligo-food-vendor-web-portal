@@ -58,7 +58,7 @@ type FormData = z.infer<typeof productValidation>;
 interface IProps {
   prevData: TProduct;
   closeModal: () => void;
-  businessType: string;
+  businessTypeSlug: string;
 }
 
 interface IData<T> {
@@ -69,7 +69,7 @@ interface IData<T> {
 export function EditProductForm({
   prevData,
   closeModal,
-  businessType,
+  businessTypeSlug,
 }: IProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,7 +94,7 @@ export function EditProductForm({
       name: t("pricing"),
       icon: <TagIcon className="h-5 w-5" />,
     },
-    ...(businessType !== "RESTAURANT"
+    ...(businessTypeSlug !== "restaurant"
       ? [
         {
           name: t("stock"),
@@ -108,7 +108,7 @@ export function EditProductForm({
     },
   ];
 
-  const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
+  const lastTabIndex = businessTypeSlug !== "restaurant" ? 5 : 4;
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
   });
@@ -133,7 +133,7 @@ export function EditProductForm({
       availabilityStatus: prevData?.stock?.availabilityStatus || "",
       isFeatured: prevData?.meta?.isFeatured || false,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
-      businessType,
+      businessTypeSlug,
       currentLang: lang
     },
   });
@@ -194,7 +194,7 @@ export function EditProductForm({
         isFeatured: data.isFeatured,
         isAvailableForPreOrder: data.isAvailableForPreOrder,
       },
-      ...(businessType !== "RESTAURANT"
+      ...(businessTypeSlug !== "restaurant"
         ? {
           stock: {
             unit: data.unit,
@@ -803,7 +803,7 @@ export function EditProductForm({
                   </motion.div>
                 )}
                 {/* Stock Tab */}
-                {businessType !== "RESTAURANT" && activeTab === 4 && (
+                {businessTypeSlug !== "restaurant" && activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,

@@ -66,7 +66,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
   return (
     <Products
       productsData={productsData}
-      businessType={(vendorData?.businessDetails?.businessType as string) || ""}
+      businessTypeSlug={vendorData?.businessDetails?.businessTypeSlug as string}
     />
   );
 }

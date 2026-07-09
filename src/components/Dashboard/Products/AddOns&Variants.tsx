@@ -29,13 +29,13 @@ import { TVariations } from '@/src/types/product.type';
 interface IProps {
     form: any;
     addonGroupsData: TAddonGroup[];
-    businessType: string;
+    businessTypeSlug: string;
     watchVariations: any;
     watchAddons: any;
     selectedLanguage: "en" | "pt";
 }
 
-const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariations, watchAddons, selectedLanguage }: IProps) => {
+const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVariations, watchAddons, selectedLanguage }: IProps) => {
     const { lang } = useStore();
     const { t } = useTranslation();
     const [variationName, setVariationName] = useState({
@@ -60,7 +60,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
             pt: "",
         },
         price: "",
-        ...(businessType !== "RESTAURANT"
+        ...(businessTypeSlug !== "restaurant"
             ? { stockQuantity: 0 }
             : {}),
     });
@@ -100,7 +100,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
                             pt: option.label.pt,
                         },
                         price: Number(option.price),
-                        ...(businessType !== "RESTAURANT"
+                        ...(businessTypeSlug !== "restaurant"
                             ? {
                                 stockQuantity:
                                     option.stockQuantity,
@@ -114,7 +114,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
                         pt: "",
                     },
                     price: "",
-                    ...(businessType !== "RESTAURANT"
+                    ...(businessTypeSlug !== "restaurant"
                         ? { stockQuantity: 0 }
                         : {}),
                 });
@@ -363,7 +363,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessType, watchVariation
                                 }}
                             />
                         </div>
-                        {businessType !== "RESTAURANT" && (
+                        {businessTypeSlug !== "restaurant" && (
                             <div>
                                 <Label className="text-gray-700 mb-1">
                                     Stock Quantity

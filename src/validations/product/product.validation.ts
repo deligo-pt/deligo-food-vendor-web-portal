@@ -59,7 +59,7 @@ export const productValidation = z.object({
 
   isAvailableForPreOrder: z.boolean().optional(),
 
-  businessType: z.string(),
+  businessTypeSlug: z.string(),
   currentLang: z.enum(["en", "pt"]),
 })
   .superRefine((data, ctx) => {
@@ -129,7 +129,7 @@ export const productValidation = z.object({
   .refine(
     (data) => {
       if (
-        data.businessType !== "RESTAURANT" &&
+        data.businessTypeSlug !== "restaurant" &&
         data.variations.length === 0 &&
         !data.quantity
       ) {
@@ -145,7 +145,7 @@ export const productValidation = z.object({
   .refine(
     (data) => {
       if (
-        data.businessType !== "RESTAURANT" &&
+        data.businessTypeSlug !== "restaurant" &&
         data.variations.length === 0 &&
         data.quantity &&
         data.quantity < 0
