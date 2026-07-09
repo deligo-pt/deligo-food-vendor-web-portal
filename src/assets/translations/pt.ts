@@ -881,12 +881,6 @@ export const pt = {
   sort_by: "Ordenar Por",
   search: "Buscar...",
 
-  // cancelled orders
-  list_of_all_cancelled_orders: "Lista de todos os pedidos cancelados",
-
-  // completed orders
-  list_of_all_delivered_orders: "Lista de todos os pedidos entregues",
-
   // order details
   order_details: "Detalhes do Pedido",
   order_lg: "Pedido",
@@ -933,6 +927,7 @@ export const pt = {
   call_rider: "Ligar ao Estafeta",
 
   // completed orders page
+  list_of_all_delivered_orders: "Lista de todos os pedidos entregues",
   fully_delivered_orders_with_earnings_rider_data:
     "Pedidos totalmente entregues com ganhos e dados do estafeta.",
   delivered_at: "Entregue em",
@@ -941,6 +936,7 @@ export const pt = {
   select_payment_method: "Selecionar Método de Pagamento",
 
   // cancelled orders page
+  list_of_all_cancelled_orders: "Lista de todos os pedidos cancelados",
   see_all_orders_were_cancelled:
     "Ver todos os pedidos cancelados — motivo, pagamento e dados do cliente.",
   reason: "Motivo",
@@ -984,6 +980,12 @@ export const pt = {
   product_category: "Categoria do Produto",
   product_images: "Imagens do Produto",
   product_image: "Imagem do Produto",
+  choose_add_on: "Escolher Complemento",
+  add_an_option_price: "Adicionar preço da opção",
+  stock_quantity: "Quantidade em Estoque",
+  add_stock_quantity: "Adicionar quantidade em estoque",
+  select_discount_type: "Selecionar Tipo de Desconto",
+  select_tax: "Selecionar imposto",
   select_category_placeholder: "Selecione uma categoria",
   select_language_placeholder: "Selecione um idioma",
 
@@ -1055,20 +1057,56 @@ export const pt = {
   update_item: "Atualizar item",
   update_product_details:
     "Preencha os detalhes para atualizar o produto alimentar do seu menu.",
+  delete: "Excluir",
+  are_you_absolutely_sure: "Você tem certeza absoluta?",
+  this_action_cannot_be_undone: "Esta ação não pode ser desfeita. Isso excluirá estes dados e não poderá ser desfeito.",
 
   // stock-management page
   update_product_stock_in_real_time:
     "Atualizar o stock dos produtos em tempo real —",
   no_products_found: "Nenhum produto encontrado.",
 
+  // variation management
+  add_edit_manage_product_variation: "Adicionar, editar e gerenciar variações do produto",
+  products: "Produtos",
+  try_adjusting_your_search_or_filter: "Tente ajustar sua busca ou filtro",
+  variation: "variação",
+  option: "opção",
+  no_variations: "Sem variações",
+  variation_name: "Nome da Variação",
+  option_lg: "Opção",
+  delete_variation: "Excluir variação",
+  option_label: "Rótulo da Opção",
+  option_price: "Preço da Opção",
+  delete_option: "Excluir opção",
+  no_options_add_one: "Sem opções — adicione uma para começar",
+  // ---> add variation form
+  variation_name_placeholder: "Nome da variação (ex.: Tamanho, Cor, Sabor)",
+  add_an_option_label: "Adicionar um rótulo de opção",
+  create: "Criar",
+  //  --> add variation option form
+  medium_placeholder: "ex.: Médio",
+  add: "Adicionar",
+
   // add-ons page
   add_ons_extras: "Extras & Complementos",
+  manage_your_add_on_groups_options: "Gerencie seus grupos e opções de complementos",
+  add_addon_to: "Adicionar Complemento a",
+  drinks_upgrade: "ex.: Upgrade de Bebidas",
+  option_tax: "Imposto da Opção",
   add_group: "Adicionar Grupo",
   min: "Mín",
   max: "Máx",
   add_addon: "Adicionar Extra",
   edit: "Editar",
   no_add_ons_found: "Nenhum extra encontrado",
+  addon_group: "Grupo de Complementos",
+  group_title: "Título do Grupo",
+  min_select: "Seleção Mínima",
+  max_select: "Seleção Máxima",
+  option_name: "Nome da Opção",
+  add_an_option_name: "Adicionar um nome de opção",
+  update: "Atualizar",
 
   // payouts page
   vendor_payouts: "Pagamentos ao Vendedor",

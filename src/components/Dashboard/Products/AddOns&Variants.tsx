@@ -132,7 +132,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
 
     const addVariation = () => {
         if (variationName[selectedLanguage] && options.length > 0) {
-            if (!form.getValues("variations").find((v : TVariations) => v.name[selectedLanguage] ===
+            if (!form.getValues("variations").find((v: TVariations) => v.name[selectedLanguage] ===
                 variationName[selectedLanguage])) {
                 form.setValue("variations", [
                     ...form.getValues("variations"),
@@ -230,7 +230,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                                                 : "border-gray-300",
                                         )}
                                     >
-                                        <SelectValue placeholder="Choose Add-On" />
+                                        <SelectValue placeholder={t("choose_add_on")} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {addonGroupsData?.map((group) => (
@@ -355,7 +355,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                                 onChange={(e) =>
                                     setOption({ ...option, price: e.target.value })
                                 }
-                                placeholder="Add an option price"
+                                placeholder={t("add_an_option_price")}
                                 onKeyUp={(e) => {
                                     if (e.key === "Enter") {
                                         e.preventDefault();
@@ -366,7 +366,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                         {businessTypeSlug !== "restaurant" && (
                             <div>
                                 <Label className="text-gray-700 mb-1">
-                                    Stock Quantity
+                                    {t("stock_quantity")}
                                 </Label>
                                 <Input
                                     type="number"
@@ -378,7 +378,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                                             stockQuantity: Number(e.target.value),
                                         })
                                     }
-                                    placeholder="Add stock quantity"
+                                    placeholder={t("add_stock_quantity")}
                                     onKeyUp={(e) => {
                                         if (e.key === "Enter") {
                                             e.preventDefault();

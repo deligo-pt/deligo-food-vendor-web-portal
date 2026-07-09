@@ -66,6 +66,7 @@ const BasicInfoForm = ({ form, productCategories, selectedLanguage }: IProps) =>
                         <FormControl>
                             <Input
                                 {...field}
+                                placeholder={t("product_name_placeholder")}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                             />
                         </FormControl>
@@ -87,6 +88,7 @@ const BasicInfoForm = ({ form, productCategories, selectedLanguage }: IProps) =>
                         <FormControl>
                             <Input
                                 {...field}
+                                placeholder={t("product_name_placeholder")}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                             />
                         </FormControl>
@@ -119,7 +121,7 @@ const BasicInfoForm = ({ form, productCategories, selectedLanguage }: IProps) =>
                                             : "border-gray-300",
                                     )}
                                 >
-                                    <SelectValue placeholder="Select a category" />
+                                    <SelectValue placeholder={t("select_category_placeholder")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {productCategories?.map((category) => (

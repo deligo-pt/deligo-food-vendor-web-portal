@@ -852,12 +852,6 @@ export const en = {
   sort_by: "Sort By",
   search: "Search...",
 
-  // cancelled orders
-  list_of_all_cancelled_orders: "List of all cancelled orders",
-
-  // completed orders
-  list_of_all_delivered_orders: "List of all delivered orders",
-
   // order details
   order_details: "",
   order_lg: "Order",
@@ -899,18 +893,23 @@ export const en = {
     "Track your live orders — rider location, ETA, and delivery stage.",
   rider_id: "Rider ID",
   call_rider: "Call Rider",
+
   // completed orders page
+  list_of_all_delivered_orders: "List of all delivered orders",
   fully_delivered_orders_with_earnings_rider_data:
     "Fully delivered orders with earnings & rider data.",
   delivered_at: "Delivered at",
   payment: " Payment",
   payment_method: "Payment Method",
   select_payment_method: "Select Payment Method",
+
   // cancelled orders page
+  list_of_all_cancelled_orders: "List of all cancelled orders",
   see_all_orders_were_cancelled:
     "See all orders that were cancelled — reason, payment, customer info.",
   reason: "Reason",
   cancelled_at: "Cancelled at",
+
   // all-items page
   food_items: "Food Items",
   manage_your_restaurants_food_delivery_items:
@@ -948,8 +947,15 @@ export const en = {
   product_category: "Product Category",
   product_images: "Product Images",
   product_image: "Product Image",
+  choose_add_on: "Choose Add-On",
+  add_an_option_price: "Add an option price",
+  stock_quantity: "Stock Quantity",
+  add_stock_quantity: "Add stock quantity",
+  select_discount_type: "Select Discount Type",
+  select_tax: "Select tax",
   select_category_placeholder: "Select a category",
   select_language_placeholder: "Select a language",
+
   // -> image uploader
   drag_drop_product_images: "Drag & drop product images here",
   or_click: "or click to browse files",
@@ -1012,19 +1018,55 @@ export const en = {
   update_item: "Update Item",
   update_product_details:
     "Fill in the details to update the food product of your menu.",
+  delete: "Delete",
+  are_you_absolutely_sure: "Are you absolutely sure?",
+  this_action_cannot_be_undone: "This action cannot be undone. This will delete this data and cannot be undone.",
 
   // stock-management page
   update_product_stock_in_real_time: "Update product stock in real-time —",
   no_products_found: "No products found.",
 
+  // variation management
+  add_edit_manage_product_variation: "Add, edit, and manage product variations",
+  products: "Products",
+  try_adjusting_your_search_or_filter: "Try adjusting your search or filter",
+  variation: "variation",
+  option: "option",
+  no_variations: "No variations",
+  variation_name: "Variation Name",
+  option_lg: "Option",
+  delete_variation: "Delete variation",
+  option_label: "Option Label",
+  option_price: "Option Price",
+  delete_option: "Delete option",
+  no_options_add_one: "No options — add one to get started",
+  // ---> add variation form
+  variation_name_placeholder: "Variation name (e.g. Size, Color, Flavor)",
+  add_an_option_label: "Add an option label",
+  create: "Create",
+  //  --> add variation option form
+  medium_placeholder: "e.g. Medium",
+  add: "Add",
+
   // add-ons page
   add_ons_extras: "Add-Ons & Extras",
+  manage_your_add_on_groups_options: "Manage your add-on groups and options",
+  add_addon_to: "Add Addon to",
+  drinks_upgrade: "e.g. Drinks Upgrade",
+  option_tax: "Option Tax",
   add_group: "Add Group",
   min: "Min",
   max: "Max",
   add_addon: "Add Add-On",
   edit: "Edit",
   no_add_ons_found: "No add ons found",
+  addon_group:"Addon Group",
+  group_title:"Group Title",
+  min_select:"Min Select",
+  max_select:"Max Select",
+  option_name:"Option Name",
+  add_an_option_name:"Add an option name",
+  update:"Update",
 
   // payouts page
   vendor_payouts: "Vendor Payouts",

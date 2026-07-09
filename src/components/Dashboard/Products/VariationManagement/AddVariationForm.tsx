@@ -30,7 +30,7 @@ import z from "zod";
 interface IProps {
   productId: string;
   onCancel: () => void;
-  businessType: "STORE" | "RESTAURANT";
+  businessTypeSlug: "store" | "restaurant";
 }
 
 interface IOption {
@@ -41,7 +41,7 @@ interface IOption {
 
 type TVariationForm = z.infer<typeof variationValidation>;
 
-export default function AddVariationForm({ productId, onCancel, businessType }: IProps) {
+export default function AddVariationForm({ productId, onCancel, businessTypeSlug }: IProps) {
   const { t } = useTranslation();
   const { lang } = useStore();
   const router = useRouter();
@@ -144,7 +144,7 @@ export default function AddVariationForm({ productId, onCancel, businessType }: 
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Variation name (e.g. Size, Color, Flavor)"
+                  placeholder={t("variation_name_placeholder")}
                   className=""
                 />
               </FormControl>
@@ -161,7 +161,7 @@ export default function AddVariationForm({ productId, onCancel, businessType }: 
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Variation name (e.g. Size, Color, Flavor)"
+                  placeholder={t("variation_name_placeholder")}
                   className=""
                 />
               </FormControl>
@@ -208,7 +208,7 @@ export default function AddVariationForm({ productId, onCancel, businessType }: 
                   label: { ...option.label, [lang]: e.target.value },
                 })
               }
-              placeholder="Add an option label"
+              placeholder={t("add_an_option_label")}
             />
           </div>
           <div>
@@ -220,11 +220,11 @@ export default function AddVariationForm({ productId, onCancel, businessType }: 
               onChange={(e) =>
                 setOption({ ...option, price: Number(e.target.value) })
               }
-              placeholder="Add an option price"
+              placeholder={t("add_an_option_price")}
             />
           </div>
-          {businessType === "STORE" && <div>
-            <Label className="text-gray-700 mb-1">Stock Quantity</Label>
+          {businessTypeSlug === "store" && <div>
+            <Label className="text-gray-700 mb-1">{t("stock_quantity")}</Label>
             <Input
               type="number"
               min={0}
@@ -235,7 +235,7 @@ export default function AddVariationForm({ productId, onCancel, businessType }: 
                   stockQuantity: Number(e.target.value),
                 })
               }
-              placeholder="Add stock quantity"
+              placeholder={t("add_stock_quantity")}
             />
           </div>}
           {form.formState.errors.options && (
@@ -256,13 +256,13 @@ export default function AddVariationForm({ productId, onCancel, businessType }: 
         </div>
         <div>
           <Button disabled={isSubmitting} className="bg-[#DC3173] text-sm font-bold hover:bg-[#DC3173]/90 transition-colors mr-2">
-            Create
+            {t("create")}
           </Button>
           <Button
             onClick={onCancel}
             className="bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200 transition-colors"
           >
-            Cancel
+            {t("cancel")}
           </Button>
         </div>
       </motion.form>

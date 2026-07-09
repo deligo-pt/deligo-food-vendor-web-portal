@@ -592,7 +592,7 @@ export function EditProductForm({
                                       : "border-gray-300",
                                   )}
                                 >
-                                  <SelectValue placeholder="Choose Add-On" />
+                                  <SelectValue placeholder={t("choose_add_on")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {addonGroupsData?.data?.map((group) => (
@@ -715,7 +715,7 @@ export function EditProductForm({
                             <FormLabel
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Select Discount Type
+                              {t("select_discount_type")}
                             </FormLabel>
                             <FormControl>
                               <Select
@@ -724,7 +724,7 @@ export function EditProductForm({
                               >
                                 <FormControl>
                                   <SelectTrigger className="w-full h-10">
-                                    <SelectValue placeholder="Select Discount Type" />
+                                    <SelectValue placeholder={t("select_discount_type")} />
                                   </SelectTrigger>
                                 </FormControl>
 
@@ -931,7 +931,7 @@ export function EditProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      DeliGo Metadata Information
+                       {t("deligo_metadata_information")}
                     </h2>
                     <div className="space-y-4">
                       <FormField
@@ -953,7 +953,7 @@ export function EditProductForm({
                                     }
                                     className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                   />
-                                  Featured Product
+                                   {t("featured_product")}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -980,7 +980,7 @@ export function EditProductForm({
                                     }
                                     className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                   />
-                                  Available for Pre-Order
+                                   {t("available_for_pre_order")}
                                 </FormLabel>
                               </div>
                             </FormControl>

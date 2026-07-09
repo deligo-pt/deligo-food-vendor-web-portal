@@ -102,7 +102,7 @@ const PricingForm = ({ form, watchVariations, watchPrice, watchDiscountType, wat
                             <FormLabel
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Select Discount Type
+                                {t("select_discount_type")}
                             </FormLabel>
                             <FormControl>
                                 <Select

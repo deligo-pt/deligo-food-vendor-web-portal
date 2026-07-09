@@ -86,7 +86,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
 
         <TitleHeader
           title={t("add_ons_extras")}
-          subtitle="Manage your add-on groups and options"
+          subtitle={t("manage_your_add_on_groups_options")}
           buttonInfo={{
             text: t("add_group"),
             icon: Plus,
@@ -97,6 +97,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
           open={openCreateForm}
           onOpenChange={(open) => !open && setOpenCreateForm(false)}
           taxes={taxes}
+          t={t}
         />
 
         {/* FILTERS */}
@@ -213,7 +214,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                               </span>
                               {option.tax && (
                                 <span className="text-xs text-slate-800">
-                                  (tax: {(option.tax as TTax)?.taxRate}%)
+                                  {t("tax")}: {(option.tax as TTax)?.taxRate}%)
                                 </span>
                               )}
                               <CheckCircle
@@ -273,6 +274,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
         }
         selectedGroup={selectedGroupForAddOption}
         taxes={taxes}
+        t={t}
       />
 
       {/* Edit AddOns Group */}
@@ -282,6 +284,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
         prevValues={selectedGroupForEdit}
         taxes={taxes}
         actionType="edit"
+        t={t}
       />
     </>
   );

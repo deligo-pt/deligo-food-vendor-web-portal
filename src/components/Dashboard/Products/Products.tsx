@@ -149,6 +149,7 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
                 product={product}
                 onDelete={openDeleteDialog}
                 onEdit={onEditClick}
+                t={t}
               />
             ))}
           </AnimatePresence>
@@ -187,6 +188,7 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
           setSelectedProduct({ id: null, action: null, product: null })
         }
         onConfirm={handleDeleteProduct}
+        t={t}
       />
 
       <EditProductDialog
