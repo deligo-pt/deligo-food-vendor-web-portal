@@ -16,6 +16,7 @@ interface IProps {
   onOpenChange: (open: boolean) => void;
   onPurchase: (paymentMethod: (typeof paymentMethods)[number]) => void;
   isOrdering: boolean;
+  t: (key: string) => string;
 }
 
 export default function PaymentMethodSelectModal({
@@ -23,6 +24,7 @@ export default function PaymentMethodSelectModal({
   onOpenChange,
   onPurchase,
   isOrdering,
+  t
 }: IProps) {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     (typeof paymentMethods)[number] | null
@@ -44,18 +46,18 @@ export default function PaymentMethodSelectModal({
       <form onSubmit={(e) => e.preventDefault()}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Select Payment Method</DialogTitle>
+            <DialogTitle>{t("select_payment_method")}</DialogTitle>
             <DialogDescription>
-              Choose your preferred payment method to complete your order.
+              {t("choose_your_preferred_payment_method")}
             </DialogDescription>
 
             <div className="mt-3 p-3 rounded-lg border border-[#DC3173]/60 bg-[#DC3173]/20 text-xs text-black space-y-1">
-              <h4 className="font-semibold text-sm">Delivery Charges Notification</h4>
+              <h4 className="font-semibold text-sm">{t("delivery_charges_notification")}</h4>
               <p>
-                • If your location is under <span className="text-[#DC3173] font-medium">Lisbon</span>, the delivery charge will be <span className="font-medium text-[#DC3173]">20€</span>.
+                • {t("if_your_location_is_under")} <span className="text-[#DC3173] font-medium">{t("lisbon")}</span>, {t("the_delivery_charge_will_be")} <span className="font-medium text-[#DC3173]">20€</span>.
               </p>
               <p>
-                • If your location is <span className="text-[#DC3173] font-medium">outside of Lisbon</span>, the delivery charge will be <span className="font-medium text-[#DC3173]">30€</span>.
+                • {t("if_your_location_is")} <span className="text-[#DC3173] font-medium">{t("outside_of_lisbon")}</span>, {t("the_delivery_charge_will_be")} <span className="font-medium text-[#DC3173]">30€</span>.
               </p>
             </div>
           </DialogHeader>
@@ -93,7 +95,7 @@ export default function PaymentMethodSelectModal({
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
-                Cancel
+                {t("cancel")}
               </Button>
             </DialogClose>
             <Button
@@ -102,7 +104,7 @@ export default function PaymentMethodSelectModal({
               type="button"
               disabled={isOrdering}
             >
-              {isOrdering ? "Processing..." : "Purchase"}
+              {isOrdering ? t("processing") : t("purchase")}
             </Button>
           </DialogFooter>
         </DialogContent>
