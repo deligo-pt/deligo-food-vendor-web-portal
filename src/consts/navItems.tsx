@@ -34,7 +34,7 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       title: t("orders"),
       icon: <ShoppingBag size={18} />,
       items: [
-        { name: "All Orders", path: "/vendor/all-orders" },
+        { name: t("all_orders"), path: "/vendor/all-orders" },
         { name: t("cancelled"), path: "/vendor/cancelled" },
         { name: t("completed"), path: "/vendor/completed" },
       ],
@@ -50,10 +50,10 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
         ...(businessType === "STORE"
           ? [{ name: t("stock_management"), path: "/vendor/stock" }]
           : []),
-        { name: "Variation Management", path: "/vendor/variation-management" },
+        { name: t("variation_management"), path: "/vendor/variation-management" },
         { name: t("add_ons"), path: "/vendor/addons" },
-        { name: "Ingredients", path: "/vendor/ingredients" },
-        { name: "My Ingredient Orders", path: "/vendor/ingredients/my-orders" },
+        { name: t("ingredients"), path: "/vendor/ingredients" },
+        { name: t("my_ingredient_orders"), path: "/vendor/ingredients/my-orders" },
       ],
     },
     {

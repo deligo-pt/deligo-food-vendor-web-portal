@@ -748,6 +748,7 @@ export const en = {
   // -> sidebar
   dashboard: "Dashboard",
   orders: "Orders",
+  all_orders: "All Orders",
   new_orders: "New Orders",
   preparing: "Preparing",
   ready_for_pickup: "Ready for Pickup",
@@ -758,7 +759,9 @@ export const en = {
   all_items: "All Items",
   add_new_item: "Add New Item",
   stock_management: "Stock Management",
+  variation_management: "Variation Management",
   add_ons: "Add-Ons",
+  my_ingredient_orders: "My Ingredient Orders",
   payments_earnings: "Payments & Earnings",
   payouts: "Payouts",
   earnings_summary: "Earnings Summary",
@@ -834,6 +837,41 @@ export const en = {
   picked_up: "Picked Up",
   on_the_way: "On The Way",
   delivered: "Delivered",
+  order_status: "Order Status",
+
+  // all-orders
+  manage_all_orders_from_here: "Manage all orders from here",
+  order_id: "Order ID",
+  customer: "Customer",
+  delivery_partner: "Delivery Partner",
+  amount: "Amount",
+  date: "Date",
+  no_orders_found: "No orders found",
+  page_lg: "Page",
+  page_sm: "page",
+  sort_by: "Sort By",
+  search: "Search...",
+
+  // cancelled orders
+  list_of_all_cancelled_orders: "List of all cancelled orders",
+
+  // completed orders
+  list_of_all_delivered_orders: "List of all delivered orders",
+
+  // order details
+  order_details: "",
+  order_lg: "Order",
+  flash: "Flash",
+  order_items: "Order Items",
+  items_sm: "items",
+  product_details: "Product Details",
+  subtotal: "Subtotal",
+  delivery_address: "Delivery Address",
+  customer_contact: "Customer Contact",
+  payment_summary: "Payment Summary",
+  total_amount: "Total Amount",
+  includes_all_taxes: "Includes all taxes",
+  customer_details: "Customer Details",
 
   // new orders page
   vendor_new_orders: "Vendor — New Orders",
@@ -942,7 +980,7 @@ export const en = {
   original_price: "Original Price",
   discount: "Discount",
   tax: "Tax",
-  incl : "incl.",
+  incl: "incl.",
   final_price: "Final Price",
   base_price: "Base Price",
   add_ons_and_variants: "Add-Ons & Variants",

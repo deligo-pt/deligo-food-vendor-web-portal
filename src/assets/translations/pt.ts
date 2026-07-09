@@ -761,6 +761,7 @@ export const pt = {
 
   // -> sidebar
   dashboard: "Painel",
+  all_orders: "Todos os Pedidos",
   orders: "Pedidos",
   new_orders: "Novos Pedidos",
   preparing: "Em Preparação",
@@ -773,7 +774,9 @@ export const pt = {
   all_items: "Todos os Itens",
   add_new_item: "Adicionar Novo Item",
   stock_management: "Gestão de Stock",
+  variation_management: "Gerenciamento de Variações",
   add_ons: "Extras",
+  my_ingredient_orders: "Meus Pedidos de Ingredientes",
 
   payments_earnings: "Pagamentos & Ganhos",
   payouts: "Pagamentos",
@@ -863,6 +866,41 @@ export const pt = {
   picked_up: "Recolhido",
   on_the_way: "A Caminho",
   delivered: "Entregue",
+  order_status: "Status do Pedido",
+
+  // all-orders
+  manage_all_orders_from_here: "Gerencie todos os pedidos por aqui",
+  order_id: "ID do Pedido",
+  customer: "Cliente",
+  delivery_partner: "Parceiro de Entrega",
+  amount: "Valor",
+  date: "Data",
+  no_orders_found: "Nenhum pedido encontrado",
+  page_lg: "Página",
+  page_sm: "página",
+  sort_by: "Ordenar Por",
+  search: "Buscar...",
+
+  // cancelled orders
+  list_of_all_cancelled_orders: "Lista de todos os pedidos cancelados",
+
+  // completed orders
+  list_of_all_delivered_orders: "Lista de todos os pedidos entregues",
+
+  // order details
+  order_details: "Detalhes do Pedido",
+  order_lg: "Pedido",
+  flash: "Flash",
+  order_items: "Itens do Pedido",
+  items_sm: "itens",
+  product_details: "Detalhes do Produto",
+  subtotal: "Subtotal",
+  delivery_address: "Endereço de Entrega",
+  customer_contact: "Contato do Cliente",
+  payment_summary: "Resumo do Pagamento",
+  total_amount: "Valor Total",
+  includes_all_taxes: "Inclui todos os impostos",
+  customer_details: "Detalhes do Cliente",
 
   // new orders page
   vendor_new_orders: "Vendedor — Novos Pedidos",
@@ -1702,7 +1740,7 @@ export const pt = {
   info: "Informações",
   emergency_type: "Tipo de Emergência",
   time_triggered: "Hora do Acionamento",
-  status: "Status",
+  status: "Estado",
   actions: "Ações",
   no_alerts_found: "Nenhum alerta encontrado",
   alert_details: "Detalhes do Alerta",
