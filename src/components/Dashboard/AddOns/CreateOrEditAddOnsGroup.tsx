@@ -307,7 +307,7 @@ export default function CreateOrEditAddOnsGroup({
                       <span className="ml-2 text-xs text-slate-200">
                         Price: (€{option.price})
                         {option.tax
-                          ? `+ Tax: (
+                          ? ` (incl. Tax:
                         ${taxes.find((t) => t._id === option.tax)?.taxRate}%)`
                           : ""}
                       </span>

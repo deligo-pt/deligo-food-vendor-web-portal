@@ -1,4 +1,4 @@
-// VendorLoginPage.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -60,56 +60,62 @@ export default function LoginForm({ redirect }: IProps) {
     forceLogin?: boolean;
   }) => {
     const toastId = toast.loading("Logging in...");
-    const deviceDetails = await getDeviceInfo();
+    try {
+      const deviceDetails = await getDeviceInfo();
 
-    const result = await loginReq({
-      ...payload,
-      deviceDetails,
-    });
+      const result = await loginReq({
+        ...payload,
+        deviceDetails,
+      });
 
-    if (result?.success) {
-      setShowModal(false);
+      if (result?.success) {
+        setShowModal(false);
+        const decoded = jwtDecode(result.data.accessToken) as {
+          role: string;
+          status: string;
+        };
+        if (decoded.role === "VENDOR") {
+          setCookie("accessToken", result.data.accessToken, 7);
+          setCookie("refreshToken", result.data.refreshToken, 365);
+          toast.success(result?.message || "Login successful!", {
+            id: toastId,
+          });
 
-      const decoded = jwtDecode(result.data.accessToken) as {
-        role: string;
-        status: string;
-      };
-      if (decoded.role === "VENDOR") {
-        setCookie("accessToken", result.data.accessToken, 7);
-        setCookie("refreshToken", result.data.refreshToken, 365);
-        toast.success(result?.message || "Login successful!", {
-          id: toastId,
-        });
+          // get and save fcm token
+          setTimeout(() => {
+            getAndSaveFcmToken(result.data.accessToken);
+          }, 1000);
 
-        // get and save fcm token
-        setTimeout(() => {
-          getAndSaveFcmToken(result.data.accessToken);
-        }, 1000);
-
-        switch (decoded.status) {
-          case "PENDING":
-          case "SUBMITTED":
-          case "REJECTED":
-            router.push("/become-vendor/registration-status");
-            return;
-          case "APPROVED":
-            if (redirect) {
-              router.push(redirect);
+          switch (decoded.status) {
+            case "PENDING":
+            case "SUBMITTED":
+            case "REJECTED":
+              router.push("/become-vendor/registration-status");
               return;
-            }
-            router.push("/vendor/dashboard");
-            return;
+            case "APPROVED":
+              if (redirect) {
+                router.push(redirect);
+                return;
+              }
+              router.push("/vendor/dashboard");
+              return;
+          }
+          return;
         }
+        toast.error("You are not a vendor", { id: toastId });
         return;
+      } else {
+        if (result?.err?.statusCode === 403 && result?.err?.errorKey === "LIMIT_EXCEEDED") {
+          toast.error("Device limit exceeded. Click remove and continue login or try again later", { id: toastId });
+          setShowModal(true);
+          return;
+        }
+        toast.error(result?.message, { id: toastId });
       }
-      toast.error("You are not a vendor", { id: toastId });
-      return;
-    }
 
-    toast.error(result.message || "Login failed", { id: toastId });
-
-    if (result.message === "LIMIT_EXCEEDED") {
-      setShowModal(true);
+    } catch (err: any) {
+      console.log("login err :", err);
+      toast.error(err.message || err?.response?.message || "Login failed", { id: toastId });
     }
   };
 
