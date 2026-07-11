@@ -8,12 +8,14 @@ interface IProps {
   onSend: (text: string) => void;
   onTyping: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   ticketStatus: TTicketStatus;
+  t: (key: string) => string;
 }
 
 export default function SupportChatInput({
   onSend,
   onTyping,
   ticketStatus,
+  t
 }: IProps) {
   const [value, setValue] = useState("");
 
@@ -33,8 +35,7 @@ export default function SupportChatInput({
       {ticketStatus === "CLOSED" ? (
         <div className="text-center p-3 bg-gray-50 rounded-xl text-sm text-gray-500 flex items-center justify-center gap-2">
           <AlertTriangle size={16} />
-          This ticket is closed. Please open a new ticket for further
-          assistance.
+          {t("this_ticket_is_closed_please_open_new")}
         </div>
       ) : (
         <div className="flex items-end gap-2">
@@ -44,7 +45,7 @@ export default function SupportChatInput({
               value={value}
               onChange={(e) => setValue(e.target?.value)}
               onKeyDown={handleMessageTyping}
-              placeholder="Type a message..."
+              placeholder={t("type_a_message")}
               className="w-full bg-transparent px-3 py-2 outline-none text-sm resize-none max-h-32 min-h-10"
             />
           </div>

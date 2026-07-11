@@ -22,11 +22,12 @@ import { useEffect, useRef, useState } from "react";
 interface IProps {
   ticket: TSupportTicket;
   closeChatSheet: () => void;
+  t: (key: string) => string;
 }
 
 const MESSAGE_LIMIT = 50;
 
-export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
+export default function SupportChatSheet({ ticket, closeChatSheet, t }: IProps) {
   const router = useRouter();
   const isInitialLoad = useRef(true);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -129,7 +130,7 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
           setOtherUserTyping(data.isTyping);
         }
       },
-      onClosed: () => {},
+      onClosed: () => { },
       onRead: (data) => {
         if (
           data.ticketId === ticket.ticketId &&
@@ -252,8 +253,8 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
       if (container) {
         const isNearBottom =
           container.scrollHeight -
-            container.scrollTop -
-            container.clientHeight <=
+          container.scrollTop -
+          container.clientHeight <=
           150;
         if (isNearBottom) {
           scrollToBottom(true);
@@ -372,7 +373,7 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
 
           {otherUserTyping && (
             <div className="flex flex-col gap-1 items-center mb-0">
-              <span className="text-xs text-gray-500">Admin is typing...</span>
+              <span className="text-xs text-gray-500">{t("admin_is_typing")}</span>
               <div className="flex justify-center gap-1">
                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
                 <span
@@ -395,6 +396,7 @@ export default function SupportChatSheet({ ticket, closeChatSheet }: IProps) {
           onSend={handleSendMessage}
           onTyping={handleMessageTyping}
           ticketStatus={ticket.status}
+          t={t}
         />
       </motion.div>
     </>

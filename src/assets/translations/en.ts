@@ -673,6 +673,8 @@ export const en = {
     "Your vendor application has submitted successfully! An admin will review your application and activate your vendor account within 24-48 hours.",
   seeRegistrationStatus: "See registration status",
   goHome: "Go Home",
+  view_full_file:"View Full File",
+  no_documents_uploaded:"No documents uploaded",
   // personal details
   personalDetails: "Personal Details",
   personalDetailsDesc: "Let’s start with your basic information",
@@ -1488,7 +1490,7 @@ export const en = {
   promo_code: "Promo Code",
   enter_promo_code: "Enter promo code",
   // --> edit offer
-  edit_offer:"Edit Offer",
+  edit_offer: "Edit Offer",
 
   // coupon analytics page
   performance_insights_all_active_past_coupon:
@@ -1560,8 +1562,20 @@ export const en = {
   decline_drinks_suggests_icreasing:
     "Decline in drinks suggests increasing stock or improving visibility.",
   view_full_sales_breakdown: "View Full Sales Breakdown",
+  sales_overview: "Sales Overview",
+  sales: "Sales",
 
   // tax-report page
+  detailed_tax_breakdown_for_products_addons: "Detailed tax breakdown for products and addons",
+  gross_sales: "Gross Sales",
+  total_tax_liability: "Total Tax Liability",
+  net_revenue: "Net Revenue",
+  tax_contribution: "Tax Contribution",
+  product: "Product",
+  addon: "Addon",
+  tax_by_category: "Tax by Category",
+  revenue_vs_tax_over_time: "Revenue vs Tax Over Time",
+  top_tax_generating_addons: "Top Tax-Generating Addons",
   tax_report_iva_breakdown: "Tax Report (IVA Breakdown)",
   portugal_compliant_iva_calculation:
     "Portugal-compliant IVA calculation report for vendors",
@@ -1596,11 +1610,16 @@ export const en = {
   view_full_iva_breakdown: "View Full IVA Breakdown",
 
   // customer report page
+  overview_of_all_registered_customers: "Overview of all registered customers and their activity",
   see_customer_trends_spending_behaviour:
     "See customer trends, spending behaviour & loyalty",
   avg_rating: "Avg Rating",
   highest_spender: "Highest Spender",
   most_orders: "Most Orders",
+  customer_growth: "Customer Growth",
+  customer_ordered_over_last_6_months: "Customer ordered over the last 6 months",
+  all_customers: "All Customers",
+  customers: "customers",
   search_customer: "Search customer...",
   total_spent: "total spent",
   last_order: "Last order",
@@ -1615,6 +1634,8 @@ export const en = {
   weekend_offers_boost_returning:
     "Weekend offers boost returning customers by 18%.",
   view_full_customer_breakdown: "View Full Customer Breakdown",
+  last_ordered: "Last Ordered",
+  no_customer_found: "No customer found",
 
   // business info
   business_information: "Business Information",
@@ -1627,6 +1648,10 @@ export const en = {
   about_business: "About Business",
   opening_hours: "Opening Hours",
 
+  // export popover
+  export_as_pdf: "Export as PDF",
+  export_as_csv: "Export as CSV",
+
   // notifications page
   manage_alerts_system_updates:
     "Manage alerts, system updates & notification preferences",
@@ -1637,6 +1662,7 @@ export const en = {
   push_notifications: "Push Notifications",
   instant_alerts_for_orders_reviews: "Instant alerts for new orders & reviews",
   save_preferences: "Save Preferences",
+  unread: "Unread",
 
   // change password
   update_account_password_securely: "Update your account password securely.",
@@ -1696,12 +1722,36 @@ export const en = {
   save_apply_demo: "Save & Apply (demo)",
 
   // chat-support
-  chat_support: "Chat Support",
+  chat_directly_with_support_experts: "Chat directly with our support experts with support ticket",
   get_help_from_support_team: "Get help from our support team in real‑time.",
   deligo_support: "Deligo Support",
   active_now: "Active now",
   type_your_message: "Type your message…",
   send: "Send",
+  inquiry: "Inquiry",
+  no_message_content_available: "No message content available.",
+  view_conversation: "View Conversation",
+  our_team_tipically_responds_within: "Our team typically responds within",
+  hours: "hours",
+  no_active_support_tickets: "No Active Support Tickets",
+  you_dont_have_any_open_request: "You don't have any open requests. If you're experiencing an issue, create a ticket and we'll get right on it!",
+  create_your_first_ticket: "Create your first ticket",
+  // ---> create new ticket
+  create_new_ticket: "Create New Ticket",
+  category: "Category",
+  select_category: "Select category",
+  general: "General",
+  iva_invoice: "IVA Invoice",
+  technical: "Technical",
+  please_provide_details_of_issue: "Please provide the details of your issue or inquiry here...",
+  select_value: "Select value",
+  submitting: "Submitting...",
+  submit_ticket: "Submit Ticket",
+  // --> chat sheet
+  admin_is_typing:"Admin is typing...",
+  // --> chat input
+  this_ticket_is_closed_please_open_new:"This ticket is closed. Please open a new ticket for further assistance.",
+  type_a_message:"Type a message...",
 
   // help
   help_center: "Help Center",
@@ -1834,6 +1884,7 @@ export const en = {
   last_login: "Last Login",
   account_created: "Account Created",
   two_factor_auth: "Two-Factor Auth",
+
 
 
   // all sos alerts

@@ -682,6 +682,8 @@ export const pt = {
     "A sua candidatura de vendedor foi submetida com sucesso! Um administrador irá analisar a sua candidatura e ativar a sua conta de vendedor em 24–48 horas.",
   seeRegistrationStatus: "Ver estado do registo",
   goHome: "Ir para Início",
+  view_full_file: "Ver Arquivo Completo",
+  no_documents_uploaded: "Nenhum documento enviado",
   // personal details
   personalDetails: "Dados Pessoais",
   personalDetailsDesc: "Vamos começar com as suas informações básicas",
@@ -1610,8 +1612,20 @@ export const pt = {
   decline_drinks_suggests_icreasing:
     "A queda nas bebidas sugere aumento de stock ou melhoria de visibilidade.",
   view_full_sales_breakdown: "Ver Análise Completa de Vendas",
+  sales_overview: "Visão Geral de Vendas",
+  sales: "Vendas",
 
   // tax-report page
+  detailed_tax_breakdown_for_products_addons: "Detalhamento de impostos para produtos e complementos",
+  gross_sales: "Vendas Brutas",
+  total_tax_liability: "Obrigação Fiscal Total",
+  net_revenue: "Receita Líquida",
+  tax_contribution: "Contribuição Fiscal",
+  product: "Produto",
+  addon: "Complemento",
+  tax_by_category: "Imposto por Categoria",
+  revenue_vs_tax_over_time: "Receita vs Imposto ao Longo do Tempo",
+  top_tax_generating_addons: "Principais Complementos Geradores de Imposto",
   tax_report_iva_breakdown: "Relatório Fiscal (Detalhe de IVA)",
   portugal_compliant_iva_calculation:
     "Relatório de cálculo de IVA em conformidade com a legislação portuguesa",
@@ -1646,11 +1660,16 @@ export const pt = {
   view_full_iva_breakdown: "Ver Detalhe Completo do IVA",
 
   // customer report page
+  overview_of_all_registered_customers: "Visão geral de todos os clientes registrados e suas atividades",
   see_customer_trends_spending_behaviour:
     "Visualizar tendências de clientes, comportamento de gastos e fidelização",
   avg_rating: "Avaliação Média",
   highest_spender: "Maior Gastador",
   most_orders: "Mais Pedidos",
+  customer_growth: "Crescimento de Clientes",
+  customer_ordered_over_last_6_months: "Clientes que pediram nos últimos 6 meses",
+  all_customers: "Todos os Clientes",
+  customers: "clientes",
   search_customer: "Pesquisar cliente...",
   total_spent: "total gasto",
   last_order: "Último pedido",
@@ -1665,6 +1684,8 @@ export const pt = {
   weekend_offers_boost_returning:
     "Ofertas ao fim de semana aumentam clientes recorrentes em 18%.",
   view_full_customer_breakdown: "Ver Análise Completa de Clientes",
+  last_ordered: "Último Pedido",
+  no_customer_found: "Nenhum cliente encontrado",
 
   // business info
   business_information: "Informações do Negócio",
@@ -1676,6 +1697,10 @@ export const pt = {
   website_optional: "Website (Opcional)",
   about_business: "Sobre o Negócio",
   opening_hours: "Horário de Funcionamento",
+
+  // export popover
+  export_as_pdf: "Exportar como PDF",
+  export_as_csv: "Exportar como CSV",
 
   // notifications page
   manage_alerts_system_updates:
@@ -1689,6 +1714,7 @@ export const pt = {
   instant_alerts_for_orders_reviews:
     "Alertas instantâneos para novos pedidos e avaliações",
   save_preferences: "Guardar Preferências",
+  unread: "Não lido",
 
   // change password
   update_account_password_securely:
@@ -1750,13 +1776,37 @@ export const pt = {
   save_apply_demo: "Guardar e Aplicar (demo)",
 
   // chat-support
-  chat_support: "Chat de Suporte",
+  chat_directly_with_support_experts: "Converse diretamente com nossos especialistas por meio de um tíquete de suporte",
   get_help_from_support_team:
     "Obtenha ajuda da nossa equipa de suporte em tempo real.",
   deligo_support: "Suporte Deligo",
   active_now: "Ativo agora",
   type_your_message: "Escreva a sua mensagem…",
   send: "Enviar",
+  inquiry: "Consulta",
+  no_message_content_available: "Nenhum conteúdo de mensagem disponível.",
+  view_conversation: "Ver Conversa",
+  our_team_tipically_responds_within: "Nossa equipe normalmente responde em",
+  hours: "horas",
+  no_active_support_tickets: "Nenhum Tíquete de Suporte Ativo",
+  you_dont_have_any_open_request: "Você não tem solicitações abertas. Se estiver enfrentando algum problema, crie um tíquete e cuidaremos disso imediatamente!",
+  create_your_first_ticket: "Criar seu primeiro tíquete",
+  // ---> create new ticket
+  create_new_ticket: "Criar Novo Tíquete",
+  category: "Categoria",
+  select_category: "Selecionar categoria",
+  general: "Geral",
+  iva_invoice: "Fatura IVA",
+  technical: "Técnico",
+  please_provide_details_of_issue: "Por favor, forneça os detalhes do seu problema ou consulta aqui...",
+  select_value: "Selecionar valor",
+  submitting: "Enviando...",
+  submit_ticket: "Enviar Tíquete",
+  // --> chat sheet
+  admin_is_typing: "O administrador está digitando...",
+  // --> chat input
+  this_ticket_is_closed_please_open_new: "Este tíquete está fechado. Por favor, abra um novo tíquete para obter mais ajuda.",
+  type_a_message: "Digite uma mensagem...",
 
   // help
   help_center: "Centro de Ajuda",

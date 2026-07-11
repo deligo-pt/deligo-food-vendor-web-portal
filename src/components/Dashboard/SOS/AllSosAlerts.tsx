@@ -21,8 +21,8 @@ const AllSosAlerts = ({ sosAlerts }: IProps) => {
     const sortOptions = [
         { label: t("newest_first"), value: "-createdAt" },
         { label: t("oldest_first"), value: "createdAt" },
-        { label: t("name_a_z"), value: "name.firstName" },
-        { label: t("name_z_a"), value: "-name.lastName" },
+        { label: t("name_a_to_z"), value: "name.firstName" },
+        { label: t("name_z_to_a"), value: "-name.lastName" },
     ];;
     const [selectedSos, setSelectedSos] = useState<ISos | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
