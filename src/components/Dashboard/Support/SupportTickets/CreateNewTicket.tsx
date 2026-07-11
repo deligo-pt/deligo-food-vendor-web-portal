@@ -33,11 +33,12 @@ import z from "zod";
 interface IProps {
   onClose: () => void;
   onCreated: () => void;
+  t: (key: string) => string;
 }
 
 type TFormData = z.infer<typeof ticketValidation>;
 
-export default function CreateNewTicket({ onClose, onCreated }: IProps) {
+export default function CreateNewTicket({ onClose, onCreated, t }: IProps) {
   const router = useRouter();
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -167,7 +168,7 @@ export default function CreateNewTicket({ onClose, onCreated }: IProps) {
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-xl z-52 overflow-hidden"
       >
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900">Create New Ticket</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t("create_new_ticket")}</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:bg-gray-50 rounded-full transition-colors"
@@ -186,18 +187,18 @@ export default function CreateNewTicket({ onClose, onCreated }: IProps) {
               name="category"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>{t("category")}</FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#DC3173] focus:ring-2 focus:ring-[#DC3173]/20 outline-none transition-all bg-white">
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder={t("select_category")} />
                       </SelectTrigger>
                       <SelectContent className="z-52">
-                        <SelectItem value="GENERAL">General</SelectItem>
-                        <SelectItem value="ORDER_ISSUE">Order Issue</SelectItem>
-                        <SelectItem value="IVA_INVOICE">IVA Invoice</SelectItem>
-                        <SelectItem value="PAYMENT">Payment</SelectItem>
-                        <SelectItem value="TECHNICAL">Technical</SelectItem>
+                        <SelectItem value="GENERAL">{t("general")}</SelectItem>
+                        <SelectItem value="ORDER_ISSUE">{t("order_issue")}</SelectItem>
+                        <SelectItem value="IVA_INVOICE">{t("iva_invoice")}</SelectItem>
+                        <SelectItem value="PAYMENT">{t("payment")}</SelectItem>
+                        <SelectItem value="TECHNICAL">{t("technical")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -211,12 +212,12 @@ export default function CreateNewTicket({ onClose, onCreated }: IProps) {
               name="message"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Message</FormLabel>
+                  <FormLabel>{t("message")}</FormLabel>
                   <FormControl>
                     <textarea
                       {...field}
                       rows={4}
-                      placeholder="Please provide the details of your issue or inquiry here..."
+                      placeholder={t("please_provide_details_of_issue")}
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#DC3173] focus:ring-2 focus:ring-[#DC3173]/20 outline-none transition-all resize-none"
                     />
                   </FormControl>
@@ -231,14 +232,14 @@ export default function CreateNewTicket({ onClose, onCreated }: IProps) {
                 name="referenceOrderId"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Order</FormLabel>
+                    <FormLabel>{t("order_lg")}</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#DC3173] focus:ring-2 focus:ring-[#DC3173]/20 outline-none transition-all bg-white">
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue placeholder={t("select_value")} />
                         </SelectTrigger>
                         <SelectContent className="z-52">
                           {ordersData.data.map((o) => (
@@ -261,14 +262,14 @@ export default function CreateNewTicket({ onClose, onCreated }: IProps) {
                 onClick={onClose}
                 className="px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-50 rounded-xl transition-colors"
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="px-6 py-2.5 bg-[#DC3173] text-white font-bold rounded-xl hover:bg-[#DC3173]/90 transition-colors shadow-lg shadow-[#DC3173]/20"
               >
-                {isSubmitting ? "Submitting..." : "Submit Ticket"}
+                {isSubmitting ? t("submitting") : t("submit_ticket")}
               </button>
             </div>
           </form>

@@ -14,6 +14,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/src/components/ui/avatar";
+import { useStore } from "@/src/store/store";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -31,9 +32,11 @@ import { useRouter } from "next/navigation";
 
 interface IProps {
   orders: TOrder[];
+  t: (key: string) => string;
 }
 
-export default function SalesReportOrderTable({ orders }: IProps) {
+export default function SalesReportOrderTable({ orders, t }: IProps) {
+  const { lang } = useStore();
   const router = useRouter();
 
   return (
@@ -48,42 +51,42 @@ export default function SalesReportOrderTable({ orders }: IProps) {
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <HashIcon className="w-4" />
-                Order ID
+                {t("order_id")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <UserIcon className="w-4" />
-                Customer
+                {t("customer")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <PackageIcon className="w-4" />
-                Items
+                {t("items")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <EuroIcon className="w-4" />
-                Amount
+                {t("amount")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <CalendarIcon className="w-4" />
-                Date
+                {t("date")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <CheckCircleIcon className="w-4" />
-                Status
+                {t("status")}
               </div>
             </TableHead>
             <TableHead className="text-right text-[#DC3173] flex gap-2 items-center justify-end">
               <Cog className="w-4" />
-              Actions
+              {t("actions")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -94,7 +97,7 @@ export default function SalesReportOrderTable({ orders }: IProps) {
                 className="text-[#DC3173] text-lg text-center"
                 colSpan={7}
               >
-                No orders found
+                {t("no_orders_found")}
               </TableCell>
             </TableRow>
           )}
@@ -125,7 +128,7 @@ export default function SalesReportOrderTable({ orders }: IProps) {
               <TableCell>
                 {order.items?.map((i, index) => (
                   <span key={index}>
-                    {i.productId?.name} x {i.itemSummary?.quantity}
+                    {i.productId?.name?.[lang]} x {i.itemSummary?.quantity}
                   </span>
                 ))}
               </TableCell>
@@ -146,7 +149,7 @@ export default function SalesReportOrderTable({ orders }: IProps) {
                   className="bg-[#DC3173] flex items-center gap-2 hover:bg-[#DC3173]/90 ml-auto"
                 >
                   <EyeIcon />
-                  View
+                  {t("view")}
                 </Button>
               </TableCell>
             </TableRow>

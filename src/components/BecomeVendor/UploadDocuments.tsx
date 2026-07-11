@@ -41,6 +41,20 @@ interface IDoc {
   prefersImagePreview: boolean;
 }
 
+const OPTIONAL_DOCS: DocKey[] = [
+  "myPhoto",
+  "storePhoto",
+  "menuUpload",
+  "agoserisHaccpCertificate",
+];
+
+const REQUIRED_DOCS: DocKey[] = [
+  "businessLicenseDoc",
+  "taxDoc",
+  "idProofFront",
+  "idProofBack",
+];
+
 export default function UploadDocuments({
   savedPreviews,
   vendor,
@@ -77,7 +91,6 @@ export default function UploadDocuments({
       ? savedPreviews.agoserisHaccpCertificate
       : null,
   });
-  // const [uploadedUrls, setUploadedUrls] = useState<Record<DocKey, string[] | null>>(null)
 
   // file input refs to trigger the browser picker
   const inputsRef = useRef<Record<string, HTMLInputElement | null>>({});
@@ -125,9 +138,17 @@ export default function UploadDocuments({
     },
   ];
 
+  const DEFAULT_DOC_IMAGES: Partial<Record<DocKey, string>> = {
+    myPhoto: "/defaults/my-photo.png",
+    storePhoto: "/defaults/store-photo.jpeg",
+    menuUpload: "/defaults/menu.jpeg",
+  };
+
   const visibleDocuments = DOCUMENTS.filter(
-    (doc) => !(vendor?.businessDetails?.businessType === "STORE" && doc.key === "agoserisHaccpCertificate")
+    (doc) => !(vendor?.businessDetails?.businessTypeSlug === "store" && doc.key === "agoserisHaccpCertificate")
   );
+
+  const isFormValid = REQUIRED_DOCS.every((key) => previews[key] !== null && previews[key]!.length > 0);
 
   const documentLimits: Partial<Record<DocKey, number>> = {
     myPhoto: 1,
@@ -158,7 +179,7 @@ export default function UploadDocuments({
     // HACCP only applies to restaurants
     if (
       key === "agoserisHaccpCertificate" &&
-      vendor?.businessDetails?.businessType !== "RESTAURANT"
+      vendor?.businessDetails?.businessTypeSlug !== "restaurant"
     ) {
       maxFiles = 0;
     }
@@ -360,10 +381,50 @@ export default function UploadDocuments({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const uploadDefaultDocument = async (key: DocKey) => {
+    const imagePath = DEFAULT_DOC_IMAGES[key];
+    if (!imagePath) return;
+
+    // Convert public image into a File
+    const response = await fetch(imagePath);
+    const blob = await response.blob();
+
+    const file = new window.File(
+      [blob],
+      imagePath.split("/").pop() ?? "default.png",
+      {
+        type: blob.type || "image/png",
+      }
+    );
+
+    const uploadResult = await uploadImagesReq([file]);
+
+    if (!uploadResult.success) {
+      throw new Error(uploadResult.message);
+    }
+
+    await updateDocumentsReq(vendor?.userId as string, {
+      docImageTitle: key,
+      docImageUrls: [uploadResult.data![0]],
+    });
+  };
+
   // Continue button handler: stop confetti and close modal (later you can trigger API)
   const handleContinue = async () => {
     const toastId = toast.loading("Submitting...");
     setIsSubmitting(true);
+
+    const optionalDefaults: DocKey[] = [
+      "myPhoto",
+      "storePhoto",
+      "menuUpload",
+    ];
+
+    for (const key of optionalDefaults) {
+      if (!previews[key] || previews[key]!.length === 0) {
+        await uploadDefaultDocument(key);
+      }
+    }
 
     const result = await submitForApprovalReq(vendor?.userId as string);
 
@@ -453,7 +514,7 @@ export default function UploadDocuments({
 
                       <div className="min-w-0">
                         <div className="text-sm font-semibold text-gray-800">
-                          {d.label}
+                          {d.label} {REQUIRED_DOCS.includes(d.key) && <span className="text-[#DC3173]">*</span>}
                         </div>
                         <div className="text-xs text-gray-500 mt-1 space-y-1">
                           {preview?.map((f, i) => (
@@ -560,13 +621,12 @@ export default function UploadDocuments({
             </div>
             <div className="pt-4">
               <Button
-                disabled={
-                  !visibleDocuments.every(
-                    (d) => !(!previews[d.key] || previews[d.key]?.length === 0),
-                  ) || isSubmitting
-                }
+                disabled={!isFormValid || isSubmitting}
                 onClick={handleContinue}
-                className="bg-[#DC3173] hover:bg-[#b72a63] text-white px-6 py-3 rounded-xl shadow-lg"
+                className={`bg-[#DC3173] hover:bg-[#b72a63] text-white px-6 py-3 rounded-xl shadow-lg ${isFormValid
+                  ? "bg-[#DC3173] text-white hover:bg-[#c21c5e]"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
               >
                 {t("completeRegistrationCTA")}
               </Button>

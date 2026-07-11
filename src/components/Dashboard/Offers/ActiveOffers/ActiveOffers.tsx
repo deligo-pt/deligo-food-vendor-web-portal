@@ -12,6 +12,7 @@ import {
   deleteOfferReq,
   toggleOfferStatusReq,
 } from "@/src/services/dashboard/offers/offers";
+import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { format } from "date-fns";
@@ -33,9 +34,11 @@ interface IProps {
 
 export default function ActiveOffers({ offersResult, title }: IProps) {
   const { t } = useTranslation();
+  const { lang } = useStore();
   const router = useRouter();
   const [editOffer, setEditOffer] = useState<TOffer | null>(null);
   const [deleteId, setDeleteId] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
@@ -62,6 +65,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
   const deleteOffer = async () => {
     const toastId = toast.loading("Deleting offer...");
+    setIsDeleting(true);
 
     const result = await deleteOfferReq(deleteId);
     if (result.success) {
@@ -70,12 +74,14 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
         id: toastId,
       });
       setDeleteId("");
+      setIsDeleting(false);
       return;
     }
 
     toast.error(result.message || "Offer deletion failed", {
       id: toastId,
     });
+    setIsDeleting(false);
     console.log(result);
   };
 
@@ -121,7 +127,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
                     <div>
                       <h2 className="text-2xl font-bold text-gray-800">
-                        {offer.title}
+                        {offer.title?.[lang]}
                       </h2>
 
                       <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
@@ -218,6 +224,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId("")}
         onConfirm={() => deleteOffer()}
+        isDeleting={isDeleting}
       />
 
       {/* Edit Offer Modal */}
@@ -226,6 +233,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
           open={!!editOffer}
           onOpenChange={(open) => !open && setEditOffer(null)}
           offer={editOffer || offersResult.data?.[0]}
+          t={t}
         />
       )}
 

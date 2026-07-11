@@ -30,9 +30,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { updateOfferReq } from "@/src/services/dashboard/offers/offers";
 import { getAllProductsReq } from "@/src/services/dashboard/products/products";
+import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
+import { translateObject } from "@/src/utils/translation/translationObject";
 import { offerValidation } from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -51,10 +53,12 @@ interface IProps {
   offer: TOffer;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  t: (key: string) => string;
 }
 
-export default function EditOffer({ offer, open, onOpenChange }: IProps) {
+export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
   const router = useRouter();
+  const { lang } = useStore();
   const [itemsResult, setItemsResult] = useState<{
     data: TProduct[];
     meta?: TMeta;
@@ -80,8 +84,11 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
       maxUsageCount: offer?.maxUsageCount ? String(offer.maxUsageCount) : "",
       userUsageLimit: offer?.userUsageLimit ? String(offer.userUsageLimit) : "",
       applicableProducts: offer?.applicableProducts ? (offer?.applicableProducts as string[]) : [],
+      currentLang: lang
     },
   });
+  const { formState: { isSubmitting } } = form;
+  const [isAutoApply, setIsAutoApply] = useState(false);
 
   const [watchOfferType, watchApplicableProducts] = useWatch({
     control: form.control,
@@ -91,9 +98,21 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Updating offer...");
 
-    const offerData: Partial<TOffer> = {
+    const transPayload = {
       title: data.title,
-      description: data.description,
+      description: data.description
+    };
+    console.log("trans pay", transPayload);
+    const translated = await translateObject(transPayload, lang);
+
+    if (!translated) {
+      toast.error("Translation failed!", { id: toastId });
+      return;
+    }
+
+    const offerData: Partial<TOffer> = {
+      title: translated.title ? translated.title : data.title,
+      description: translated.description ? translated.description : data.description,
       offerType: data.offerType,
       discountValue: data.discountValue,
       maxDiscountAmount: data.maxDiscountAmount,
@@ -101,7 +120,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
       expiresAt: data.expiresAt,
       minOrderAmount: data.minOrderAmount,
       code: data.code,
-      isAutoApply: false,
+      isAutoApply: data.isAutoApply,
       applicableProducts: data.applicableProducts,
 
       ...(data.offerType === "BOGO"
@@ -190,23 +209,26 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
       <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl text-center font-medium">
-            Edit Offer
+            {t("edit_offer")}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
             <div className="space-y-4">
-              <h2 className="font-bold text-lg">Offer Details</h2>
+              <h2 className="font-bold text-lg">{t("offer_details")}</h2>
               <Separator />
 
               <FormField
                 control={form.control}
-                name="title"
+                name={`title.${lang}`}
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel className="font-medium text-sm text-gray-700">
+                      {t("offer_title_20_perc_off")}
+                    </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Offer Title (e.g., 20% OFF on Burgers)"
+                        placeholder={t("offer_title_20_perc_off")}
                         className="h-12 text-base"
                         {...field}
                       />
@@ -218,12 +240,15 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
 
               <FormField
                 control={form.control}
-                name="description"
+                name={`description.${lang}`}
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel className="font-medium text-sm text-gray-700">
+                      {t("offer_description")}
+                    </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Offer Description"
+                        placeholder={t("offer_description")}
                         className="text-base"
                         rows={4}
                         {...field}
@@ -242,7 +267,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                     <FormControl>
                       <div className="space-y-2">
                         <FormLabel className="font-medium text-sm text-gray-700">
-                          Offer Type
+                          {t("offer_type")}
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -254,16 +279,16 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                               fieldState.invalid ? "border-destructive" : "",
                             )}
                           >
-                            <SelectValue placeholder="Select type" />
+                            <SelectValue placeholder={t("select_type")} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="PERCENT">
-                              Percentage Discount
+                              {t("percentage_discount")}
                             </SelectItem>
                             <SelectItem value="FLAT">
-                              Flat Amount OFF
+                              {t("flat_amount_off")}
                             </SelectItem>
-                            <SelectItem value="BOGO">Buy 1 Get 1</SelectItem>
+                            <SelectItem value="BOGO">{t("buy_1_get_1")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -275,29 +300,61 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
 
               {/* CONDITIONAL INPUTS */}
               {watchOfferType === "PERCENT" && (
-                <FormField
-                  control={form.control}
-                  name="discountValue"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Discount % (e.g., 20)"
-                          type="number"
-                          min={0}
-                          max={100}
-                          className="h-12 text-base"
-                          {...field}
-                          value={String(field.value)}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex flex-col md:flex-row items-center gap-5 w-full">
+                  <FormField
+                    control={form.control}
+                    name="discountValue"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-medium text-sm text-gray-700">
+                          {t("discount_value")}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t("discount_perc_20")}
+                            type="number"
+                            min={0}
+                            max={100}
+                            className="h-12 text-base w-full"
+                            {...field}
+                            value={String(field.value)}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="maxDiscountAmount"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="font-medium text-sm text-gray-700">
+                          {t("max_discount_amount")}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t("discount_perc_20")}
+                            type="number"
+                            min={0}
+                            max={1000}
+                            className="h-12 text-base w-full"
+                            {...field}
+                            value={String(field.value)}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
               )}
 
               {watchOfferType === "FLAT" && (
@@ -306,9 +363,12 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                   name="discountValue"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel className="font-medium text-sm text-gray-700">
+                        {t("discount_value")}
+                      </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Flat Discount (€)"
+                          placeholder={t("flat_discount")}
                           type="number"
                           min={0}
                           max={100}
@@ -339,7 +399,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                             value={field.value}
                           >
                             <SelectTrigger className="w-full h-12">
-                              <SelectValue placeholder="Choose an Item" />
+                              <SelectValue placeholder={t("choose_an_item")} />
                             </SelectTrigger>
                             <SelectContent>
                               {itemsResult?.data.map((item: TProduct) => (
@@ -347,7 +407,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                                   key={item._id}
                                   value={item._id as string}
                                 >
-                                  {item.name}
+                                  {item.name?.[lang]}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -368,7 +428,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                     <FormItem>
                       <FormControl>
                         <Input
-                          placeholder="Buy Quantity (e.g., 2)"
+                          placeholder={t("buy_quantity")}
                           type="number"
                           min={1}
                           className="h-12 text-base"
@@ -393,7 +453,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                     <FormItem>
                       <FormControl>
                         <Input
-                          placeholder="Get Quantity (e.g., 1)"
+                          placeholder={t("get_quantity")}
                           type="number"
                           min={1}
                           className="h-12 text-base"
@@ -413,7 +473,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
 
             {/* VALIDITY */}
             <div className="space-y-4">
-              <h2 className="font-bold text-lg">Validity</h2>
+              <h2 className="font-bold text-lg">{t("validity")}</h2>
               <Separator />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -425,7 +485,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                       <FormControl>
                         <div className="space-y-2">
                           <FormLabel className="font-medium text-sm text-gray-700">
-                            Start Date
+                            {t("start_date")}
                           </FormLabel>
                           <Input
                             type="date"
@@ -450,7 +510,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                       <FormControl>
                         <div className="space-y-2">
                           <FormLabel className="font-medium text-sm text-gray-700">
-                            End Date
+                            {t("end_date")}
                           </FormLabel>
                           <Input
                             type="date"
@@ -477,7 +537,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                     <FormControl>
                       <div className="space-y-2">
                         <FormLabel className="font-medium text-sm text-gray-700">
-                          Minimum Order Amount (€)
+                          {t("minimum_order_amount")}
                         </FormLabel>
                         <Input
                           type="number"
@@ -495,6 +555,55 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                   </FormItem>
                 )}
               />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="maxUsageCount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="space-y-2">
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("maximum_usage_count")}
+                          </FormLabel>
+                          <Input
+                            placeholder={t("maximum_usage_count")}
+                            type="number"
+                            min={0}
+                            className="h-12 text-base"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="userUsageLimit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="space-y-2">
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("users_usage_limit")}
+                          </FormLabel>
+                          <Input
+                            placeholder={t("users_usage_limit")}
+                            type="number"
+                            min={0}
+                            className="h-12 text-base"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
                 name="isAutoApply"
@@ -504,18 +613,24 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                       <FormLabel className="flex space-y-2 gap-2 items-center">
                         <Input
                           type="checkbox"
-                          placeholder="Offer Description"
+                          placeholder={t("offer_description")}
                           className="w-4 h-4 mb-0"
                           {...field}
                           checked={field.value ? true : false}
                           value={"true"}
-                          onChange={(e) => field.onChange(e.target.checked)}
+                          onChange={(e) => {
+                            field.onChange(e.target.checked);
+                            setIsAutoApply(e.target.checked);
+                          }}
                         />
                         <span
-                          onClick={() => field.onChange(!field.value)}
+                          onClick={() => {
+                            field.onChange(!field.value);
+                            setIsAutoApply(!field.value)
+                          }}
                           className="font-medium text-sm text-gray-700"
                         >
-                          Will Auto Apply?
+                          {t("will_auto_apply")}
                         </span>
                       </FormLabel>
                     </FormControl>
@@ -526,8 +641,8 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
             </div>
 
             {/* PROMO CODE */}
-            <div className="space-y-4">
-              <h2 className="font-bold text-lg">Promo Code</h2>
+            {!isAutoApply && <div className="space-y-4">
+              <h2 className="font-bold text-lg">{t("promo_code")}</h2>
               <Separator />
               <FormField
                 control={form.control}
@@ -536,7 +651,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder="Enter promo code (optional)"
+                        placeholder={t("enter_promo_code")}
                         className="h-12 text-base uppercase"
                         {...field}
                       />
@@ -545,11 +660,11 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                   </FormItem>
                 )}
               />
-            </div>
+            </div>}
 
             {/* APPLICABLE PRODUCTS */}
             <div className="space-y-4">
-              <h2 className="font-bold text-lg">Applicable Products</h2>
+              <h2 className="font-bold text-lg">{t("applicable_products")}</h2>
               <Separator />
 
               <div className="flex items-center w-full gap-4">
@@ -563,7 +678,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                       setIsSelectedAllProducts(true);
                     }}
                   />
-                  <span>All Products</span>
+                  <span>{t("all_products")}</span>
                 </Label>
                 <Label className="font-medium text-sm text-gray-700">
                   <Input
@@ -575,7 +690,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                       setIsSelectedAllProducts(false);
                     }}
                   />
-                  <span>Selected Products</span>
+                  <span>{t("selected_products")}</span>
                 </Label>
               </div>
 
@@ -590,7 +705,7 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                       >
                         <span>
                           {itemsResult.data.find((i) => i._id === itemId)
-                            ?.name || "-"}
+                            ?.name?.[lang] || "-"}
                         </span>
                         <button
                           type="button"
@@ -636,17 +751,17 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                             value="select_products"
                           >
                             <SelectTrigger className="w-full h-12!">
-                              <SelectValue placeholder="Select Products" />
+                              <SelectValue placeholder={t("select_products")} />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="select_products">
-                                {isLoadingProducts ? "Loading..." : "Select Products"}
+                                {isLoadingProducts ? "Loading..." : t("select_products")}
                               </SelectItem>
 
                               {!isLoadingProducts &&
                                 filteredItems.map((item) => (
                                   <SelectItem key={item._id} value={item._id as string}>
-                                    {item.name}
+                                    {item.name?.[lang]}
                                   </SelectItem>
                                 ))}
                             </SelectContent>
@@ -668,14 +783,15 @@ export default function EditOffer({ offer, open, onOpenChange }: IProps) {
                   variant="outline"
                   className="h-12 px-6 text-base"
                 >
-                  Cancel
+                  {t("cancel")}
                 </Button>
               </DialogClose>
               <Button
                 className="h-12 px-6 text-base text-white"
                 style={{ background: PRIMARY }}
+                disabled={isSubmitting}
               >
-                Update
+                {t("update")}
               </Button>
             </div>
           </form>

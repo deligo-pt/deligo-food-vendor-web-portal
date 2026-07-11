@@ -1,5 +1,6 @@
 "use client";
 
+import { useStore } from "@/src/store/store";
 import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
 import { Clock, ShoppingBag, Star } from "lucide-react";
@@ -10,9 +11,11 @@ interface IProps {
   product: TProduct;
   onEdit: (product: TProduct) => void;
   onDelete: (id: string) => void;
+  t: (key: string) => string;
 }
 
-export default function ProductCard({ product, onEdit, onDelete }: IProps) {
+export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
+  const { lang } = useStore();
   const router = useRouter();
 
   const statusColors = {
@@ -53,7 +56,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
         {product.images && product.images.length > 0 ? (
           <Image
             src={product.images[0]}
-            alt={product.name}
+            alt={product?.name?.[lang] as string}
             className="w-full h-full object-fill"
             width={500}
             height={500}
@@ -69,9 +72,8 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
           </div>
         )}
         <div
-          className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${
-            statusColors[product.isDeleted ? "DELETED" : product.meta.status]
-          }`}
+          className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${statusColors[product.isDeleted ? "DELETED" : product.meta.status]
+            }`}
         >
           {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
@@ -79,7 +81,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-bold text-gray-900 truncate">
-            {product.name}
+            {product.name?.[lang]}
           </h3>
           <div className="flex items-center">
             <Star
@@ -92,7 +94,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
           </div>
         </div>
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-          {product.description}
+          {product.description?.[lang]}
         </p>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
@@ -115,9 +117,8 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
           </div>
           {product.stock?.availabilityStatus && (
             <div
-              className={`text-xs px-2 py-1 rounded-full ${
-                availabilityColors[product.stock.availabilityStatus]
-              }`}
+              className={`text-xs px-2 py-1 rounded-full ${availabilityColors[product.stock.availabilityStatus]
+                }`}
             >
               {product.stock.availabilityStatus}
             </div>
@@ -151,7 +152,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
               }
               className="text-xs px-3 py-1 rounded-md border border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173] hover:text-white transition-colors"
             >
-              View
+              {t('view')}
             </motion.button>
             <motion.button
               whileHover={{
@@ -163,7 +164,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
               onClick={() => onEdit(product)}
               className="text-xs px-3 py-1 rounded-md border border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173] hover:text-white transition-colors"
             >
-              Edit
+              {t("edit")}
             </motion.button>
             <motion.button
               whileHover={{
@@ -175,7 +176,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
               onClick={() => onDelete(product.productId)}
               className="text-xs px-3 py-1 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
             >
-              Delete
+              {t("delete")}
             </motion.button>
           </div>
         </div>

@@ -5,13 +5,13 @@ import { ProductForm } from "@/src/components/Dashboard/Products/ProductForm";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
-import { TProductCategory } from "@/src/types/category.type";
+import { TProductCategoryResponse } from "@/src/types/category.type";
 import { TTax } from "@/src/types/tax.type";
 import { TVendor } from "@/src/types/vendor.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function AddItemPage() {
-  let productCategoriesData: TProductCategory[] = [];
+  let productCategoriesData: TProductCategoryResponse[] = [];
   let addonGroupsData: TAddonGroup[] = [];
   let taxesData: TTax[] = [];
   const vendorData: TVendor = await getProfileData();
@@ -19,10 +19,10 @@ export default async function AddItemPage() {
   try {
     const result = (await serverRequest.get(
       "/categories/productCategory",
-    )) as TResponse<{ data: TProductCategory[] }>;
+    ));
 
     if (result?.success) {
-      productCategoriesData = result?.data?.data || [];
+      productCategoriesData = result?.data || [];
     }
   } catch (err) {
     console.log("Server fetch error:", err);
@@ -43,12 +43,10 @@ export default async function AddItemPage() {
   }
 
   try {
-    const result = (await serverRequest.get("/taxes")) as TResponse<{
-      data: TTax[];
-    }>;
+    const result = (await serverRequest.get("/taxes"));
 
     if (result?.success) {
-      taxesData = result?.data?.data || [];
+      taxesData = result?.data || [];
     }
   } catch (err) {
     console.log("Server fetch error:", err);
@@ -60,7 +58,7 @@ export default async function AddItemPage() {
       productCategories={productCategoriesData}
       addonGroupsData={addonGroupsData}
       taxesData={taxesData}
-      businessType={vendorData?.businessDetails?.businessType as string}
+      businessTypeSlug={vendorData?.businessDetails?.businessTypeSlug as string}
     />
   );
 }

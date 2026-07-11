@@ -15,15 +15,35 @@ import { removeCookie } from "@/src/utils/cookies";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Navbar({ vendorData }: { vendorData: TVendor }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { lang, setLang } = useStore();
   const { t } = useTranslation();
+
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const urlLang = searchParams.get("lang");
+    if (urlLang === "en" || urlLang === "pt") {
+      setLang(urlLang);
+    }
+  }, [searchParams, setLang]);
+
+  const handleLangChange = (value: "en" | "pt") => {
+    setLang(value);
+    document.cookie = `lang=${value}; path=/`;
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("lang", value);
+
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const navItems = [
     { name: t("home"), href: "/" },
@@ -116,9 +136,7 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
             {/* language switcher */}
             <Select
               value={lang}
-              onValueChange={(value: "en" | "pt") => {
-                setLang(value);
-              }}
+              onValueChange={(value: "en" | "pt") => handleLangChange(value)}
             >
               <SelectTrigger className="w-[70px] hover:border hover:border-[#DC3173]">
                 <SelectValue placeholder="Language" />

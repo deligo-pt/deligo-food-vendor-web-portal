@@ -43,8 +43,8 @@ export default async function AllOrdersPage({ searchParams }: IProps) {
   return (
     <Orders
       ordersResult={initialData}
-      title="Cancelled Orders"
-      subtitle="List of all cancelled orders"
+      title="cancelled_orders"
+      subtitle="list_of_all_cancelled_orders"
     />
   );
 }

@@ -16,6 +16,11 @@ export type TResponse<T> = {
   error?: unknown;
 };
 
+export type LocalizedType = {
+  en?: string;
+  pt?: string;
+}
+
 export type TJwtPayload = {
   userId: string;
   name: {

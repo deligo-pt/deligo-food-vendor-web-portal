@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import StockInput from "@/src/components/Dashboard/StockManagement/StockInput";
 import { updateStockPriceReq } from "@/src/services/dashboard/products/products";
+import { useStore } from "@/src/store/store";
 import { TVariations } from "@/src/types/product.type";
 import { EditIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,7 @@ interface IProps {
 
 export default function StockVariationOption({ productId, option }: IProps) {
   const router = useRouter();
+  const { lang } = useStore();
   const [isEditClicked, setIsEditClicked] = useState(false);
   const [stockData, setStockData] = useState({
     newPrice: 0,
@@ -56,7 +58,7 @@ export default function StockVariationOption({ productId, option }: IProps) {
     <div className="pb-4 border-b border-gray-50 last:border-0 last:pb-0">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
         <div className="flex items-center gap-3">
-          <span className="font-medium text-gray-900">{option.label}</span>
+          <span className="font-medium text-gray-900">{option.label?.[lang]}</span>
           {option.isOutOfStock && (
             <span className="text-xs font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">
               Out of Stock

@@ -16,6 +16,7 @@ import { updateVendorReq } from "@/src/services/becomeVendor/become-vendor";
 import { TVendor } from "@/src/types/vendor.type";
 import { businessLocationValidation } from "@/src/validations/become-vendor/business-location.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Map, Marker, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { motion } from "framer-motion";
 import { ArrowLeftCircle, Save, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -23,26 +24,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-declare global {
-  interface Window {
-    google: any;
-  }
-}
-
 type LocationFormType = {
   streetAddress: string;
   city: string;
   postalCode: string;
   country: string;
+  latitude?: number;
+  longitude?: number;
 };
 
-const GOOGLE_API_URL = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_LOCATION_API_KEY!}&libraries=places`;
 
 const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
   const { t } = useTranslation();
-  const mapRef = useRef<HTMLDivElement | null>(null);
-  const markerRef = useRef<any>(null);
-  const geocoderRef = useRef<any>(null);
   const router = useRouter();
 
   const [locationCoordinates, setLocationCoordinates] = useState({
@@ -67,6 +60,8 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
       label: t("country"),
       name: "country",
     },
+    { label: "Latitude", name: "latitude" },
+    { label: "Longitude", name: "longitude" },
   ];
 
   const form = useForm<LocationFormType>({
@@ -81,126 +76,149 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
 
   const { formState: { isSubmitting } } = form;
 
-  /** --- Extract and Set Address Fields --- */
+  const map = useMap();
+  const places = useMapsLibrary("places");
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const defaultLocation = { lat: 38.7223, lng: -9.1393 };
+
+  const [position, setPosition] = useState({
+    lat: vendor?.businessLocation?.latitude ?? defaultLocation.lat,
+    lng: vendor?.businessLocation?.longitude ?? defaultLocation.lng,
+  });
+
   const fillAddressFields = useCallback(
-    (components: any[]) => {
-      const address: any = {};
-      components.forEach((c) => {
-        if (c.types.includes("route")) address.streetAddress = c.long_name;
-        if (c.types.includes("street_number"))
-          address.streetNumber = c.long_name;
-        if (c.types.includes("administrative_area_level_1"))
-          address.state = c.long_name;
-        if (c.types.includes("locality")) address.city = c.long_name;
-        if (c.types.includes("postal_code")) address.postalCode = c.long_name;
-        if (c.types.includes("country")) address.country = c.long_name;
+    (components: google.maps.GeocoderAddressComponent[]) => {
+      let streetNumber = "";
+      let route = "";
+
+      const address: Partial<LocationFormType> = {};
+
+      components.forEach((component) => {
+        console.log("component", component);
+        const types = component.types;
+
+        if (types.includes("street_number")) {
+          streetNumber = component.long_name;
+        }
+
+        if (types.includes("route")) {
+          route = component.long_name;
+        }
+
+        if (types.includes("locality")) {
+          address.city = component.long_name;
+        }
+
+        if (types.includes("postal_code")) {
+          address.postalCode = component.long_name;
+        }
+
+        if (types.includes("country")) {
+          address.country = component.long_name;
+        }
       });
 
-      Object.entries(address).forEach(([key, value]) =>
-        form.setValue(key as keyof LocationFormType, (value || "") as string),
-      );
+      address.streetAddress = `${streetNumber} ${route}`.trim();
+
+      Object.entries(address).forEach(([key, value]) => {
+        form.setValue(key as keyof LocationFormType, value ?? "", {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      });
     },
     [form],
   );
 
-  /** --- Update Marker Position --- */
-  const updateMarker = useCallback((map: any, location: any) => {
-    markerRef.current.setPosition(location);
-    map.setCenter(location);
-    map.setZoom(15);
-  }, []);
+  // Reverse geocode (for map drag/select)
+  const reverseGeocode = useCallback(
+    (lat: number, lng: number) => {
+      if (!window.google?.maps) return;
 
-  /** --- Initialize Google Map & Autocomplete --- */
-  const initializeMap = useCallback(async () => {
-    if (!window.google?.maps) return;
+      const geocoder = new window.google.maps.Geocoder();
 
-    const defaultLocation = { lat: 38.7253, lng: -9.15 }; // Lisbon, Portugal
-    const map = new window.google.maps.Map(mapRef.current, {
-      center: defaultLocation,
-      zoom: 12,
-    });
+      geocoder.geocode(
+        {
+          location: { lat, lng },
+        },
+        (results, status) => {
+          if (
+            status === "OK" &&
+            results &&
+            results.length > 0
+          ) {
+            fillAddressFields(results[0].address_components);
+          }
+        },
+      );
+    },
+    [fillAddressFields],
+  );
 
-    geocoderRef.current = new window.google.maps.Geocoder();
+  // SEARCH + INIT AUTOCOMPLETE
+  useEffect(() => {
+    if (!places || !inputRef.current) return;
 
-    markerRef.current = new window.google.maps.Marker({
-      map,
-      position: defaultLocation,
-      animation: window.google.maps.Animation.DROP,
-    });
-
-    /** Autocomplete */
-    const input = document.getElementById("autocomplete") as HTMLInputElement;
-    const autocomplete = new window.google.maps.places.Autocomplete(input, {
-      fields: ["address_components", "geometry"],
+    const autocomplete = new places.Autocomplete(inputRef.current, {
+      fields: ["geometry", "address_components"],
       types: ["address"],
     });
 
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
-      if (!place.geometry) return;
+      if (!place.geometry?.location) return;
 
-      const loc = place.geometry.location;
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
 
-      setLocationCoordinates({ latitude: loc.lat(), longitude: loc.lng() });
-      updateMarker(map, loc);
-      fillAddressFields(place.address_components);
+      const newPos = { lat, lng };
+
+      setPosition(newPos);
+
+      map?.panTo(newPos);
+      map?.setZoom(16);
+      setLocationCoordinates({ latitude: lat, longitude: lng });
+
+      form.setValue("latitude", lat);
+      form.setValue("longitude", lng);
+
+      // map?.panTo(newPos);
+      // map?.setZoom(16);
+
+      fillAddressFields(place.address_components || []);
+
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
     });
+  }, [places, map, fillAddressFields, setLocationCoordinates, form]);
 
-    /** On Map Click */
-    map.addListener("click", (e: any) => {
-      const loc = e.latLng;
-      setLocationCoordinates({ latitude: loc.lat(), longitude: loc.lng() });
-
-      geocoderRef.current.geocode(
-        { location: loc },
-        (results: any, status: string) => {
-          if (status === "OK" && results[0]) {
-            updateMarker(map, loc);
-            fillAddressFields(results[0].address_components);
-          }
-        },
-      );
-    });
-
-    /** Load Saved Agent Location */
-
-    const loc = vendor?.businessLocation;
-    form.reset({
-      streetAddress: loc?.street || "",
-      city: loc?.city || "",
-      postalCode: loc?.postalCode || "",
-      country: loc?.country || "",
-    });
-
-    if (loc?.latitude && loc?.longitude) {
-      const savedLoc = new window.google.maps.LatLng(
-        loc?.latitude,
-        loc?.longitude,
-      );
-      setLocationCoordinates({
-        latitude: loc?.latitude,
-        longitude: loc?.longitude,
-      });
-      updateMarker(map, savedLoc);
-    }
-  }, [fillAddressFields, form, updateMarker, vendor]);
-
-  /** --- Load Google Maps Script Once --- */
   useEffect(() => {
-    if (document.querySelector(`script[src="${GOOGLE_API_URL}"]`)) {
-      (() => initializeMap())();
-      return;
-    }
+    if (!vendor?.businessLocation) return;
 
-    const script = document.createElement("script");
-    script.src = GOOGLE_API_URL;
-    script.async = true;
-    script.onload = initializeMap;
-    document.body.appendChild(script);
-  }, [initializeMap]);
+    const latitude = vendor.businessLocation.latitude || 0;
+    const longitude = vendor.businessLocation.longitude || 0;
+
+    form.reset({
+      streetAddress: vendor.businessLocation.street || "",
+      city: vendor.businessLocation.city || "",
+      postalCode: vendor.businessLocation.postalCode || "",
+      country: vendor.businessLocation.country || "",
+      latitude,
+      longitude,
+    });
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLocationCoordinates({
+      latitude,
+      longitude,
+    });
+  }, [vendor, form]);
 
   /** --- Submit Handler --- */
-  const handleSave = async (data: LocationFormType) => {
+  const handleSave = async (data: Partial<LocationFormType>) => {
     if (!locationCoordinates.latitude || !locationCoordinates.longitude) {
       toast.error("Please select a location on the map");
       return;
@@ -252,33 +270,71 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
         <form
           onSubmit={form.handleSubmit(handleSave)}
           className="space-y-6"
-          autoComplete="off"
         >
+
+          {/* SEARCH */}
           <div className="relative">
-            <Search className="absolute left-3 top-3 text-gray-500 w-5 h-5" />
+            <Search className="absolute left-3 top-3.5 text-gray-500 w-5 h-5" />
             <input
-              id="autocomplete"
-              placeholder="Search your business address..."
-              className="pl-10 py-3 rounded-xl border w-full"
+              ref={inputRef}
+              type="text"
+              placeholder="Search address here..."
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                }
+              }}
+              className="pl-10 py-3 rounded-xl border w-full focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
-          <div
-            ref={mapRef}
-            className="w-full h-80 rounded-xl shadow-md border"
-          />
+          {/* MAP */}
+          <div className="w-full h-80 rounded-xl shadow-md border overflow-hidden">
+            <Map
+              center={position}
+              zoom={14}
+              gestureHandling="greedy"
+              disableDefaultUI
+              onClick={(event) => {
+                if (!event.detail?.latLng) return;
+
+                const lat = event.detail.latLng.lat;
+                const lng = event.detail.latLng.lng;
+
+                setPosition({ lat, lng });
+
+                setLocationCoordinates({
+                  latitude: lat,
+                  longitude: lng,
+                });
+
+                form.setValue("latitude", lat);
+                form.setValue("longitude", lng);
+
+                reverseGeocode(lat, lng);
+              }}
+            >
+              <Marker position={position} />
+            </Map>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {formFields.map((field) => (
               <FormField
                 key={field.name}
-                control={form.control}
+                control={form.control as any}
                 name={field.name as keyof LocationFormType}
                 render={({ field: formField }) => (
                   <FormItem>
                     <FormLabel>{field.label}</FormLabel>
                     <FormControl>
-                      <Input {...formField} placeholder={field.label} />
+                      <Input
+                        {...formField}
+                        readOnly={
+                          field.name === "latitude" ||
+                          field.name === "longitude"
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

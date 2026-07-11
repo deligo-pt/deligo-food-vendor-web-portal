@@ -16,12 +16,6 @@ export const businessDetailsValidation = z
 
     restaurantCuisineType: z.array(z.string()).optional(),
 
-    businessLicenseNumber: z
-      .string()
-      .min(2, "Social number must be at least 2 characters long")
-      .max(50, "Social number must be at most 50 characters long")
-      .nonempty("Social number is required"),
-
     NIF: z
       .string()
       .min(2, "NIF must be at least 2 characters long")

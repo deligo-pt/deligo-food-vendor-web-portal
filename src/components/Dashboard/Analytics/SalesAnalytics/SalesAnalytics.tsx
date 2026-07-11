@@ -2,6 +2,7 @@
 
 import { AnimatedCounter } from "@/src/components/Dashboard/Payments/EarningsSummary/AnimatedCounter";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TSalesAnalytics } from "@/src/types/analytics.type";
 import { motion, Variants } from "framer-motion";
 import {
@@ -28,6 +29,7 @@ interface IProps {
 }
 
 export default function SalesAnalytics({ salesAnalytics }: IProps) {
+  const { t } = useTranslation();
   const maxSold = Math.max(
     ...salesAnalytics.topSellingItems.map((i) => i.sold),
   );
@@ -69,13 +71,13 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
     >
       {/* Header */}
       <TitleHeader
-        title="Sales Analytics"
-        subtitle="Weekly performance and top products"
+        title={t("sales_analytics")}
+        subtitle={t("weekly_performance_top_products")}
         extraComponent={
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
             <CalendarIcon className="w-4 h-4 text-[#DC3173]" />
             <span className="text-sm font-medium text-gray-600">
-              Last 7 Days
+              {t("last_7_days")}
             </span>
           </div>
         }
@@ -87,14 +89,14 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 relative overflow-hidden">
-          <div className="h-1.5 w-full bg-gradient-to-r from-[#DC3173] to-[#e45a92] absolute top-0 left-0" />
+          <div className="h-1.5 w-full bg-linear-to-r from-[#DC3173] to-[#e45a92] absolute top-0 left-0" />
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-[#DC3173]/10 rounded-lg text-[#DC3173]">
               <TrendingUpIcon className="w-5 h-5" />
             </div>
           </div>
           <h3 className="text-gray-500 text-sm font-medium mb-1">
-            Total Sales
+            {t("total_sales")}
           </h3>
           <div className="text-3xl font-bold text-[#DC3173]">
             <AnimatedCounter value={salesAnalytics.totalSales} prefix="€" />
@@ -102,17 +104,17 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 relative overflow-hidden">
-          <div className="h-1.5 w-full bg-gradient-to-r from-green-400 to-green-600 absolute top-0 left-0" />
+          <div className="h-1.5 w-full bg-linear-to-r from-green-400 to-green-600 absolute top-0 left-0" />
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-green-100 rounded-lg text-green-600">
               <ArrowUpIcon className="w-5 h-5" />
             </div>
             <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">
-              Best Day
+              {t("best_day")}
             </span>
           </div>
           <h3 className="text-gray-500 text-sm font-medium mb-1">
-            Best Performing
+            {t("best_performing")}
           </h3>
           <div className="text-3xl font-bold text-gray-900">
             {salesAnalytics.bestPerformingDay}
@@ -120,17 +122,17 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 relative overflow-hidden">
-          <div className="h-1.5 w-full bg-gradient-to-r from-amber-400 to-amber-600 absolute top-0 left-0" />
+          <div className="h-1.5 w-full bg-linear-to-r from-amber-400 to-amber-600 absolute top-0 left-0" />
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
               <ArrowDownIcon className="w-5 h-5" />
             </div>
             <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-100">
-              Slowest Day
+              {t("slowest_day")}
             </span>
           </div>
           <h3 className="text-gray-500 text-sm font-medium mb-1">
-            Slowest Day
+            {t("slowest_day")}
           </h3>
           <div className="text-3xl font-bold text-gray-900">
             {salesAnalytics.slowestDay}
@@ -143,11 +145,11 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
         variants={itemVariants}
         className="bg-white rounded-3xl border border-gray-200 shadow-sm p-8 relative overflow-hidden"
       >
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#DC3173] to-[#e45a92] absolute top-0 left-0" />
+        <div className="h-1.5 w-full bg-linear-to-r from-[#DC3173] to-[#e45a92] absolute top-0 left-0" />
         <div className="flex items-center gap-3 mb-6">
           <TrendingUpIcon className="w-6 h-6 text-[#DC3173]" />
           <h2 className="text-xl font-bold text-gray-900">
-            Weekly Sales Trend
+            {t("weekly_sales_trend")}
           </h2>
         </div>
         <div className="h-[300px] w-full">
@@ -215,7 +217,7 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
       >
         <div className="flex items-center gap-3 mb-6">
           <ShoppingBagIcon className="w-6 h-6 text-[#DC3173]" />
-          <h2 className="text-xl font-bold text-gray-900">Top Selling Items</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t("top_selling_items")}</h2>
         </div>
         <div className="space-y-4">
           {salesAnalytics.topSellingItems.map((item, index) => (
@@ -234,7 +236,7 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
               }}
               className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100"
             >
-              <div className="w-8 h-8 rounded-full bg-[#DC3173]/10 flex items-center justify-center text-[#DC3173] font-bold text-sm flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#DC3173]/10 flex items-center justify-center text-[#DC3173] font-bold text-sm shrink-0">
                 {index + 1}
               </div>
               <div className="flex-1 min-w-0">
@@ -242,13 +244,13 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
                   <span className="font-medium text-gray-900 truncate">
                     {item.name}
                   </span>
-                  <span className="font-bold text-[#DC3173] ml-2 flex-shrink-0">
-                    {item.sold} sold
+                  <span className="font-bold text-[#DC3173] ml-2 shrink-0">
+                    {item.sold} {t("sold")}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-[#DC3173] to-[#e45a92] rounded-full"
+                    className="h-full bg-linear-to-r from-[#DC3173] to-[#e45a92] rounded-full"
                     initial={{
                       width: 0,
                     }}

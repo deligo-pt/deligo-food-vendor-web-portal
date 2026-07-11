@@ -6,14 +6,14 @@ import PaginationComponent from "@/src/components/Filtering/PaginationComponent"
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
-import { TProductCategory } from "@/src/types/category.type";
+import { TProductCategoryResponse } from "@/src/types/category.type";
 import { motion } from "framer-motion";
 import { Apple, CupSoda, Flame, Sandwich, Slice, Utensils } from "lucide-react";
 
 const PRIMARY = "#DC3173";
 
 interface IProps {
-  categoriesResult: { data: TProductCategory[]; meta?: TMeta };
+  categoriesResult: { data: TProductCategoryResponse[]; meta?: TMeta };
 }
 
 const icons = {

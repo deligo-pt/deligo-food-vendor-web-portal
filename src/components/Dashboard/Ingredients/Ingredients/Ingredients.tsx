@@ -64,8 +64,8 @@ export default function Ingredients({ ingredientsData }: IProps) {
     <div className="min-h-screen">
       {/* Header */}
       <TitleHeader
-        title="Ingredients Marketplace"
-        subtitle="Purchase ingredients for your store"
+        title={t("ingredients_marketplace")}
+        subtitle={t("purchase_ingredients_for_store")}
       />
 
       {/* Filters */}
@@ -73,11 +73,17 @@ export default function Ingredients({ ingredientsData }: IProps) {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-5">
+        {ingredientsData.data?.length === 0 && (
+          <div className="col-span-full text-center text-gray-500">
+            {t("no_ingredients_found")}
+          </div>
+        )}
         {ingredientsData.data?.map((item) => (
           <SingleIngredientCard
             key={item._id}
             item={item}
             setOrderDetails={setOrderDetails}
+            t={t}
           />
         ))}
       </div>
@@ -101,6 +107,7 @@ export default function Ingredients({ ingredientsData }: IProps) {
         onOpenChange={(open) => !open && setOrderDetails([])}
         onPurchase={purchaseIngredient}
         isOrdering={isOrdering}
+        t={t}
       />
     </div>
   );

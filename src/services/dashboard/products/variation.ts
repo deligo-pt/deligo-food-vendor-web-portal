@@ -2,14 +2,29 @@
 
 import { serverRequest } from "@/lib/serverFetch";
 import { catchAsync } from "@/src/utils/catchAsync";
-import { variationValidation } from "@/src/validations/product/product.validation";
-import z from "zod";
 
-type TVariationForm = z.infer<typeof variationValidation>;
+type LocalizedType = {
+  en?: string;
+  pt?: string;
+};
+interface IVariation {
+  name: {
+    en?: string | undefined;
+    pt?: string | undefined;
+  };
+  options: {
+    label: {
+      en?: string | undefined;
+      pt?: string | undefined;
+    };
+    price: number;
+    stockQuantity: number;
+  }[];
+}
 
 export const addVariationReq = async (
   productId: string,
-  data: TVariationForm,
+  data: Partial<IVariation>,
 ) => {
   return catchAsync<null>(async () => {
     return await serverRequest.patch(
@@ -23,9 +38,9 @@ export const renameVariationReq = async (
   productId: string,
   data: {
     oldName: string;
-    newName?: string;
+    newName?: LocalizedType;
     oldLabel?: string;
-    newLabel?: string;
+    newLabel?: LocalizedType;
   },
 ) => {
   return catchAsync<null>(async () => {

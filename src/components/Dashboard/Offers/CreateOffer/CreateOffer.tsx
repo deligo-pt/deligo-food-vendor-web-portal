@@ -26,9 +26,11 @@ import { cn } from "@/lib/utils";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { createOfferReq } from "@/src/services/dashboard/offers/offers";
+import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
+import { translateObject } from "@/src/utils/translation/translationObject";
 import { offerValidation } from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -48,17 +50,25 @@ interface IProps {
 
 export default function VendorCreateOffer({ itemsResult }: IProps) {
   const { t } = useTranslation();
+  const { lang } = useStore();
 
   const [isSelectedAllProducts, setIsSelectedAllProducts] = useState(true);
   const [filteredItems, setFilteredItems] = useState<TProduct[]>(
     itemsResult.data || [],
   );
+  const [isAutoApply, setIsAutoApply] = useState(false);
 
   const form = useForm<TOfferForm>({
     resolver: zodResolver(offerValidation),
     defaultValues: {
-      title: "",
-      description: "",
+      title: {
+        en: "",
+        pt: ""
+      },
+      description: {
+        en: "",
+        pt: ""
+      },
       offerType: "PERCENT",
       discountValue: 0,
       maxDiscountAmount: 0,
@@ -73,6 +83,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       maxUsageCount: "",
       userUsageLimit: "",
       applicableProducts: [],
+      currentLang: lang
     },
   });
   const { formState: { isSubmitting } } = form;
@@ -86,9 +97,20 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     const toastId = toast.loading("Creating offer...");
 
     try {
-      const offerData: Partial<TOffer> = {
+      const transPayload = {
         title: data.title,
-        description: data.description,
+        description: data.description
+      };
+      const translated = await translateObject(transPayload, lang);
+
+      if (!translated) {
+        toast.error("Translation failed!", { id: toastId });
+        return;
+      }
+
+      const offerData: Partial<TOffer> = {
+        title: translated.title,
+        description: translated.description,
         offerType: data.offerType,
         discountValue: data.discountValue,
         maxDiscountAmount: data.maxDiscountAmount,
@@ -96,7 +118,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         expiresAt: data.expiresAt,
         minOrderAmount: data.minOrderAmount,
         code: data.code,
-        isAutoApply: false,
+        isAutoApply: data.isAutoApply,
         applicableProducts: data.applicableProducts,
 
         ...(data.offerType === "BOGO"
@@ -177,11 +199,14 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                 <h2 className="font-bold text-lg">{t("offer_details")}</h2>
                 <Separator />
 
-                <FormField
+                {lang === "en" && <FormField
                   control={form.control}
-                  name="title"
+                  name="title.en"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel className="font-medium text-sm text-gray-700">
+                        {t("offer_title_20_perc_off")}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder={t("offer_title_20_perc_off")}
@@ -192,13 +217,36 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />}
 
-                <FormField
+                {lang === "pt" && <FormField
                   control={form.control}
-                  name="description"
+                  name="title.pt"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel className="font-medium text-sm text-gray-700">
+                        {t("offer_title_20_perc_off")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t("offer_title_20_perc_off")}
+                          className="h-12 text-base"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />}
+
+                {lang === "en" && <FormField
+                  control={form.control}
+                  name="description.en"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-medium text-sm text-gray-700">
+                        {t("offer_description")}
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder={t("offer_description")}
@@ -210,7 +258,28 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />}
+
+                {lang === "pt" && <FormField
+                  control={form.control}
+                  name="description.pt"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-medium text-sm text-gray-700">
+                        {t("offer_description")}
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t("offer_description")}
+                          className="text-base"
+                          rows={4}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />}
 
                 <FormField
                   control={form.control}
@@ -255,29 +324,60 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
                 {/* CONDITIONAL INPUTS */}
                 {watchOfferType === "PERCENT" && (
-                  <FormField
-                    control={form.control}
-                    name="discountValue"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder={t("discount_perc_20")}
-                            type="number"
-                            min={0}
-                            max={100}
-                            className="h-12 text-base"
-                            {...field}
-                            value={String(field.value)}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex flex-col md:flex-row items-center gap-5 w-full">
+                    <FormField
+                      control={form.control}
+                      name="discountValue"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("discount_value")}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("discount_perc_20")}
+                              type="number"
+                              min={0}
+                              max={100}
+                              className="h-12 text-base w-full"
+                              {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="maxDiscountAmount"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("max_discount_amount")}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("discount_perc_20")}
+                              type="number"
+                              min={0}
+                              max={1000}
+                              className="h-12 text-base w-full"
+                              {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 )}
 
                 {watchOfferType === "FLAT" && (
@@ -286,6 +386,9 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     name="discountValue"
                     render={({ field }) => (
                       <FormItem>
+                        <FormLabel className="font-medium text-sm text-gray-700">
+                          {t("discount_value")}
+                        </FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t("flat_discount")}
@@ -329,7 +432,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                     key={item._id}
                                     value={item._id as string}
                                   >
-                                    {item.name}
+                                    {item.name?.[lang]}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -487,10 +590,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <div className="space-y-2">
                             <FormLabel className="font-medium text-sm text-gray-700">
-                              Maximum Usage Count
+                              {t("maximum_usage_count")}
                             </FormLabel>
                             <Input
-                              placeholder="Maximum usage count"
+                              placeholder={t("maximum_usage_count")}
                               type="number"
                               min={0}
                               className="h-12 text-base"
@@ -510,10 +613,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <div className="space-y-2">
                             <FormLabel className="font-medium text-sm text-gray-700">
-                              Users Usage Limit
+                              {t("users_usage_limit")}
                             </FormLabel>
                             <Input
-                              placeholder="Users usage limit"
+                              placeholder={t("users_usage_limit")}
                               type="number"
                               min={0}
                               className="h-12 text-base"
@@ -536,18 +639,24 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormLabel className="flex space-y-2 gap-2 items-center">
                           <Input
                             type="checkbox"
-                            placeholder="Offer Description"
+                            placeholder={t("offer_description")}
                             className="w-4 h-4 mb-0"
                             {...field}
                             checked={field.value ? true : false}
                             value={"true"}
-                            onChange={(e) => field.onChange(e.target.checked)}
+                            onChange={(e) => {
+                              field.onChange(e.target.checked)
+                              setIsAutoApply(e.target.checked);
+                            }}
                           />
                           <span
-                            onClick={() => field.onChange(!field.value)}
+                            onClick={() => {
+                              setIsAutoApply(!field.value);
+                              field.onChange(!field.value)
+                            }}
                             className="font-medium text-sm text-gray-700"
                           >
-                            Will Auto Apply?
+                            {t("will_auto_apply")}
                           </span>
                         </FormLabel>
                       </FormControl>
@@ -558,7 +667,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
               </div>
 
               {/* PROMO CODE */}
-              <div className="space-y-4">
+              {!isAutoApply && <div className="space-y-4">
                 <h2 className="font-bold text-lg">{t("promo_code")}</h2>
                 <Separator />
                 <FormField
@@ -580,11 +689,11 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     </FormItem>
                   )}
                 />
-              </div>
+              </div>}
 
               {/* APPLICABLE PRODUCTS */}
               <div className="space-y-4">
-                <h2 className="font-bold text-lg">Applicable Products</h2>
+                <h2 className="font-bold text-lg">{t("applicable_products")}</h2>
                 <Separator />
 
                 <div className="flex items-center w-full gap-4">
@@ -598,7 +707,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         setIsSelectedAllProducts(true);
                       }}
                     />
-                    <span>All Products</span>
+                    <span>{t("all_products")}</span>
                   </Label>
                   <Label className="font-medium text-sm text-gray-700">
                     <Input
@@ -610,7 +719,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         setIsSelectedAllProducts(false);
                       }}
                     />
-                    <span>Selected Products</span>
+                    <span>{t("selected_products")}</span>
                   </Label>
                 </div>
 
@@ -625,7 +734,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         >
                           <span>
                             {itemsResult.data.find((i) => i._id === itemId)
-                              ?.name || "-"}
+                              ?.name?.[lang] || "-"}
                           </span>
                           <button
                             type="button"
@@ -677,18 +786,18 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               value="select_products"
                             >
                               <SelectTrigger className="w-full h-12!">
-                                <SelectValue placeholder="Select Products" />
+                                <SelectValue placeholder={t("select_products")} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="select_products">
-                                  Select Products
+                                  {t("select_products")}
                                 </SelectItem>
                                 {filteredItems?.map((item: TProduct) => (
                                   <SelectItem
                                     key={item._id}
                                     value={item._id as string}
                                   >
-                                    {item.name}
+                                    {item.name?.[lang]}
                                   </SelectItem>
                                 ))}
                               </SelectContent>

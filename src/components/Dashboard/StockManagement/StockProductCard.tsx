@@ -19,7 +19,7 @@ interface IProps {
 }
 
 export default function StockProductCard({ product }: IProps) {
-  const { categoryType } = useStore();
+  const { lang, categoryType } = useStore();
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
   const [stockData, setStockData] = useState<{
@@ -80,7 +80,7 @@ export default function StockProductCard({ product }: IProps) {
         <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-100">
           <Image
             src={product.images?.[0]}
-            alt={product.name}
+            alt={product.name?.[lang] as string}
             className="w-full h-full object-fill"
             width={80}
             height={80}
@@ -89,10 +89,10 @@ export default function StockProductCard({ product }: IProps) {
 
         {/* Info */}
         <div className="flex-1 w-full text-center md:text-left">
-          <h3 className="text-lg font-bold text-gray-900">{product?.name || ""}</h3>
+          <h3 className="text-lg font-bold text-gray-900">{product?.name?.[lang] || ""}</h3>
           <div>
             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-              {product?.category?.name || "Uncategorized"}
+              {product?.category?.name?.[lang] || "Uncategorized"}
             </span>
           </div>
 
@@ -171,7 +171,7 @@ export default function StockProductCard({ product }: IProps) {
                     >
                       <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <Layers size={14} className="text-[#DC3173]" />
-                        {group.name} Variations
+                        {group.name?.[lang]} Variations
                       </h4>
 
                       <div className="space-y-4">

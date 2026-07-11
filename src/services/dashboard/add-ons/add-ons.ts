@@ -4,9 +4,14 @@ import { serverRequest } from "@/lib/serverFetch";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 
-export const getAddOnsGroupReq = async ({ limit = 10 }) => {
+export const getAddOnsGroupReq = async ({ limit = 10 }, lang: "en" | "pt") => {
   return catchAsync<TAddonGroup>(async () => {
-    return await serverRequest.get("/add-ons", { params: { limit } });
+    return await serverRequest.get("/add-ons", {
+      params: { limit },
+      headers: {
+        "Accept-Language": lang
+      }
+    });
   });
 };
 
@@ -31,7 +36,7 @@ export const updateAddOnsGroup = async (
 
 export const addOptionInGroup = async (
   groupId: string,
-  data: { name: string; price: number },
+  data: { name: { en?: string; pt?: string }; price: number, tax: string },
 ) => {
   return catchAsync<null>(async () => {
     return await serverRequest.patch(`/add-ons/${groupId}/add-option`, {
@@ -42,11 +47,11 @@ export const addOptionInGroup = async (
 
 export const deleteOptionFromGroup = async (
   groupId: string,
-  optionId: string,
+  optionSku: string,
 ) => {
   return catchAsync<null>(async () => {
     return await serverRequest.delete(`/add-ons/${groupId}/delete-option`, {
-      data: { optionId },
+      data: { optionSku },
     });
   });
 };

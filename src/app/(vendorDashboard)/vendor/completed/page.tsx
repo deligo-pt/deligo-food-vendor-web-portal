@@ -43,8 +43,8 @@ export default async function AllOrdersPage({ searchParams }: IProps) {
   return (
     <Orders
       ordersResult={initialData}
-      title="Completed Orders"
-      subtitle="List of all delivered orders"
+      title="completed_orders"
+      subtitle="list_of_all_delivered_orders"
     />
   );
 }

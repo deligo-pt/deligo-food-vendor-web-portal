@@ -7,6 +7,7 @@ import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import StatsCard from "@/src/components/StatsCard/StatsCard";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TCustomerReport } from "@/src/types/report.type";
 import { generateCustomerReportCSV } from "@/src/utils/csv/generateCustomerReportCSV";
@@ -49,6 +50,8 @@ const filterOptions = [
 ];
 
 export default function CustomerReport({ customerReportData }: IProps) {
+  const { t } = useTranslation();
+
   const stats = {
     total: customerReportData?.data?.stats?.totalCustomers || 0,
     highestSpender: customerReportData?.data?.stats?.highestSpender || "N/A",
@@ -59,8 +62,8 @@ export default function CustomerReport({ customerReportData }: IProps) {
     <div className="min-h-screen">
       {/* Header */}
       <TitleHeader
-        title="Customer Report"
-        subtitle="Overview of all registered customers and their activity"
+        title={t("customer_report")}
+        subtitle={t("overview_of_all_registered_customers")}
         extraComponent={
           <ExportPopover
             onPDFClick={() =>
@@ -76,19 +79,19 @@ export default function CustomerReport({ customerReportData }: IProps) {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <StatsCard
-          title="Total Customers"
+          title={t("total_customers")}
           value={stats.total}
           icon={User}
           delay={0}
         />
         <StatsCard
-          title="Highest Spender"
+          title={t("highest_spender")}
           value={stats.highestSpender}
           icon={EuroIcon}
           delay={0.1}
         />
         <StatsCard
-          title="Most Orders"
+          title={t("most_orders")}
           value={stats.mostOrders}
           icon={ShoppingBag}
           delay={0.2}
@@ -112,10 +115,10 @@ export default function CustomerReport({ customerReportData }: IProps) {
           className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
         >
           <h3 className="text-lg font-bold text-gray-900 mb-2">
-            Customer Growth
+            {t("customer_growth")}
           </h3>
           <p className="text-sm text-gray-500 mb-6">
-            Customer ordered over the last 6 months
+            {t("customer_ordered_over_last_6_months")}
           </p>
           <AnalyticsChart
             data={customerReportData?.data?.monthlyCustomers || []}
@@ -147,10 +150,10 @@ export default function CustomerReport({ customerReportData }: IProps) {
               <User size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">All Customers</h2>
+              <h2 className="text-lg font-bold text-gray-900">{t("all_customers")}</h2>
               <p className="text-sm text-gray-500">
                 {customerReportData?.data?.customers?.meta?.total || 0}{" "}
-                customers
+                {t("customers")}
               </p>
             </div>
           </div>
@@ -160,6 +163,7 @@ export default function CustomerReport({ customerReportData }: IProps) {
 
         <CustomerReportTable
           customers={customerReportData?.data?.customers?.data || []}
+          t={t}
         />
 
         {!!customerReportData?.data?.customers?.meta?.totalPage && (

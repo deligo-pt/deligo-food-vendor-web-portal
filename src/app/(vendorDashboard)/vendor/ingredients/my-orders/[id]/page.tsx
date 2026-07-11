@@ -2,7 +2,7 @@ import { IngredientOrderDetails } from "@/src/components/Dashboard/Ingredients/I
 import { getSingleIngredientOrderReq } from "@/src/services/dashboard/ingredient/ingredient.service";
 import { TIngredientOrder } from "@/src/types/ingredient.type";
 
-export default async function ProductDetailsPage({
+export default async function IngredientOrderDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;

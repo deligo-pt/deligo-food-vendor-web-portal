@@ -1,6 +1,7 @@
 "use client";
 
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TOrderTrends } from "@/src/types/analytics.type";
 import { motion, Variants } from "framer-motion";
 import {
@@ -27,6 +28,7 @@ interface IProps {
 }
 
 export default function OrderTrends({ orderTrends }: IProps) {
+  const { t } = useTranslation();
   const containerVariants = {
     hidden: {
       opacity: 0,
@@ -64,13 +66,13 @@ export default function OrderTrends({ orderTrends }: IProps) {
     >
       {/* Header */}
       <TitleHeader
-        title="Order Trends"
-        subtitle="Volume analysis and peak times"
+        title={t("order_trends")}
+        subtitle={t("volume_analysis_and_peak_times")}
         extraComponent={
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
             <TrendingUpIcon className="w-4 h-4 text-[#DC3173]" />
             <span className="text-sm font-medium text-gray-600">
-              Last 14 Days
+              {t("last_14_days")}
             </span>
           </div>
         }
@@ -81,7 +83,7 @@ export default function OrderTrends({ orderTrends }: IProps) {
         variants={itemVariants}
         className="bg-white rounded-3xl border border-gray-200 shadow-sm p-8 relative overflow-hidden"
       >
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#DC3173] to-[#e45a92] absolute top-0 left-0" />
+        <div className="h-1.5 w-full bg-linear-to-r from-[#DC3173] to-[#e45a92] absolute top-0 left-0" />
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -89,7 +91,7 @@ export default function OrderTrends({ orderTrends }: IProps) {
                 <BarChart2Icon className="w-6 h-6" />
               </div>
               <span className="text-sm font-bold tracking-wider text-gray-400 uppercase">
-                Total Orders
+                {t("total_orders")}
               </span>
             </div>
             <div className="text-7xl font-bold text-[#DC3173]">
@@ -102,7 +104,7 @@ export default function OrderTrends({ orderTrends }: IProps) {
               <div className="text-2xl font-bold text-green-700">
                 {orderTrends.summary?.percentage}
               </div>
-              <div className="text-sm text-green-600">Period Growth</div>
+              <div className="text-sm text-green-600">{t("period_growth")}</div>
             </div>
           </div>
         </div>
@@ -116,7 +118,7 @@ export default function OrderTrends({ orderTrends }: IProps) {
         <div className="flex items-center gap-3 mb-6">
           <BarChart2Icon className="w-6 h-6 text-[#DC3173]" />
           <h2 className="text-xl font-bold text-gray-900">
-            Daily Order Volume
+            {t("daily_order_volume")}
           </h2>
         </div>
         <div className="h-[300px] w-full">
@@ -187,7 +189,7 @@ export default function OrderTrends({ orderTrends }: IProps) {
           <div className="flex items-center gap-3 mb-6">
             <ClockIcon className="w-6 h-6 text-[#DC3173]" />
             <h2 className="text-xl font-bold text-gray-900">
-              Peak Ordering Times
+              {t("peak_ordering_times")}
             </h2>
           </div>
           <div className="h-[250px] w-full">
@@ -253,7 +255,7 @@ export default function OrderTrends({ orderTrends }: IProps) {
         >
           <div className="flex items-center gap-3 mb-6">
             <TrendingUpIcon className="w-6 h-6 text-[#DC3173]" />
-            <h2 className="text-xl font-bold text-gray-900">Category Growth</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t("category_growth")}</h2>
           </div>
           <div className="space-y-6">
             {orderTrends.categoryGrowth?.map((item, index) => (
@@ -262,13 +264,13 @@ export default function OrderTrends({ orderTrends }: IProps) {
                   <span className="text-sm font-medium text-gray-700 truncate pr-2">
                     {item.category}
                   </span>
-                  <span className="text-sm font-bold text-[#DC3173] flex-shrink-0">
+                  <span className="text-sm font-bold text-[#DC3173] shrink-0">
                     {item.percentage}
                   </span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                   <motion.div
-                    className="bg-gradient-to-r from-[#DC3173] to-[#e45a92] h-2 rounded-full"
+                    className="bg-linear-to-r from-[#DC3173] to-[#e45a92] h-2 rounded-full"
                     initial={{
                       width: 0,
                     }}

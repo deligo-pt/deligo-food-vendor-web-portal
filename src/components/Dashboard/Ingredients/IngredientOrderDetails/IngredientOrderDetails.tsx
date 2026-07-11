@@ -1,6 +1,7 @@
 "use client";
 
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TBulkDiscount, TIngredientOrder, TIngredientOrderDetail } from "@/src/types/ingredient.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { format } from "date-fns";
@@ -24,6 +25,7 @@ interface IProps {
 }
 
 export function IngredientOrderDetails({ orderData }: IProps) {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const getStatusBadge = (status: TIngredientOrder["orderStatus"]) => {
@@ -31,25 +33,25 @@ export function IngredientOrderDetails({ orderData }: IProps) {
       case "DELIVERED":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-50 text-green-700 border border-green-200">
-            <CheckCircle size={14} /> Delivered
+            <CheckCircle size={14} /> {t("delivered")}
           </span>
         );
       case "SHIPPED":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-            <Truck size={14} /> Shipped
+            <Truck size={14} /> {t("shipped")}
           </span>
         );
       case "CONFIRMED":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-blue-50 text-blue-700 border border-blue-200">
-            <Package size={14} /> Confirmed
+            <Package size={14} /> {t("confirmed")}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200">
-            <Clock size={14} /> Pending
+            <Clock size={14} /> {t("pending")}
           </span>
         );
     }
@@ -65,11 +67,11 @@ export function IngredientOrderDetails({ orderData }: IProps) {
             className="inline-flex items-center gap-2 text-[#DC3173] font-medium hover:underline mb-4 transition-colors"
           >
             <ArrowLeft size={18} />
-            Back to My Ingredient Orders
+            {t("back_to_my_ingredient_orders")}
           </Link>
           <TitleHeader
-            title={`Order #${orderData.orderId}`}
-            subtitle={`Placed on ${format(new Date(orderData.createdAt), "do MMM yyyy, hh:mm a")}`}
+            title={`${t("order_lg")} #${orderData.orderId}`}
+            subtitle={`${t("placed_on")} ${format(new Date(orderData.createdAt), "do MMM yyyy, hh:mm a")}`}
           />
         </div>
 
@@ -83,7 +85,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
             {/* Items Ordered List Section */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="p-6 border-b border-gray-100">
-                <h2 className="text-lg font-bold text-gray-900">Items Ordered</h2>
+                <h2 className="text-lg font-bold text-gray-900">{t("items_ordered")}</h2>
               </div>
               <div className="divide-y divide-gray-50">
                 {orderData.orderDetails?.map((item: TIngredientOrderDetail, idx: number) => {
@@ -109,7 +111,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                         </div>
                         <div>
                           <h4 className="font-bold text-gray-900">{item.name}</h4>
-                          <p className="text-xs text-gray-400 font-mono mt-0.5">SKU: {item.sku}</p>
+                          <p className="text-xs text-gray-400 font-mono mt-0.5">{t("sku")}: {item.sku}</p>
                           <p className="text-sm text-gray-500 mt-1">
                             €{formatPrice(item.pricePerUnit)} x {item.quantity} {item.unit || "units"}
                           </p>
@@ -118,17 +120,17 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                           <div className="flex flex-wrap items-center gap-2 mt-2">
                             <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${isAvailable ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
                               }`}>
-                              ● Market Source: {ingredientRef.status || "unspecified"}
+                              ● {t("market_source")}: {ingredientRef.status || "unspecified"}
                             </span>
                             <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-[11px] font-medium">
-                              Current Stock Pool: {ingredientRef.stock ?? "N/A"} units
+                              {t("current_stock_pool")}: {ingredientRef.stock ?? "N/A"} {t("units")}
                             </span>
                           </div>
 
                           {/* Dynamic Bulk Pricing Offer Status indicator */}
                           {matchingBulkOffer && (
                             <div className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded mt-2 border border-amber-100">
-                              <Tag size={12} /> Bulk Volume Tier Triggered (€{matchingBulkOffer.discountPrice}/{item.unit})
+                              <Tag size={12} /> {t("bulk_volume_tier_triggered")} (€{matchingBulkOffer.discountPrice}/{item.unit})
                             </div>
                           )}
                         </div>
@@ -137,7 +139,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                         <p className="font-bold text-lg text-gray-900">
                           €{formatPrice(item.totalAmount)}
                         </p>
-                        <p className="text-xs text-gray-400">Includes {item.taxRate}% VAT</p>
+                        <p className="text-xs text-gray-400">{t("includes")} {item.taxRate}% {t("vat")}</p>
                       </div>
                     </div>
                   );
@@ -152,17 +154,17 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                   <Truck size={24} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-1">Logistics & Handling</h3>
+                  <h3 className="font-bold text-gray-900 mb-1">{t("logistics_handling")}</h3>
                   {orderData.statusHistory?.deliveredAt ? (
                     <p className="text-sm text-gray-600">
-                      Delivered successfully on{" "}
+                      {t("delivered_successfully_on")}{" "}
                       <span className="font-semibold text-gray-900">
                         {format(new Date(orderData.statusHistory.deliveredAt), "do MMM yyyy 'at' hh:mm a")}
                       </span>
                     </p>
                   ) : (
                     <p className="text-sm text-gray-600">
-                      Estimated fulfillment cycle completes within <span className="font-bold text-gray-900">2-3 operating days</span>.
+                      {t("estimated_fulfillment_cycle_completes")} <span className="font-bold text-gray-900">2-3 {t("operating_days")}</span>.
                     </p>
                   )}
                 </div>
@@ -174,7 +176,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                     <MapPin size={24} />
                   </div>
                   <div className="text-sm">
-                    <h4 className="font-bold text-gray-800 mb-0.5">Shipping Destination</h4>
+                    <h4 className="font-bold text-gray-800 mb-0.5">{t("shipping_destination")}</h4>
                     <p className="text-gray-500">
                       {orderData.deliveryAddress.street}, {orderData.deliveryAddress.city},{" "}
                       {orderData.deliveryAddress.postalCode}, {orderData.deliveryAddress.country}
@@ -195,35 +197,35 @@ export function IngredientOrderDetails({ orderData }: IProps) {
             {/* Detailed Ledger Summary */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Receipt size={18} className="text-gray-400" /> Order Financial Matrix
+                <Receipt size={18} className="text-gray-400" /> {t("order_financial_matrix")}
               </h2>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-gray-500">
-                  <span>Products Net Base</span>
+                  <span>{t("products_net_base")}</span>
                   <span className="font-medium text-gray-800">
                     €{formatPrice(orderData.orderCalculation?.totalOriginalPrice || 0)}
                   </span>
                 </div>
                 {orderData.orderCalculation?.totalProductDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>Bulk Wholesale Adjustment</span>
+                    <span>{t("bulk_wholesale_adjustment")}</span>
                     <span>-€{formatPrice(orderData.orderCalculation.totalProductDiscount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-gray-500">
-                  <span>Total Tax Amount</span>
+                  <span>{t("total_tax_amount")}</span>
                   <span className="font-medium text-gray-800">
                     €{formatPrice(orderData.orderCalculation?.totalTaxAmount || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between text-gray-500 pb-3 border-b border-gray-50">
-                  <span>Distribution Logistics Fee</span>
+                  <span>{t("distribution_logistics_fee")}</span>
                   <span className="font-medium text-gray-800">
                     €{formatPrice(orderData.delivery?.totalDeliveryCharge || 0)}
                   </span>
                 </div>
                 <div className="pt-2 flex justify-between items-center">
-                  <span className="font-bold text-gray-900 text-base">Grand Total Total</span>
+                  <span className="font-bold text-gray-900 text-base">{t("grand_total")}</span>
                   <span className="font-black text-[#DC3173] text-2xl">
                     €{formatPrice(orderData.grandTotal)}
                   </span>
@@ -231,28 +233,28 @@ export function IngredientOrderDetails({ orderData }: IProps) {
               </div>
 
               <div className="mt-4 p-3 bg-gray-50 rounded-xl flex items-center justify-between text-xs font-medium text-gray-500">
-                <span>Method: <strong className="text-gray-800">{orderData.paymentMethod}</strong></span>
+                <span>{t("method")}: <strong className="text-gray-800">{orderData.paymentMethod}</strong></span>
                 <span className="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold uppercase tracking-wider">
                   {orderData.paymentStatus}
                 </span>
               </div>
 
               <div className="mt-4 p-3 bg-gray-50 rounded-xl flex items-center justify-between font-medium text-gray-500">
-                Status: {getStatusBadge(orderData?.orderStatus)}
+                {t("status")}: {getStatusBadge(orderData?.orderStatus)}
               </div>
             </div>
 
             {/* Help / Support Link Widget */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
-              <h3 className="font-bold text-gray-900 mb-1">Need Assistance?</h3>
+              <h3 className="font-bold text-gray-900 mb-1">{t("need_assistance")}</h3>
               <p className="text-xs text-gray-400 mb-4">
-                Reference Order ID <span className="font-mono font-bold text-gray-600">{orderData.orderId}</span> for immediate pipeline routing checkups.
+                {t("reference_order_id")} <span className="font-mono font-bold text-gray-600">{orderData.orderId}</span> {t("for_immediate_pipeline_routing_checkups")}
               </p>
               <button
                 onClick={() => router.push("/vendor/chat-support")}
                 className="w-full py-2.5 bg-white border border-gray-200 rounded-xl font-bold text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
               >
-                Contact Support Lines
+                {t("contact_support_lines")}
               </button>
             </div>
           </motion.div>

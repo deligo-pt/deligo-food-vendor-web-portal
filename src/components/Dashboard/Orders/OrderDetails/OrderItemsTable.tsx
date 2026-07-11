@@ -1,5 +1,6 @@
 "use client";
 
+import { useStore } from "@/src/store/store";
 import { TOrder } from "@/src/types/order.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { motion, Variants } from "framer-motion";
@@ -7,9 +8,11 @@ import { ShoppingBagIcon } from "lucide-react";
 
 interface IProps {
   items: TOrder["items"];
+  t: (key: string) => string
 }
 
-export default function OrderItemsTable({ items }: IProps) {
+export default function OrderItemsTable({ items, t }: IProps) {
+  const { lang } = useStore();
   const containerVariants = {
     hidden: {
       opacity: 0,
@@ -41,9 +44,9 @@ export default function OrderItemsTable({ items }: IProps) {
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center gap-2">
         <ShoppingBagIcon className="w-5 h-5 text-[#DC3173]" />
-        <h3 className="font-semibold text-gray-900">Order Items</h3>
+        <h3 className="font-semibold text-gray-900">{t("order_items")}</h3>
         <span className="ml-auto text-sm text-gray-500">
-          {items.length} items
+          {items.length} {t("items_sm")}
         </span>
       </div>
 
@@ -51,9 +54,9 @@ export default function OrderItemsTable({ items }: IProps) {
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
             <tr>
-              <th className="px-6 py-3">Product Details</th>
-              <th className="px-6 py-3 text-center">Qty</th>
-              <th className="px-6 py-3 text-right">Subtotal</th>
+              <th className="px-6 py-3">{t("product_details")}</th>
+              <th className="px-6 py-3 text-center">{t("qty")}</th>
+              <th className="px-6 py-3 text-right">{t("subtotal")}</th>
             </tr>
           </thead>
           <motion.tbody
@@ -71,10 +74,10 @@ export default function OrderItemsTable({ items }: IProps) {
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
                     <span className="font-medium text-gray-900">
-                      {item.productId.name}
+                      {item.productId.name?.[lang]}
                     </span>
                     <span className="text-xs text-gray-400">
-                      ID: {item.productId.productId}
+                      {t("id")}: {item.productId.productId}
                     </span>
                   </div>
                 </td>

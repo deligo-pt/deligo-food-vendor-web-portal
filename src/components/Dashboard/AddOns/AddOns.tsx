@@ -21,6 +21,7 @@ import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TTax } from "@/src/types/tax.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useStore } from "@/src/store/store";
 
 const SHADOW =
   "0px 6px 24px rgba(0,0,0,0.06), inset 0px 0px 10px rgba(0,0,0,0.03)";
@@ -32,6 +33,7 @@ interface IProps {
 
 export default function AddOns({ addOnsResult, taxes }: IProps) {
   const { t } = useTranslation();
+  const { lang } = useStore();
   const router = useRouter();
 
   const sortOptions = [
@@ -40,11 +42,14 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
   ];
   const [deleteOptionInfo, setDeleteOptionInfo] = useState<{
     groupId: string;
-    optionId: string;
-  }>({ groupId: "", optionId: "" });
+    optionSku: string;
+  }>({ groupId: "", optionSku: "" });
+
   const [selectedGroupForEdit, setSelectedGroupForEdit] = useState<
     TAddonGroup | undefined
   >(undefined);
+
+  const [isDeleting, setIsDeleting] = useState(false);
   const [openCreateForm, setOpenCreateForm] = useState<boolean>(false);
   const [selectedGroupForAddOption, setSelectedGroupForAddOption] = useState<
     TAddonGroup | undefined
@@ -54,20 +59,23 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
 
   const handleDeleteOption = async () => {
     const toastId = toast.loading("Deleting option...");
+    setIsDeleting(true);
 
-    const { groupId, optionId } = deleteOptionInfo;
-    const result = await deleteOptionFromGroup(groupId, optionId);
+    const { groupId, optionSku } = deleteOptionInfo;
+    const result = await deleteOptionFromGroup(groupId, optionSku);
 
     if (result.success) {
       toast.success(result.message || "Option deleted successfully!", {
         id: toastId,
       });
       router.refresh();
-      setDeleteOptionInfo({ groupId: "", optionId: "" });
+      setDeleteOptionInfo({ groupId: "", optionSku: "" });
+      setIsDeleting(false);
       return;
     }
 
     toast.error(result.message || "Failed to delete option", { id: toastId });
+    setIsDeleting(false);
     console.log(result);
   };
 
@@ -78,7 +86,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
 
         <TitleHeader
           title={t("add_ons_extras")}
-          subtitle="Manage your add-on groups and options"
+          subtitle={t("manage_your_add_on_groups_options")}
           buttonInfo={{
             text: t("add_group"),
             icon: Plus,
@@ -89,6 +97,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
           open={openCreateForm}
           onOpenChange={(open) => !open && setOpenCreateForm(false)}
           taxes={taxes}
+          t={t}
         />
 
         {/* FILTERS */}
@@ -103,7 +112,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                 animate={{ opacity: 1 }}
                 className="py-12 text-center text-gray-500"
               >
-                {t("no_orders_match_query")}
+                {t("no_add_ons_found")}
               </motion.div>
             )}
 
@@ -124,7 +133,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                     {/* GROUP HEADER */}
                     <div className="flex items-center justify-between p-5 border-b">
                       <div>
-                        <h2 className="text-xl font-bold">{group.title}</h2>
+                        <h2 className="text-xl font-bold">{group.title?.[lang]}</h2>
 
                         <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
                           <span>{t("min")}:</span>
@@ -194,7 +203,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                           <div className="flex items-center gap-2 text-gray-800">
                             <Dot size={24} className="text-gray-400" />
                             <span className="text-base font-medium">
-                              {option.name}
+                              {option?.name?.[lang]}
                             </span>
                           </div>
 
@@ -205,7 +214,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                               </span>
                               {option.tax && (
                                 <span className="text-xs text-slate-800">
-                                  (tax: {(option.tax as TTax)?.taxRate}%)
+                                  {t("tax")}: {(option.tax as TTax)?.taxRate}%)
                                 </span>
                               )}
                               <CheckCircle
@@ -220,7 +229,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                                 onClick={() =>
                                   setDeleteOptionInfo({
                                     groupId: group._id,
-                                    optionId: option._id as string,
+                                    optionSku: option.sku as string,
                                   })
                                 }
                               >
@@ -239,11 +248,12 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
         </div>
 
         <DeleteModal
-          open={!!deleteOptionInfo.optionId && !!deleteOptionInfo.groupId}
+          open={!!deleteOptionInfo.optionSku && !!deleteOptionInfo.groupId}
           onOpenChange={(open) =>
-            !open && setDeleteOptionInfo({ groupId: "", optionId: "" })
+            !open && setDeleteOptionInfo({ groupId: "", optionSku: "" })
           }
           onConfirm={() => handleDeleteOption()}
+          isDeleting={isDeleting}
         />
 
         {/* PAGINATION */}
@@ -264,6 +274,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
         }
         selectedGroup={selectedGroupForAddOption}
         taxes={taxes}
+        t={t}
       />
 
       {/* Edit AddOns Group */}
@@ -273,6 +284,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
         prevValues={selectedGroupForEdit}
         taxes={taxes}
         actionType="edit"
+        t={t}
       />
     </>
   );

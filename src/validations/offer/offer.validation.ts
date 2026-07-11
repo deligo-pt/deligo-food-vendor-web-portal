@@ -1,54 +1,74 @@
+import { validateLocalizedField } from "@/src/consts/validation.const";
 import { z } from "zod";
 
-export const offerValidation = z
-  .object({
-    title: z.string().min(3, "Title must be at least 3 characters long"),
+const localizedTextSchema = z.object({
+  en: z.string().optional(),
+  pt: z.string().optional(),
+});
 
-    description: z
-      .string()
-      .min(2, "Description must be at least 2 characters long")
-      .max(500, "Description must be at most 500 characters long")
-      .optional(),
 
-    offerType: z.enum(
-      ["PERCENT", "FLAT", "FREE_DELIVERY", "BOGO"],
-      "Offer type must be one of the following: PERCENT, FLAT, FREE_DELIVERY, BOGO",
-    ),
+export const offerValidation = z.object({
+  title: localizedTextSchema,
 
-    discountValue: z
-      .number()
-      .min(0, "Discount value must be at least 0")
-      .max(100, "Discount value must be at most 100")
-      .optional(),
+  description: localizedTextSchema,
 
-    maxDiscountAmount: z
-      .number("Max discount amount must be a number")
-      .min(0, "Max discount amount must be at least 0")
-      .max(100, "Max discount amount must be at most 100")
-      .optional(),
+  offerType: z.enum(
+    ["PERCENT", "FLAT", "BOGO"],
+    "Offer type must be one of the following: PERCENT, FLAT, BOGO",
+  ),
 
-    buyQty: z.number("Buy quantity must be a number").optional(),
+  discountValue: z
+    .number()
+    .min(0, "Discount value must be at least 0")
+    .max(100, "Discount value must be at most 100")
+    .optional(),
 
-    getQty: z.number("Get quantity must be a number").optional(),
+  maxDiscountAmount: z
+    .number("Max discount amount must be a number")
+    .min(0, "Max discount amount must be at least 0")
+    .max(1000, "Max discount amount must be at most 1000")
+    .optional(),
 
-    productId: z.string().optional(),
+  buyQty: z.number("Buy quantity must be a number").optional(),
 
-    validFrom: z.date("Start date must be a valid date"),
-    expiresAt: z.date("End date must be a valid date"),
+  getQty: z.number("Get quantity must be a number").optional(),
 
-    minOrderAmount: z
-      .number()
-      .min(0, "Minimum order amount must be at least 0")
-      .optional(),
+  productId: z.string().optional(),
 
-    code: z.string().optional(),
-    isAutoApply: z.boolean("Auto apply must be a boolean").optional(),
+  validFrom: z.date("Start date must be a valid date"),
+  expiresAt: z.date("End date must be a valid date"),
 
-    maxUsageCount: z.string().optional(),
+  minOrderAmount: z
+    .number()
+    .min(0, "Minimum order amount must be at least 0")
+    .optional(),
 
-    userUsageLimit: z.string().optional(),
+  code: z.string().optional(),
+  isAutoApply: z.boolean("Auto apply must be a boolean"),
 
-    applicableProducts: z.array(z.string("Product is required")).optional(),
+  maxUsageCount: z.string().optional(),
+
+  userUsageLimit: z.string().optional(),
+
+  applicableProducts: z.array(z.string("Product is required")).optional(),
+  currentLang: z.enum(["en", "pt"]),
+})
+  .superRefine((data, ctx) => {
+    validateLocalizedField(
+      data.title,
+      data.currentLang,
+      ctx,
+      ["title"],
+      "Title is required"
+    );
+
+    validateLocalizedField(
+      data.description,
+      data.currentLang,
+      ctx,
+      ["description"],
+      "Description is required"
+    );
   })
   .refine(
     (data) => {

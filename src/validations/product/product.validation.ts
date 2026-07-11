@@ -1,66 +1,106 @@
+import { validateLocalizedField } from "@/src/consts/validation.const";
 import { z } from "zod";
 
-export const productValidation = z
-  .object({
-    name: z
-      .string()
-      .min(2, "Name must be at least 2 character")
-      .max(50, "Name must be at most 50 characters")
-      .nonempty("Name is required"),
+const localizedTextSchema = z.object({
+  en: z.string().optional(),
+  pt: z.string().optional(),
+});
 
-    description: z
-      .string()
-      .min(1, "Description is required")
-      .max(500, "Description must be at most 500 characters")
-      .nonempty("Description is required"),
+export const productValidation = z.object({
+  name: localizedTextSchema,
 
-    category: z
-      .string()
-      .min(2, "Category must be at least 2 characters")
-      .max(50, "Category must be at most 50 characters")
-      .nonempty("Category is required"),
+  description: localizedTextSchema,
 
-    images: z
-      .array(
-        z
-          .url("Each image must be a valid URL")
-          .nonempty("Image URL is required"),
-      )
-      .min(1, "At least one image is required")
-      .max(5, "No more than 5 images are allowed"),
+  category: z
+    .string()
+    .min(2, "Category must be at least 2 characters")
+    .max(50, "Category must be at most 50 characters")
+    .nonempty("Category is required"),
 
-    price: z.number().optional(),
+  images: z
+    .array(
+      z
+        .url("Each image must be a valid URL")
+        .nonempty("Image URL is required"),
+    )
+    .min(1, "At least one image is required")
+    .max(5, "No more than 5 images are allowed"),
 
-    taxId: z.string().nonempty("Tax is required"),
+  price: z.number().optional(),
 
-    discount: z.number().min(0).max(100),
+  discountType: z.enum(["PERCENTAGE", "FLAT"]),
 
-    quantity: z.number().optional(),
+  taxId: z.string().nonempty("Tax is required"),
 
-    unit: z.string().optional(),
+  discount: z.number().min(0).max(100),
 
-    availabilityStatus: z.string().optional(),
+  quantity: z.number().optional(),
 
-    addonGroups: z.array(z.string()),
+  unit: z.string().optional(),
 
-    variations: z.array(
-      z.object({
-        name: z.string(),
-        options: z.array(
-          z.object({
-            label: z.string(),
-            price: z.number().min(0),
-            stockQuantity: z.number().optional(),
-          }),
-        ),
-      }),
-    ),
+  availabilityStatus: z.string().optional(),
 
-    isFeatured: z.boolean().optional(),
+  addonGroups: z.array(z.string()),
 
-    isAvailableForPreOrder: z.boolean().optional(),
+  variations: z.array(
+    z.object({
+      name: localizedTextSchema,
+      options: z.array(
+        z.object({
+          label: localizedTextSchema,
+          price: z.number().min(0),
+          stockQuantity: z.number().optional(),
+        }),
+      ),
+    }),
+  ),
 
-    businessType: z.string(),
+  isFeatured: z.boolean().optional(),
+
+  isAvailableForPreOrder: z.boolean().optional(),
+
+  businessTypeSlug: z.string(),
+  currentLang: z.enum(["en", "pt"]),
+})
+  .superRefine((data, ctx) => {
+    validateLocalizedField(
+      data.name,
+      data.currentLang,
+      ctx,
+      ["name"],
+      "Name is required"
+    );
+
+    validateLocalizedField(
+      data.description,
+      data.currentLang,
+      ctx,
+      ["description"],
+      "Description is required"
+    );
+
+    // discount type and value validation
+    // if (
+    //   data.discountType === "PERCENTAGE" &&
+    //   data.discount > 100
+    // ) {
+    //   ctx.addIssue({
+    //     code: "custom",
+    //     path: ["discount"],
+    //     message: "Percentage discount cannot exceed 100%.",
+    //   });
+    // }
+
+    // if (data?.price &&
+    //   data.discountType === "FLAT" &&
+    //   data?.discount > data.price
+    // ) {
+    //   ctx.addIssue({
+    //     code: "custom",
+    //     path: ["discount"],
+    //     message: "Flat discount cannot exceed the product price.",
+    //   });
+    // }
   })
   .refine(
     (data) => {
@@ -89,7 +129,7 @@ export const productValidation = z
   .refine(
     (data) => {
       if (
-        data.businessType !== "RESTAURANT" &&
+        data.businessTypeSlug !== "restaurant" &&
         data.variations.length === 0 &&
         !data.quantity
       ) {
@@ -105,7 +145,7 @@ export const productValidation = z
   .refine(
     (data) => {
       if (
-        data.businessType !== "RESTAURANT" &&
+        data.businessTypeSlug !== "restaurant" &&
         data.variations.length === 0 &&
         data.quantity &&
         data.quantity < 0
@@ -121,22 +161,25 @@ export const productValidation = z
   );
 
 export const variationOptionValidation = z.object({
-  label: z
-    .string()
-    .min(2, "Label must be at least 2 characters")
-    .max(50, "Label must be at most 50 characters")
-    .nonempty("Label is required"),
+  label: localizedTextSchema,
   price: z.number().min(0, "Price must be at least 0"),
   stockQuantity: z.number().min(0, "Stock quantity must be at least 0"),
 });
 
 export const variationValidation = z.object({
-  name: z
-    .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name must be at most 50 characters")
-    .nonempty("Name is required"),
+  name: localizedTextSchema,
   options: z
     .array(variationOptionValidation)
     .min(1, "At least one option is required"),
-});
+
+  currentLang: z.enum(["en", "pt"]),
+
+}).superRefine((data, ctx) => {
+  validateLocalizedField(
+    data.name,
+    data.currentLang,
+    ctx,
+    ["name"],
+    "Name is required"
+  );
+})

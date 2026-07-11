@@ -15,11 +15,13 @@ interface IProps {
       quantity: number;
     }[]>
   >;
+  t: (key: string) => string;
 }
 
 export default function SingleIngredientCard({
   item,
   setOrderDetails,
+  t
 }: IProps) {
   const router = useRouter();
 
@@ -94,7 +96,7 @@ export default function SingleIngredientCard({
                 }
                 className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] hover:bg-[#DC3173]/90 transition-colors cursor-pointer"
               >
-                Order
+                {t("order_lg")}
               </button>
               <button
                 type="button"
@@ -112,7 +114,7 @@ export default function SingleIngredientCard({
                 className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] transition-colors cursor-pointer"
               >
                 <EyeIcon size={16} />
-                View
+                {t("view")}
               </button>
               <button
                 type="button"
@@ -120,7 +122,7 @@ export default function SingleIngredientCard({
                 className="flex items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-bold bg-[#DC3173] transition-colors cursor-pointer"
               >
                 <ShoppingBag size={16} />
-                Buy
+                {t("buy")}
               </button>
             </div>
           )}

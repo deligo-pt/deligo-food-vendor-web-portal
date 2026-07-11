@@ -21,6 +21,7 @@ export const serverRequestHelper = async (
   const cookieStore = await cookies();
   const cookieStr = cookieStore.toString();
   const accessToken = cookieStore.get("accessToken")?.value || "";
+  const activeLang = cookieStore.get("lang")?.value || "pt";
 
   if (url !== "/auth/refresh-token") {
     await verifyTokens();
@@ -32,6 +33,7 @@ export const serverRequestHelper = async (
       ...options,
       headers: {
         ...(options?.headers || {}),
+        "Accept-Language": activeLang,
         ...(accessToken && {
           authorization: `Bearer ${accessToken}`,
         }),

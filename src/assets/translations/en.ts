@@ -673,6 +673,8 @@ export const en = {
     "Your vendor application has submitted successfully! An admin will review your application and activate your vendor account within 24-48 hours.",
   seeRegistrationStatus: "See registration status",
   goHome: "Go Home",
+  view_full_file: "View Full File",
+  no_documents_uploaded: "No documents uploaded",
   // personal details
   personalDetails: "Personal Details",
   personalDetailsDesc: "Let’s start with your basic information",
@@ -748,6 +750,7 @@ export const en = {
   // -> sidebar
   dashboard: "Dashboard",
   orders: "Orders",
+  all_orders: "All Orders",
   new_orders: "New Orders",
   preparing: "Preparing",
   ready_for_pickup: "Ready for Pickup",
@@ -758,7 +761,9 @@ export const en = {
   all_items: "All Items",
   add_new_item: "Add New Item",
   stock_management: "Stock Management",
+  variation_management: "Variation Management",
   add_ons: "Add-Ons",
+  my_ingredient_orders: "My Ingredient Orders",
   payments_earnings: "Payments & Earnings",
   payouts: "Payouts",
   earnings_summary: "Earnings Summary",
@@ -834,6 +839,35 @@ export const en = {
   picked_up: "Picked Up",
   on_the_way: "On The Way",
   delivered: "Delivered",
+  order_status: "Order Status",
+
+  // all-orders
+  manage_all_orders_from_here: "Manage all orders from here",
+  order_id: "Order ID",
+  customer: "Customer",
+  delivery_partner: "Delivery Partner",
+  amount: "Amount",
+  date: "Date",
+  no_orders_found: "No orders found",
+  page_lg: "Page",
+  page_sm: "page",
+  sort_by: "Sort By",
+  search: "Search...",
+
+  // order details
+  order_details: "",
+  order_lg: "Order",
+  flash: "Flash",
+  order_items: "Order Items",
+  items_sm: "items",
+  product_details: "Product Details",
+  subtotal: "Subtotal",
+  delivery_address: "Delivery Address",
+  customer_contact: "Customer Contact",
+  payment_summary: "Payment Summary",
+  total_amount: "Total Amount",
+  includes_all_taxes: "Includes all taxes",
+  customer_details: "Customer Details",
 
   // new orders page
   vendor_new_orders: "Vendor — New Orders",
@@ -861,18 +895,23 @@ export const en = {
     "Track your live orders — rider location, ETA, and delivery stage.",
   rider_id: "Rider ID",
   call_rider: "Call Rider",
+
   // completed orders page
+  list_of_all_delivered_orders: "List of all delivered orders",
   fully_delivered_orders_with_earnings_rider_data:
     "Fully delivered orders with earnings & rider data.",
   delivered_at: "Delivered at",
   payment: " Payment",
   payment_method: "Payment Method",
   select_payment_method: "Select Payment Method",
+
   // cancelled orders page
+  list_of_all_cancelled_orders: "List of all cancelled orders",
   see_all_orders_were_cancelled:
     "See all orders that were cancelled — reason, payment, customer info.",
   reason: "Reason",
   cancelled_at: "Cancelled at",
+
   // all-items page
   food_items: "Food Items",
   manage_your_restaurants_food_delivery_items:
@@ -891,6 +930,14 @@ export const en = {
   no_items_match_current_filters:
     "No items match your current filters. Try adjusting your search or filters to find what you're looking for.",
   clear_all_filters: "Clear all filters",
+  //--> product details page
+  back_to_items: "Back to Items",
+  product_id: "Product ID",
+  featured: "Featured",
+  variation_options: "Variation Options",
+  ratings_and_reviews: "Ratings & Reviews",
+  edit_product: "Edit Product",
+  delete_product: "Delete Product",
   // categories page
   these_are_platform_managed_categories:
     "These are platform-managed categories. Vendors cannot create or edit categories.",
@@ -910,8 +957,15 @@ export const en = {
   product_category: "Product Category",
   product_images: "Product Images",
   product_image: "Product Image",
+  choose_add_on: "Choose Add-On",
+  add_an_option_price: "Add an option price",
+  stock_quantity: "Stock Quantity",
+  add_stock_quantity: "Add stock quantity",
+  select_discount_type: "Select Discount Type",
+  select_tax: "Select tax",
   select_category_placeholder: "Select a category",
   select_language_placeholder: "Select a language",
+
   // -> image uploader
   drag_drop_product_images: "Drag & drop product images here",
   or_click: "or click to browse files",
@@ -931,15 +985,20 @@ export const en = {
   image_upload_fail: "Failed to upload image",
   image_delete_success: "Image deleteed successfully!",
   image_delete_fail: "Failed to delete image",
+  generate_description_hint: "Generate description hint",
+  ai_generate_description: "AI Generate description",
+  enter_product_description: "Enter product description",
 
   pricing_information: "Pricing Information",
   price_E: "Price (€)",
-  discount_2: "Discount (%)",
+  discount_2: "Discount",
   tax_2: "Tax (%)",
   original_price: "Original Price",
   discount: "Discount",
   tax: "Tax",
+  incl: "incl.",
   final_price: "Final Price",
+  base_price: "Base Price",
   add_ons_and_variants: "Add-Ons & Variants",
   variations: "Variations",
   name: "Name",
@@ -951,7 +1010,8 @@ export const en = {
   stock_information: "Stock Information",
   quantity: "Quantity",
   unit: "Unit",
-  meta_information: "Meta Information",
+  deligo_metadata: "Deligo Metadata",
+  deligo_metadata_information: "Deligo Metadata Information",
   featured_product: "Featured Product",
   available_for_pre_order: "Available for Pre-Order",
   previous: "Previous",
@@ -968,18 +1028,130 @@ export const en = {
   update_item: "Update Item",
   update_product_details:
     "Fill in the details to update the food product of your menu.",
+  delete: "Delete",
+  are_you_absolutely_sure: "Are you absolutely sure?",
+  this_action_cannot_be_undone: "This action cannot be undone. This will delete this data and cannot be undone.",
 
   // stock-management page
   update_product_stock_in_real_time: "Update product stock in real-time —",
   no_products_found: "No products found.",
 
+  // variation management
+  add_edit_manage_product_variation: "Add, edit, and manage product variations",
+  products: "Products",
+  try_adjusting_your_search_or_filter: "Try adjusting your search or filter",
+  variation: "variation",
+  option: "option",
+  no_variations: "No variations",
+  variation_name: "Variation Name",
+  option_lg: "Option",
+  delete_variation: "Delete variation",
+  option_label: "Option Label",
+  option_price: "Option Price",
+  delete_option: "Delete option",
+  no_options_add_one: "No options — add one to get started",
+  // ---> add variation form
+  variation_name_placeholder: "Variation name (e.g. Size, Color, Flavor)",
+  add_an_option_label: "Add an option label",
+  create: "Create",
+  //  --> add variation option form
+  medium_placeholder: "e.g. Medium",
+  add: "Add",
+
   // add-ons page
   add_ons_extras: "Add-Ons & Extras",
+  manage_your_add_on_groups_options: "Manage your add-on groups and options",
+  add_addon_to: "Add Addon to",
+  drinks_upgrade: "e.g. Drinks Upgrade",
+  option_tax: "Option Tax",
   add_group: "Add Group",
   min: "Min",
   max: "Max",
   add_addon: "Add Add-On",
   edit: "Edit",
+  no_add_ons_found: "No add ons found",
+  addon_group: "Addon Group",
+  group_title: "Group Title",
+  min_select: "Min Select",
+  max_select: "Max Select",
+  option_name: "Option Name",
+  add_an_option_name: "Add an option name",
+  update: "Update",
+
+  // ingredients
+  ingredients_marketplace: "Ingredients Marketplace",
+  purchase_ingredients_for_store: "Purchase ingredients for your store",
+  buy: "Buy",
+  choose_your_preferred_payment_method: "Choose your preferred payment method to complete your order.",
+  delivery_charges_notification: "Delivery Charges Notification",
+  if_your_location_is_under: "If your location is under",
+  the_delivery_charge_will_be: "the delivery charge will be",
+  if_your_location_is: "If your location is",
+  outside_of_lisbon: "outside of Lisbon",
+  purchase: "Purchase",
+  // --> ingedients details
+  back_to_ingredients: "Back to Ingredients",
+  ingredients_details: "Ingredient Details",
+  review_physical_inventor_allocations: "Review physical inventory allocations, tier discounts, and fulfill restocking needs.",
+  sku_code: "SKU Code",
+  shelf_life: "Shelf Life",
+  days: "Days",
+  volume_bulk_discount_schemes: "Volume Bulk Discount Schemes",
+  active_tier_applied: " Active Tier Applied",
+  available_dot: "● Available",
+  out_of_stock_suspended: "● Out of Stock / Suspended",
+  inventory_real_time_status: "Inventory Real-Time Status",
+  current_status: "Current Status",
+  stock_remaining: "Stock Remaining",
+  bulk_discount_offer: "Bulk Discount Offer",
+  get_items_as_low_as: "Get items as low as",
+  per_unit_by_increasing_your_order_quantities: "per unit by increasing your order quantities to matching discount thresholds.",
+  no_wholesale_bulk_discount_rates: "No wholesale bulk discount rates are mapped to this item profile currently.",
+  order_target_quantity: "Order Target Quantity",
+  minimum_order_quantity: "Minimum Order Quantity",
+  maximum_order_quantity: "Maximum Order Quantity",
+  subtotal_value: "Subtotal Value",
+  excludes: "Excludes",
+  tax_profile: "Tax Profile",
+  buy_now: "Buy Now",
+  unavailable: "Unavailable",
+  fleet_logistics_distribution: "Fleet Logistics Distribution",
+  standard_bulk_supply_lines_arrive: "Standard bulk supply lines arrive within 2-3 operating windows. Tracking triggers via dispatch routing system dashboard.",
+
+  // my ingredient orders
+  track_status_of_ingredient_purchases: "Track status of your ingredient purchases",
+  placed_on: "Placed on",
+  more_items: "more item(s)",
+  no_orders_yet: "No orders yet",
+  start_ordering_ingredients: "Start ordering ingredients to see them here.",
+
+  // ingredients details
+  shipped: "Shipped",
+  confirmed: "Confirmed",
+  back_to_my_ingredient_orders: "Back to My Ingredient Orders",
+  items_ordered: "Items Ordered",
+  sku: "SKU",
+  market_source: "Market Source",
+  current_stock_pool: "Current Stock Pool",
+  bulk_volume_tier_triggered: "Bulk Volume Tier Triggered",
+  includes: "Includes",
+  vat: "VAT",
+  logistics_handling: "Logistics & Handling",
+  delivered_successfully_on: "Delivered successfully on",
+  estimated_fulfillment_cycle_completes: "Estimated fulfillment cycle completes within",
+  operating_days: "operating days",
+  shipping_destination: "Shipping Destination",
+  order_financial_matrix: "Order Financial Matrix",
+  products_net_base: "Products Net Base",
+  bulk_wholesale_adjustment: "Bulk Wholesale Adjustment",
+  total_tax_amount: "Total Tax Amount",
+  distribution_logistics_fee: "Distribution Logistics Fee",
+  grand_total: "Grand Total",
+  method: "Method",
+  need_assistance: "Need Assistance?",
+  reference_order_id: "Reference Order ID",
+  for_immediate_pipeline_routing_checkups: "for immediate pipeline routing checkups.",
+  contact_support_lines: "Contact Support Lines",
 
   // payouts page
   vendor_payouts: "Vendor Payouts",
@@ -990,6 +1162,9 @@ export const en = {
   payout_completed: "Payout Completed",
   processing: "Processing",
   all: "All",
+  payout_id: "Payout ID",
+  payout_proof: "Payout Proof",
+  download: "Download",
   no_payouts_found: "No payouts found",
   portugal_payment_rules: "Portugal Payment Rules",
   automatic_weekly_payout: "Automatic weekly SEPA payout every Monday.",
@@ -1007,12 +1182,17 @@ export const en = {
     "Payouts are sent to your registered IBAN. Update bank details in Settings > Finance.",
 
   // earnings-summary page
+  overview_of_your_earnings_sales: "Overview of your earnings and sales",
   performance_overview: "Performance overview — revenue, orders and trends",
   range: "Range",
   export_report: "Export Report",
   total_earnings: "Total Earnings",
+  today_earnings: "Today's Earnings",
   since_joining_the_platform: "Since joining the platform",
   this_week: "This Week",
+  this_month: "This Month",
+  earnings_overview: "Earnings Overview",
+  earnings_trend_over_last_6_months: "Earnings trend over the last 6 months",
   vs_last_week: "vs Last Week",
   last_week: "Last Week",
   reference: "Reference",
@@ -1058,6 +1238,8 @@ export const en = {
   fees: "Fees",
   refunds: "Refunds",
   id: "ID",
+  transaction_id: "Transaction ID",
+  type: "Type",
   no_transactions_found: "No transactions found.",
   summary: "Summary",
   positive_values_revenue_from_orders: "Positive values = revenue from orders",
@@ -1067,11 +1249,13 @@ export const en = {
   refunds_may_take_24_48_hours: "Refunds may take 24–48 hours to reflect",
 
   // sales-analytics page
+  weekly_performance_top_products: "Weekly performance and top products",
   deep_insights_revenue_best_selling_items_performance_trends:
     "Deep insights into revenue, best-selling items & performance trends",
   total_sales: "Total Sales",
   last_7_days: "Last 7 days",
-  best_performing_day: "Best Performing Day",
+  best_day: "Best Day",
+  best_performing: "Best Performing",
   slowest_day: "Slowest Day",
   weekly_sales_trend: "Weekly Sales Trend",
   top_selling_items: "Top Selling Items",
@@ -1080,11 +1264,22 @@ export const en = {
     "Data based on last 7 days | Updated automatically",
 
   // customer-insights page
+  understand_your_audience_retention: "Understand your audience and retention",
+  all_time: "All Time",
   deep_customer_analytics:
     "Deep customer analytics — demographics, behavior, retention & sentiment",
   total_customers: "Total Customers",
   returning: "Returning",
   top_city: "Top City",
+  retention: "Retention",
+  demographics_by_city: "Demographics by City",
+  no_data_available: "No data available",
+  order_frequency: "Order Frequency",
+  weekly_order: "Weekly Orders",
+  bi_weekly_orders: "Bi-Weekly Orders",
+  monthly_orders: "Monthly Orders",
+  orders_sm: "orders",
+  order: "order",
   avg_repeat: "Avg. Repeat",
   demographics: "Demographics",
   live: "Live",
@@ -1110,10 +1305,12 @@ export const en = {
   export_segment: "Export Segment",
 
   // order-trends page
+  volume_analysis_and_peak_times: "Volume analysis and peak times",
   trend_analysis_orders_over_time:
     "Trend analysis of orders over time — peaks, categories & volume",
   export_trends: "Export Trends",
-  last_14_days_order_trend: "Last 14 Days Order Trend",
+  last_14_days: "Last 14 Days",
+  period_growth: "Period Growth",
   vs_last_14_days: "vs Last 14 Days",
   daily_order_volume: "Daily Order Volume",
   peak_ordering_times: "Peak Ordering Times",
@@ -1133,6 +1330,11 @@ export const en = {
   best_performing_menu_items:
     "Best performing menu items — sales, ratings & growth",
   export: "Export",
+  items_sold_total: "Items Sold Total",
+  no_items_available_to_show: "No items available to show",
+  your_top_performing_items_will_appear: "Your top performing items will appear here once orders are processed.",
+  units_sold: "units sold",
+  no_ratings_yet: "No ratings yet",
   total_items_sold: "Total Items Sold (7 days)",
   updated_hourly: "Updated hourly",
   ai_insights: "AI Insights",
@@ -1147,7 +1349,7 @@ export const en = {
   create_promo: "Create Promo",
 
   // customer-reviews page
-  real_feedback_from_glovo_customers: "Real feedback from your Glovo customers",
+  real_feedback_from_your_customers: "Real feedback from your customers",
   average_rating: "Average Rating",
   based_on: "based on",
   reviews_sm: "reviews",
@@ -1166,8 +1368,19 @@ export const en = {
     "Weekend orders show a rating dip — consider peak-hour staffing boost.",
 
   // rating-summary page
-  customer_satisfaction_overview:
-    "Customer satisfaction overview + advanced analytics",
+  customer_satisfaction_overview: "Customer satisfaction overview + advanced analytics",
+  customer_satisfaction: "Customer Satisfaction",
+  total_reviews: "Total Reviews",
+  avg_score: "Avg Score",
+  out_of: "Out of",
+  based_on_last: "Based on last",
+  positive_reviews: "Positive Reviews",
+  neutral_reviews: "Neutral Reviews",
+  negative_reviews: "Negative Reviews",
+  star_distribution: "Star Distribution",
+  awaiting_reviews: "Awaiting reviews",
+  category_scores: "Category Scores",
+  no_reviews_yet: "No reviews yet",
   overall_rating: "Overall Rating",
   neutral: "Neutral",
   rating_breakdown: "Rating Breakdown",
@@ -1264,7 +1477,9 @@ export const en = {
   percentage_discount: "Percentage Discount",
   flat_amount_off: "Flat Amount OFF",
   buy_1_get_1: "Buy 1 Get 1",
+  discount_value: "Discount Value",
   discount_perc_20: "Discount % (e.g., 20)",
+  max_discount_amount: "Max discount Amount",
   flat_discount: "Flat Discount (€)",
   choose_an_item: "Choose an Item",
   buy_quantity: "Buy Quantity (e.g., 2)",
@@ -1273,8 +1488,17 @@ export const en = {
   start_date: "Start Date",
   end_date: "End Date",
   minimum_order_amount: "Minimum Order Amount (€)",
+  maximum_usage_count: "Maximum Usage Count",
+  users_usage_limit: "Users Usage Limit",
+  will_auto_apply: "Will Auto Apply?",
+  applicable_products: "Applicable Products",
+  all_products: "All Products",
+  selected_products: "Selected Products",
+  select_products: "Select Products",
   promo_code: "Promo Code",
   enter_promo_code: "Enter promo code",
+  // --> edit offer
+  edit_offer: "Edit Offer",
 
   // coupon analytics page
   performance_insights_all_active_past_coupon:
@@ -1346,8 +1570,20 @@ export const en = {
   decline_drinks_suggests_icreasing:
     "Decline in drinks suggests increasing stock or improving visibility.",
   view_full_sales_breakdown: "View Full Sales Breakdown",
+  sales_overview: "Sales Overview",
+  sales: "Sales",
 
   // tax-report page
+  detailed_tax_breakdown_for_products_addons: "Detailed tax breakdown for products and addons",
+  gross_sales: "Gross Sales",
+  total_tax_liability: "Total Tax Liability",
+  net_revenue: "Net Revenue",
+  tax_contribution: "Tax Contribution",
+  product: "Product",
+  addon: "Addon",
+  tax_by_category: "Tax by Category",
+  revenue_vs_tax_over_time: "Revenue vs Tax Over Time",
+  top_tax_generating_addons: "Top Tax-Generating Addons",
   tax_report_iva_breakdown: "Tax Report (IVA Breakdown)",
   portugal_compliant_iva_calculation:
     "Portugal-compliant IVA calculation report for vendors",
@@ -1382,11 +1618,16 @@ export const en = {
   view_full_iva_breakdown: "View Full IVA Breakdown",
 
   // customer report page
+  overview_of_all_registered_customers: "Overview of all registered customers and their activity",
   see_customer_trends_spending_behaviour:
     "See customer trends, spending behaviour & loyalty",
   avg_rating: "Avg Rating",
   highest_spender: "Highest Spender",
   most_orders: "Most Orders",
+  customer_growth: "Customer Growth",
+  customer_ordered_over_last_6_months: "Customer ordered over the last 6 months",
+  all_customers: "All Customers",
+  customers: "customers",
   search_customer: "Search customer...",
   total_spent: "total spent",
   last_order: "Last order",
@@ -1401,6 +1642,8 @@ export const en = {
   weekend_offers_boost_returning:
     "Weekend offers boost returning customers by 18%.",
   view_full_customer_breakdown: "View Full Customer Breakdown",
+  last_ordered: "Last Ordered",
+  no_customer_found: "No customer found",
 
   // business info
   business_information: "Business Information",
@@ -1413,6 +1656,10 @@ export const en = {
   about_business: "About Business",
   opening_hours: "Opening Hours",
 
+  // export popover
+  export_as_pdf: "Export as PDF",
+  export_as_csv: "Export as CSV",
+
   // notifications page
   manage_alerts_system_updates:
     "Manage alerts, system updates & notification preferences",
@@ -1423,6 +1670,7 @@ export const en = {
   push_notifications: "Push Notifications",
   instant_alerts_for_orders_reviews: "Instant alerts for new orders & reviews",
   save_preferences: "Save Preferences",
+  unread: "Unread",
 
   // change password
   update_account_password_securely: "Update your account password securely.",
@@ -1482,12 +1730,36 @@ export const en = {
   save_apply_demo: "Save & Apply (demo)",
 
   // chat-support
-  chat_support: "Chat Support",
+  chat_directly_with_support_experts: "Chat directly with our support experts with support ticket",
   get_help_from_support_team: "Get help from our support team in real‑time.",
   deligo_support: "Deligo Support",
   active_now: "Active now",
   type_your_message: "Type your message…",
   send: "Send",
+  inquiry: "Inquiry",
+  no_message_content_available: "No message content available.",
+  view_conversation: "View Conversation",
+  our_team_tipically_responds_within: "Our team typically responds within",
+  hours: "hours",
+  no_active_support_tickets: "No Active Support Tickets",
+  you_dont_have_any_open_request: "You don't have any open requests. If you're experiencing an issue, create a ticket and we'll get right on it!",
+  create_your_first_ticket: "Create your first ticket",
+  // ---> create new ticket
+  create_new_ticket: "Create New Ticket",
+  category: "Category",
+  select_category: "Select category",
+  general: "General",
+  iva_invoice: "IVA Invoice",
+  technical: "Technical",
+  please_provide_details_of_issue: "Please provide the details of your issue or inquiry here...",
+  select_value: "Select value",
+  submitting: "Submitting...",
+  submit_ticket: "Submit Ticket",
+  // --> chat sheet
+  admin_is_typing: "Admin is typing...",
+  // --> chat input
+  this_ticket_is_closed_please_open_new: "This ticket is closed. Please open a new ticket for further assistance.",
+  type_a_message: "Type a message...",
 
   // help
   help_center: "Help Center",
@@ -1620,6 +1892,7 @@ export const en = {
   last_login: "Last Login",
   account_created: "Account Created",
   two_factor_auth: "Two-Factor Auth",
+
 
 
   // all sos alerts

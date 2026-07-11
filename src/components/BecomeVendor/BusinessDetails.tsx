@@ -40,7 +40,6 @@ import {
   Building2,
   CalendarX2,
   Clock,
-  FileCheck2,
   MapPin,
   X,
 } from "lucide-react";
@@ -80,7 +79,6 @@ export default function BusinessDetailsForm({
       businessName: vendor?.businessDetails?.businessName || "",
       businessType: vendor?.businessDetails?.businessType || "",
       restaurantCuisineType: vendor?.businessDetails?.restaurantCuisineType || [],
-      businessLicenseNumber: vendor?.businessDetails?.businessLicenseNumber || "",
       NIF: vendor?.businessDetails?.NIF || "",
       totalBranches: vendor?.businessDetails?.totalBranches?.toString() || "",
       openingHours: vendor?.businessDetails?.openingHours || "",
@@ -101,15 +99,15 @@ export default function BusinessDetailsForm({
 
     const { restaurantCuisineType, ...restOfData } = data;
 
-    const processedData = businessType === "STORE"
+    const processedData = businessType === "store"
       ? restOfData
       : { ...restOfData, restaurantCuisineType };
 
     const businessDetails = {
       businessDetails: {
         ...processedData,
+        businessType: data.businessType,
         NIF: data.NIF.toUpperCase(),
-        businessLicenseNumber: data.businessLicenseNumber.toUpperCase(),
         totalBranches: Number(data.totalBranches),
       },
     };
@@ -201,7 +199,7 @@ export default function BusinessDetailsForm({
                             <Select
                               {...field}
                               value={field.value}
-                              onValueChange={field.onChange}
+                              onValueChange={(value) => field.onChange(value)}
                             >
                               <SelectTrigger
                                 className={cn(
@@ -220,7 +218,7 @@ export default function BusinessDetailsForm({
                                 {businessCategories.map((category) => (
                                   <SelectItem
                                     key={category?._id}
-                                    value={category?.name}
+                                    value={category?.slug}
                                     className="capitalize"
                                   >
                                     {category?.name}
@@ -228,31 +226,6 @@ export default function BusinessDetailsForm({
                                 ))}
                               </SelectContent>
                             </Select>
-                          </FormControl>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* License */}
-                  <FormField
-                    control={form.control}
-                    name="businessLicenseNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          {t("socialNumber")} <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="relative">
-                          <FileCheck2 className="absolute left-3 top-3.5 text-[#DC3173]" />
-                          <FormControl>
-                            <Input
-                              placeholder="Social Number"
-                              type="number"
-                              className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60 uppercase"
-                              {...field}
-                            />
                           </FormControl>
                         </div>
                         <FormMessage />
@@ -287,7 +260,7 @@ export default function BusinessDetailsForm({
                 </div>
 
                 {/* if business type is restaurant */}
-                {businessType === "RESTAURANT" && (
+                {businessType === "restaurant" && (
                   <FormField
                     control={form.control}
                     name="restaurantCuisineType"
@@ -365,7 +338,7 @@ export default function BusinessDetailsForm({
                                       return (
                                         <SelectItem
                                           key={idx}
-                                          value={type?.name}
+                                          value={type?.slug}
                                           className="capitalize"
                                           disabled={isAlreadySelected}
                                         >

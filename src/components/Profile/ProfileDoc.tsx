@@ -35,13 +35,13 @@ export default function ProfileDoc({ documents }: IProps) {
             }}
           >
             <p className="text-sm text-gray-500 mb-2">
-              {doc === "idProofFront" && "ID Proof Front"}
-              {doc === "idProofBack" && "ID Proof Back"}
-              {doc === "businessLicenseDoc" && "Business License"}
-              {doc === "taxDoc" && "Tax Document"}
-              {doc === "storePhoto" && "Store Photo"}
-              {doc === "menuUpload" && "Menu / Brochure"}
-              {doc === "agoserisHaccpCertificate" && "AGOSERIS HACCP Certificate"}
+              {doc === "idProofFront" && t("id_proof_front")}
+              {doc === "idProofBack" && t("id_proof_back")}
+              {doc === "businessLicenseDoc" && t("documentsLabel1")}
+              {doc === "taxDoc" && t("documentsLabel2")}
+              {doc === "storePhoto" && t("documentsLabel4")}
+              {doc === "menuUpload" && t("documentsLabel5")}
+              {doc === "agoserisHaccpCertificate" && t("agoserisHaccpCertificate")}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               {files.map((file, index) => {
@@ -70,7 +70,7 @@ export default function ProfileDoc({ documents }: IProps) {
                       rel="noopener noreferrer"
                       className="mt-2 text-sm text-[#DC3173] hover:underline inline-block"
                     >
-                      View Full File
+                      {t("view_full_file")}
                     </motion.a>
                   </div>
                 );
@@ -83,7 +83,7 @@ export default function ProfileDoc({ documents }: IProps) {
 
       {docsArr.length === 0 && (
         <p className="text-gray-500 italic col-span-2">
-          No documents uploaded
+          {t("no_documents_uploaded")}
         </p>
       )}
     </div>
