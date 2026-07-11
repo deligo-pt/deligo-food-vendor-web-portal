@@ -1339,7 +1339,7 @@ export const en = {
   create_promo: "Create Promo",
 
   // customer-reviews page
-  real_feedback_from_glovo_customers: "Real feedback from your Glovo customers",
+  real_feedback_from_your_customers: "Real feedback from your customers",
   average_rating: "Average Rating",
   based_on: "based on",
   reviews_sm: "reviews",
@@ -1358,8 +1358,19 @@ export const en = {
     "Weekend orders show a rating dip — consider peak-hour staffing boost.",
 
   // rating-summary page
-  customer_satisfaction_overview:
-    "Customer satisfaction overview + advanced analytics",
+  customer_satisfaction_overview: "Customer satisfaction overview + advanced analytics",
+  customer_satisfaction: "Customer Satisfaction",
+  total_reviews: "Total Reviews",
+  avg_score: "Avg Score",
+  out_of: "Out of",
+  based_on_last: "Based on last",
+  positive_reviews: "Positive Reviews",
+  neutral_reviews: "Neutral Reviews",
+  negative_reviews: "Negative Reviews",
+  star_distribution: "Star Distribution",
+  awaiting_reviews: "Awaiting reviews",
+  category_scores: "Category Scores",
+  no_reviews_yet: "No reviews yet",
   overall_rating: "Overall Rating",
   neutral: "Neutral",
   rating_breakdown: "Rating Breakdown",
@@ -1456,7 +1467,9 @@ export const en = {
   percentage_discount: "Percentage Discount",
   flat_amount_off: "Flat Amount OFF",
   buy_1_get_1: "Buy 1 Get 1",
+  discount_value: "Discount Value",
   discount_perc_20: "Discount % (e.g., 20)",
+  max_discount_amount: "Max discount Amount",
   flat_discount: "Flat Discount (€)",
   choose_an_item: "Choose an Item",
   buy_quantity: "Buy Quantity (e.g., 2)",
@@ -1465,8 +1478,17 @@ export const en = {
   start_date: "Start Date",
   end_date: "End Date",
   minimum_order_amount: "Minimum Order Amount (€)",
+  maximum_usage_count: "Maximum Usage Count",
+  users_usage_limit: "Users Usage Limit",
+  will_auto_apply: "Will Auto Apply?",
+  applicable_products: "Applicable Products",
+  all_products: "All Products",
+  selected_products: "Selected Products",
+  select_products: "Select Products",
   promo_code: "Promo Code",
   enter_promo_code: "Enter promo code",
+  // --> edit offer
+  edit_offer:"Edit Offer",
 
   // coupon analytics page
   performance_insights_all_active_past_coupon:

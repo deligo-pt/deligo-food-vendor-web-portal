@@ -233,6 +233,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
           open={!!editOffer}
           onOpenChange={(open) => !open && setEditOffer(null)}
           offer={editOffer || offersResult.data?.[0]}
+          t={t}
         />
       )}
 
