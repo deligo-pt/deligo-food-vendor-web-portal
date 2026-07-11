@@ -673,8 +673,8 @@ export const en = {
     "Your vendor application has submitted successfully! An admin will review your application and activate your vendor account within 24-48 hours.",
   seeRegistrationStatus: "See registration status",
   goHome: "Go Home",
-  view_full_file:"View Full File",
-  no_documents_uploaded:"No documents uploaded",
+  view_full_file: "View Full File",
+  no_documents_uploaded: "No documents uploaded",
   // personal details
   personalDetails: "Personal Details",
   personalDetailsDesc: "Let’s start with your basic information",
@@ -930,6 +930,14 @@ export const en = {
   no_items_match_current_filters:
     "No items match your current filters. Try adjusting your search or filters to find what you're looking for.",
   clear_all_filters: "Clear all filters",
+  //--> product details page
+  back_to_items: "Back to Items",
+  product_id: "Product ID",
+  featured: "Featured",
+  variation_options: "Variation Options",
+  ratings_and_reviews: "Ratings & Reviews",
+  edit_product: "Edit Product",
+  delete_product: "Delete Product",
   // categories page
   these_are_platform_managed_categories:
     "These are platform-managed categories. Vendors cannot create or edit categories.",
@@ -1748,10 +1756,10 @@ export const en = {
   submitting: "Submitting...",
   submit_ticket: "Submit Ticket",
   // --> chat sheet
-  admin_is_typing:"Admin is typing...",
+  admin_is_typing: "Admin is typing...",
   // --> chat input
-  this_ticket_is_closed_please_open_new:"This ticket is closed. Please open a new ticket for further assistance.",
-  type_a_message:"Type a message...",
+  this_ticket_is_closed_please_open_new: "This ticket is closed. Please open a new ticket for further assistance.",
+  type_a_message: "Type a message...",
 
   // help
   help_center: "Help Center",

@@ -963,6 +963,15 @@ export const pt = {
     "Nenhum item corresponde aos filtros atuais. Tente ajustar a pesquisa ou os filtros.",
   clear_all_filters: "Limpar todos os filtros",
 
+  //--> product details page
+  back_to_items: "Voltar aos Itens",
+  product_id: "ID do Produto",
+  featured: "Em Destaque",
+  variation_options: "Opções de Variação",
+  ratings_and_reviews: "Avaliações e Comentários",
+  edit_product: "Editar Produto",
+  delete_product: "Excluir Produto",
+
   // categories page
   these_are_platform_managed_categories:
     "Estas são categorias geridas pela plataforma. Os vendedores não podem criar ou editar categorias.",

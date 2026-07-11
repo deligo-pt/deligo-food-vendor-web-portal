@@ -38,7 +38,7 @@ export default async function ProductDetailsPage({
   return (
     <ProductDetails
       product={initialData}
-      businessType={vendorData?.businessDetails?.businessType as string}
+      businessTypeSlug={vendorData?.businessDetails?.businessTypeSlug as string}
     />
   );
 }

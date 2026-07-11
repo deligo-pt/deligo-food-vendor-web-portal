@@ -4,7 +4,7 @@ import { TResponse } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
-export default async function ProductDetailsPage({
+export default async function OrderDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
