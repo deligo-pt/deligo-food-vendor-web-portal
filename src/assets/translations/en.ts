@@ -1239,11 +1239,13 @@ export const en = {
   refunds_may_take_24_48_hours: "Refunds may take 24–48 hours to reflect",
 
   // sales-analytics page
+  weekly_performance_top_products: "Weekly performance and top products",
   deep_insights_revenue_best_selling_items_performance_trends:
     "Deep insights into revenue, best-selling items & performance trends",
   total_sales: "Total Sales",
   last_7_days: "Last 7 days",
-  best_performing_day: "Best Performing Day",
+  best_day: "Best Day",
+  best_performing: "Best Performing",
   slowest_day: "Slowest Day",
   weekly_sales_trend: "Weekly Sales Trend",
   top_selling_items: "Top Selling Items",
@@ -1252,11 +1254,22 @@ export const en = {
     "Data based on last 7 days | Updated automatically",
 
   // customer-insights page
+  understand_your_audience_retention: "Understand your audience and retention",
+  all_time: "All Time",
   deep_customer_analytics:
     "Deep customer analytics — demographics, behavior, retention & sentiment",
   total_customers: "Total Customers",
   returning: "Returning",
   top_city: "Top City",
+  retention: "Retention",
+  demographics_by_city: "Demographics by City",
+  no_data_available: "No data available",
+  order_frequency: "Order Frequency",
+  weekly_order: "Weekly Orders",
+  bi_weekly_orders: "Bi-Weekly Orders",
+  monthly_orders: "Monthly Orders",
+  orders_sm: "orders",
+  order: "order",
   avg_repeat: "Avg. Repeat",
   demographics: "Demographics",
   live: "Live",
@@ -1282,10 +1295,12 @@ export const en = {
   export_segment: "Export Segment",
 
   // order-trends page
+  volume_analysis_and_peak_times: "Volume analysis and peak times",
   trend_analysis_orders_over_time:
     "Trend analysis of orders over time — peaks, categories & volume",
   export_trends: "Export Trends",
-  last_14_days_order_trend: "Last 14 Days Order Trend",
+  last_14_days: "Last 14 Days",
+  period_growth: "Period Growth",
   vs_last_14_days: "vs Last 14 Days",
   daily_order_volume: "Daily Order Volume",
   peak_ordering_times: "Peak Ordering Times",
@@ -1305,6 +1320,11 @@ export const en = {
   best_performing_menu_items:
     "Best performing menu items — sales, ratings & growth",
   export: "Export",
+  items_sold_total: "Items Sold Total",
+  no_items_available_to_show: "No items available to show",
+  your_top_performing_items_will_appear: "Your top performing items will appear here once orders are processed.",
+  units_sold: "units sold",
+  no_ratings_yet: "No ratings yet",
   total_items_sold: "Total Items Sold (7 days)",
   updated_hourly: "Updated hourly",
   ai_insights: "AI Insights",

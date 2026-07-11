@@ -1288,11 +1288,13 @@ export const pt = {
     "Os reembolsos podem demorar 24–48 horas a refletir",
 
   // sales-analytics page
+  weekly_performance_top_products: "Desempenho semanal e principais produtos",
   deep_insights_revenue_best_selling_items_performance_trends:
     "Análises detalhadas sobre receitas, itens mais vendidos e tendências de desempenho",
   total_sales: "Vendas Totais",
   last_7_days: "Últimos 7 dias",
-  best_performing_day: "Melhor Dia de Vendas",
+  best_day: "Melhor Dia",
+  best_performing: "Melhor Desempenho",
   slowest_day: "Dia Mais Fraco",
   weekly_sales_trend: "Tendência Semanal de Vendas",
   top_selling_items: "Itens Mais Vendidos",
@@ -1301,11 +1303,22 @@ export const pt = {
     "Dados baseados nos últimos 7 dias | Atualizado automaticamente",
 
   // customer-insights page
+  understand_your_audience_retention: "Entenda o seu público e a retenção",
+  all_time: "Todo o Período",
   deep_customer_analytics:
     "Análises profundas de clientes — demografia, comportamento, retenção e sentimento",
   total_customers: "Total de Clientes",
   returning: "Recorrentes",
   top_city: "Cidade Principal",
+  retention: "Retenção",
+  demographics_by_city: "Dados Demográficos por Cidade",
+  no_data_available: "Nenhum dado disponível",
+  order_frequency: "Frequência de Pedidos",
+  weekly_order: "Pedidos Semanais",
+  bi_weekly_orders: "Pedidos Quinzenais",
+  monthly_orders: "Pedidos Mensais",
+  orders_sm: "pedidos",
+  order: "pedido",
   avg_repeat: "Repetição Média",
   demographics: "Demografia",
   live: "Em direto",
@@ -1331,10 +1344,12 @@ export const pt = {
   export_segment: "Exportar Segmento",
 
   // order-trends page
+  volume_analysis_and_peak_times: "Análise de volume e horários de pico",
   trend_analysis_orders_over_time:
     "Análise de tendências de pedidos ao longo do tempo — picos, categorias e volume",
   export_trends: "Exportar Tendências",
-  last_14_days_order_trend: "Tendência de Pedidos — Últimos 14 Dias",
+  last_14_days: "Últimos 14 Dias",
+  period_growth: "Crescimento no Período",
   vs_last_14_days: "vs Últimos 14 Dias",
   daily_order_volume: "Volume Diário de Pedidos",
   peak_ordering_times: "Horários de Maior Procura",
@@ -1354,6 +1369,11 @@ export const pt = {
   best_performing_menu_items:
     "Itens do menu com melhor desempenho — vendas, avaliações e crescimento",
   export: "Exportar",
+  items_sold_total: "Total de Itens Vendidos",
+  no_items_available_to_show: "Nenhum item disponível para exibir",
+  your_top_performing_items_will_appear: "Seus itens de melhor desempenho aparecerão aqui assim que os pedidos forem processados.",
+  units_sold: "unidades vendidas",
+  no_ratings_yet: "Nenhuma avaliação ainda",
   total_items_sold: "Total de Itens Vendidos (7 dias)",
   updated_hourly: "Atualizado de hora a hora",
   ai_insights: "Insights por IA",
