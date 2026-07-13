@@ -58,7 +58,7 @@ export default async function AddItemPage() {
       productCategories={productCategoriesData}
       addonGroupsData={addonGroupsData}
       taxesData={taxesData}
-      businessType={vendorData?.businessDetails?.businessType as string}
+      businessTypeSlug={vendorData?.businessDetails?.businessTypeSlug as string}
     />
   );
 }

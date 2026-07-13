@@ -26,9 +26,10 @@ import {
 
 interface IProps {
   customers: TCustomer[];
+  t: (key: string) => string;
 }
 
-export default function CustomerReportTable({ customers }: IProps) {
+export default function CustomerReportTable({ customers, t }: IProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -41,31 +42,31 @@ export default function CustomerReportTable({ customers }: IProps) {
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <ContactRoundIcon className="w-4" />
-                Customer
+                {t("customer")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <ShoppingBagIcon className="w-4" />
-                Orders
+                {t("orders")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <EuroIcon className="w-4" />
-                Total Spent
+                {t("total_spent")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <CalendarIcon className="w-4" />
-                Last Ordered
+                {t("last_ordered")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <CheckCheckIcon className="w-4" />
-                Status
+                {t("status")}
               </div>
             </TableHead>
           </TableRow>
@@ -77,7 +78,7 @@ export default function CustomerReportTable({ customers }: IProps) {
                 className="text-[#DC3173] text-lg text-center"
                 colSpan={5}
               >
-                No customer found
+                {t("no_customer_found")}
               </TableCell>
             </TableRow>
           )}

@@ -11,9 +11,10 @@ interface IProps {
   product: TProduct;
   onEdit: (product: TProduct) => void;
   onDelete: (id: string) => void;
+  t: (key: string) => string;
 }
 
-export default function ProductCard({ product, onEdit, onDelete }: IProps) {
+export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
   const { lang } = useStore();
   const router = useRouter();
 
@@ -151,7 +152,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
               }
               className="text-xs px-3 py-1 rounded-md border border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173] hover:text-white transition-colors"
             >
-              View
+              {t('view')}
             </motion.button>
             <motion.button
               whileHover={{
@@ -163,7 +164,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
               onClick={() => onEdit(product)}
               className="text-xs px-3 py-1 rounded-md border border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173] hover:text-white transition-colors"
             >
-              Edit
+              {t("edit")}
             </motion.button>
             <motion.button
               whileHover={{
@@ -175,7 +176,7 @@ export default function ProductCard({ product, onEdit, onDelete }: IProps) {
               onClick={() => onDelete(product.productId)}
               className="text-xs px-3 py-1 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
             >
-              Delete
+              {t("delete")}
             </motion.button>
           </div>
         </div>

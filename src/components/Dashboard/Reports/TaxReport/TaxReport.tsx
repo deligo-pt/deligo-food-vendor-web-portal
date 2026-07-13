@@ -3,6 +3,7 @@
 import AnalyticsChart from "@/src/components/AnalyticsChart/AnalyticsChart";
 import StatsCard from "@/src/components/StatsCard/StatsCard";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TTaxReport } from "@/src/types/report.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { motion } from "framer-motion";
@@ -27,30 +28,32 @@ interface IProps {
 }
 
 export default function TaxReport({ taxReportData }: IProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen">
       {/* Header */}
       <TitleHeader
-        title="Tax Report"
-        subtitle="Detailed tax breakdown for products and addons"
+        title={t("tax_report")}
+        subtitle={t("detailed_tax_breakdown_for_products_addons")}
       />
 
       {/* Summary Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <StatsCard
-          title="Gross Sales"
+          title={t("gross_sales")}
           value={`€${formatPrice(taxReportData.stats.totalSales)}`}
           icon={EuroIcon}
           delay={0}
         />
         <StatsCard
-          title="Total Tax Liability"
+          title={t("total_tax_liability")}
           value={`€${formatPrice(taxReportData.stats.totalTax)}`}
           icon={FileText}
           delay={0.1}
         />
         <StatsCard
-          title="Net Revenue"
+          title={t("net_revenue")}
           value={`€${formatPrice(taxReportData.stats.netRevenue)}`}
           icon={TrendingUp}
           delay={0.2}
@@ -79,7 +82,7 @@ export default function TaxReport({ taxReportData }: IProps) {
               <TrendingUp size={18} />
             </div>
             <h3 className="text-sm font-medium text-gray-500">
-              Tax Contribution
+              {t("tax_contribution")}
             </h3>
           </div>
           <AnalyticsChart
@@ -91,11 +94,11 @@ export default function TaxReport({ taxReportData }: IProps) {
           <div className="flex justify-between text-xs mt-2 px-2">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[#DC3173]" />
-              <span className="text-gray-600">Product</span>
+              <span className="text-gray-600">{t("product")}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[#2563eb]" />
-              <span className="text-gray-600">Addon</span>
+              <span className="text-gray-600">{t("addon")}</span>
             </div>
           </div>
         </motion.div>
@@ -120,7 +123,7 @@ export default function TaxReport({ taxReportData }: IProps) {
               <PieChart size={18} />
             </div>
             <h3 className="text-sm font-medium text-gray-500">
-              Tax by Category
+              {t("tax_by_category")}
             </h3>
           </div>
           <div className="space-y-3">
@@ -128,7 +131,7 @@ export default function TaxReport({ taxReportData }: IProps) {
               <div key={i}>
                 <div className="flex justify-between text-xs mb-1">
                   <span className="font-medium text-gray-600">
-                    {tax.name} tax
+                    {tax.name} {t("tax")}
                   </span>
                   <span className="font-bold text-gray-900">
                     €{formatPrice(tax.value)}
@@ -163,7 +166,7 @@ export default function TaxReport({ taxReportData }: IProps) {
           className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-md p-6"
         >
           <h3 className="text-lg font-bold text-gray-900 mb-6">
-            Revenue vs Tax Over Time
+            {t("revenue_vs_tax_over_time")}
           </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -231,7 +234,7 @@ export default function TaxReport({ taxReportData }: IProps) {
           className="bg-white rounded-2xl border border-gray-100 shadow-md p-6"
         >
           <h3 className="text-lg font-bold text-gray-900 mb-6">
-            Top Tax-Generating Addons
+            {t("top_tax_generating_addons")}
           </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">

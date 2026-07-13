@@ -64,8 +64,8 @@ export default function Ingredients({ ingredientsData }: IProps) {
     <div className="min-h-screen">
       {/* Header */}
       <TitleHeader
-        title="Ingredients Marketplace"
-        subtitle="Purchase ingredients for your store"
+        title={t("ingredients_marketplace")}
+        subtitle={t("purchase_ingredients_for_store")}
       />
 
       {/* Filters */}
@@ -83,6 +83,7 @@ export default function Ingredients({ ingredientsData }: IProps) {
             key={item._id}
             item={item}
             setOrderDetails={setOrderDetails}
+            t={t}
           />
         ))}
       </div>
@@ -106,6 +107,7 @@ export default function Ingredients({ ingredientsData }: IProps) {
         onOpenChange={(open) => !open && setOrderDetails([])}
         onPurchase={purchaseIngredient}
         isOrdering={isOrdering}
+        t={t}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TCustomerInsights } from "@/src/types/analytics.type";
 import { motion, Variants } from "framer-motion";
 import {
@@ -28,6 +29,7 @@ const orderFrequencyColor = {
 };
 
 export default function CustomerInsights({ insights }: IProps) {
+  const { t } = useTranslation();
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const hourLabel = (h: number) => {
@@ -73,12 +75,12 @@ export default function CustomerInsights({ insights }: IProps) {
     >
       {/* Header */}
       <TitleHeader
-        title="Customer Insights"
-        subtitle="Understand your audience and retention"
+        title={t("customer_insights")}
+        subtitle={t("understand_your_audience_retention")}
         extraComponent={
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
             <UsersIcon className="w-4 h-4 text-[#DC3173]" />
-            <span className="text-sm font-medium text-gray-600">All Time</span>
+            <span className="text-sm font-medium text-gray-600">{t("all_time")}</span>
           </div>
         }
       />
@@ -89,13 +91,13 @@ export default function CustomerInsights({ insights }: IProps) {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
-          <div className="h-1.5 w-full bg-gradient-to-r from-blue-400 to-blue-600 absolute top-0 left-0" />
+          <div className="h-1.5 w-full bg-linear-to-r from-blue-400 to-blue-600 absolute top-0 left-0" />
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
               <UsersIcon className="w-5 h-5" />
             </div>
             <span className="text-sm font-medium text-gray-500">
-              Total Customers
+              {t("total_customers")}
             </span>
           </div>
           <div className="text-3xl font-bold text-gray-900">
@@ -107,12 +109,12 @@ export default function CustomerInsights({ insights }: IProps) {
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
-          <div className="h-1.5 w-full bg-gradient-to-r from-purple-400 to-purple-600 absolute top-0 left-0" />
+          <div className="h-1.5 w-full bg-linear-to-r from-purple-400 to-purple-600 absolute top-0 left-0" />
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
               <RepeatIcon className="w-5 h-5" />
             </div>
-            <span className="text-sm font-medium text-gray-500">Returning</span>
+            <span className="text-sm font-medium text-gray-500">{t("returning")}</span>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {insights.summaryCards?.returningCustomers?.value}
@@ -123,12 +125,12 @@ export default function CustomerInsights({ insights }: IProps) {
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
-          <div className="h-1.5 w-full bg-gradient-to-r from-amber-400 to-amber-600 absolute top-0 left-0" />
+          <div className="h-1.5 w-full bg-linear-to-r from-amber-400 to-amber-600 absolute top-0 left-0" />
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-amber-50 rounded-lg text-amber-600">
               <MapPinIcon className="w-5 h-5" />
             </div>
-            <span className="text-sm font-medium text-gray-500">Top City</span>
+            <span className="text-sm font-medium text-gray-500">{t("top_city")}</span>
           </div>
           <div className="text-2xl font-bold text-gray-900 truncate">
             {insights.summaryCards?.topCity?.value}
@@ -139,12 +141,12 @@ export default function CustomerInsights({ insights }: IProps) {
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden">
-          <div className="h-1.5 w-full bg-gradient-to-r from-[#DC3173] to-[#e45a92] absolute top-0 left-0" />
+          <div className="h-1.5 w-full bg-linear-to-r from-[#DC3173] to-[#e45a92] absolute top-0 left-0" />
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-[#DC3173]/10 rounded-lg text-[#DC3173]">
               <UserPlusIcon className="w-5 h-5" />
             </div>
-            <span className="text-sm font-medium text-gray-500">Retention</span>
+            <span className="text-sm font-medium text-gray-500">{t("retention")}</span>
           </div>
           <div className="text-3xl font-bold text-[#DC3173]">
             {insights.summaryCards?.retentionRate?.value}
@@ -164,11 +166,11 @@ export default function CustomerInsights({ insights }: IProps) {
           <div className="flex items-center gap-3 mb-6">
             <MapPinIcon className="w-6 h-6 text-[#DC3173]" />
             <h2 className="text-xl font-bold text-gray-900">
-              Demographics by City
+              {t("demographics_by_city")}
             </h2>
           </div>
           <div className="h-auto w-full">
-            <div className="max-h-[240px]">
+            <div className="max-h-60">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -213,7 +215,7 @@ export default function CustomerInsights({ insights }: IProps) {
             <div className="flex flex-col items-center justify-center mt-36">
               {insights.demographics?.length === 0 && (
                 <div className=" text-sm text-gray-400">
-                  No data available
+                  {t("no_data_available")}
                 </div>
               )}
             </div>
@@ -244,7 +246,7 @@ export default function CustomerInsights({ insights }: IProps) {
         >
           <div className="flex items-center gap-3 mb-6">
             <RepeatIcon className="w-6 h-6 text-[#DC3173]" />
-            <h2 className="text-xl font-bold text-gray-900">Order Frequency</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t("order_frequency")}</h2>
           </div>
           <div className="space-y-4">
             {insights.orderFrequency?.map((item, index) => {
@@ -271,12 +273,12 @@ export default function CustomerInsights({ insights }: IProps) {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold text-gray-900 text-sm">
-                        {item.name === "weekly" && "Weekly Orders"}
-                        {item.name === "biweekly" && "Bi-Weekly Orders"}
-                        {item.name === "monthly" && "Monthly Orders"}
+                        {item.name === "weekly" && t("weekly_order")}
+                        {item.name === "biweekly" && t("bi_weekly_orders")}
+                        {item.name === "monthly" && t("monthly_orders")}
                       </p>
                       <p className="text-xs text-gray-400">
-                        {item.orders} orders
+                        {item.orders} {t("orders_sm")}
                       </p>
                     </div>
                     <div
@@ -305,7 +307,7 @@ export default function CustomerInsights({ insights }: IProps) {
       >
         <div className="flex items-center gap-3 mb-6">
           <MapPinIcon className="w-6 h-6 text-[#DC3173]" />
-          <h2 className="text-xl font-bold text-gray-900">Peak Order Times</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t("peak_order_times")}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {insights.heatmap?.map((slot, index) => (
@@ -324,7 +326,7 @@ export default function CustomerInsights({ insights }: IProps) {
               }}
               className="flex items-center gap-4 p-5 bg-[#DC3173]/5 rounded-2xl border border-[#DC3173]/15"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#DC3173]/10 flex items-center justify-center text-[#DC3173] flex-shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-[#DC3173]/10 flex items-center justify-center text-[#DC3173] shrink-0">
                 <MapPinIcon className="w-6 h-6" />
               </div>
               <div>
@@ -335,14 +337,14 @@ export default function CustomerInsights({ insights }: IProps) {
                   <span className="font-semibold text-[#DC3173]">
                     {slot.orderCount}
                   </span>{" "}
-                  order{slot.orderCount !== 1 ? "s" : ""}
+                  {slot.orderCount !== 1 ? t("orders_sm") : t("order")}
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
         {insights.heatmap?.length === 0 && (
-          <p className="text-center text-gray-400">No data available</p>
+          <p className="text-center text-gray-400">{t("no_data_available")}</p>
         )}
       </motion.div>
     </motion.div>

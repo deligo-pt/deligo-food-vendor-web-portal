@@ -2,6 +2,7 @@
 
 import OrderItemsTable from "@/src/components/Dashboard/Orders/OrderDetails/OrderItemsTable";
 import OrderPricingSummary from "@/src/components/Dashboard/Orders/OrderDetails/OrderPricingSummary";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TOrder } from "@/src/types/order.type";
 import { format } from "date-fns";
 import { motion, Variants } from "framer-motion";
@@ -20,6 +21,7 @@ interface IProps {
 }
 
 export default function OrderDetails({ order }: IProps) {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const containerVariants = {
@@ -68,7 +70,7 @@ export default function OrderDetails({ order }: IProps) {
             </button>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold">Order #{order.orderId}</h1>
+                <h1 className="text-2xl font-bold">{t("order_lg")} #{order.orderId}</h1>
                 {order.flash && (
                   <span className="px-2 py-0.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded uppercase">
                     Flash
@@ -88,7 +90,7 @@ export default function OrderDetails({ order }: IProps) {
           <div className="lg:col-span-2 space-y-6">
             {/* Order Items */}
             <motion.div variants={itemVariants as Variants}>
-              <OrderItemsTable items={order.items} />
+              <OrderItemsTable items={order.items} t={t} />
             </motion.div>
 
             {/* Locations Grid */}
@@ -129,7 +131,7 @@ export default function OrderDetails({ order }: IProps) {
                 <div className="flex items-center gap-2 mb-4 text-[#DC3173]">
                   <MapPinIcon className="w-5 h-5" />
                   <h3 className="font-semibold text-gray-900">
-                    Delivery Address
+                    {t("delivery_address")}
                   </h3>
                 </div>
                 <div className="space-y-3">
@@ -147,7 +149,7 @@ export default function OrderDetails({ order }: IProps) {
                     </span>
                   </div>
                   <div className="text-sm text-gray-500 pt-2 border-t border-gray-100 mt-2">
-                    Customer Contact: {order.customerId.contactNumber}
+                    {t("customer_contact")}: {order.customerId.contactNumber}
                   </div>
                 </div>
               </motion.div>
@@ -158,7 +160,7 @@ export default function OrderDetails({ order }: IProps) {
           <div className="space-y-6">
             {/* Pricing Card */}
             <motion.div variants={itemVariants as Variants}>
-              <OrderPricingSummary order={order} />
+              <OrderPricingSummary order={order} t={t} />
             </motion.div>
 
             {/* Customer Card */}
@@ -169,7 +171,7 @@ export default function OrderDetails({ order }: IProps) {
               <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
                 <UserIcon className="w-4 h-4 text-[#DC3173]" />
                 <h3 className="font-semibold text-gray-900 text-sm">
-                  Customer Details
+                  {t("customer_details")}
                 </h3>
               </div>
               <div className="p-4 flex items-center gap-4">
@@ -207,7 +209,7 @@ export default function OrderDetails({ order }: IProps) {
                 <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
                   <BikeIcon className="w-4 h-4 text-[#DC3173]" />
                   <h3 className="font-semibold text-gray-900 text-sm">
-                    Delivery Partner
+                    {t("delivery_partner")}
                   </h3>
                 </div>
                 <div className="p-4 flex items-center gap-4">

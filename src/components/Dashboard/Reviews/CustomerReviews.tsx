@@ -46,7 +46,7 @@ export default function CustomerReviews({
       {/* HEADER */}
       <TitleHeader
         title={t("customer_reviews")}
-        subtitle={t("real_feedback_from_Your_customers")}
+        subtitle={t("real_feedback_from_your_customers")}
       />
 
       {/* STATS SUMMARY */}
@@ -112,7 +112,7 @@ export default function CustomerReviews({
           onClick={() => filterReviews("NEUTRAL")}
           className={sentimentParam === "NEUTRAL" ? "bg-[#DC3173]" : ""}
         >
-          Neutral
+          {t("neutral")}
         </Button>
       </div>
 
@@ -178,7 +178,7 @@ export default function CustomerReviews({
                         </Badge>
                       ) : rev.rating === 3 ? (
                         <Badge className="bg-yellow-100 text-yellow-700 flex gap-1">
-                          <ThumbsDown size={14} /> Neutral
+                          <ThumbsDown size={14} /> {t("neutral")}
                         </Badge>
                       ) : (
                         <Badge className="bg-red-100 text-red-700 flex gap-1">

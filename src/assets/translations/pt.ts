@@ -624,6 +624,7 @@ export const pt = {
   bankDetailsDesc:
     "Adicione os seus dados bancários para que possamos efetuar os pagamentos. Os seus dados são encriptados e armazenados de forma segura.",
   bankName: "Nome do Banco",
+  select_bank_name: "Selecionar Nome do Banco",
   accountHolder: "Titular da Conta",
   iban: "IBAN",
   swift_bic: "SWIFT / BIC",
@@ -682,6 +683,8 @@ export const pt = {
     "A sua candidatura de vendedor foi submetida com sucesso! Um administrador irá analisar a sua candidatura e ativar a sua conta de vendedor em 24–48 horas.",
   seeRegistrationStatus: "Ver estado do registo",
   goHome: "Ir para Início",
+  view_full_file: "Ver Arquivo Completo",
+  no_documents_uploaded: "Nenhum documento enviado",
   // personal details
   personalDetails: "Dados Pessoais",
   personalDetailsDesc: "Vamos começar com as suas informações básicas",
@@ -761,6 +764,7 @@ export const pt = {
 
   // -> sidebar
   dashboard: "Painel",
+  all_orders: "Todos os Pedidos",
   orders: "Pedidos",
   new_orders: "Novos Pedidos",
   preparing: "Em Preparação",
@@ -773,7 +777,9 @@ export const pt = {
   all_items: "Todos os Itens",
   add_new_item: "Adicionar Novo Item",
   stock_management: "Gestão de Stock",
+  variation_management: "Gerenciamento de Variações",
   add_ons: "Extras",
+  my_ingredient_orders: "Meus Pedidos de Ingredientes",
 
   payments_earnings: "Pagamentos & Ganhos",
   payouts: "Pagamentos",
@@ -863,6 +869,35 @@ export const pt = {
   picked_up: "Recolhido",
   on_the_way: "A Caminho",
   delivered: "Entregue",
+  order_status: "Status do Pedido",
+
+  // all-orders
+  manage_all_orders_from_here: "Gerencie todos os pedidos por aqui",
+  order_id: "ID do Pedido",
+  customer: "Cliente",
+  delivery_partner: "Parceiro de Entrega",
+  amount: "Valor",
+  date: "Data",
+  no_orders_found: "Nenhum pedido encontrado",
+  page_lg: "Página",
+  page_sm: "página",
+  sort_by: "Ordenar Por",
+  search: "Buscar...",
+
+  // order details
+  order_details: "Detalhes do Pedido",
+  order_lg: "Pedido",
+  flash: "Flash",
+  order_items: "Itens do Pedido",
+  items_sm: "itens",
+  product_details: "Detalhes do Produto",
+  subtotal: "Subtotal",
+  delivery_address: "Endereço de Entrega",
+  customer_contact: "Contato do Cliente",
+  payment_summary: "Resumo do Pagamento",
+  total_amount: "Valor Total",
+  includes_all_taxes: "Inclui todos os impostos",
+  customer_details: "Detalhes do Cliente",
 
   // new orders page
   vendor_new_orders: "Vendedor — Novos Pedidos",
@@ -895,6 +930,7 @@ export const pt = {
   call_rider: "Ligar ao Estafeta",
 
   // completed orders page
+  list_of_all_delivered_orders: "Lista de todos os pedidos entregues",
   fully_delivered_orders_with_earnings_rider_data:
     "Pedidos totalmente entregues com ganhos e dados do estafeta.",
   delivered_at: "Entregue em",
@@ -903,6 +939,7 @@ export const pt = {
   select_payment_method: "Selecionar Método de Pagamento",
 
   // cancelled orders page
+  list_of_all_cancelled_orders: "Lista de todos os pedidos cancelados",
   see_all_orders_were_cancelled:
     "Ver todos os pedidos cancelados — motivo, pagamento e dados do cliente.",
   reason: "Motivo",
@@ -927,6 +964,15 @@ export const pt = {
     "Nenhum item corresponde aos filtros atuais. Tente ajustar a pesquisa ou os filtros.",
   clear_all_filters: "Limpar todos os filtros",
 
+  //--> product details page
+  back_to_items: "Voltar aos Itens",
+  product_id: "ID do Produto",
+  featured: "Em Destaque",
+  variation_options: "Opções de Variação",
+  ratings_and_reviews: "Avaliações e Comentários",
+  edit_product: "Editar Produto",
+  delete_product: "Excluir Produto",
+
   // categories page
   these_are_platform_managed_categories:
     "Estas são categorias geridas pela plataforma. Os vendedores não podem criar ou editar categorias.",
@@ -946,6 +992,12 @@ export const pt = {
   product_category: "Categoria do Produto",
   product_images: "Imagens do Produto",
   product_image: "Imagem do Produto",
+  choose_add_on: "Escolher Complemento",
+  add_an_option_price: "Adicionar preço da opção",
+  stock_quantity: "Quantidade em Estoque",
+  add_stock_quantity: "Adicionar quantidade em estoque",
+  select_discount_type: "Selecionar Tipo de Desconto",
+  select_tax: "Selecionar imposto",
   select_category_placeholder: "Selecione uma categoria",
   select_language_placeholder: "Selecione um idioma",
 
@@ -974,8 +1026,9 @@ export const pt = {
 
   pricing_information: "Informações de Preço",
   price_E: "Preço (€)",
-  discount_2: "Desconto (%)",
+  discount_2: "Desconto",
   tax_2: "Imposto (%)",
+  incl: "incl.",
   original_price: "Preço Original",
   discount: "Desconto",
   tax: "Imposto",
@@ -1016,20 +1069,131 @@ export const pt = {
   update_item: "Atualizar item",
   update_product_details:
     "Preencha os detalhes para atualizar o produto alimentar do seu menu.",
+  delete: "Excluir",
+  are_you_absolutely_sure: "Você tem certeza absoluta?",
+  this_action_cannot_be_undone: "Esta ação não pode ser desfeita. Isso excluirá estes dados e não poderá ser desfeito.",
 
   // stock-management page
   update_product_stock_in_real_time:
     "Atualizar o stock dos produtos em tempo real —",
   no_products_found: "Nenhum produto encontrado.",
 
+  // variation management
+  add_edit_manage_product_variation: "Adicionar, editar e gerenciar variações do produto",
+  products: "Produtos",
+  try_adjusting_your_search_or_filter: "Tente ajustar sua busca ou filtro",
+  variation: "variação",
+  option: "opção",
+  no_variations: "Sem variações",
+  variation_name: "Nome da Variação",
+  option_lg: "Opção",
+  delete_variation: "Excluir variação",
+  option_label: "Rótulo da Opção",
+  option_price: "Preço da Opção",
+  delete_option: "Excluir opção",
+  no_options_add_one: "Sem opções — adicione uma para começar",
+  // ---> add variation form
+  variation_name_placeholder: "Nome da variação (ex.: Tamanho, Cor, Sabor)",
+  add_an_option_label: "Adicionar um rótulo de opção",
+  create: "Criar",
+  //  --> add variation option form
+  medium_placeholder: "ex.: Médio",
+  add: "Adicionar",
+
   // add-ons page
   add_ons_extras: "Extras & Complementos",
+  manage_your_add_on_groups_options: "Gerencie seus grupos e opções de complementos",
+  add_addon_to: "Adicionar Complemento a",
+  drinks_upgrade: "ex.: Upgrade de Bebidas",
+  option_tax: "Imposto da Opção",
   add_group: "Adicionar Grupo",
   min: "Mín",
   max: "Máx",
   add_addon: "Adicionar Extra",
   edit: "Editar",
   no_add_ons_found: "Nenhum extra encontrado",
+  addon_group: "Grupo de Complementos",
+  group_title: "Título do Grupo",
+  min_select: "Seleção Mínima",
+  max_select: "Seleção Máxima",
+  option_name: "Nome da Opção",
+  add_an_option_name: "Adicionar um nome de opção",
+  update: "Atualizar",
+
+  // ingredients
+  ingredients_marketplace: "Mercado de Ingredientes",
+  purchase_ingredients_for_store: "Compre ingredientes para a sua loja",
+  buy: "Comprar",
+  choose_your_preferred_payment_method: "Escolha o seu método de pagamento preferido para concluir o pedido.",
+  delivery_charges_notification: "Notificação de Taxas de Entrega",
+  if_your_location_is_under: "Se a sua localização for abaixo de",
+  the_delivery_charge_will_be: "a taxa de entrega será",
+  if_your_location_is: "Se a sua localização for",
+  outside_of_lisbon: "fora de Lisboa",
+  purchase: "Comprar",
+  // --> ingedients details
+  back_to_ingredients: "Voltar para Ingredientes",
+  ingredients_details: "Detalhes do Ingrediente",
+  review_physical_inventor_allocations: "Revise alocações de estoque físico, descontos por nível e atenda às necessidades de reposição.",
+  sku_code: "Código SKU",
+  shelf_life: "Validade",
+  days: "Dias",
+  volume_bulk_discount_schemes: "Esquemas de Desconto por Volume em Lote",
+  active_tier_applied: " Nível Ativo Aplicado",
+  available_dot: "● Disponível",
+  out_of_stock_suspended: "● Esgotado / Suspenso",
+  inventory_real_time_status: "Status do Estoque em Tempo Real",
+  current_status: "Status Atual",
+  stock_remaining: "Estoque Restante",
+  bulk_discount_offer: "Oferta de Desconto em Lote",
+  get_items_as_low_as: "Obtenha itens a partir de",
+  per_unit_by_increasing_your_order_quantities: "por unidade ao aumentar a quantidade do pedido para atingir os limites de desconto.",
+  no_wholesale_bulk_discount_rates: "Nenhuma taxa de desconto de atacado em lote está associada a este perfil de item no momento.",
+  order_target_quantity: "Quantidade Alvo do Pedido",
+  minimum_order_quantity: "Quantidade Mínima do Pedido",
+  maximum_order_quantity: "Quantidade Máxima do Pedido",
+  subtotal_value: "Valor do Subtotal",
+  excludes: "Exclui",
+  tax_profile: "Perfil Fiscal",
+  buy_now: "Comprar Agora",
+  unavailable: "Indisponível",
+  fleet_logistics_distribution: "Distribuição Logística de Frota",
+  standard_bulk_supply_lines_arrive: "Linhas de abastecimento padrão em lote chegam dentro de 2 a 3 janelas operacionais. Rastreamento ativado pelo painel do sistema de rotas de envio.",
+
+  // my ingredient orders
+  track_status_of_ingredient_purchases: "Acompanhe o status das suas compras de ingredientes",
+  placed_on: "Realizado em",
+  more_items: "mais item(ns)",
+  no_orders_yet: "Nenhum pedido ainda",
+  start_ordering_ingredients: "Comece a pedir ingredientes para vê-los aqui.",
+
+  // ingredients details
+  shipped: "Enviado",
+  confirmed: "Confirmado",
+  back_to_my_ingredient_orders: "Voltar para Meus Pedidos de Ingredientes",
+  items_ordered: "Itens Pedidos",
+  sku: "SKU",
+  market_source: "Origem do Mercado",
+  current_stock_pool: "Reserva de Estoque Atual",
+  bulk_volume_tier_triggered: "Nível de Volume em Lote Ativado",
+  includes: "Inclui",
+  vat: "IVA",
+  logistics_handling: "Logística e Manuseio",
+  delivered_successfully_on: "Entregue com sucesso em",
+  estimated_fulfillment_cycle_completes: "Ciclo estimado de processamento concluído em",
+  operating_days: "dias úteis",
+  shipping_destination: "Destino do Envio",
+  order_financial_matrix: "Matriz Financeira do Pedido",
+  products_net_base: "Base Líquida de Produtos",
+  bulk_wholesale_adjustment: "Ajuste de Atacado em Lote",
+  total_tax_amount: "Valor Total de Impostos",
+  distribution_logistics_fee: "Taxa de Logística de Distribuição",
+  grand_total: "Total Geral",
+  method: "Método",
+  need_assistance: "Precisa de Ajuda?",
+  reference_order_id: "ID de Referência do Pedido",
+  for_immediate_pipeline_routing_checkups: "para verificações imediatas do roteamento de envio.",
+  contact_support_lines: "Entrar em Contato com o Suporte",
 
   // payouts page
   vendor_payouts: "Pagamentos ao Vendedor",
@@ -1040,6 +1204,9 @@ export const pt = {
   payout_completed: "Pagamento Concluído",
   processing: "Em Processamento",
   all: "Todos",
+  payout_id: "ID do Pagamento",
+  payout_proof: "Comprovante de Pagamento",
+  download: "Baixar",
   no_payouts_found: "Nenhum pagamento encontrado",
 
   portugal_payment_rules: "Regras de Pagamento em Portugal",
@@ -1059,13 +1226,18 @@ export const pt = {
     "Os pagamentos são enviados para o IBAN registado. Atualize os dados bancários em Definições > Finanças.",
 
   // earnings-summary page
+  overview_of_your_earnings_sales: "Visão geral dos seus ganhos e vendas",
   performance_overview:
     "Visão geral de desempenho — receitas, pedidos e tendências",
   range: "Período",
   export_report: "Exportar Relatório",
   total_earnings: "Ganhos Totais",
+  today_earnings: "Ganhos de Hoje",
   since_joining_the_platform: "Desde que aderiu à plataforma",
   this_week: "Esta Semana",
+  this_month: "Este Mês",
+  earnings_overview: "Visão Geral dos Ganhos",
+  earnings_trend_over_last_6_months: "Tendência de ganhos nos últimos 6 meses",
   vs_last_week: "vs Semana Anterior",
   last_week: "Semana Anterior",
   reference: "Referência",
@@ -1114,6 +1286,8 @@ export const pt = {
   fees: "Taxas",
   refunds: "Reembolsos",
   id: "ID",
+  transaction_id: "ID da Transação",
+  type: "Tipo",
   no_transactions_found: "Nenhuma transação encontrada.",
   summary: "Resumo",
   positive_values_revenue_from_orders:
@@ -1126,11 +1300,13 @@ export const pt = {
     "Os reembolsos podem demorar 24–48 horas a refletir",
 
   // sales-analytics page
+  weekly_performance_top_products: "Desempenho semanal e principais produtos",
   deep_insights_revenue_best_selling_items_performance_trends:
     "Análises detalhadas sobre receitas, itens mais vendidos e tendências de desempenho",
   total_sales: "Vendas Totais",
   last_7_days: "Últimos 7 dias",
-  best_performing_day: "Melhor Dia de Vendas",
+  best_day: "Melhor Dia",
+  best_performing: "Melhor Desempenho",
   slowest_day: "Dia Mais Fraco",
   weekly_sales_trend: "Tendência Semanal de Vendas",
   top_selling_items: "Itens Mais Vendidos",
@@ -1139,11 +1315,22 @@ export const pt = {
     "Dados baseados nos últimos 7 dias | Atualizado automaticamente",
 
   // customer-insights page
+  understand_your_audience_retention: "Entenda o seu público e a retenção",
+  all_time: "Todo o Período",
   deep_customer_analytics:
     "Análises profundas de clientes — demografia, comportamento, retenção e sentimento",
   total_customers: "Total de Clientes",
   returning: "Recorrentes",
   top_city: "Cidade Principal",
+  retention: "Retenção",
+  demographics_by_city: "Dados Demográficos por Cidade",
+  no_data_available: "Nenhum dado disponível",
+  order_frequency: "Frequência de Pedidos",
+  weekly_order: "Pedidos Semanais",
+  bi_weekly_orders: "Pedidos Quinzenais",
+  monthly_orders: "Pedidos Mensais",
+  orders_sm: "pedidos",
+  order: "pedido",
   avg_repeat: "Repetição Média",
   demographics: "Demografia",
   live: "Em direto",
@@ -1169,10 +1356,12 @@ export const pt = {
   export_segment: "Exportar Segmento",
 
   // order-trends page
+  volume_analysis_and_peak_times: "Análise de volume e horários de pico",
   trend_analysis_orders_over_time:
     "Análise de tendências de pedidos ao longo do tempo — picos, categorias e volume",
   export_trends: "Exportar Tendências",
-  last_14_days_order_trend: "Tendência de Pedidos — Últimos 14 Dias",
+  last_14_days: "Últimos 14 Dias",
+  period_growth: "Crescimento no Período",
   vs_last_14_days: "vs Últimos 14 Dias",
   daily_order_volume: "Volume Diário de Pedidos",
   peak_ordering_times: "Horários de Maior Procura",
@@ -1192,6 +1381,11 @@ export const pt = {
   best_performing_menu_items:
     "Itens do menu com melhor desempenho — vendas, avaliações e crescimento",
   export: "Exportar",
+  items_sold_total: "Total de Itens Vendidos",
+  no_items_available_to_show: "Nenhum item disponível para exibir",
+  your_top_performing_items_will_appear: "Seus itens de melhor desempenho aparecerão aqui assim que os pedidos forem processados.",
+  units_sold: "unidades vendidas",
+  no_ratings_yet: "Nenhuma avaliação ainda",
   total_items_sold: "Total de Itens Vendidos (7 dias)",
   updated_hourly: "Atualizado de hora a hora",
   ai_insights: "Insights por IA",
@@ -1206,7 +1400,7 @@ export const pt = {
   create_promo: "Criar Promoção",
 
   // customer-reviews page
-  real_feedback_from_glovo_customers: "Feedback real dos seus clientes Glovo",
+  real_feedback_from_your_customers: "Feedback real dos seus clientes",
   average_rating: "Classificação Média",
   based_on: "com base em",
   reviews_sm: "avaliações",
@@ -1227,6 +1421,18 @@ export const pt = {
   // rating-summary page
   customer_satisfaction_overview:
     "Visão geral da satisfação do cliente + análises avançadas",
+  customer_satisfaction: "Satisfação do Cliente",
+  total_reviews: "Total de Avaliações",
+  avg_score: "Pontuação Média",
+  out_of: "De",
+  based_on_last: "Com base nas últimas",
+  positive_reviews: "Avaliações Positivas",
+  neutral_reviews: "Avaliações Neutras",
+  negative_reviews: "Avaliações Negativas",
+  star_distribution: "Distribuição por Estrelas",
+  awaiting_reviews: "Aguardando avaliações",
+  category_scores: "Pontuações por Categoria",
+  no_reviews_yet: "Nenhuma avaliação ainda",
   overall_rating: "Classificação Geral",
   neutral: "Neutras",
   rating_breakdown: "Distribuição de Avaliações",
@@ -1323,7 +1529,9 @@ export const pt = {
   percentage_discount: "Desconto Percentual",
   flat_amount_off: "Desconto Fixo",
   buy_1_get_1: "Compre 1 Leve 1",
+  discount_value: "Valor do Desconto",
   discount_perc_20: "Desconto % (ex.: 20)",
+  max_discount_amount: "Valor Máximo de Desconto",
   flat_discount: "Desconto Fixo (€)",
   choose_an_item: "Escolher um Item",
   buy_quantity: "Quantidade a Comprar (ex.: 2)",
@@ -1332,6 +1540,13 @@ export const pt = {
   start_date: "Data de Início",
   end_date: "Data de Fim",
   minimum_order_amount: "Valor Mínimo do Pedido (€)",
+  maximum_usage_count: "Limite Máximo de Uso",
+  users_usage_limit: "Limite de Uso por Usuário",
+  will_auto_apply: "Aplicar Automaticamente?",
+  applicable_products: "Produtos Aplicáveis",
+  all_products: "Todos os Produtos",
+  selected_products: "Produtos Selecionados",
+  select_products: "Selecionar Produtos",
   promo_code: "Código Promocional",
   enter_promo_code: "Introduzir código promocional",
 
@@ -1407,8 +1622,20 @@ export const pt = {
   decline_drinks_suggests_icreasing:
     "A queda nas bebidas sugere aumento de stock ou melhoria de visibilidade.",
   view_full_sales_breakdown: "Ver Análise Completa de Vendas",
+  sales_overview: "Visão Geral de Vendas",
+  sales: "Vendas",
 
   // tax-report page
+  detailed_tax_breakdown_for_products_addons: "Detalhamento de impostos para produtos e complementos",
+  gross_sales: "Vendas Brutas",
+  total_tax_liability: "Obrigação Fiscal Total",
+  net_revenue: "Receita Líquida",
+  tax_contribution: "Contribuição Fiscal",
+  product: "Produto",
+  addon: "Complemento",
+  tax_by_category: "Imposto por Categoria",
+  revenue_vs_tax_over_time: "Receita vs Imposto ao Longo do Tempo",
+  top_tax_generating_addons: "Principais Complementos Geradores de Imposto",
   tax_report_iva_breakdown: "Relatório Fiscal (Detalhe de IVA)",
   portugal_compliant_iva_calculation:
     "Relatório de cálculo de IVA em conformidade com a legislação portuguesa",
@@ -1443,11 +1670,16 @@ export const pt = {
   view_full_iva_breakdown: "Ver Detalhe Completo do IVA",
 
   // customer report page
+  overview_of_all_registered_customers: "Visão geral de todos os clientes registrados e suas atividades",
   see_customer_trends_spending_behaviour:
     "Visualizar tendências de clientes, comportamento de gastos e fidelização",
   avg_rating: "Avaliação Média",
   highest_spender: "Maior Gastador",
   most_orders: "Mais Pedidos",
+  customer_growth: "Crescimento de Clientes",
+  customer_ordered_over_last_6_months: "Clientes que pediram nos últimos 6 meses",
+  all_customers: "Todos os Clientes",
+  customers: "clientes",
   search_customer: "Pesquisar cliente...",
   total_spent: "total gasto",
   last_order: "Último pedido",
@@ -1462,6 +1694,8 @@ export const pt = {
   weekend_offers_boost_returning:
     "Ofertas ao fim de semana aumentam clientes recorrentes em 18%.",
   view_full_customer_breakdown: "Ver Análise Completa de Clientes",
+  last_ordered: "Último Pedido",
+  no_customer_found: "Nenhum cliente encontrado",
 
   // business info
   business_information: "Informações do Negócio",
@@ -1473,6 +1707,10 @@ export const pt = {
   website_optional: "Website (Opcional)",
   about_business: "Sobre o Negócio",
   opening_hours: "Horário de Funcionamento",
+
+  // export popover
+  export_as_pdf: "Exportar como PDF",
+  export_as_csv: "Exportar como CSV",
 
   // notifications page
   manage_alerts_system_updates:
@@ -1486,6 +1724,7 @@ export const pt = {
   instant_alerts_for_orders_reviews:
     "Alertas instantâneos para novos pedidos e avaliações",
   save_preferences: "Guardar Preferências",
+  unread: "Não lido",
 
   // change password
   update_account_password_securely:
@@ -1547,13 +1786,37 @@ export const pt = {
   save_apply_demo: "Guardar e Aplicar (demo)",
 
   // chat-support
-  chat_support: "Chat de Suporte",
+  chat_directly_with_support_experts: "Converse diretamente com nossos especialistas por meio de um tíquete de suporte",
   get_help_from_support_team:
     "Obtenha ajuda da nossa equipa de suporte em tempo real.",
   deligo_support: "Suporte Deligo",
   active_now: "Ativo agora",
   type_your_message: "Escreva a sua mensagem…",
   send: "Enviar",
+  inquiry: "Consulta",
+  no_message_content_available: "Nenhum conteúdo de mensagem disponível.",
+  view_conversation: "Ver Conversa",
+  our_team_tipically_responds_within: "Nossa equipe normalmente responde em",
+  hours: "horas",
+  no_active_support_tickets: "Nenhum Tíquete de Suporte Ativo",
+  you_dont_have_any_open_request: "Você não tem solicitações abertas. Se estiver enfrentando algum problema, crie um tíquete e cuidaremos disso imediatamente!",
+  create_your_first_ticket: "Criar seu primeiro tíquete",
+  // ---> create new ticket
+  create_new_ticket: "Criar Novo Tíquete",
+  category: "Categoria",
+  select_category: "Selecionar categoria",
+  general: "Geral",
+  iva_invoice: "Fatura IVA",
+  technical: "Técnico",
+  please_provide_details_of_issue: "Por favor, forneça os detalhes do seu problema ou consulta aqui...",
+  select_value: "Selecionar valor",
+  submitting: "Enviando...",
+  submit_ticket: "Enviar Tíquete",
+  // --> chat sheet
+  admin_is_typing: "O administrador está digitando...",
+  // --> chat input
+  this_ticket_is_closed_please_open_new: "Este tíquete está fechado. Por favor, abra um novo tíquete para obter mais ajuda.",
+  type_a_message: "Digite uma mensagem...",
 
   // help
   help_center: "Centro de Ajuda",
@@ -1701,7 +1964,7 @@ export const pt = {
   info: "Informações",
   emergency_type: "Tipo de Emergência",
   time_triggered: "Hora do Acionamento",
-  status: "Status",
+  status: "Estado",
   actions: "Ações",
   no_alerts_found: "Nenhum alerta encontrado",
   alert_details: "Detalhes do Alerta",

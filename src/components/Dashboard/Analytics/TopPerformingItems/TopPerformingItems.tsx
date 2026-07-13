@@ -1,6 +1,7 @@
 "use client";
 
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TTopPerformingItems } from "@/src/types/analytics.type";
 import { motion, Variants } from "framer-motion";
 import { ShoppingBagIcon, StarIcon, TrendingUpIcon } from "lucide-react";
@@ -11,6 +12,7 @@ interface IProps {
 }
 
 export default function TopPerformingItems({ topPerformingItemsData }: IProps) {
+  const { t } = useTranslation();
   const containerVariants = {
     hidden: {
       opacity: 0,
@@ -52,13 +54,13 @@ export default function TopPerformingItems({ topPerformingItemsData }: IProps) {
     >
       {/* Header */}
       <TitleHeader
-        title="Top Performing Items"
-        subtitle="Your best sellers and trending products"
+        title={t("top_performing_items")}
+        subtitle={t("best_performing_menu_items")}
         extraComponent={
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
             <ShoppingBagIcon className="w-4 h-4 text-[#DC3173]" />
             <span className="text-sm font-medium text-gray-600">
-              {topPerformingItemsData.summary?.totalItemsSold} Items Sold Total
+              {topPerformingItemsData.summary?.totalItemsSold} {t("items_sold_total")}
             </span>
           </div>
         }
@@ -67,8 +69,8 @@ export default function TopPerformingItems({ topPerformingItemsData }: IProps) {
       {/* Items Grid */}
       {topPerformingItemsData?.topItems?.length < 1 && (
         <div className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 rounded-xl border border-dashed w-full">
-          <p className="text-gray-500 text-lg font-medium">No items available to show</p>
-          <p className="text-gray-400 text-sm mt-0.5">Your top performing items will appear here once orders are processed.</p>
+          <p className="text-gray-500 text-lg font-medium">{t("no_items_available_to_show")}</p>
+          <p className="text-gray-400 text-sm mt-0.5">{t("your_top_performing_items_will_appear")}</p>
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -109,7 +111,7 @@ export default function TopPerformingItems({ topPerformingItemsData }: IProps) {
                   <span className="text-2xl font-bold text-[#DC3173]">
                     {item.sold}
                   </span>
-                  <span className="text-sm text-gray-500">units sold</span>
+                  <span className="text-sm text-gray-500">{t("units_sold")}</span>
                 </div>
                 {item.rating > 0 ? (
                   <div className="flex items-center gap-1 text-amber-500">
@@ -117,14 +119,14 @@ export default function TopPerformingItems({ topPerformingItemsData }: IProps) {
                     <span className="text-sm font-bold">{item.rating}</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">No ratings yet</span>
+                  <span className="text-xs text-gray-400">{t("no_ratings_yet")}</span>
                 )}
               </div>
 
               {/* Progress bar */}
               <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-[#DC3173] to-[#e45a92] rounded-full"
+                  className="h-full bg-linear-to-r from-[#DC3173] to-[#e45a92] rounded-full"
                   initial={{
                     width: 0,
                   }}

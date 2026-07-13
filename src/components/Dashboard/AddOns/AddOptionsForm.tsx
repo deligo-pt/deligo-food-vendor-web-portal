@@ -44,6 +44,7 @@ interface IProps {
   onOpenChange: (open: boolean) => void;
   selectedGroup?: TAddonGroup;
   taxes: TTax[];
+  t: (key: string) => string;
 }
 
 type TAddonOptionForm = z.infer<typeof createAddonOptionValidationSchema>;
@@ -53,6 +54,7 @@ export default function AddOptionsForm({
   onOpenChange,
   selectedGroup,
   taxes,
+  t
 }: IProps) {
   const router = useRouter();
   const { lang } = useStore();
@@ -108,7 +110,7 @@ export default function AddOptionsForm({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="p-6">
         <SheetHeader className="px-0">
-          <SheetTitle>Add Addon to {selectedGroup?.title?.[lang]}</SheetTitle>
+          <SheetTitle>{t("add_addon_to")} {selectedGroup?.title?.[lang]}</SheetTitle>
         </SheetHeader>
 
         <Form {...form}>
@@ -121,9 +123,9 @@ export default function AddOptionsForm({
               name={`name.${lang}`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Drinks Upgrade" {...field} />
+                    <Input placeholder={t("drinks_upgrade")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -135,7 +137,7 @@ export default function AddOptionsForm({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price (€)</FormLabel>
+                  <FormLabel>{t("price")} (€)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -156,7 +158,7 @@ export default function AddOptionsForm({
               name="tax"
               render={({ field, fieldState }) => (
                 <FormItem className="gap-1">
-                  <FormLabel>Option Tax</FormLabel>
+                  <FormLabel>{t("option_tax")}</FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger
@@ -165,7 +167,7 @@ export default function AddOptionsForm({
                           fieldState.invalid ? "border-destructive" : "",
                         )}
                       >
-                        <SelectValue placeholder="Select Tax" />
+                        <SelectValue placeholder={t("select_tax")} />
                       </SelectTrigger>
                       <SelectContent>
                         {taxes?.map((tax) => (
@@ -183,7 +185,7 @@ export default function AddOptionsForm({
 
             <div className="mt-6">
               <Button className="w-full" disabled={isSubmitting} style={{ background: PRIMARY }}>
-                Add Option
+                {t("add_option")}
               </Button>
             </div>
           </form>

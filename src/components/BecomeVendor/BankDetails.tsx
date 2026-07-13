@@ -26,6 +26,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { updateVendorReq } from "@/src/services/becomeVendor/become-vendor";
@@ -35,6 +42,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
+import { cn } from "@/lib/utils";
+import { bankNames } from "@/src/consts/bankNames.const";
 
 type TBankForm = z.infer<typeof bankDetailsValidation>;
 
@@ -118,7 +127,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                     <FormField
                       control={form.control}
                       name="bankName"
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <FormItem>
                           <div className="relative">
                             <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -126,11 +135,25 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                               {t("bankName")}
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                placeholder="e.g. Santander Bank"
-                                className="mt-2 w-full"
-                                {...field}
-                              />
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger
+                                  className={cn(
+                                    "w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#DC3173] focus:border-[#DC3173] outline-none transition-all",
+                                    fieldState.invalid
+                                      ? "border-red-500"
+                                      : "border-gray-300",
+                                  )}
+                                >
+                                  <SelectValue placeholder={t("select_bank_name")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {bankNames.map((value) => (
+                                    <SelectItem key={value} value={value}>
+                                      {value}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                           </div>
                           <FormMessage />

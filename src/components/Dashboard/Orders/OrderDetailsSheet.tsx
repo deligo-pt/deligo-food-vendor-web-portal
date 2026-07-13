@@ -56,7 +56,7 @@ export default function OrderDetailsSheet({
             <Separator />
 
             {/* Customer */}
-            <h3 className="text-lg font-semibold mb-2">Customer</h3>
+            <h3 className="text-lg font-semibold mb-2">{t("customer")}</h3>
             <div className="flex items-center gap-3">
               <Avatar className="w-14 h-14">
                 <AvatarImage src={selectedOrder?.customerId?.profilePhoto} />
@@ -84,7 +84,7 @@ export default function OrderDetailsSheet({
                 <>
                   <Separator />
 
-                  <h3 className="text-lg font-semibold mb-2">Delivery Partner</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t("delivery_partner")}</h3>
                   <div className="flex items-center gap-3">
                     <Avatar className="w-14 h-14">
                       <AvatarImage

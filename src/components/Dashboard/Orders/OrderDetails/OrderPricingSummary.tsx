@@ -5,9 +5,10 @@ import { CreditCardIcon, EuroIcon, SmartphoneIcon } from "lucide-react";
 
 interface IProps {
   order: TOrder;
+  t:(key: string) => string;
 }
 
-export default function OrderPricingSummary({ order }: IProps) {
+export default function OrderPricingSummary({ order, t }: IProps) {
   const { payoutSummary, paymentMethod, paymentStatus } = order;
 
   const getPaymentStatusColor = (status: string) => {
@@ -42,7 +43,7 @@ export default function OrderPricingSummary({ order }: IProps) {
     >
       <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center gap-2">
         <EuroIcon className="w-5 h-5 text-[#DC3173]" />
-        <h3 className="font-semibold text-gray-900">Payment Summary</h3>
+        <h3 className="font-semibold text-gray-900">{t("payment_summary")}</h3>
       </div>
 
       <div className="p-6 space-y-4">
@@ -67,7 +68,7 @@ export default function OrderPricingSummary({ order }: IProps) {
 
         <div className="border-t border-gray-100 pt-4 mt-4">
           <div className="flex justify-between items-end">
-            <span className="text-gray-900 font-semibold">Total Amount</span>
+            <span className="text-gray-900 font-semibold">{t("total_amount")}</span>
             <span className="text-3xl font-bold text-[#DC3173]">
               €
               {formatPrice(
@@ -77,7 +78,7 @@ export default function OrderPricingSummary({ order }: IProps) {
             </span>
           </div>
           <p className="text-xs text-gray-400 text-right mt-1">
-            Includes all taxes
+            {t("includes_all_taxes")}
           </p>
         </div>
       </div>

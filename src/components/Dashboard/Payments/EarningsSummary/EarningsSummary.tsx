@@ -6,6 +6,7 @@ import {
   AnimatedInteger,
 } from "@/src/components/Dashboard/Payments/EarningsSummary/AnimatedCounter";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { TEarningsAnalytics } from "@/src/types/analytics.type";
 import { motion, Variants } from "framer-motion";
 import { ActivityIcon, CalendarIcon, ClockIcon, EuroIcon } from "lucide-react";
@@ -15,6 +16,7 @@ interface IProps {
 }
 
 export default function EarningsSummary({ analyticsData }: IProps) {
+  const { t } = useTranslation();
   const containerVariants = {
     hidden: {
       opacity: 0,
@@ -52,8 +54,8 @@ export default function EarningsSummary({ analyticsData }: IProps) {
     >
       {/* Header */}
       <TitleHeader
-        title="Earnings Summary"
-        subtitle="Overview of your earnings and sales"
+        title={t("earnings_summary")}
+        subtitle={t("overview_of_your_earnings_sales")}
         extraComponent={
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
             <CalendarIcon className="w-4 h-4 text-[#DC3173]" />
@@ -87,7 +89,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
                   <EuroIcon className="w-6 h-6" />
                 </div>
                 <span className="text-sm font-bold tracking-wider text-gray-400 uppercase">
-                  Total Earnings
+                  {t("total_earnings")}
                 </span>
               </div>
 
@@ -106,7 +108,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
                 <div className="w-2 h-2 rounded-full bg-blue-400" />
                 <div className="flex flex-col">
                   <span className="text-xs text-gray-400 uppercase tracking-wide">
-                    Total Orders
+                    {t("total_orders")}
                   </span>
                   <span className="text-xl font-bold text-gray-900">
                     <AnimatedInteger value={analyticsData.topCard?.orders} />
@@ -118,7 +120,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
                 <div className="w-2 h-2 rounded-full bg-green-400" />
                 <div className="flex flex-col">
                   <span className="text-xs text-gray-400 uppercase tracking-wide">
-                    Completed Orders
+                    {t("completed_orders")}
                   </span>
                   <span className="text-xl font-bold text-gray-900">
                     <AnimatedInteger value={analyticsData.topCard?.completed} />
@@ -130,7 +132,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
                 <div className="w-2 h-2 rounded-full bg-amber-400" />
                 <div className="flex flex-col">
                   <span className="text-xs text-gray-400 uppercase tracking-wide">
-                    Pending Orders
+                    {t("pending_orders")}
                   </span>
                   <span className="text-xl font-bold text-gray-900">
                     <AnimatedInteger value={analyticsData.topCard?.pending} />
@@ -158,7 +160,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
             </div>
           </div>
           <h3 className="text-gray-500 text-sm font-medium mb-1">
-            Today&lsquo;s Earnings
+            {t("today_earnings")}
           </h3>
           <div className="text-3xl font-bold text-gray-900 group-hover:text-[#DC3173] transition-colors">
             <AnimatedCounter
@@ -181,7 +183,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
               <ActivityIcon className="w-5 h-5" />
             </div>
           </div>
-          <h3 className="text-gray-500 text-sm font-medium mb-1">This Week</h3>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">{t("this_week")}</h3>
           <div className="text-3xl font-bold text-gray-900 group-hover:text-[#DC3173] transition-colors">
             <AnimatedCounter
               value={analyticsData.earningsOverview?.thisWeek}
@@ -203,7 +205,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
               <CalendarIcon className="w-5 h-5" />
             </div>
           </div>
-          <h3 className="text-gray-500 text-sm font-medium mb-1">This Month</h3>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">{t("this_month")}</h3>
           <div className="text-3xl font-bold text-gray-900 group-hover:text-[#DC3173] transition-colors">
             <AnimatedCounter
               value={analyticsData.earningsOverview?.thisMonth}
@@ -230,10 +232,10 @@ export default function EarningsSummary({ analyticsData }: IProps) {
           className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
         >
           <h3 className="text-lg font-bold text-gray-900 mb-2">
-            Earnings Overview
+            {t("earnings_overview")}
           </h3>
           <p className="text-sm text-gray-500 mb-6">
-            Earnings trend over the last 6 months
+            {t("earnings_trend_over_last_6_months")}
           </p>
           <AnalyticsChart
             data={analyticsData?.monthlyEarnings || []}

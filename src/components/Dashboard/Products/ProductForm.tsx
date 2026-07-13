@@ -46,12 +46,12 @@ export function ProductForm({
   productCategories,
   addonGroupsData,
   taxesData,
-  businessType,
+  businessTypeSlug,
 }: {
   productCategories: TProductCategoryResponse[];
   addonGroupsData: TAddonGroup[];
   taxesData: TTax[];
-  businessType: string;
+  businessTypeSlug: string;
 }) {
   const { lang } = useStore();
   const { t } = useTranslation();
@@ -77,7 +77,7 @@ export function ProductForm({
       },
     ];
 
-    if (businessType !== "RESTAURANT") {
+    if (businessTypeSlug !== "restaurant") {
       baseTabs.push({
         name: t("stock"),
         icon: <PackageIcon className="h-5 w-5" />,
@@ -90,7 +90,7 @@ export function ProductForm({
     });
 
     return baseTabs;
-  }, [businessType, t]);
+  }, [businessTypeSlug, t]);
 
   const lastTabIndex = tabs.length - 1;
 
@@ -108,6 +108,7 @@ export function ProductForm({
       },
       category: "",
       price: 0,
+      discountType: "PERCENTAGE",
       discount: 0,
       taxId: "",
       quantity: 0,
@@ -117,7 +118,7 @@ export function ProductForm({
       variations: [],
       isFeatured: false,
       isAvailableForPreOrder: false,
-      businessType,
+      businessTypeSlug,
       currentLang: lang
     },
   });
@@ -133,10 +134,10 @@ export function ProductForm({
     ),
   );
 
-  const [watchPrice, watchDiscount, watchTaxId, watchAddons, watchVariations] =
+  const [watchPrice, watchDiscount, watchDiscountType, watchTaxId, watchAddons, watchVariations] =
     useWatch({
       control: form.control,
-      name: ["price", "discount", "taxId", "addonGroups", "variations"],
+      name: ["price", "discount", "discountType", "taxId", "addonGroups", "variations"],
     });
 
   const onSubmit = async (data: FormData) => {
@@ -157,6 +158,7 @@ export function ProductForm({
         images: data.images,
         pricing: {
           price: data.price,
+          discountType: data.discountType,
           discount: data.discount,
           taxId: data.taxId,
           currency: "€",
@@ -167,7 +169,7 @@ export function ProductForm({
           isFeatured: data.isFeatured,
           isAvailableForPreOrder: data.isAvailableForPreOrder,
         },
-        ...(businessType !== "RESTAURANT"
+        ...(businessTypeSlug !== "restaurant"
           ? {
             stock: {
               quantity: data.quantity,
@@ -322,7 +324,7 @@ export function ProductForm({
                   <AddOnsAndVariants
                     form={form}
                     addonGroupsData={addonGroupsData}
-                    businessType={businessType}
+                    businessTypeSlug={businessTypeSlug}
                     watchAddons={watchAddons}
                     watchVariations={watchVariations}
                     selectedLanguage={lang}
@@ -336,9 +338,10 @@ export function ProductForm({
                     watchPrice={watchPrice}
                     watchVariations={watchVariations}
                     watchTaxId={watchTaxId}
+                    watchDiscountType={watchDiscountType}
                   />
                 )}
-                {businessType !== "RESTAURANT" && activeTab === 4 && (
+                {businessTypeSlug !== "restaurant" && activeTab === 4 && (
                   <StockInformationForm
                     form={form}
                     watchVariations={watchVariations}

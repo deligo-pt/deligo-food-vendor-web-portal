@@ -33,9 +33,10 @@ import { toast } from "sonner";
 
 interface IProps {
   payouts: TPayout[];
+  t: (key: string) => string;
 }
 
-export default function PayoutTable({ payouts }: IProps) {
+export default function PayoutTable({ payouts, t }: IProps) {
   const router = useRouter();
 
   const handleDownloadInvoice = (p: TPayout) => {
@@ -66,36 +67,36 @@ export default function PayoutTable({ payouts }: IProps) {
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <HashIcon className="w-4" />
-                Payout ID
+                {t("payout_id")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <CreditCardIcon className="w-4" />
-                Method
+                {t("method")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <EuroIcon className="w-4" />
-                Amount
+                {t("amount")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <CheckCircleIcon className="w-4" />
-                Status
+                {t("status")}
               </div>
             </TableHead>
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <CalendarIcon className="w-4" />
-                Date
+                {t("date")}
               </div>
             </TableHead>
             <TableHead className="text-right text-[#DC3173] flex gap-2 items-center justify-end">
               <Cog className="w-4" />
-              Actions
+              {t("actions")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -106,7 +107,7 @@ export default function PayoutTable({ payouts }: IProps) {
                 className="text-[#DC3173] text-lg text-center"
                 colSpan={6}
               >
-                No payouts found
+                {t("no_payouts_found")}
               </TableCell>
             </TableRow>
           )}
@@ -128,15 +129,15 @@ export default function PayoutTable({ payouts }: IProps) {
                         router.push(`/vendor/payouts/${p.payoutId}`)
                       }
                     >
-                      View
+                      {t("view")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => handlePayoutProof(p)}
                     >
-                      Payout Proof
+                      {t("payout_proof")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleDownloadInvoice(p)}>
-                      Download
+                      {t("download")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

@@ -57,8 +57,8 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
     <div className="min-h-screen bg-gray-50/50 pb-20">
       <div className="min-h-screen">
         <TitleHeader
-          title="My Ingredient Orders"
-          subtitle="Track status of your ingredient purchases"
+          title={t("my_ingredient_orders")}
+          subtitle={t("track_status_of_ingredient_purchases")}
         />
 
         <AllFilters sortOptions={sortOptions} />
@@ -96,7 +96,7 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
                         </span>
                       </div>
                       <p className="text-sm text-gray-500 mb-2">
-                        Placed on{" "}
+                        {t("placed_on")}{" "}
                         {format(new Date(order.createdAt), "do MMM yyyy, hh:mm a")}
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -107,7 +107,7 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
                         )}
                         {order.orderDetails && order.orderDetails.length > 1 && (
                           <span className="px-2 py-1 bg-gray-50 rounded text-xs font-medium text-gray-400">
-                            +{order.orderDetails.length - 1} more item(s)
+                            +{order.orderDetails.length - 1} {t("more_items")}
                           </span>
                         )}
                       </div>
@@ -117,7 +117,7 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
                   <div className="flex items-center justify-between md:justify-end gap-6 min-w-[200px]">
                     <div className="text-right">
                       <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                        Total Amount
+                        {t("total_amount")}
                       </p>
                       <p className="text-2xl font-bold text-gray-900">
                         €{formatPrice(order.grandTotal || 0)}
@@ -142,9 +142,9 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
               <div className="inline-flex p-4 bg-gray-100 rounded-full text-gray-400 mb-4">
                 <Package size={32} />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">No orders yet</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t("no_orders_yet")}</h3>
               <p className="text-gray-500">
-                Start ordering ingredients to see them here.
+                {t("start_ordering_ingredients")}
               </p>
             </div>
           )}

@@ -112,12 +112,12 @@ export default function RatingSummary({
         <div className="space-y-4">
           <div className="inline-flex gap-2 bg-[#DC3173]/8 text-[#DC3173] text-xs font-semibold px-3 py-1.5 rounded-full">
             <AwardIcon className="w-3.5 h-3.5" />
-            Customer Satisfaction
+            {t("customer_satisfaction")}
           </div>
           <div className="mt-6 flex items-center gap-6">
             <div>
               <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
-                Total Reviews
+                {t("total_reviews")}
               </p>
               <p className="text-xl md:text-2xl lg:text-4xl font-bold text-gray-900 mt-0.5">
                 {summaryResult.summary?.avgRating}
@@ -126,7 +126,7 @@ export default function RatingSummary({
             <div className="w-px h-10 bg-gray-100" />
             <div>
               <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
-                Avg Score
+                {t("avg_score")}
               </p>
               <p className="text-xl md:text-2xl lg:text-4xl  font-bold text-gray-900 mt-0.5">
                 {summaryResult.summary?.avgRating?.toFixed(1)}
@@ -135,7 +135,7 @@ export default function RatingSummary({
             <div className="w-px h-10 bg-gray-100" />
             <div>
               <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
-                Out of
+                {t("out_of")}
               </p>
               <p className="text-xl md:text-2xl lg:text-4xl font-bold text-gray-900 mt-0.5">
                 5.0
@@ -143,7 +143,7 @@ export default function RatingSummary({
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            Based on last {summaryResult.summary?.totalRatings || 0} reviews
+            {t("based_on_last")} {summaryResult.summary?.totalRatings || 0} {t("reviews")}
           </p>
         </div>
 
@@ -194,7 +194,7 @@ export default function RatingSummary({
       >
         {[
           {
-            label: "Positive Reviews",
+            label: t("positive_reviews"),
             value: summaryResult.summary?.sentimentPercentages?.positive,
             color: "emerald",
             border: "border-l-4 border-emerald-400",
@@ -203,7 +203,7 @@ export default function RatingSummary({
             num: "text-emerald-700",
           },
           {
-            label: "Neutral Reviews",
+            label: t("neutral_reviews"),
             value: summaryResult.summary?.sentimentPercentages?.neutral,
             color: "amber",
             border: "border-l-4 border-amber-400",
@@ -212,7 +212,7 @@ export default function RatingSummary({
             num: "text-amber-700",
           },
           {
-            label: "Negative Reviews",
+            label: t("negative_reviews"),
             value: summaryResult.summary?.sentimentPercentages?.negative,
             color: "red",
             border: "border-l-4 border-red-400",
@@ -256,7 +256,7 @@ export default function RatingSummary({
             <div className="w-8 h-8 bg-[#DC3173]/10 rounded-lg flex items-center justify-center">
               <TrendingUpIcon className="w-4 h-4 text-[#DC3173]" />
             </div>
-            <h3 className="font-semibold text-gray-900">Star Distribution</h3>
+            <h3 className="font-semibold text-gray-900">{t("star_distribution")}</h3>
           </div>
           <div className="h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -320,7 +320,7 @@ export default function RatingSummary({
             <div className="w-8 h-8 bg-[#DC3173]/10 rounded-lg flex items-center justify-center">
               <MessageCircleIcon className="w-4 h-4 text-[#DC3173]" />
             </div>
-            <h3 className="font-semibold text-gray-900">30-Day Trend</h3>
+            <h3 className="font-semibold text-gray-900">{t("rating_trend_30_day")}</h3>
           </div>
           <div className="h-[220px] relative">
             <ResponsiveContainer width="100%" height="100%">
@@ -373,7 +373,7 @@ export default function RatingSummary({
                   <MessageCircleIcon className="w-5 h-5 text-gray-300" />
                 </div>
                 <p className="text-gray-400 text-sm font-medium">
-                  Awaiting reviews
+                  {t("awaiting_reviews")}
                 </p>
               </div>
             )}
@@ -384,7 +384,7 @@ export default function RatingSummary({
       {/* Category Ratings — 2x2 grid */}
       <motion.div variants={itemVariants}>
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
-          Category Scores
+          {t("category_scores")}
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Object.entries(summaryResult.summary?.categoryRatings || {})?.map(
@@ -411,7 +411,7 @@ export default function RatingSummary({
                     />
                   ))}
                 </div>
-                <p className="text-xs text-gray-400 mt-2">No reviews yet</p>
+                <p className="text-xs text-gray-400 mt-2">{t("no_reviews_yet")}</p>
               </motion.div>
             ),
           )}

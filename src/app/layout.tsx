@@ -4,6 +4,7 @@ import SonnerToaster from "@/src/components/SonnerToaster/SonnerToaster";
 import type { Metadata } from "next";
 import "react-international-phone/style.css";
 import "./globals.css";
+import { GoogleMapsProvider } from "../store/googleProvider";
 
 export const metadata: Metadata = {
   title: "DeliGo Vendor Portal | Manage Orders, Menus & Growth",
@@ -27,10 +28,12 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={`antialiased`}>
-        <RegisterFCMSW />
-        {children}
-        <SonnerToaster />
-        <NumberInputStopScroll />
+        <GoogleMapsProvider>
+          <RegisterFCMSW />
+          {children}
+          <SonnerToaster />
+          <NumberInputStopScroll />
+        </GoogleMapsProvider>
       </body>
     </html>
   );

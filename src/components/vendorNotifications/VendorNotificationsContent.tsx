@@ -96,18 +96,18 @@ export default function VendorNotificationsContent({
     <div className="min-h-screen space-y-10">
       <TitleHeader
         title={t("notifications")}
-        subtitle={t("Manage alerts system updates")}
+        subtitle={t("manage_alerts_system_updates")}
       />
 
       <div className="flex items-center justify-between text-sm text-slate-500 px-1">
         <span>
           {meta?.total
             ? `${meta.total} notification${meta.total > 1 ? "s" : ""}`
-            : t("No Notifications Available")}
+            : t("no_notifications_available")}
         </span>
         {meta?.page && meta?.totalPage ? (
           <span>
-            Page {meta.page} of {meta.totalPage}
+            {t("page_lg")} {meta.page} of {meta.totalPage}
           </span>
         ) : null}
       </div>
@@ -148,7 +148,7 @@ export default function VendorNotificationsContent({
                             </h3>
                             {!notification.isRead && (
                               <span className="inline-flex items-center rounded-full bg-[#DC3173]/10 px-2 py-0.5 text-[11px] font-semibold text-[#DC3173]">
-                                Unread
+                                {t("")}
                               </span>
                             )}
                           </div>
@@ -169,7 +169,7 @@ export default function VendorNotificationsContent({
                         </span>
                         {notification.data?.orderId ? (
                           <span className="rounded-full bg-slate-100 px-2.5 py-1 font-medium">
-                            Order {notification.data.orderId}
+                            {t("order_lg")} {notification.data.orderId}
                           </span>
                         ) : null}
                       </div>
@@ -183,7 +183,7 @@ export default function VendorNotificationsContent({
 
         {notifications.length === 0 && (
           <p className="text-center text-gray-500 py-10">
-            {t("No Notifications Available")}
+            {t("no_notifications_available")}
           </p>
         )}
       </div>

@@ -58,7 +58,7 @@ type FormData = z.infer<typeof productValidation>;
 interface IProps {
   prevData: TProduct;
   closeModal: () => void;
-  businessType: string;
+  businessTypeSlug: string;
 }
 
 interface IData<T> {
@@ -69,7 +69,7 @@ interface IData<T> {
 export function EditProductForm({
   prevData,
   closeModal,
-  businessType,
+  businessTypeSlug,
 }: IProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,7 +94,7 @@ export function EditProductForm({
       name: t("pricing"),
       icon: <TagIcon className="h-5 w-5" />,
     },
-    ...(businessType !== "RESTAURANT"
+    ...(businessTypeSlug !== "restaurant"
       ? [
         {
           name: t("stock"),
@@ -108,7 +108,7 @@ export function EditProductForm({
     },
   ];
 
-  const lastTabIndex = businessType !== "RESTAURANT" ? 5 : 4;
+  const lastTabIndex = businessTypeSlug !== "restaurant" ? 5 : 4;
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
   });
@@ -123,7 +123,8 @@ export function EditProductForm({
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
       price: prevData?.pricing?.price || 0,
-      discount: prevData?.pricing?.discount || 0,
+      discountType: prevData?.pricing?.discountType ?? "",
+      discount: prevData?.pricing?.discount ?? 0,
       taxId: String(prevData?.pricing?.taxId || ""),
       addonGroups: prevData?.addonGroups || [],
       variations: prevData?.variations || [],
@@ -132,8 +133,8 @@ export function EditProductForm({
       availabilityStatus: prevData?.stock?.availabilityStatus || "",
       isFeatured: prevData?.meta?.isFeatured || false,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
-      businessType,
-      currentLang : lang
+      businessTypeSlug,
+      currentLang: lang
     },
   });
 
@@ -184,6 +185,7 @@ export function EditProductForm({
       category: data.category,
       pricing: {
         discount: data.discount,
+        discountType: data.discountType,
         taxId: data.taxId,
       },
       addonGroups: data.addonGroups,
@@ -192,7 +194,7 @@ export function EditProductForm({
         isFeatured: data.isFeatured,
         isAvailableForPreOrder: data.isAvailableForPreOrder,
       },
-      ...(businessType !== "RESTAURANT"
+      ...(businessTypeSlug !== "restaurant"
         ? {
           stock: {
             unit: data.unit,
@@ -590,7 +592,7 @@ export function EditProductForm({
                                       : "border-gray-300",
                                   )}
                                 >
-                                  <SelectValue placeholder="Choose Add-On" />
+                                  <SelectValue placeholder={t("choose_add_on")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {addonGroupsData?.data?.map((group) => (
@@ -675,7 +677,7 @@ export function EditProductForm({
                     <h2 className="text-xl font-semibold text-gray-800">
                       {t("pricing_information")}
                     </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       {(!prevData?.variations || prevData?.variations?.length === 0) && <FormField
                         control={form.control}
                         name="price"
@@ -705,6 +707,37 @@ export function EditProductForm({
                           </FormItem>
                         )}
                       />}
+                      <FormField
+                        control={form.control}
+                        name="discountType"
+                        render={({ field }) => (
+                          <FormItem className="gap-1">
+                            <FormLabel
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              {t("select_discount_type")}
+                            </FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="w-full h-10">
+                                    <SelectValue placeholder={t("select_discount_type")} />
+                                  </SelectTrigger>
+                                </FormControl>
+
+                                <SelectContent>
+                                  <SelectItem value="PERCENTAGE">PERCENTAGE</SelectItem>
+                                  <SelectItem value="FLAT">FLAT</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name="discount"
@@ -770,7 +803,7 @@ export function EditProductForm({
                   </motion.div>
                 )}
                 {/* Stock Tab */}
-                {businessType !== "RESTAURANT" && activeTab === 4 && (
+                {businessTypeSlug !== "restaurant" && activeTab === 4 && (
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -898,7 +931,7 @@ export function EditProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      DeliGo Metadata Information
+                       {t("deligo_metadata_information")}
                     </h2>
                     <div className="space-y-4">
                       <FormField
@@ -920,7 +953,7 @@ export function EditProductForm({
                                     }
                                     className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                   />
-                                  Featured Product
+                                   {t("featured_product")}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -947,7 +980,7 @@ export function EditProductForm({
                                     }
                                     className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                   />
-                                  Available for Pre-Order
+                                   {t("available_for_pre_order")}
                                 </FormLabel>
                               </div>
                             </FormControl>

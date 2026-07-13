@@ -53,6 +53,7 @@ interface IProps {
   prevValues?: TAddonGroup;
   taxes: TTax[];
   actionType?: "create" | "edit";
+  t: (key: string) => string;
 }
 
 export default function CreateOrEditAddOnsGroup({
@@ -60,6 +61,7 @@ export default function CreateOrEditAddOnsGroup({
   onOpenChange,
   prevValues,
   taxes,
+  t,
   actionType = "create",
 }: IProps) {
   const { lang } = useStore();
@@ -217,7 +219,7 @@ export default function CreateOrEditAddOnsGroup({
       <SheetContent className="p-6 overflow-auto">
         <SheetHeader className="px-0">
           <SheetTitle>
-            {actionType === "create" ? "Create" : "Edit"} Addon Group
+            {actionType === "create" ? t("create") : t("edit")} {t("addon_group")}
           </SheetTitle>
         </SheetHeader>
 
@@ -232,9 +234,9 @@ export default function CreateOrEditAddOnsGroup({
               name="title.en"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Group Title</FormLabel>
+                  <FormLabel>{t("group_title")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Drinks Upgrade" {...field} />
+                    <Input placeholder={t("drinks_upgrade")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -245,9 +247,9 @@ export default function CreateOrEditAddOnsGroup({
               name="title.pt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Group Title</FormLabel>
+                  <FormLabel>{t("group_title")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Drinks Upgrade" {...field} />
+                    <Input placeholder={t("drinks_upgrade")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -259,7 +261,7 @@ export default function CreateOrEditAddOnsGroup({
               name="minSelectable"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Min Select</FormLabel>
+                  <FormLabel>{t("min_select")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -279,7 +281,7 @@ export default function CreateOrEditAddOnsGroup({
               name="maxSelectable"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Max Select</FormLabel>
+                  <FormLabel>{t("max_select")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -295,7 +297,7 @@ export default function CreateOrEditAddOnsGroup({
             />
 
             <div className="space-y-2 ">
-              <label className="block mb-1">Options</label>
+              <label className="block mb-1">{t("options")}</label>
               {optionsFields?.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-1">
                   {optionsFields?.map((option) => (
@@ -305,9 +307,9 @@ export default function CreateOrEditAddOnsGroup({
                     >
                       <span>{option.name?.[lang]}</span>
                       <span className="ml-2 text-xs text-slate-200">
-                        Price: (€{option.price})
+                        {t("price")}: (€{option.price})
                         {option.tax
-                          ? `+ Tax: (
+                          ? ` (incl. Tax:
                         ${taxes.find((t) => t._id === option.tax)?.taxRate}%)`
                           : ""}
                       </span>
@@ -331,13 +333,13 @@ export default function CreateOrEditAddOnsGroup({
                   name="optionName"
                   render={() => (
                     <FormItem className="gap-1">
-                      <FormLabel>Option Name</FormLabel>
+                      <FormLabel>{t("option_name")}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
                           value={optionName}
                           onChange={(e) => setOptionName(e.target.value)}
-                          placeholder="Add an option name"
+                          placeholder={t("add_an_option_name")}
                           onKeyUp={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
@@ -355,7 +357,7 @@ export default function CreateOrEditAddOnsGroup({
                   name="optionPrice"
                   render={() => (
                     <FormItem className="gap-1">
-                      <FormLabel>Option Price</FormLabel>
+                      <FormLabel>{t("option_price")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -364,7 +366,7 @@ export default function CreateOrEditAddOnsGroup({
                           onChange={(e) =>
                             setOptionPrice(Number(e.target.value))
                           }
-                          placeholder="Option Price"
+                          placeholder={t("option_price")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -376,14 +378,14 @@ export default function CreateOrEditAddOnsGroup({
                   name="optionTax"
                   render={() => (
                     <FormItem className="gap-1">
-                      <FormLabel>Option Tax</FormLabel>
+                      <FormLabel>{t("option_tax")}</FormLabel>
                       <FormControl>
                         <Select
                           value={optionTax}
                           onValueChange={(val) => setOptionTax(val)}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Tax" />
+                            <SelectValue placeholder={t("select_tax")} />
                           </SelectTrigger>
                           <SelectContent>
                             {taxes?.map((tax) => (
@@ -405,7 +407,7 @@ export default function CreateOrEditAddOnsGroup({
                     onClick={addOption}
                     className="bg-[#DC3173] text-white px-4 py-2 rounded-md hover:bg-[#B02458] transition-colors"
                   >
-                    Add Option
+                    {t("add_option")}
                   </Button>
                 </div>
               </div>
@@ -417,7 +419,7 @@ export default function CreateOrEditAddOnsGroup({
                 form="creatAddOnsForm"
                 disabled={isSubmitting}
               >
-                {actionType === "create" ? "Create" : "Update"}
+                {actionType === "create" ? t("create") : t("update")}
               </Button>
             </div>
           </form>

@@ -76,8 +76,8 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
       <div className="max-w-full ">
         {/* Header */}
         <TitleHeader
-          title="Variation Management"
-          subtitle="Add, edit, and manage product variations"
+          title={t("variation_management")}
+          subtitle={t("add_edit_manage_product_variation")}
         />
 
         {/* Filters */}
@@ -100,7 +100,7 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
         >
           <div className="flex items-center gap-2">
             <Package size={16} className="text-[#DC3173]" />
-            <span className="text-sm text-gray-500">Products:</span>
+            <span className="text-sm text-gray-500">{t("products")}:</span>
             <span className="text-sm font-bold text-gray-900">
               {productsData.meta?.total || 0}
             </span>
@@ -108,7 +108,7 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
           <div className="w-px h-4 bg-gray-200" />
           <div className="flex items-center gap-2">
             <Layers size={16} className="text-blue-400" />
-            <span className="text-sm text-gray-500">Variations:</span>
+            <span className="text-sm text-gray-500">{t("variations")}:</span>
             <span className="text-sm font-bold text-gray-900">
               {totalVariations}
             </span>
@@ -116,7 +116,7 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
           <div className="w-px h-4 bg-gray-200" />
           <div className="flex items-center gap-2">
             <Tag size={16} className="text-green-400" />
-            <span className="text-sm text-gray-500">Options:</span>
+            <span className="text-sm text-gray-500">{t("options")}:</span>
             <span className="text-sm font-bold text-gray-900">
               {totalOptions}
             </span>
@@ -141,7 +141,10 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
                   delay: index * 0.05,
                 }}
               >
-                <ProductVariationCard product={product} businessType={vendor?.businessDetails?.businessType as "STORE" | "RESTAURANT"} />
+                <ProductVariationCard
+                  product={product} businessTypeSlug={vendor?.businessDetails?.businessTypeSlug as "store" | "restaurant"}
+                  t={t}
+                />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -152,10 +155,10 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
                 <Package size={32} />
               </div>
               <h3 className="text-lg font-medium text-gray-900">
-                No products found
+                {t("no_products_found")}
               </h3>
               <p className="text-gray-500 mt-1">
-                Try adjusting your search or filter
+                {t("try_adjusting_your_search_or_filter")}
               </p>
             </div>
           )}

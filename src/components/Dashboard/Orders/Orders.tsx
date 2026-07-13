@@ -34,61 +34,61 @@ export default function Orders({
 
   const filterOptions = [
     {
-      label: "Order Status",
+      label: t("order_status"),
       key: "orderStatus",
       placeholder: "Select Status",
       type: "select",
       items: [
         {
-          label: "All",
+          label: t("all"),
           value: "all",
         },
         {
-          label: "Pending",
+          label: t("pending"),
           value: ORDER_STATUS.PENDING,
         },
         {
-          label: "Accepted",
+          label: t("accepted"),
           value: ORDER_STATUS.ACCEPTED,
         },
         {
-          label: "Rejected",
+          label: t("rejected"),
           value: ORDER_STATUS.REJECTED,
         },
         {
-          label: "Canceled",
+          label: t("cancelled"),
           value: ORDER_STATUS.CANCELED,
         },
         {
-          label: "Dispatching",
+          label: t("dispatching"),
           value: ORDER_STATUS.DISPATCHING,
         },
         {
-          label: "Waiting for Partner",
+          label: t("awaiting_partner"),
           value: ORDER_STATUS.AWAITING_PARTNER,
         },
         {
-          label: "Assigned to Partner",
+          label: t("assigned"),
           value: ORDER_STATUS.ASSIGNED,
         },
         {
-          label: "Reassignment Needed",
+          label: t("reassignment_needed"),
           value: ORDER_STATUS.REASSIGNMENT_NEEDED,
         },
         {
-          label: "Preparing",
+          label: t("preparing"),
           value: ORDER_STATUS.PREPARING,
         },
         {
-          label: "Ready for Pickup",
+          label: t("ready_for_pickup"),
           value: ORDER_STATUS.READY_FOR_PICKUP,
         },
         {
-          label: "On the Way",
+          label: t("on_the_way"),
           value: ORDER_STATUS.ON_THE_WAY,
         },
         {
-          label: "Delivered",
+          label: t("delivered"),
           value: ORDER_STATUS.DELIVERED,
         },
       ],
@@ -98,7 +98,7 @@ export default function Orders({
   return (
     <div className="space-y-6 max-w-full">
       {/* Page Title */}
-      <TitleHeader title={title} subtitle={subtitle} />
+      <TitleHeader title={t(`${title}`)} subtitle={t(`${subtitle}`)} />
 
       {/* Filters */}
       <AllFilters

@@ -32,7 +32,7 @@ export default function Payouts({ payoutsResult }: IProps) {
       <AllFilters sortOptions={sortOptions} />
 
       {/* Payout Table */}
-      <PayoutTable payouts={payoutsResult?.data || []} />
+      <PayoutTable payouts={payoutsResult?.data || []} t={t} />
 
       {/* Pagination */}
       {!!payoutsResult?.meta?.totalPage && (

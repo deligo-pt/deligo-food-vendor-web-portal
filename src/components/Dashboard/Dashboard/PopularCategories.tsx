@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/src/hooks/use-translation";
+import { useStore } from "@/src/store/store";
 import { TPopularCategory } from "@/src/types/analytics.type";
 import { motion } from "framer-motion";
 
@@ -11,7 +12,8 @@ interface IProps {
 }
 
 const PopularCategories = ({ popularCategories }: IProps) => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
+  const { lang } = useStore();
 
   return (
     <div className="bg-white rounded-lg shadow p-6 border border-gray-100 h-full">
@@ -25,7 +27,7 @@ const PopularCategories = ({ popularCategories }: IProps) => {
         {popularCategories?.map((category, index) => (
           <div key={index}>
             <div className="flex justify-between mb-1">
-              <span className="text-sm font-medium">{category.name}</span>
+              <span className="text-sm font-medium">{category.name?.[lang] as string}</span>
               <span className="text-sm font-medium">
                 {category.percentage}%
               </span>

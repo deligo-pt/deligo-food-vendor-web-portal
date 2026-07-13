@@ -331,7 +331,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       render={({ field }) => (
                         <FormItem className="w-full">
                           <FormLabel className="font-medium text-sm text-gray-700">
-                            Discount Value
+                            {t("discount_value")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -357,7 +357,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       render={({ field }) => (
                         <FormItem className="w-full">
                           <FormLabel className="font-medium text-sm text-gray-700">
-                            Max discount Amount
+                            {t("max_discount_amount")}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -387,7 +387,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-medium text-sm text-gray-700">
-                          Discount Value
+                          {t("discount_value")}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -590,10 +590,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <div className="space-y-2">
                             <FormLabel className="font-medium text-sm text-gray-700">
-                              Maximum Usage Count
+                              {t("maximum_usage_count")}
                             </FormLabel>
                             <Input
-                              placeholder="Maximum usage count"
+                              placeholder={t("maximum_usage_count")}
                               type="number"
                               min={0}
                               className="h-12 text-base"
@@ -613,10 +613,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <div className="space-y-2">
                             <FormLabel className="font-medium text-sm text-gray-700">
-                              Users Usage Limit
+                              {t("users_usage_limit")}
                             </FormLabel>
                             <Input
-                              placeholder="Users usage limit"
+                              placeholder={t("users_usage_limit")}
                               type="number"
                               min={0}
                               className="h-12 text-base"
@@ -639,7 +639,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormLabel className="flex space-y-2 gap-2 items-center">
                           <Input
                             type="checkbox"
-                            placeholder="Offer Description"
+                            placeholder={t("offer_description")}
                             className="w-4 h-4 mb-0"
                             {...field}
                             checked={field.value ? true : false}
@@ -656,7 +656,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             }}
                             className="font-medium text-sm text-gray-700"
                           >
-                            Will Auto Apply?
+                            {t("will_auto_apply")}
                           </span>
                         </FormLabel>
                       </FormControl>
@@ -693,7 +693,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
               {/* APPLICABLE PRODUCTS */}
               <div className="space-y-4">
-                <h2 className="font-bold text-lg">Applicable Products</h2>
+                <h2 className="font-bold text-lg">{t("applicable_products")}</h2>
                 <Separator />
 
                 <div className="flex items-center w-full gap-4">
@@ -707,7 +707,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         setIsSelectedAllProducts(true);
                       }}
                     />
-                    <span>All Products</span>
+                    <span>{t("all_products")}</span>
                   </Label>
                   <Label className="font-medium text-sm text-gray-700">
                     <Input
@@ -719,7 +719,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         setIsSelectedAllProducts(false);
                       }}
                     />
-                    <span>Selected Products</span>
+                    <span>{t("selected_products")}</span>
                   </Label>
                 </div>
 
@@ -786,11 +786,11 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               value="select_products"
                             >
                               <SelectTrigger className="w-full h-12!">
-                                <SelectValue placeholder="Select Products" />
+                                <SelectValue placeholder={t("select_products")} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="select_products">
-                                  Select Products
+                                  {t("select_products")}
                                 </SelectItem>
                                 {filteredItems?.map((item: TProduct) => (
                                   <SelectItem

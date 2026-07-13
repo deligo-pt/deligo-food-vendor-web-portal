@@ -32,6 +32,7 @@ export type TProduct = {
 
   pricing: {
     price: number;
+    discountType: "PERCENTAGE" | "FLAT";
     discount?: number;
     taxId?: string;
     finalPrice: number;

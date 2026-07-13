@@ -16,10 +16,10 @@ import { toast } from "sonner";
 
 interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
-  businessType: string;
+  businessTypeSlug: string;
 }
 
-export default function Products({ productsData, businessType }: IProps) {
+export default function Products({ productsData, businessTypeSlug }: IProps) {
   const { t } = useTranslation();
   const [products, setProducts] = useState(productsData.data);
   const [selectedProduct, setSelectedProduct] = useState<{
@@ -114,7 +114,7 @@ export default function Products({ productsData, businessType }: IProps) {
       {/* Filters */}
       <AllFilters
         sortOptions={sortOptions}
-        {...(businessType !== "RESTAURANT" ? { filterOptions } : {})}
+        {...(businessTypeSlug !== "restaurant" ? { filterOptions } : {})}
       />
 
       {productsData.data?.length > 0 && (
@@ -149,6 +149,7 @@ export default function Products({ productsData, businessType }: IProps) {
                 product={product}
                 onDelete={openDeleteDialog}
                 onEdit={onEditClick}
+                t={t}
               />
             ))}
           </AnimatePresence>
@@ -187,6 +188,7 @@ export default function Products({ productsData, businessType }: IProps) {
           setSelectedProduct({ id: null, action: null, product: null })
         }
         onConfirm={handleDeleteProduct}
+        t={t}
       />
 
       <EditProductDialog
@@ -195,7 +197,7 @@ export default function Products({ productsData, businessType }: IProps) {
           setSelectedProduct({ id: null, action: null, product: null })
         }
         prevData={selectedProduct?.product as TProduct}
-        businessType={businessType}
+        businessTypeSlug={businessTypeSlug}
       />
     </div>
   );

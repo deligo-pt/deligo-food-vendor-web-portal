@@ -25,7 +25,8 @@ interface IProps {
   productId: string;
   variationName: LocalizedType;
   onCancel: () => void;
-  businessType: "STORE" | "RESTAURANT"
+  businessTypeSlug: "store" | "restaurant"
+  t: (key: string) => string;
 }
 
 type TOptionForm = z.infer<typeof variationOptionValidation>;
@@ -34,7 +35,8 @@ export default function AddVaritionOptionForm({
   productId,
   variationName,
   onCancel,
-  businessType
+  businessTypeSlug,
+  t
 }: IProps) {
   const { lang } = useStore();
   const router = useRouter();
@@ -109,10 +111,10 @@ export default function AddVaritionOptionForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="block text-xs font-medium text-gray-500 mb-1">
-                    Option Label
+                    {t("option_label")}
                   </FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g. Medium" />
+                    <Input {...field} placeholder={t("medium_placeholder")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -124,10 +126,10 @@ export default function AddVaritionOptionForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="block text-xs font-medium text-gray-500 mb-1">
-                    Option Label
+                    {t("option_label")}
                   </FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g. Medium" />
+                    <Input {...field} placeholder={t("medium_placeholder")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,7 +143,7 @@ export default function AddVaritionOptionForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="block text-xs font-medium text-gray-500 mb-1">
-                    Price (€)
+                    {t("price")} (€)
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -157,14 +159,14 @@ export default function AddVaritionOptionForm({
               )}
             />
           </div>
-          {businessType === "STORE" && <div className="w-24">
+          {businessTypeSlug === "store" && <div className="w-24">
             <FormField
               control={form.control}
               name="stockQuantity"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="block text-xs font-medium text-gray-500 mb-1">
-                    Stock
+                    {t("stock")}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -182,14 +184,14 @@ export default function AddVaritionOptionForm({
           </div>}
           <div className="flex items-center gap-2">
             <button disabled={isSubmitting} className="px-4 py-1.5 bg-[#DC3173] text-white rounded-lg text-sm font-bold hover:bg-[#DC3173]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-              Add
+              {t("add")}
             </button>
             <button
               type="button"
               onClick={onCancel}
               className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
             >
-              Cancel
+              {t("cancel")}
             </button>
           </div>
         </form>

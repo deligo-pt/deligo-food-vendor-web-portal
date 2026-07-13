@@ -2,7 +2,10 @@ import { ORDER_STATUS } from "@/src/consts/order.const";
 
 export type TPopularCategory = {
   _id: string;
-  name: string;
+  name: {
+    en: string;
+    pt: string;
+  };
   percentage: number;
 };
 
