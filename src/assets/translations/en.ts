@@ -616,6 +616,7 @@ export const en = {
   bankDetailsDesc:
     "Add your bank details so we can pay you. Your data is encrypted and stored securely.",
   bankName: "Bank Name",
+  select_bank_name: "Select Bank Name",
   accountHolder: "Account Holder",
   iban: "IBAN",
   swift_bic: "SWIFT / BIC",
