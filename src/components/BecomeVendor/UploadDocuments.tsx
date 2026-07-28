@@ -53,6 +53,7 @@ const REQUIRED_DOCS: DocKey[] = [
   "taxDoc",
   "idProofFront",
   "idProofBack",
+  "ibanProof"
 ];
 
 export default function UploadDocuments({
@@ -89,6 +90,9 @@ export default function UploadDocuments({
       : null,
     agoserisHaccpCertificate: Array.isArray(savedPreviews.agoserisHaccpCertificate)
       ? savedPreviews.agoserisHaccpCertificate
+      : null,
+    ibanProof: Array.isArray(savedPreviews.ibanProof)
+      ? savedPreviews.ibanProof
       : null,
   });
 
@@ -136,6 +140,11 @@ export default function UploadDocuments({
       label: t("agoserisHaccpCertificate"),
       prefersImagePreview: true,
     },
+    {
+      key: "ibanProof",
+      label: t("iban_proof"),
+      prefersImagePreview: true,
+    },
   ];
 
   const DEFAULT_DOC_IMAGES: Partial<Record<DocKey, string>> = {
@@ -155,6 +164,7 @@ export default function UploadDocuments({
     idProofFront: 1,
     idProofBack: 1,
     agoserisHaccpCertificate: 1,
+    ibanProof: 1,
 
     businessLicenseDoc: 3,
     taxDoc: 3,

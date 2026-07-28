@@ -671,6 +671,7 @@ export const pt = {
   documentsLabel4: "Fotografia da Loja",
   documentsLabel5: "Menu / Brochura",
   agoserisHaccpCertificate: "Certificado HACCP Agoseris",
+  iban_proof: "Comprovante do IBAN",
   viewCTA: "Ver",
   removeCTA: "Remover",
   addMoreCTA: "Adicionar Mais",
