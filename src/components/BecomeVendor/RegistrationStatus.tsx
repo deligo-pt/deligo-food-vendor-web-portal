@@ -50,12 +50,35 @@ export default function RegistrationStatus({ vendor }: IProps) {
       removeCookie("accessToken");
       removeCookie("refreshToken");
       router.push("/login");
+      setIsSubmitting(false);
+      return;
+    }
+    if (result?.message === "NEXT_REDIRECT") {
+      toast.success("Logout successful!", {
+        id: toastId,
+      });
+
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (result?.success === false) {
+      toast.success("Logout successful!", {
+        id: toastId,
+      });
+
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      router.push("/login");
+      setIsSubmitting(false);
       return;
     }
 
     toast.error(result?.message || "Logout failed", { id: toastId });
-    console.log(result);
-    setIsSubmitting(false);
+
   };
 
   return (

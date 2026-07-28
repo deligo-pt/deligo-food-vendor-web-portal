@@ -24,7 +24,10 @@ export type TRecentOrder = {
 
 export type TTopRatedItems = {
   _id: string;
-  name: string;
+  name: {
+    en: string;
+    pt: string;
+  };
   rating: {
     average: number;
   };

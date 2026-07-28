@@ -29,8 +29,8 @@ type LocationFormType = {
   city: string;
   postalCode: string;
   country: string;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
 };
 
 
@@ -71,6 +71,8 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
       city: "",
       postalCode: "",
       country: "",
+      latitude: 0,
+      longitude: 0,
     },
   });
 
@@ -291,10 +293,10 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
           {/* MAP */}
           <div className="w-full h-80 rounded-xl shadow-md border overflow-hidden">
             <Map
-              center={position}
-              zoom={14}
+              defaultCenter={position}
+              defaultZoom={14}
               gestureHandling="greedy"
-              disableDefaultUI
+              disableDefaultUI={false}
               onClick={(event) => {
                 if (!event.detail?.latLng) return;
 
