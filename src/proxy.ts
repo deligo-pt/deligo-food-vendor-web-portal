@@ -1,8 +1,7 @@
-
 import { USER_ROLE, USER_STATUS } from "@/src/consts/user.const";
 import { NextRequest, NextResponse } from "next/server";
-import { jwtDecode } from "jwt-decode";
-import type { TJwtPayload } from "@/src/types";
+import { getNewAccessToken } from "./utils/getNewAccessToken";
+import { verifyJWT } from "./utils/verifyJWT";
 
 const PUBLIC_AUTH_PATHS = [
   "/login",
@@ -31,7 +30,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 1. CRITICAL FIX: Handle the explicit clear session flag safely in Middleware
+  // 1. Handle the explicit clear session flag safely
   if (pathname === "/login" && searchParams.get("clearSession") === "true") {
     const response = NextResponse.redirect(new URL("/login", req.url));
     response.cookies.delete("accessToken");
@@ -40,36 +39,76 @@ export async function proxy(req: NextRequest) {
   }
 
   const accessToken = req.cookies.get("accessToken")?.value;
+  const refreshToken = req.cookies.get("refreshToken")?.value;
+  
   const loginUrl = new URL("/login", req.url);
   loginUrl.searchParams.set("redirect", pathname);
 
-  // === No Token Logic ===
-  if (!accessToken) {
+  let decodedData = null;
+  let isTokenRefreshed = false;
+  let newAccessTokenValue = "";
+
+  // === Token Verification & Silent Refresh ===
+  if (accessToken) {
+    const decoded = await verifyJWT(accessToken);
+
+    if (decoded.success) {
+      decodedData = decoded.data;
+    } else if (decoded?.reason === "jwt expired" && refreshToken) {
+      // Attempt to retrieve a new token if the old one expired
+      const newAccessTokenResponse = await getNewAccessToken();
+      const newAccessToken =
+        typeof newAccessTokenResponse === "string"
+          ? newAccessTokenResponse
+          : newAccessTokenResponse?.accessToken;
+
+      if (newAccessToken) {
+        const verified = await verifyJWT(newAccessToken);
+        if (verified.success) {
+          decodedData = verified.data;
+          newAccessTokenValue = newAccessToken;
+          isTokenRefreshed = true;
+        }
+      }
+    }
+  }
+
+  // === Case 1: No Token (or Refresh Failed / Invalid Token) ===
+  if (!decodedData) {
     if (PUBLIC_AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(path))) {
       return NextResponse.next();
     }
 
-    // Protect vendor routes
+    // Protect vendor and registration routes
     if (pathname.startsWith("/vendor") || PROTECTED_REGISTRATION_PATHS.some((p) => pathname.startsWith(p))) {
-      return NextResponse.redirect(loginUrl);
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.delete("accessToken");
+      response.cookies.delete("refreshToken");
+      return response;
     }
     return NextResponse.next();
   }
 
-  // === Decode JWT (Fast, no network call) ===
-  let decoded: TJwtPayload | null = null;
-  try {
-    decoded = jwtDecode<TJwtPayload>(accessToken);
-  } catch (error) {
-    const response = NextResponse.redirect(loginUrl);
-    response.cookies.delete("accessToken");
-    response.cookies.delete("refreshToken");
-    return response;
-  }
+  // === Case 2: Token Exists / Decoded Successfully ===
+  const { role, status } = decodedData;
 
-  const { role, status } = decoded;
+  // Helper helper to create responses that preserve the refreshed cookie state if needed
+  const createResponse = (redirectUrl?: URL) => {
+    const res = redirectUrl ? NextResponse.redirect(redirectUrl) : NextResponse.next();
+    if (isTokenRefreshed && newAccessTokenValue) {
+      res.cookies.set({
+        name: "accessToken",
+        value: newAccessTokenValue,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+      });
+    }
+    return res;
+  };
 
-  // Wrong role → logout
+  // Enforce correct role
   if (role !== USER_ROLE.VENDOR) {
     const response = NextResponse.redirect(loginUrl);
     response.cookies.delete("accessToken");
@@ -77,36 +116,36 @@ export async function proxy(req: NextRequest) {
     return response;
   }
 
-  // === Redirect Logic for Logged-in Users ===
+  // Redirect Logged-in Users from Public Auth Paths
   if (PUBLIC_AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(path))) {
     if (status === USER_STATUS.APPROVED) {
-      return NextResponse.redirect(new URL("/vendor/dashboard", req.url));
+      return createResponse(new URL("/vendor/dashboard", req.url));
     }
-    // Still in registration flow
-    return NextResponse.next();
+    // Still in registration flow, let them continue to setup
+    return createResponse();
   }
 
-  // Block non-approved users from vendor dashboard
+  // Block non-approved users from dashboard
   if (pathname.startsWith("/vendor") && status !== USER_STATUS.APPROVED) {
-    return NextResponse.redirect(new URL("/become-vendor/registration-status", req.url));
+    return createResponse(new URL("/become-vendor/registration-status", req.url));
   }
 
-  // Protected registration paths
+  // Handle protected registration path flows
   if (PROTECTED_REGISTRATION_PATHS.some((p) => pathname.startsWith(p))) {
     if (status === USER_STATUS.APPROVED) {
-      return NextResponse.redirect(new URL("/vendor/dashboard", req.url));
+      return createResponse(new URL("/vendor/dashboard", req.url));
     } else if (status === USER_STATUS.PENDING) {
-      return NextResponse.next();
+      return createResponse();
     } else {
       if (pathname === "/become-vendor/registration-status") {
-        return NextResponse.next();
+        return createResponse();
       } else {
-        return NextResponse.redirect(new URL("/become-vendor/registration-status", req.url));
+        return createResponse(new URL("/become-vendor/registration-status", req.url));
       }
     }
   }
 
-  return NextResponse.next();
+  return createResponse();
 }
 
 export const config = {

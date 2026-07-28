@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { verifyTokens } from "@/src/utils/verifyTokens";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
@@ -23,10 +22,6 @@ export const serverRequestHelper = async (
   const accessToken = cookieStore.get("accessToken")?.value || "";
   const activeLang = cookieStore.get("lang")?.value || "pt";
 
-  if (url !== "/auth/refresh-token") {
-    await verifyTokens();
-  }
-
   try {
     const res = await axiosInstance({
       url,
@@ -44,6 +39,7 @@ export const serverRequestHelper = async (
     });
 
     return res.data;
+
   } catch (error: any) {
 
     if (isRedirectError(error)) {

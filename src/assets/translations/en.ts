@@ -663,6 +663,7 @@ export const en = {
   documentsLabel4: "Store Photo",
   documentsLabel5: "Menu / Brochure",
   agoserisHaccpCertificate: "AGOSERIS HACCP Certificate",
+  iban_proof: "IBAN Proof",
   viewCTA: "View",
   removeCTA: "Remove",
   addMoreCTA: "Add More",
