@@ -616,6 +616,7 @@ export const en = {
   bankDetailsDesc:
     "Add your bank details so we can pay you. Your data is encrypted and stored securely.",
   bankName: "Bank Name",
+  select_bank_name: "Select Bank Name",
   accountHolder: "Account Holder",
   iban: "IBAN",
   swift_bic: "SWIFT / BIC",
@@ -662,6 +663,7 @@ export const en = {
   documentsLabel4: "Store Photo",
   documentsLabel5: "Menu / Brochure",
   agoserisHaccpCertificate: "AGOSERIS HACCP Certificate",
+  iban_proof: "IBAN Proof",
   viewCTA: "View",
   removeCTA: "Remove",
   addMoreCTA: "Add More",

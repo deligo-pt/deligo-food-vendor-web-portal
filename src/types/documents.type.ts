@@ -6,7 +6,8 @@ export type DocKey =
   | "idProofBack"
   | "storePhoto"
   | "menuUpload"
-  | "agoserisHaccpCertificate";
+  | "agoserisHaccpCertificate"
+  | "ibanProof";
 
 export type FilePreview = {
   file: File | null;

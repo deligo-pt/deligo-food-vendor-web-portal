@@ -624,6 +624,7 @@ export const pt = {
   bankDetailsDesc:
     "Adicione os seus dados bancários para que possamos efetuar os pagamentos. Os seus dados são encriptados e armazenados de forma segura.",
   bankName: "Nome do Banco",
+  select_bank_name: "Selecionar Nome do Banco",
   accountHolder: "Titular da Conta",
   iban: "IBAN",
   swift_bic: "SWIFT / BIC",
@@ -670,6 +671,7 @@ export const pt = {
   documentsLabel4: "Fotografia da Loja",
   documentsLabel5: "Menu / Brochura",
   agoserisHaccpCertificate: "Certificado HACCP Agoseris",
+  iban_proof: "Comprovante do IBAN",
   viewCTA: "Ver",
   removeCTA: "Remover",
   addMoreCTA: "Adicionar Mais",

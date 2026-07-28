@@ -10,6 +10,7 @@ export interface IVendorDocs {
   storePhoto?: string[];
   menuUpload?: string[];
   agoserisHaccpCertificate?: string[];
+  ibanProof?: string[];
 }
 
 interface IProps {
@@ -42,6 +43,7 @@ export default function ProfileDoc({ documents }: IProps) {
               {doc === "storePhoto" && t("documentsLabel4")}
               {doc === "menuUpload" && t("documentsLabel5")}
               {doc === "agoserisHaccpCertificate" && t("agoserisHaccpCertificate")}
+              {doc === "ibanProof" && t("iban_proof")}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               {files.map((file, index) => {
