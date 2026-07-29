@@ -967,6 +967,9 @@ export const en = {
   select_tax: "Select tax",
   select_category_placeholder: "Select a category",
   select_language_placeholder: "Select a language",
+  product_name_required: "Product name is required",
+  select_a_product_category: "Select a product category",
+  description_generation_failed: "Description generation failed",
 
   // -> image uploader
   drag_drop_product_images: "Drag & drop product images here",

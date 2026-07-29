@@ -21,6 +21,9 @@ import { ImageUpload } from "./ProductImageUpload";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FileTextIcon } from "lucide-react";
+import { catchAsync } from "@/src/utils/catchAsync";
+import { postData } from "@/src/utils/requests";
+import { TResponse } from "@/src/types";
 
 interface IProps {
     form: any;
@@ -39,37 +42,35 @@ const ImageAndDescriptionForm = ({ form, selectedLanguage }: IProps) => {
     const generateDescription = async () => {
         const productName = form.getValues("name");
         const categoryId = form.getValues("category");
-        const productImageUrl = form.getValues("images")?.[0];
 
-        if (!productName) {
+        if (!productName?.[selectedLanguage]) {
             toast.error(t("product_name_required") || "Product name is required");
             return;
+        } else if (!categoryId) {
+            toast.error(t("select_a_product_category"));
+            return;
+        }
+
+        const payload = {
+            productName: productName?.[selectedLanguage],
+            productCategory: categoryId,
+            language: descriptionLanguage,
         }
 
         setGeneratingDescription(true);
         try {
-            const response = await fetch(
-                "https://api-food.deligo.pt/api/v1/ai/generate-product-description",
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        productName,
-                        productCategory: categoryId,
-                        productImageUrl,
-                        language: descriptionLanguage,
-                    }),
-                }
-            );
+            const result = await catchAsync<any>(async () => {
+                return (await postData(
+                    "/ai/generate-product-description",
+                    payload,
+                )) as unknown as TResponse<any>;
+            });
 
-            if (!response.ok) throw new Error(`API error: ${response.status}`);
-
-            const result = await response.json();
             if (result.success && result.data?.description) {
                 form.setValue("description", result.data.description);
                 toast.success(t("description_generated") || "Description generated!");
             } else {
-                throw new Error(result.message || "Failed to generate description");
+                toast.error(result.message || "Failed to generate description");
             }
         } catch (error) {
             console.error(error);
@@ -107,7 +108,7 @@ const ImageAndDescriptionForm = ({ form, selectedLanguage }: IProps) => {
                 </div>
                 <div className="flex-1 border rounded-lg p-4 bg-gray-50">
                     <div className="space-y-4">
-                         <div>
+                        <div>
                             <Label>{t("description")}</Label>
                             <FormField
                                 control={form.control}
