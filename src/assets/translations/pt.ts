@@ -1001,6 +1001,9 @@ export const pt = {
   select_tax: "Selecionar imposto",
   select_category_placeholder: "Selecione uma categoria",
   select_language_placeholder: "Selecione um idioma",
+  product_name_required: "O nome do produto é obrigatório",
+  select_a_product_category: "Selecione uma categoria de produto",
+  description_generation_failed: "Falha ao gerar a descrição",
 
   // -> image uploader
   drag_drop_product_images: "Arraste e largue as imagens do produto aqui",
