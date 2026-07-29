@@ -90,6 +90,9 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
     lng: vendor?.businessLocation?.longitude ?? defaultLocation.lng,
   });
 
+  // Always start as false — only becomes true after map click or search selection
+  const [isLocationSelected, setIsLocationSelected] = useState(false);
+
   const fillAddressFields = useCallback(
     (components: google.maps.GeocoderAddressComponent[]) => {
       let streetNumber = "";
@@ -178,18 +181,17 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
       const newPos = { lat, lng };
 
       setPosition(newPos);
-
       map?.panTo(newPos);
       map?.setZoom(16);
-      setLocationCoordinates({ latitude: lat, longitude: lng });
 
+      setLocationCoordinates({ latitude: lat, longitude: lng });
       form.setValue("latitude", lat);
       form.setValue("longitude", lng);
 
-      // map?.panTo(newPos);
-      // map?.setZoom(16);
-
       fillAddressFields(place.address_components || []);
+
+      // Enable address fields only after selection
+      setIsLocationSelected(true);
 
       if (inputRef.current) {
         inputRef.current.value = "";
@@ -314,6 +316,9 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
                 form.setValue("longitude", lng);
 
                 reverseGeocode(lat, lng);
+
+                // Enable address fields only after map click
+                setIsLocationSelected(true);
               }}
             >
               <Marker position={position} />
@@ -321,28 +326,33 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {formFields.map((field) => (
-              <FormField
-                key={field.name}
-                control={form.control as any}
-                name={field.name as keyof LocationFormType}
-                render={({ field: formField }) => (
-                  <FormItem>
-                    <FormLabel>{field.label}</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...formField}
-                        readOnly={
-                          field.name === "latitude" ||
-                          field.name === "longitude"
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
+            {formFields.map((field) => {
+              const isLatOrLng =
+                field.name === "latitude" || field.name === "longitude";
+
+              const isDisabled = isLatOrLng || !isLocationSelected;
+
+              return (
+                <FormField
+                  key={field.name}
+                  control={form.control as any}
+                  name={field.name as keyof LocationFormType}
+                  render={({ field: formField }) => (
+                    <FormItem>
+                      <FormLabel>{field.label}<span className="ml-1 text-red-600">*</span></FormLabel>
+                      <FormControl>
+                        <Input
+                          {...formField}
+                          disabled={isDisabled}
+                          readOnly={isLatOrLng}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )
+            })}
           </div>
 
           <motion.button
