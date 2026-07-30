@@ -43,16 +43,16 @@ interface IDoc {
 
 const OPTIONAL_DOCS: DocKey[] = [
   "myPhoto",
-  "storePhoto",
   "menuUpload",
+  "taxDoc",
   "agoserisHaccpCertificate",
 ];
 
 const REQUIRED_DOCS: DocKey[] = [
   "businessLicenseDoc",
-  "taxDoc",
   "idProofFront",
   "idProofBack",
+  "storePhoto",
   "ibanProof"
 ];
 
@@ -116,15 +116,19 @@ export default function UploadDocuments({
   };
 
   const DOCUMENTS: IDoc[] = [
-    { key: "myPhoto", label: t("myPhoto"), prefersImagePreview: true },
     {
       key: "businessLicenseDoc",
       label: t("documentsLabel1"),
       prefersImagePreview: false,
-    }, // PDF/name
-    { key: "taxDoc", label: t("documentsLabel2"), prefersImagePreview: false }, // PDF/name
-    { key: "idProofFront", label: t("id_proof_front"), prefersImagePreview: true }, // image preview ok
-    { key: "idProofBack", label: t("id_proof_back"), prefersImagePreview: true }, // image preview ok
+    },
+    // { key: "taxDoc", label: t("documentsLabel2"), prefersImagePreview: false },
+    { key: "idProofFront", label: t("id_proof_front"), prefersImagePreview: true },
+    { key: "idProofBack", label: t("id_proof_back"), prefersImagePreview: true },
+    {
+      key: "ibanProof",
+      label: t("iban_proof"),
+      prefersImagePreview: true,
+    },
     {
       key: "storePhoto",
       label: t("documentsLabel4"),
@@ -135,21 +139,18 @@ export default function UploadDocuments({
       label: t("documentsLabel5"),
       prefersImagePreview: true,
     },
+    { key: "myPhoto", label: t("myPhoto"), prefersImagePreview: true },
+    { key: "taxDoc", label: t("address_proof"), prefersImagePreview: false },
     {
       key: "agoserisHaccpCertificate",
       label: t("agoserisHaccpCertificate"),
-      prefersImagePreview: true,
-    },
-    {
-      key: "ibanProof",
-      label: t("iban_proof"),
       prefersImagePreview: true,
     },
   ];
 
   const DEFAULT_DOC_IMAGES: Partial<Record<DocKey, string>> = {
     myPhoto: "/defaults/my-photo.png",
-    storePhoto: "/defaults/store-photo.jpeg",
+    // storePhoto: "/defaults/store-photo.jpeg",
     menuUpload: "/defaults/menu.jpeg",
   };
 

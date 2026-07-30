@@ -236,11 +236,11 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                   />
                 );
               })()}
-              <ProfileInfoRow
+              {/* <ProfileInfoRow
                 label={t("license_mumber")}
                 value={vendor.businessDetails?.businessLicenseNumber}
                 icon={HashIcon}
-              />
+              /> */}
               <ProfileInfoRow
                 label={t("nif")}
                 value={vendor.businessDetails?.NIF}

@@ -39,6 +39,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
   const [editOffer, setEditOffer] = useState<TOffer | null>(null);
   const [deleteId, setDeleteId] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
@@ -47,6 +48,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
   const toggleStatus = async (offerId: string) => {
     const toastId = toast.loading("Updating offer status...");
+    setIsSubmitting(true);
 
     const result = await toggleOfferStatusReq(offerId);
     if (result.success) {
@@ -54,12 +56,14 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
       toast.success(result.message || "Offer status updated successfully!", {
         id: toastId,
       });
+      setIsSubmitting(false);
       return;
     }
 
     toast.error(result.message || "Offer status update failed", {
       id: toastId,
     });
+    setIsSubmitting(false);
     console.log(result);
   };
 
@@ -187,6 +191,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                     }
                     size="sm"
                     onClick={() => toggleStatus(offer._id)}
+                    disabled={isSubmitting}
                   >
                     {offer.isActive ? "Deactivate" : "Activate"}
                   </Button>

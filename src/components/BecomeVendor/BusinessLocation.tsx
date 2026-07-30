@@ -49,12 +49,12 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
       name: "streetAddress",
     },
     {
-      label: t("city"),
-      name: "city",
-    },
-    {
       label: t("postalCode"),
       name: "postalCode",
+    },
+    {
+      label: t("city"),
+      name: "city",
     },
     {
       label: t("country"),
