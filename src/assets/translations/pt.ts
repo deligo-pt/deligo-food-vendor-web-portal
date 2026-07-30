@@ -640,6 +640,7 @@ export const pt = {
   select_business_type: "Selecione o Tipo de Negócio",
   restaurantCuisineType: "Tipo de Cozinha do Restaurante",
   select_multiple_cuisine: "Escolha os Tipos de Comida",
+  add_selected: "Adicionar Selecionado",
   socialNumber: "Número do Registro Social",
   no_of_branches: "Nº de Filiais",
   workingHours: "⏰ Horário de Funcionamento",

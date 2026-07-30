@@ -632,6 +632,7 @@ export const en = {
   select_business_type: "Select Business Type",
   restaurantCuisineType: "Restaurant Cuisine Type",
   select_multiple_cuisine: "Select Multiple Cuisine",
+  add_selected: "Add Selected",
   socialNumber: "Social Number",
   no_of_branches: "No. of Branches",
   workingHours: "⏰ Working Hours",
