@@ -212,7 +212,7 @@ export default function BusinessDetailsForm({
                                   height: "3rem",
                                 }}
                               >
-                                <SelectValue placeholder="Select Business Type" />
+                                <SelectValue placeholder={t("select_business_type")} />
                               </SelectTrigger>
                               <SelectContent>
                                 {businessCategories.map((category) => (
@@ -324,7 +324,7 @@ export default function BusinessDetailsForm({
                                   )}
                                   style={{ height: "3rem" }}
                                 >
-                                  <SelectValue placeholder="Select Multiple Cuisine" />
+                                  <SelectValue placeholder={t("select_multiple_cuisine")} />
                                 </SelectTrigger>
 
                                 <SelectContent>
