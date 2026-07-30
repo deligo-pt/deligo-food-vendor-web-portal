@@ -39,6 +39,7 @@ import { TProduct } from "@/src/types/product.type";
 import { TResponse } from "@/src/types";
 import { useStore } from "@/src/store/store";
 import { translateObject } from "@/src/utils/translation/translationObject";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof productValidation>;
 
@@ -55,6 +56,7 @@ export function ProductForm({
 }) {
   const { lang } = useStore();
   const { t } = useTranslation();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = useMemo(() => {
@@ -195,7 +197,7 @@ export function ProductForm({
         form.reset();
         setTabError({});
         setActiveTab(0);
-
+        router.push('/vendor/all-items')
         return;
       }
 

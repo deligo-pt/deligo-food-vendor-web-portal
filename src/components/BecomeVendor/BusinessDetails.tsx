@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import {
   Form,
   FormControl,
@@ -41,12 +40,12 @@ import {
   CalendarX2,
   Clock,
   MapPin,
-  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { CuisineMultiSelect } from "./CuisineMultiSelect";
 
 interface IProps {
   businessCategories: TBusinessCategory[];
@@ -212,7 +211,7 @@ export default function BusinessDetailsForm({
                                   height: "3rem",
                                 }}
                               >
-                                <SelectValue placeholder="Select Business Type" />
+                                <SelectValue placeholder={t("select_business_type")} />
                               </SelectTrigger>
                               <SelectContent>
                                 {businessCategories.map((category) => (
@@ -264,97 +263,26 @@ export default function BusinessDetailsForm({
                   <FormField
                     control={form.control}
                     name="restaurantCuisineType"
-                    render={({ field, fieldState }) => {
-                      const selectedCuisines = Array.isArray(field.value) ? field.value : [];
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="mb-2 block text-sm font-medium text-gray-700 mt-5">
+                          {t("restaurantCuisineType")} <span className="text-red-500">*</span>
+                        </FormLabel>
 
-                      // remove cuisine
-                      const handleRemoveCuisine = (cuisineToRemove: string) => {
-                        const updatedCuisines = selectedCuisines.filter(
-                          (item) => item !== cuisineToRemove
-                        );
-                        field.onChange(updatedCuisines);
-                      };
+                        <FormControl>
+                          <CuisineMultiSelect
+                            value={Array.isArray(field.value) ? field.value : []}
+                            onChange={field.onChange}
+                            cuisines={cuisines || []}
+                            invalid={fieldState.invalid}
+                            placeholder={t("select_multiple_cuisine")}
+                            t={t}
+                          />
+                        </FormControl>
 
-                      // add cuisine
-                      const handleSelectCuisine = (cuisineToAdd: string) => {
-                        if (!selectedCuisines.includes(cuisineToAdd)) {
-                          field.onChange([...selectedCuisines, cuisineToAdd]);
-                        }
-                      };
-
-                      return (
-                        <FormItem>
-                          <FormLabel className="mb-2 block text-sm font-medium text-gray-700 mt-5">
-                            {t("restaurantCuisineType")} <span className="text-red-500">*</span>
-                          </FormLabel>
-
-                          {/* 4. Display Selected Badges ABOVE the Select Dropdown */}
-                          {selectedCuisines.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-3 p-2 border border-dashed rounded-lg bg-gray-50/50">
-                              {selectedCuisines.map((cuisine) => (
-                                <Badge
-                                  key={cuisine}
-                                  variant="secondary"
-                                  className="flex items-center gap-1 bg-[#DC3173]/10 text-[#DC3173] hover:bg-[#DC3173]/20 transition-all capitalize px-3 py-1 text-sm font-medium"
-                                >
-                                  {cuisine}
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveCuisine(cuisine)}
-                                    className="rounded-full outline-none hover:bg-[#DC3173]/20 p-0.5"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-
-                          <div className="relative">
-                            <Briefcase className="absolute left-3 top-3.5 text-[#DC3173]/80" />
-                            <FormControl>
-                              <Select
-                                value=""
-                                onValueChange={handleSelectCuisine}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "pl-11 pr-4 h-12 w-full bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer",
-                                    fieldState.invalid ? "border-destructive focus-visible:ring-destructive/20" : "border-gray-300"
-                                  )}
-                                  style={{ height: "3rem" }}
-                                >
-                                  <SelectValue placeholder="Select Multiple Cuisine" />
-                                </SelectTrigger>
-
-                                <SelectContent>
-                                  {cuisines?.length < 1 ? (
-                                    <div className="p-2 text-sm text-gray-500">
-                                      {t("no_items_found")}
-                                    </div>
-                                  ) : (
-                                    cuisines?.map((type, idx) => {
-                                      const isAlreadySelected = selectedCuisines.includes(type?.name);
-                                      return (
-                                        <SelectItem
-                                          key={idx}
-                                          value={type?.slug}
-                                          className="capitalize"
-                                          disabled={isAlreadySelected}
-                                        >
-                                          {type?.name} {isAlreadySelected && "✓"}
-                                        </SelectItem>
-                                      );
-                                    })
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 )}
               </div>
@@ -409,7 +337,7 @@ export default function BusinessDetailsForm({
                         <div className="relative">
                           <FormLabel className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                             <Clock className="w-4 h-4 text-[#DC3173]" />
-                            {t("openingTime")}
+                            {t("openingTime")} <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -433,7 +361,7 @@ export default function BusinessDetailsForm({
                         <div className="relative">
                           <FormLabel className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                             <Clock className="w-4 h-4 text-[#DC3173]" />
-                            {t("closingTime")}
+                            {t("closingTime")} <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input

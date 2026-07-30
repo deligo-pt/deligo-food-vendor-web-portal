@@ -130,7 +130,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                       render={({ field, fieldState }) => (
                         <FormItem>
                           <div className="relative">
-                            <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                            <FormLabel className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
                               <CreditCard className="w-4 h-4 text-[#DC3173]" />{" "}
                               {t("bankName")}
                             </FormLabel>
