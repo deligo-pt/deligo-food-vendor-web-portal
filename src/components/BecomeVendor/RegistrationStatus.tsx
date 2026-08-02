@@ -309,7 +309,7 @@ export default function RegistrationStatus({ vendor }: IProps) {
                   </Button>
 
                   <p className="text-xs text-gray-500 mt-3">
-                    Your application has been approved. Please logout to visit your dashboard.
+                    {t("application_has_been_approved")}
                   </p>
                 </>
               )}

@@ -724,6 +724,7 @@ export const pt = {
   loginAgain: "Iniciar Sessão Novamente",
   loginAgainDesc:
     "Para aceder ao seu painel, precisa de iniciar sessão novamente.",
+  application_has_been_approved: "Sua solicitação foi aprovada. Por favor, saia e entre novamente para acessar seu painel.",
   submitDetailsAgain: "Submeter Dados Novamente",
   applicationTryAgain:
     "A sua candidatura foi rejeitada. Pode tentar novamente.",
