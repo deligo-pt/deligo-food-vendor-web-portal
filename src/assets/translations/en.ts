@@ -712,6 +712,7 @@ export const en = {
   applicationApproved: "Wait for your application to be approved.",
   loginAgain: "Login Again",
   loginAgainDesc: "To get access to your dashboard you need to login again.",
+  application_has_been_approved: "Your application has been approved. Please logout and login again to visit your dashboard.",
   submitDetailsAgain: "Submit Details Again",
   applicationTryAgain: "Your application has been rejected. You can try again.",
   // verify otp
