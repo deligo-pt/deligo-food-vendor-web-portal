@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -75,7 +76,8 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
       maxDiscountAmount: offer?.maxDiscountAmount || 0,
       buyQty: offer?.bogo?.buyQty || 1,
       getQty: offer?.bogo?.getQty || 1,
-      productId: offer?.bogo?.productId || "",
+      buyProductId: offer?.bogo?.buyProductId || "",
+      getProductId: offer?.bogo?.getProductId || "",
       validFrom: new Date(offer.validFrom),
       expiresAt: new Date(offer.expiresAt),
       minOrderAmount: offer?.minOrderAmount || 0,
@@ -98,76 +100,102 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Updating offer...");
 
-    const transPayload = {
-      title: data.title,
-      description: data.description
-    };
-    console.log("trans pay", transPayload);
-    const translated = await translateObject(transPayload, lang);
-
-    if (!translated) {
-      toast.error("Translation failed!", { id: toastId });
-      return;
+    let isAutoApply = data.isAutoApply;
+    if (data.offerType === "BOGO") {
+      isAutoApply = true;
+    } else if (data.offerType === "FLAT") {
+      delete data.maxDiscountAmount;
+    } else if (isAutoApply) {
+      delete data.code;
+    } else {
+      isAutoApply = data.isAutoApply;
     }
 
-    const offerData: Partial<TOffer> = {
-      title: translated.title ? translated.title : data.title,
-      description: translated.description ? translated.description : data.description,
-      offerType: data.offerType,
-      discountValue: data.discountValue,
-      maxDiscountAmount: data.maxDiscountAmount,
-      validFrom: data.validFrom,
-      expiresAt: data.expiresAt,
-      minOrderAmount: data.minOrderAmount,
-      code: data.code,
-      isAutoApply: data.isAutoApply,
-      applicableProducts: data.applicableProducts,
+    try {
+      const transPayload = {
+        title: data.title,
+        description: data.description
+      };
 
-      ...(data.offerType === "BOGO"
-        ? {
-          bogo: {
-            buyQty: data.buyQty as number,
-            getQty: data.getQty as number,
-            productId: data.productId as string,
-          },
-        }
-        : {}),
+      const translated = await translateObject(transPayload, lang);
 
-      ...(data.maxUsageCount
-        ? { maxUsageCount: Number(data.maxUsageCount) }
-        : {}),
+      if (!translated) {
+        toast.error("Translation failed!", { id: toastId });
+        return;
+      }
 
-      ...(data.userUsageLimit
-        ? { userUsageLimit: Number(data.userUsageLimit) }
-        : {}),
-    };
+      const offerData: Partial<TOffer> = {
+        title: translated.title ? translated.title : data.title,
+        description: translated.description ? translated.description : data.description,
 
-    if (isSelectedAllProducts) {
-      delete offerData.applicableProducts;
+        offerType: data.offerType,
+        validFrom: data.validFrom,
+        expiresAt: data.expiresAt,
+        minOrderAmount: data.minOrderAmount,
+        applicableProducts: data.applicableProducts,
+        ...(data.discountValue && { discountValue: data.discountValue }),
+        ...(data.maxDiscountAmount && { maxDiscountAmount: data.maxDiscountAmount }),
+        ...(data.code && { code: data.code }),
+        ...(isAutoApply && { isAutoApply: isAutoApply }),
+
+        ...(data.offerType === "BOGO"
+          ? {
+            bogo: {
+              buyQty: data.buyQty as number,
+              getQty: data.getQty as number,
+              buyProductId: data.buyProductId as string,
+              ...(data.getProductId && {
+                getProductId: data.getProductId as string,
+              })
+            },
+          }
+          : {}),
+
+        ...(data.maxUsageCount
+          ? { maxUsageCount: Number(data.maxUsageCount) }
+          : {}),
+
+        ...(data.userUsageLimit
+          ? { userUsageLimit: Number(data.userUsageLimit) }
+          : {}),
+      };
+
+      if (isSelectedAllProducts) {
+        delete offerData.applicableProducts;
+      }
+
+      if (data.maxUsageCount === "") {
+        delete offerData.maxUsageCount;
+      }
+
+      if (data.userUsageLimit === "") {
+        delete offerData.userUsageLimit;
+      }
+
+      const result = await updateOfferReq(offer._id, offerData);
+
+      if (result.success) {
+        router.refresh();
+        toast.success(result.message || "Offer updated successfully!", {
+          id: toastId,
+        });
+        form.reset();
+        onOpenChange(false);
+        return;
+      }
+
+      toast.error(result.message || "Offer updated failed", { id: toastId });
+      console.log(result);
+    } catch (error: any) {
+      console.error(error);
+
+      toast.error(
+        error?.response?.data?.message ||
+        error?.message ||
+        "Offer creation failed",
+        { id: toastId }
+      );
     }
-
-    if (data.maxUsageCount === "") {
-      delete offerData.maxUsageCount;
-    }
-
-    if (data.userUsageLimit === "") {
-      delete offerData.userUsageLimit;
-    }
-
-    const result = await updateOfferReq(offer._id, offerData);
-
-    if (result.success) {
-      router.refresh();
-      toast.success(result.message || "Offer updated successfully!", {
-        id: toastId,
-      });
-      form.reset();
-      onOpenChange(false);
-      return;
-    }
-
-    toast.error(result.message || "Offer updated failed", { id: toastId });
-    console.log(result);
   };
 
   const getItems = async ({ limit = 10 }) => {
@@ -224,7 +252,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-medium text-sm text-gray-700">
-                      {t("offer_title_20_perc_off")}
+                      {t("offer_title_20_perc_off")} <span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -244,7 +272,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-medium text-sm text-gray-700">
-                      {t("offer_description")}
+                      {t("offer_description")} <span className="text-red-600">*</span>
                     </FormLabel>
                     <FormControl>
                       <Textarea
@@ -267,7 +295,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                     <FormControl>
                       <div className="space-y-2">
                         <FormLabel className="font-medium text-sm text-gray-700">
-                          {t("offer_type")}
+                          {t("offer_type")} <span className="text-red-600">*</span>
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -307,7 +335,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                     render={({ field }) => (
                       <FormItem className="w-full">
                         <FormLabel className="font-medium text-sm text-gray-700">
-                          {t("discount_value")}
+                          {t("discount_perc_20")} <span className="text-red-600">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -337,7 +365,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder={t("discount_perc_20")}
+                            placeholder={t("max_discount_amount")}
                             type="number"
                             min={0}
                             max={1000}
@@ -364,7 +392,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("discount_value")}
+                        {t("discount_value")} <span className="text-red-600">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -387,88 +415,132 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
               )}
 
               {watchOfferType === "BOGO" && (
-                <FormField
-                  control={form.control}
-                  name="productId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <div className="space-y-2">
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <SelectTrigger className="w-full h-12">
-                              <SelectValue placeholder={t("choose_an_item")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {itemsResult?.data.map((item: TProduct) => (
-                                <SelectItem
-                                  key={item._id}
-                                  value={item._id as string}
-                                >
-                                  {item.name?.[lang]}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="buyProductId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-medium text-sm text-gray-700">
+                          {t("buy_product")} <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="space-y-2">
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <SelectTrigger className="w-full h-12!">
+                                <SelectValue
+                                  placeholder={t("choose_an_item")}
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {itemsResult?.data.map((item: TProduct) => (
+                                  <SelectItem
+                                    key={item._id}
+                                    value={item._id as string}
+                                  >
+                                    {item.name?.[lang]}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="getProductId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-medium text-sm text-gray-700">
+                          {t("get_product")}
+                        </FormLabel>
+                        <FormControl>
+                          <div className="space-y-2">
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <SelectTrigger className="w-full h-12!">
+                                <SelectValue
+                                  placeholder={t("choose_an_item")}
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {itemsResult?.data.map((item: TProduct) => (
+                                  <SelectItem
+                                    key={item._id}
+                                    value={item._id as string}
+                                  >
+                                    {item.name?.[lang]}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="buyQty"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-medium text-sm text-gray-700">
+                          {t("buy_quantity")} <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t("buy_quantity")}
+                            type="number"
+                            min={1}
+                            className="h-12 text-base"
+                            {...field}
+                            value={String(field.value)}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="getQty"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-medium text-sm text-gray-700">
+                          {t("get_quantity")} <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t("get_quantity")}
+                            type="number"
+                            min={1}
+                            className="h-12 text-base"
+                            {...field}
+                            value={String(field.value)}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               )}
 
-              {watchOfferType === "BOGO" && (
-                <FormField
-                  control={form.control}
-                  name="buyQty"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder={t("buy_quantity")}
-                          type="number"
-                          min={1}
-                          className="h-12 text-base"
-                          {...field}
-                          value={String(field.value)}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {watchOfferType === "BOGO" && (
-                <FormField
-                  control={form.control}
-                  name="getQty"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder={t("get_quantity")}
-                          type="number"
-                          min={1}
-                          className="h-12 text-base"
-                          {...field}
-                          value={String(field.value)}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
             </div>
 
             {/* VALIDITY */}
@@ -485,7 +557,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                       <FormControl>
                         <div className="space-y-2">
                           <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("start_date")}
+                            {t("start_date")} <span className="text-red-600">*</span>
                           </FormLabel>
                           <Input
                             type="date"
@@ -510,7 +582,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                       <FormControl>
                         <div className="space-y-2">
                           <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("end_date")}
+                            {t("end_date")} <span className="text-red-600">*</span>
                           </FormLabel>
                           <Input
                             type="date"
@@ -604,7 +676,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                 />
               </div>
 
-              <FormField
+              {watchOfferType !== "BOGO" && <FormField
                 control={form.control}
                 name="isAutoApply"
                 render={({ field }) => (
@@ -637,11 +709,11 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              />}
             </div>
 
             {/* PROMO CODE */}
-            {!isAutoApply && <div className="space-y-4">
+            {(watchOfferType !== "BOGO" && !isAutoApply) && <div className="space-y-4">
               <h2 className="font-bold text-lg">{t("promo_code")}</h2>
               <Separator />
               <FormField
