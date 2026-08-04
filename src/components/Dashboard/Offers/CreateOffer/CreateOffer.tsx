@@ -35,6 +35,7 @@ import { offerValidation } from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -51,6 +52,7 @@ interface IProps {
 export default function VendorCreateOffer({ itemsResult }: IProps) {
   const { t } = useTranslation();
   const { lang } = useStore();
+  const router = useRouter();
 
   const [isSelectedAllProducts, setIsSelectedAllProducts] = useState(true);
   const [filteredItems, setFilteredItems] = useState<TProduct[]>(
@@ -74,7 +76,8 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       maxDiscountAmount: 0,
       buyQty: 1,
       getQty: 1,
-      productId: "",
+      buyProductId: "",
+      getProductId: "",
       validFrom: new Date(),
       expiresAt: new Date(),
       minOrderAmount: 0,
@@ -95,6 +98,16 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Creating offer...");
+    let isAutoApply = data.isAutoApply;
+    if (data.offerType === "BOGO") {
+      isAutoApply = true;
+    } else if (data.offerType === "FLAT") {
+      delete data.maxDiscountAmount;
+    } else if (isAutoApply) {
+      delete data.code;
+    } else {
+      isAutoApply = data.isAutoApply;
+    }
 
     try {
       const transPayload = {
@@ -112,13 +125,13 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         title: translated.title,
         description: translated.description,
         offerType: data.offerType,
-        discountValue: data.discountValue,
-        maxDiscountAmount: data.maxDiscountAmount,
         validFrom: data.validFrom,
         expiresAt: data.expiresAt,
         minOrderAmount: data.minOrderAmount,
-        code: data.code,
-        isAutoApply: data.isAutoApply,
+        ...(data.discountValue && { discountValue: data.discountValue }),
+        ...(data.maxDiscountAmount && { maxDiscountAmount: data.maxDiscountAmount }),
+        ...(data.code && { code: data.code }),
+        ...(isAutoApply && { isAutoApply: isAutoApply }),
         applicableProducts: data.applicableProducts,
 
         ...(data.offerType === "BOGO"
@@ -126,7 +139,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
             bogo: {
               buyQty: data.buyQty as number,
               getQty: data.getQty as number,
-              productId: data.productId as string,
+              buyProductId: data.buyProductId as string,
+              ...(data.getProductId && {
+                getProductId: data.getProductId as string,
+              })
             },
           }
           : {}),
@@ -160,6 +176,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
           { id: toastId }
         );
         form.reset();
+        router.push('/vendor/offers');
         return;
       }
 
@@ -205,7 +222,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("offer_title_20_perc_off")}
+                        {t("offer_title_20_perc_off")} <span className="text-red-600">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -225,7 +242,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("offer_title_20_perc_off")}
+                        {t("offer_title_20_perc_off")} <span className="text-red-600">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -245,7 +262,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("offer_description")}
+                        {t("offer_description")} <span className="text-red-600">*</span>
                       </FormLabel>
                       <FormControl>
                         <Textarea
@@ -266,7 +283,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("offer_description")}
+                        {t("offer_description")} <span className="text-red-600">*</span>
                       </FormLabel>
                       <FormControl>
                         <Textarea
@@ -289,7 +306,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       <FormControl>
                         <div className="space-y-2">
                           <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("offer_type")}
+                            {t("offer_type")} <span className="text-red-600">*</span>
                           </FormLabel>
                           <Select
                             onValueChange={field.onChange}
@@ -331,7 +348,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       render={({ field }) => (
                         <FormItem className="w-full">
                           <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("discount_value")}
+                            {t("discount_perc_20")} <span className="text-red-600">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -361,7 +378,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder={t("discount_perc_20")}
+                              placeholder={t("max_discount_amount")}
                               type="number"
                               min={0}
                               max={1000}
@@ -387,7 +404,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-medium text-sm text-gray-700">
-                          {t("discount_value")}
+                          {t("discount_value")} <span className="text-red-600">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -410,89 +427,130 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                 )}
 
                 {watchOfferType === "BOGO" && (
-                  <FormField
-                    control={form.control}
-                    name="productId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="space-y-2">
-                            <Select
-                              onValueChange={field.onChange}
-                              value={field.value}
-                            >
-                              <SelectTrigger className="w-full h-12!">
-                                <SelectValue
-                                  placeholder={t("choose_an_item")}
-                                />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {itemsResult?.data.map((item: TProduct) => (
-                                  <SelectItem
-                                    key={item._id}
-                                    value={item._id as string}
-                                  >
-                                    {item.name?.[lang]}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-
-                {watchOfferType === "BOGO" && (
-                  <FormField
-                    control={form.control}
-                    name="buyQty"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder={t("buy_quantity")}
-                            type="number"
-                            min={1}
-                            className="h-12 text-base"
-                            {...field}
-                            value={String(field.value)}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-
-                {watchOfferType === "BOGO" && (
-                  <FormField
-                    control={form.control}
-                    name="getQty"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder={t("get_quantity")}
-                            type="number"
-                            min={1}
-                            className="h-12 text-base"
-                            {...field}
-                            value={String(field.value)}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="buyProductId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("buy_product")} <span className="text-red-600">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <div className="space-y-2">
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <SelectTrigger className="w-full h-12!">
+                                  <SelectValue
+                                    placeholder={t("choose_an_item")}
+                                  />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {itemsResult?.data.map((item: TProduct) => (
+                                    <SelectItem
+                                      key={item._id}
+                                      value={item._id as string}
+                                    >
+                                      {item.name?.[lang]}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="getProductId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("get_product")}
+                          </FormLabel>
+                          <FormControl>
+                            <div className="space-y-2">
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              >
+                                <SelectTrigger className="w-full h-12!">
+                                  <SelectValue
+                                    placeholder={t("choose_an_item")}
+                                  />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {itemsResult?.data.map((item: TProduct) => (
+                                    <SelectItem
+                                      key={item._id}
+                                      value={item._id as string}
+                                    >
+                                      {item.name?.[lang]}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="buyQty"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("buy_quantity")} <span className="text-red-600">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("buy_quantity")}
+                              type="number"
+                              min={1}
+                              className="h-12 text-base"
+                              {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="getQty"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("get_quantity")} <span className="text-red-600">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("get_quantity")}
+                              type="number"
+                              min={1}
+                              className="h-12 text-base"
+                              {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 )}
               </div>
 
@@ -510,7 +568,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <div className="space-y-2">
                             <FormLabel className="font-medium text-sm text-gray-700">
-                              {t("start_date")}
+                              {t("start_date")} <span className="text-red-600">*</span>
                             </FormLabel>
                             <Input
                               type="date"
@@ -535,7 +593,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         <FormControl>
                           <div className="space-y-2">
                             <FormLabel className="font-medium text-sm text-gray-700">
-                              {t("end_date")}
+                              {t("end_date")} <span className="text-red-600">*</span>
                             </FormLabel>
                             <Input
                               type="date"
@@ -630,7 +688,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   />
                 </div>
 
-                <FormField
+                {watchOfferType !== "BOGO" && <FormField
                   control={form.control}
                   name="isAutoApply"
                   render={({ field }) => (
@@ -663,11 +721,11 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />}
               </div>
 
               {/* PROMO CODE */}
-              {!isAutoApply && <div className="space-y-4">
+              {(watchOfferType !== "BOGO" && !isAutoApply) && <div className="space-y-4">
                 <h2 className="font-bold text-lg">{t("promo_code")}</h2>
                 <Separator />
                 <FormField

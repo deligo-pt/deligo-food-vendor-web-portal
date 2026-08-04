@@ -5,7 +5,7 @@ export type TOffer = {
   title: LocalizedType;
   description: LocalizedType;
   // Offer type
-  offerType: "PERCENT" | "FLAT"  | "BOGO";
+  offerType: "PERCENT" | "FLAT" | "BOGO";
   // Discount values
   discountValue?: number;
   maxDiscountAmount?: number;
@@ -14,7 +14,8 @@ export type TOffer = {
   bogo?: {
     buyQty: number;
     getQty: number;
-    productId: string;
+    buyProductId: string;
+    getProductId?: string;
   };
 
   // Validity period

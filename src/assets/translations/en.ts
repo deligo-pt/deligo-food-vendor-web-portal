@@ -1492,6 +1492,8 @@ export const en = {
   max_discount_amount: "Max discount Amount",
   flat_discount: "Flat Discount (€)",
   choose_an_item: "Choose an Item",
+  buy_product: "Buy Product",
+  get_product: "Get Product",
   buy_quantity: "Buy Quantity (e.g., 2)",
   get_quantity: "Get Quantity (e.g., 1)",
   validity: "Validity",

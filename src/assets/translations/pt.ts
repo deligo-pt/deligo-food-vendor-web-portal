@@ -1543,6 +1543,8 @@ export const pt = {
   max_discount_amount: "Valor Máximo de Desconto",
   flat_discount: "Desconto Fixo (€)",
   choose_an_item: "Escolher um Item",
+  buy_product: "Comprar Produto",
+  get_product: "Receber Produto",
   buy_quantity: "Quantidade a Comprar (ex.: 2)",
   get_quantity: "Quantidade a Receber (ex.: 1)",
   validity: "Validade",
