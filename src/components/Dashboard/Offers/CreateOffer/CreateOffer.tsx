@@ -750,7 +750,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
               </div>}
 
               {/* APPLICABLE PRODUCTS */}
-              <div className="space-y-4">
+              {watchOfferType !== "BOGO" && <div className="space-y-4">
                 <h2 className="font-bold text-lg">{t("applicable_products")}</h2>
                 <Separator />
 
@@ -867,7 +867,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     )}
                   />
                 )}
-              </div>
+              </div>}
 
               {/* ACTION */}
               <div className="pt-4 flex justify-end gap-4">
