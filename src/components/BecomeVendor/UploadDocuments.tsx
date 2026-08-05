@@ -43,15 +43,15 @@ interface IDoc {
 
 const OPTIONAL_DOCS: DocKey[] = [
   "myPhoto",
+  "idProofFront",
+  "idProofBack",
   "menuUpload",
-  "taxDoc",
   "agoserisHaccpCertificate",
 ];
 
 const REQUIRED_DOCS: DocKey[] = [
   "businessLicenseDoc",
-  "idProofFront",
-  "idProofBack",
+  "taxDoc",
   "storePhoto",
   "ibanProof"
 ];
@@ -427,7 +427,7 @@ export default function UploadDocuments({
 
     const optionalDefaults: DocKey[] = [
       "myPhoto",
-      "storePhoto",
+      // "storePhoto",
       "menuUpload",
     ];
 

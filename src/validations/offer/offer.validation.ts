@@ -33,7 +33,8 @@ export const offerValidation = z.object({
 
   getQty: z.number("Get quantity must be a number").optional(),
 
-  productId: z.string().optional(),
+  buyProductId: z.string().optional(),
+  getProductId: z.string().optional(),
 
   validFrom: z.date("Start date must be a valid date"),
   expiresAt: z.date("End date must be a valid date"),
@@ -44,7 +45,7 @@ export const offerValidation = z.object({
     .optional(),
 
   code: z.string().optional(),
-  isAutoApply: z.boolean("Auto apply must be a boolean"),
+  isAutoApply: z.boolean("Auto apply must be a boolean").optional(),
 
   maxUsageCount: z.string().optional(),
 
@@ -81,7 +82,9 @@ export const offerValidation = z.object({
   )
   .refine(
     (data) => {
-      if (!data.isAutoApply && (!data.code || data.code === "")) {
+      if (data.offerType === "BOGO") {
+        return true;
+      } else if (!data.isAutoApply && (!data.code || data.code === "")) {
         return false;
       }
       return true;
@@ -90,14 +93,14 @@ export const offerValidation = z.object({
   )
   .refine(
     (data) => {
-      if (data.offerType === "BOGO" && !data.productId) {
+      if (data.offerType === "BOGO" && !data.buyProductId) {
         return false;
       }
       return true;
     },
     {
-      message: "Item id is required",
-      path: ["productId"],
+      message: "Buy item id is required",
+      path: ["buyProductId"],
     },
   )
   .refine(
