@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useTranslation } from "@/src/hooks/use-translation";
+import { deleteProductImage } from "@/src/services/dashboard/products/products";
 import { uploadImagesReq } from "@/src/services/upload/upload.service";
 import { AnimatePresence, motion } from "framer-motion";
 import { ImageIcon, UploadIcon, XIcon } from "lucide-react";
@@ -11,12 +13,14 @@ import { toast } from "sonner";
 interface IProps {
   images: string[];
   onChange: (images: string[]) => void;
+  productId?: string;
 }
 
-export function ImageUpload({ images, onChange }: IProps) {
+export function ImageUpload({ images, onChange, productId }: IProps) {
   const { t } = useTranslation();
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isRemoving, setIsRemoving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -75,20 +79,47 @@ export function ImageUpload({ images, onChange }: IProps) {
     }
   };
 
-  const removeImage = (index: number) => {
+  const removeImage = async (image: string, index: number) => {
+    const previousImages = [...images];
+
+    // optimistic UI
     onChange(images.filter((_, i) => i !== index));
     if (inputRef.current) inputRef.current.value = "";
+
+    if (!productId) return;
+
+    const toastId = toast.loading("Removing product image...");
+    setIsRemoving(true);
+
+    try {
+      const res = await deleteProductImage(productId, { images: [image] });
+
+      if (res?.success) {
+        toast.success(res?.message || "Image removed successfully", { id: toastId });
+      } else {
+        // restore on failure
+        onChange(previousImages);
+        toast.error(res?.message || "Image remove failed!", { id: toastId });
+      }
+    } catch (error: any) {
+      onChange(previousImages);
+      toast.error(
+        error?.response?.data?.message || error?.message || "Image remove failed",
+        { id: toastId }
+      );
+    } finally {
+      setIsRemoving(false);
+    }
   };
 
   return (
     <div className="space-y-4">
       <div
         onDragEnter={handleDrag}
-        className={`border-2 border-dashed rounded-lg p-8 text-center ${
-          dragActive
-            ? "border-[#DC3173] bg-pink-50"
-            : "border-gray-300 hover:border-gray-400"
-        } transition-colors duration-200`}
+        className={`border-2 border-dashed rounded-lg p-8 text-center ${dragActive
+          ? "border-[#DC3173] bg-pink-50"
+          : "border-gray-300 hover:border-gray-400"
+          } transition-colors duration-200`}
       >
         {dragActive && (
           <div
@@ -190,8 +221,9 @@ export function ImageUpload({ images, onChange }: IProps) {
                     whileTap={{
                       scale: 0.9,
                     }}
-                    onClick={() => removeImage(index)}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    disabled={isRemoving}
+                    onClick={() => removeImage(image, index)}
+                    className={`absolute -top-2 -right-2 text-white rounded-full p-1 ${isRemoving ? "bg-red-500 opacity-50" : "bg-red-500 opacity-0 group-hover:opacity-100 transition-opacity"}`}
                   >
                     <XIcon className="h-4 w-4" />
                   </motion.button>

@@ -49,3 +49,11 @@ export const generateProductDescriptionReq = async (data: {
     });
   });
 };
+
+export const deleteProductImage = async (productId: string, payload: { images: string[] }) => {
+  return catchAsync<null>(async () => {
+    return await serverRequest.delete(`/products/${productId}/images`, {
+      data: payload
+    });
+  });
+};
