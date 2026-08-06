@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -171,69 +172,161 @@ export function EditProductForm({
     const toastId = toast.loading("Updating product...");
     setIsSubmitting(true);
 
-    const translated = await translateObject(data, lang);
+    const productData: Record<string, any> = {};
 
-    if (!translated) {
-      toast.error("Translation failed!", { id: toastId });
+    // Helper to check if a value really changed
+    const hasChanged = (current: any, original: any) => {
+      // Handle arrays
+      if (Array.isArray(current) || Array.isArray(original)) {
+        return JSON.stringify(current || []) !== JSON.stringify(original || []);
+      }
+      // Handle primitive values (including boolean, number, string)
+      return current !== original;
+    };
+
+    // name & description (with translation)
+    const originalName = prevData?.name || "";
+    const originalDescription = prevData?.description || "";
+
+    if (hasChanged(data.name, originalName) || hasChanged(data.description, originalDescription)) {
+      const translated = await translateObject(
+        { name: data.name, description: data.description },
+        lang
+      );
+
+      if (!translated) {
+        toast.error("Translation failed!", { id: toastId });
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (hasChanged(data.name, originalName)) {
+        productData.name = translated.name;
+      }
+      if (hasChanged(data.description, originalDescription)) {
+        productData.description = translated.description;
+      }
+    }
+
+    // category
+    if (hasChanged(data.category, prevData?.category?._id || "")) {
+      productData.category = data.category;
+    }
+
+    // addonGroups
+    if (hasChanged(data.addonGroups, prevData?.addonGroups || [])) {
+      productData.addonGroups = data.addonGroups;
+    }
+
+    // images update
+    const originalImages: string[] = prevData?.images || [];
+    const currentImages: string[] = data.images || [];
+
+    const newlyUploaded = currentImages.filter(
+      (url) => !originalImages.includes(url)
+    );
+
+    if (newlyUploaded.length > 0) {
+      productData.images = newlyUploaded;
+    }
+
+    // pricing update
+    const originalPricing = prevData?.pricing || {};
+    const pricingChanged =
+      hasChanged(data.discount, originalPricing.discount ?? 0) ||
+      hasChanged(data.discountType, originalPricing.discountType ?? "") ||
+      hasChanged(data.taxId, String(originalPricing.taxId || ""));
+
+    if (pricingChanged) {
+      productData.pricing = {};
+      if (hasChanged(data.discount, originalPricing.discount ?? 0)) {
+        productData.pricing.discount = data.discount;
+      }
+      if (hasChanged(data.discountType, originalPricing.discountType ?? "")) {
+        productData.pricing.discountType = data.discountType;
+      }
+      if (hasChanged(data.taxId, String(originalPricing.taxId || ""))) {
+        productData.pricing.taxId = data.taxId;
+      }
+    }
+
+    const originalMeta = prevData?.meta || {};
+    const metaChanged =
+      hasChanged(data.isFeatured, originalMeta.isFeatured || false) ||
+      hasChanged(data.isAvailableForPreOrder, originalMeta.isAvailableForPreOrder || false);
+
+    if (metaChanged) {
+      productData.meta = {};
+      if (hasChanged(data.isFeatured, originalMeta.isFeatured || false)) {
+        productData.meta.isFeatured = data.isFeatured;
+      }
+      if (hasChanged(data.isAvailableForPreOrder, originalMeta.isAvailableForPreOrder || false)) {
+        productData.meta.isAvailableForPreOrder = data.isAvailableForPreOrder;
+      }
+    }
+
+    // stock
+    if (businessTypeSlug !== "restaurant") {
+      const originalUnit = prevData?.stock?.unit || "";
+      if (hasChanged(data.unit, originalUnit)) {
+        productData.stock = { unit: data.unit };
+      }
+    }
+
+    // price check
+    const priceChanged = hasChanged(data.price, prevData?.pricing?.price || 0);
+
+    // final validation
+    const hasAnyChange = Object.keys(productData).length > 0 || priceChanged;
+
+    if (!hasAnyChange) {
+      const onlyImagesWereDeleted =
+        originalImages.length > currentImages.length && newlyUploaded.length === 0;
+
+      if (onlyImagesWereDeleted) {
+        toast.success("Image removed successfully", { id: toastId });
+      } else {
+        toast.info("No changes detected", { id: toastId });
+      }
+
+      setActiveTab(0);
+      setTabError({});
+      router.refresh();
+      closeModal();
       setIsSubmitting(false);
       return;
     }
 
-    const productData = {
-      name: translated.name,
-      description: translated.description,
-      category: data.category,
-      pricing: {
-        discount: data.discount,
-        discountType: data.discountType,
-        taxId: data.taxId,
-      },
-      addonGroups: data.addonGroups,
-      images: data.images,
-      meta: {
-        isFeatured: data.isFeatured,
-        isAvailableForPreOrder: data.isAvailableForPreOrder,
-      },
-      ...(businessTypeSlug !== "restaurant"
-        ? {
-          stock: {
-            unit: data.unit,
-          },
-        }
-        : {}),
-    };
-
     const result = await catchAsync<TProduct>(async () => {
       return (await updateData(
         `/products/${prevData?.productId}`,
-        productData,
+        productData
       )) as unknown as TResponse<TProduct>;
     });
 
     if (result.success) {
-      if (result?.data?.variations?.length === 0 || !result?.data?.variations) {
+      if (
+        (result?.data?.variations?.length === 0 || !result?.data?.variations) &&
+        priceChanged
+      ) {
         const pricingResult = await catchAsync<unknown>(async () => {
           return (await updateData(
             `/products/update-inventory-and-pricing/${prevData?.productId}`,
-            {
-              newPrice: data.price,
-            },
+            { newPrice: data.price }
           )) as unknown as TResponse<unknown>;
         });
 
         if (pricingResult.success) {
           toast.success("Product updated successfully!", { id: toastId });
-
           setActiveTab(0);
           setTabError({});
           router.refresh();
           closeModal();
           return;
         }
-      };
+      }
 
       toast.success("Product updated successfully!", { id: toastId });
-
       setActiveTab(0);
       setTabError({});
       router.refresh();
@@ -515,8 +608,15 @@ export function EditProductForm({
                         <FormItem className="gap-1">
                           <FormControl>
                             <ImageUpload
-                              images={field.value}
-                              onChange={(urls) => field.onChange(urls)}
+                              images={field.value || []}
+                              productId={prevData?.productId}
+                              onChange={(urls) => {
+                                form.setValue("images", urls, {
+                                  shouldDirty: true,
+                                  shouldTouch: true,
+                                  shouldValidate: true,
+                                });
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -931,7 +1031,7 @@ export function EditProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                       {t("deligo_metadata_information")}
+                      {t("deligo_metadata_information")}
                     </h2>
                     <div className="space-y-4">
                       <FormField
@@ -953,7 +1053,7 @@ export function EditProductForm({
                                     }
                                     className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                   />
-                                   {t("featured_product")}
+                                  {t("featured_product")}
                                 </FormLabel>
                               </div>
                             </FormControl>
@@ -980,7 +1080,7 @@ export function EditProductForm({
                                     }
                                     className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                   />
-                                   {t("available_for_pre_order")}
+                                  {t("available_for_pre_order")}
                                 </FormLabel>
                               </div>
                             </FormControl>
