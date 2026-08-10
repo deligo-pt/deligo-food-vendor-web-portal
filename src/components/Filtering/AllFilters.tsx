@@ -100,7 +100,7 @@ export default function AllFilters({
     >
       <div className="flex flex-col lg:flex-row gap-4 items-start md:items-center justify-between">
         {/* Search + Clear button */}
-        <div className="relative w-full lg:w-auto flex-1 max-w-md">
+        <div className="relative w-full lg:w-auto flex-1 max-w-xs">
           <SearchFilter
             paramName="searchTerm"
             placeholder={
