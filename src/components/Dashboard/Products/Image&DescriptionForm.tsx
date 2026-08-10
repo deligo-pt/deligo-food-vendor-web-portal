@@ -28,9 +28,10 @@ import { TResponse } from "@/src/types";
 interface IProps {
     form: any;
     selectedLanguage: string;
+    productId?: string;
 }
 
-const ImageAndDescriptionForm = ({ form, selectedLanguage }: IProps) => {
+const ImageAndDescriptionForm = ({ form, selectedLanguage, productId }: IProps) => {
     const { t, i18n } = useTranslation();
     // State for inline AI description generator
     const [generatingDescription, setGeneratingDescription] = useState(false);
@@ -98,7 +99,14 @@ const ImageAndDescriptionForm = ({ form, selectedLanguage }: IProps) => {
                                 <FormControl>
                                     <ImageUpload
                                         images={field.value}
-                                        onChange={(urls) => field.onChange(urls)}
+                                        productId={productId}
+                                        onChange={(urls) => {
+                                            form.setValue("images", urls, {
+                                                shouldDirty: true,
+                                                shouldTouch: true,
+                                                shouldValidate: true,
+                                            });
+                                        }}
                                     />
                                 </FormControl>
                                 <FormMessage />
