@@ -1,7 +1,7 @@
 import { serverRequest } from "@/lib/serverFetch";
 import OrderDetails from "@/src/components/Dashboard/Orders/OrderDetails/OrderDetails";
 import { TResponse } from "@/src/types";
-import { TOrder } from "@/src/types/order.type";
+import { TOrderDetails } from "@/src/types/order.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function OrderDetailsPage({
@@ -10,12 +10,12 @@ export default async function OrderDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  let initialData: TOrder = {} as TOrder;
+  let initialData: TOrderDetails = {} as TOrderDetails;
 
   try {
     const result = (await serverRequest.get(
       `/orders/${id}`,
-    )) as TResponse<TOrder>;
+    )) as TResponse<TOrderDetails>;
 
     if (result?.success) {
       initialData = result.data;

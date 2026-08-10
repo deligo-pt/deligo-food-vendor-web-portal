@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -17,10 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { ImageUpload } from "@/src/components/Dashboard/Products/ProductImageUpload";
-import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { getAddOnsGroupReq } from "@/src/services/dashboard/add-ons/add-ons";
 import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
@@ -53,6 +48,11 @@ import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import BasicInfoForm from "./BasicInfoForm";
+import ImageAndDescriptionForm from "./Image&DescriptionForm";
+import PricingForm from "./PricingForm";
+import StockInformationForm from "./StockInformationForm";
+import DeligoMetadata from "./DeligoMetadata";
 
 type FormData = z.infer<typeof productValidation>;
 
@@ -149,10 +149,11 @@ export function EditProductForm({
     ),
   );
 
-  const [watchAddons, watchVariations] = useWatch({
-    control: form.control,
-    name: ["addonGroups", "variations"],
-  });
+  const [watchPrice, watchDiscount, watchDiscountType, watchTaxId, watchAddons, watchVariations] =
+    useWatch({
+      control: form.control,
+      name: ["price", "discount", "discountType", "taxId", "addonGroups", "variations"],
+    });
 
   const addAddon = (id: string) => {
     if (!form?.getValues("addonGroups")?.includes(id)) {
@@ -478,152 +479,19 @@ export function EditProductForm({
               >
                 {/* Basic Info Tab */}
                 {activeTab === 0 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {t("basic_information")}
-                    </h2>
-                    <div>
-                      <FormField
-                        control={form.control}
-                        name={`name.${lang}`}
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor={`name.${lang}`}
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("product_name")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name={`description.${lang}`}
-                      render={({ field }) => (
-                        <FormItem className="gap-1">
-                          <FormLabel
-                            htmlFor={`description.${lang}`}
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            {t("description")}
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="gap-1">
-                          <FormLabel
-                            htmlFor="category"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            {t("product_category")}
-                          </FormLabel>
-                          <FormControl>
-                            <Select
-                              value={field.value}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger
-                                className={cn(
-                                  "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                  fieldState.invalid
-                                    ? "border-destructive"
-                                    : "border-gray-300",
-                                )}
-                              >
-                                <SelectValue placeholder="Select a category" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {productCategoriesData?.map(
-                                  (category) => (
-                                    <SelectItem
-                                      key={category?._id}
-                                      value={category?._id}
-                                    >
-                                      {category?.name}
-                                    </SelectItem>
-                                  ),
-                                )}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </motion.div>
+                  <BasicInfoForm
+                    form={form as any}
+                    productCategories={productCategoriesData}
+                    selectedLanguage={lang}
+                  />
                 )}
                 {/* Images Tab */}
                 {activeTab === 1 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6 mb-0"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {t("product_images")}
-                    </h2>
-                    <FormField
-                      control={form.control}
-                      name="images"
-                      render={({ field }) => (
-                        <FormItem className="gap-1">
-                          <FormControl>
-                            <ImageUpload
-                              images={field.value || []}
-                              productId={prevData?.productId}
-                              onChange={(urls) => {
-                                form.setValue("images", urls, {
-                                  shouldDirty: true,
-                                  shouldTouch: true,
-                                  shouldValidate: true,
-                                });
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </motion.div>
+                  <ImageAndDescriptionForm
+                    form={form}
+                    selectedLanguage={lang}
+                    productId={prevData?.productId}
+                  />
                 )}
                 {/* Add-Ons & Variants Tab */}
                 {activeTab === 2 && (
@@ -703,6 +571,9 @@ export function EditProductForm({
                                       {group.title?.[lang]}
                                     </SelectItem>
                                   ))}
+                                  {addonGroupsData?.data?.length === 0 && (
+                                    <p className='italic text-sm text-gray-500 text-center'>{t("no_add_ons_found")}</p>
+                                  )}
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -762,334 +633,28 @@ export function EditProductForm({
                 )}
                 {/* Pricing Tab */}
                 {activeTab === 3 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {t("pricing_information")}
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {(!prevData?.variations || prevData?.variations?.length === 0) && <FormField
-                        control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="price"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("price")}
-                            </FormLabel>
-
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />}
-                      <FormField
-                        control={form.control}
-                        name="discountType"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("select_discount_type")}
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="w-full h-10">
-                                    <SelectValue placeholder={t("select_discount_type")} />
-                                  </SelectTrigger>
-                                </FormControl>
-
-                                <SelectContent>
-                                  <SelectItem value="PERCENTAGE">PERCENTAGE</SelectItem>
-                                  <SelectItem value="FLAT">FLAT</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="discount"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="discount"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("discount_2")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min={0}
-                                max={100}
-                                value={String(field.value)}
-                                onChange={(e) =>
-                                  field.onChange(Number(e.target.value))
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="taxId"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="tax"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("tax_2")}
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10">
-                                  <SelectValue placeholder="Select tax" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {taxesData?.map((tax) => (
-                                    <SelectItem key={tax._id} value={tax._id}>
-                                      {tax.taxName}({ }
-                                      {tax.taxRate}%)
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </motion.div>
+                  <PricingForm
+                    form={form}
+                    taxesData={taxesData}
+                    watchDiscount={watchDiscount}
+                    watchPrice={watchPrice}
+                    watchVariations={watchVariations}
+                    watchTaxId={watchTaxId}
+                    watchDiscountType={watchDiscountType}
+                  />
                 )}
                 {/* Stock Tab */}
                 {businessTypeSlug !== "restaurant" && activeTab === 4 && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {t("stock_information")}
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="unit"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="unit"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("unit")}
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300",
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select a unit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="kg">
-                                    {t("kilogram")}
-                                  </SelectItem>
-                                  <SelectItem value="g">{t("gram")}</SelectItem>
-                                  <SelectItem value="l">
-                                    {t("liter")}
-                                  </SelectItem>
-                                  <SelectItem value="ml">
-                                    {t("milliliter")}
-                                  </SelectItem>
-                                  <SelectItem value="pcs">
-                                    {t("pieces")}
-                                  </SelectItem>
-                                  <SelectItem value="others">
-                                    {t("others")}
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="availabilityStatus"
-                        render={({ field, fieldState }) => (
-                          <FormItem className="gap-1">
-                            <FormLabel
-                              htmlFor="availabilityStatus"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              {t("availability_status")}
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
-                                    fieldState.invalid
-                                      ? "border-destructive"
-                                      : "border-gray-300",
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select a unit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="In Stock">
-                                    {t("in_stock")}
-                                  </SelectItem>
-                                  <SelectItem value="Out of Stock">
-                                    {t("out_of_stock")}
-                                  </SelectItem>
-                                  <SelectItem value="Limited">
-                                    {t("limited")}
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </motion.div>
+                  <StockInformationForm
+                    form={form}
+                    watchVariations={watchVariations}
+                  />
                 )}
                 {/* DeliGo Metadata Tab */}
                 {activeTab === lastTabIndex && (
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="space-y-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {t("deligo_metadata_information")}
-                    </h2>
-                    <div className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="isFeatured"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormControl>
-                              <div className="">
-                                <FormLabel
-                                  htmlFor="isFeatured"
-                                  className="text-sm text-gray-700 flex items-center"
-                                >
-                                  <Checkbox
-                                    id="isFeatured"
-                                    checked={!!field.value}
-                                    onCheckedChange={(checked) =>
-                                      field.onChange(checked)
-                                    }
-                                    className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
-                                  />
-                                  {t("featured_product")}
-                                </FormLabel>
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="isAvailableForPreOrder"
-                        render={({ field }) => (
-                          <FormItem className="gap-1">
-                            <FormControl>
-                              <div className="">
-                                <FormLabel
-                                  htmlFor="isAvailableForPreOrder"
-                                  className="text-sm text-gray-700 flex items-center"
-                                >
-                                  <Checkbox
-                                    id="isAvailableForPreOrder"
-                                    checked={!!field.value}
-                                    onCheckedChange={(checked) =>
-                                      field.onChange(checked)
-                                    }
-                                    className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
-                                  />
-                                  {t("available_for_pre_order")}
-                                </FormLabel>
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </motion.div>
+                  <DeligoMetadata
+                    form={form}
+                  />
                 )}
                 <div className="flex justify-between pt-6">
                   <motion.button

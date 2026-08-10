@@ -18,7 +18,7 @@ const EditProductDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form>
-        <DialogContent className="w-full! sm:max-w-3xl overflow-y-auto h-11/12! max-h-11/12 p-0!">
+        <DialogContent className="w-full! sm:max-w-6xl overflow-y-auto h-11/12! max-h-11/12 p-0!">
           <DialogTitle className="hidden">Edit Product</DialogTitle>
 
           <EditProductForm
