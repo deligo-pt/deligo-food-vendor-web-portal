@@ -130,7 +130,7 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
   };
 
   return (
-    <div className="p-6">
+    <div>
       {/* Back */}
       <motion.div
         variants={itemVariants as Variants}

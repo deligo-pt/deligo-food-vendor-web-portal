@@ -954,6 +954,9 @@ export const en = {
   featured: "Featured",
   variation_options: "Variation Options",
   ratings_and_reviews: "Ratings & Reviews",
+  origin: "Origin",
+  created: "Created",
+  updated: "Updated",
   edit_product: "Edit Product",
   delete_product: "Delete Product",
   // categories page

@@ -987,6 +987,9 @@ export const pt = {
   featured: "Em Destaque",
   variation_options: "Opções de Variação",
   ratings_and_reviews: "Avaliações e Comentários",
+  origin: "Origem",
+  created: "Criado",
+  updated: "Atualizado",
   edit_product: "Editar Produto",
   delete_product: "Excluir Produto",
 
