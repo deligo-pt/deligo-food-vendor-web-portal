@@ -1,42 +1,31 @@
 "use client";
 
-import { useStore } from "@/src/store/store";
-import { TOrder } from "@/src/types/order.type";
+import { TOrderDetails } from "@/src/types/order.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { motion, Variants } from "framer-motion";
 import { ShoppingBagIcon } from "lucide-react";
+import Image from "next/image";
 
 interface IProps {
-  items: TOrder["items"];
-  t: (key: string) => string
+  items: TOrderDetails["items"];
+  t: (key: string) => string;
 }
 
 export default function OrderItemsTable({ items, t }: IProps) {
-  const { lang } = useStore();
   const containerVariants = {
-    hidden: {
-      opacity: 0,
-    },
+    hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
+      transition: { staggerChildren: 0.05 },
     },
   };
 
   const rowVariants = {
-    hidden: {
-      opacity: 0,
-      x: -20,
-    },
+    hidden: { opacity: 0, x: -20 },
     visible: {
       opacity: 1,
       x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
+      transition: { type: "spring", stiffness: 100 },
     },
   };
 
@@ -56,6 +45,7 @@ export default function OrderItemsTable({ items, t }: IProps) {
             <tr>
               <th className="px-6 py-3">{t("product_details")}</th>
               <th className="px-6 py-3 text-center">{t("qty")}</th>
+              <th className="px-6 py-3 text-right">{t("unit_price") || "Unit"}</th>
               <th className="px-6 py-3 text-right">{t("subtotal")}</th>
             </tr>
           </thead>
@@ -67,27 +57,49 @@ export default function OrderItemsTable({ items, t }: IProps) {
           >
             {items.map((item, index) => (
               <motion.tr
-                key={item.productId._id || index}
+                key={item.productId || index}
                 variants={rowVariants as Variants}
                 className="hover:bg-gray-50/50 transition-colors"
               >
                 <td className="px-6 py-4">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-900">
-                      {item.productId.name?.[lang]}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {t("id")}: {item.productId.productId}
-                    </span>
+                  <div className="flex items-center gap-3">
+                    {item.image && (
+                      <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100 shrink-0">
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="font-medium text-gray-900 truncate">
+                        {item.name}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {t("id")}: {item.productId}
+                      </div>
+                      {item.productPricing.productDiscountAmount > 0 && (
+                        <div className="text-xs text-green-600 mt-0.5">
+                          -€{formatPrice(item.productPricing.productDiscountAmount)}{" "}
+                          ({item.productPricing.discountType})
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    x{item.itemSummary?.quantity}
+                    ×{item.itemSummary?.quantity ?? 0}
                   </span>
                 </td>
+                <td className="px-6 py-4 text-right text-gray-700">
+                  €{formatPrice(item.productPricing?.unitPrice ?? 0)}
+                </td>
                 <td className="px-6 py-4 text-right font-medium text-gray-900">
-                  €{formatPrice(item.itemSummary?.grandTotal || 0)}
+                  €{formatPrice(item.itemSummary?.grandTotal ?? 0)}
                 </td>
               </motion.tr>
             ))}

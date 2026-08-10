@@ -1,11 +1,11 @@
-import { TOrder } from "@/src/types/order.type";
+import { TOrderDetails } from "@/src/types/order.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { motion } from "framer-motion";
 import { CreditCardIcon, EuroIcon, SmartphoneIcon } from "lucide-react";
 
 interface IProps {
-  order: TOrder;
-  t:(key: string) => string;
+  order: TOrderDetails;
+  t: (key: string) => string;
 }
 
 export default function OrderPricingSummary({ order, t }: IProps) {
@@ -73,7 +73,7 @@ export default function OrderPricingSummary({ order, t }: IProps) {
               €
               {formatPrice(
                 (payoutSummary?.vendor?.vendorNetPayout || 0) +
-                  (payoutSummary?.deliGoCommission?.totalDeduction || 0),
+                (payoutSummary?.deliGoCommission?.totalDeduction || 0),
               )}
             </span>
           </div>
