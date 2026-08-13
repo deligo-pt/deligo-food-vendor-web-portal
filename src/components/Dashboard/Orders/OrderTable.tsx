@@ -118,13 +118,13 @@ export default function OrderTable({ orders }: IProps) {
                   </Avatar>
                   <div>
                     <div className="font-medium">
-                      {order.customerId?.name?.firstName}{" "}
+                      {order.customerId?.name?.firstName || "N/A"}{" "}
                       {order.customerId?.name?.lastName}
                     </div>
-                    <div className="text-xs text-slate-500">
+                    {order.deliveryAddress && <div className="text-xs text-slate-500">
                       {order.deliveryAddress.street},{" "}
                       {order.deliveryAddress.city}
-                    </div>
+                    </div>}
                   </div>
                 </div>
               </TableCell>
@@ -143,7 +143,9 @@ export default function OrderTable({ orders }: IProps) {
                     0),
                 )}
               </TableCell>
-              <TableCell>{format(order.createdAt, "do MMM yyyy")}</TableCell>
+              <TableCell>
+                {format(new Date(order.createdAt), "dd-MM-yyyy")}
+              </TableCell>
               <TableCell>{order.orderStatus}</TableCell>
               <TableCell className="text-right">
                 <Button

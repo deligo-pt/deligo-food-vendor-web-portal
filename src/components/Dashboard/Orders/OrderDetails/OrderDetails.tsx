@@ -180,7 +180,7 @@ export default function OrderDetails({ order }: IProps) {
                     {order.customerId.name?.firstName}{" "}
                     {order.customerId.name?.lastName}
                   </div>
-                  <div className="text-sm text-gray-600 flex items-start gap-2">
+                  {order.deliveryAddress && <div className="text-sm text-gray-600 flex items-start gap-2">
                     <MapPinIcon className="w-4 h-4 mt-0.5 shrink-0 text-gray-400" />
                     <span>
                       {order.deliveryAddress.street}
@@ -195,7 +195,7 @@ export default function OrderDetails({ order }: IProps) {
                         ? `, ${order.deliveryAddress.country}`
                         : ""}
                     </span>
-                  </div>
+                  </div>}
                   {order.customerId.NIF && (
                     <div className="text-sm text-gray-500 pt-2 border-t border-gray-100">
                       {t("nif")}: {order.customerId.NIF}
