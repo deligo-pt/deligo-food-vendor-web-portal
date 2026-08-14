@@ -109,7 +109,7 @@ export default function Orders({
       {/* Order Table */}
       <OrderTable
         orders={ordersResult?.data || []}
-        viewOrder={(order) => setSelected(order)}
+      // viewOrder={(order) => setSelected(order)}
       />
 
       {/* Pagination */}
@@ -126,11 +126,11 @@ export default function Orders({
       )}
 
       {/* Order details sheet */}
-      <OrderDetailsSheet
+      {/* <OrderDetailsSheet
         open={!!selected}
         onOpenChange={(open) => !open && setSelected(null)}
         selectedOrder={selected}
-      />
+      /> */}
     </div>
   );
 }

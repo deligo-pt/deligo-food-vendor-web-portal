@@ -758,6 +758,8 @@ export const en = {
   dashboard: "Dashboard",
   orders: "Orders",
   all_orders: "All Orders",
+  pending_with_delivery: "Pending - With Delivery",
+  pending_with_self_pickup: "Pending - With Self Pickup",
   new_orders: "New Orders",
   preparing: "Preparing",
   ready_for_pickup: "Ready for Pickup",
@@ -855,6 +857,7 @@ export const en = {
   delivery_partner: "Delivery Partner",
   amount: "Amount",
   date: "Date",
+  hour: "Hour",
   no_orders_found: "No orders found",
   page_lg: "Page",
   page_sm: "page",
@@ -929,6 +932,12 @@ export const en = {
     "See all orders that were cancelled — reason, payment, customer info.",
   reason: "Reason",
   cancelled_at: "Cancelled at",
+
+  // pending with delivery
+  list_of_all_pending_orders_with_delivery: "List of all Pending orders with Delivery",
+
+  // pending with self pickup
+  list_of_all_pending_orders_with_self_pickup: "List of all Pending orders with self pickup",
 
   // all-items page
   food_items: "Food Items",

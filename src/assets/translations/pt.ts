@@ -771,6 +771,8 @@ export const pt = {
   // -> sidebar
   dashboard: "Painel",
   all_orders: "Todos os Pedidos",
+  pending_with_delivery: "Pendentes - Com Entrega",
+  pending_with_self_pickup: "Pendentes - Com Recolha pelo Cliente",
   orders: "Pedidos",
   new_orders: "Novos Pedidos",
   preparing: "Em Preparação",
@@ -884,6 +886,7 @@ export const pt = {
   delivery_partner: "Parceiro de Entrega",
   amount: "Valor",
   date: "Data",
+  hour: "Hora",
   no_orders_found: "Nenhum pedido encontrado",
   page_lg: "Página",
   page_sm: "página",
@@ -961,6 +964,12 @@ export const pt = {
     "Ver todos os pedidos cancelados — motivo, pagamento e dados do cliente.",
   reason: "Motivo",
   cancelled_at: "Cancelado em",
+
+  // pending with delivery
+  list_of_all_pending_orders_with_delivery: "Lista de todos os pedidos pendentes com entrega",
+
+  // pending with self pickup
+  list_of_all_pending_orders_with_self_pickup: "Lista de todos os pedidos pendentes para retirada no local",
 
   // all-items page
   food_items: "Itens Alimentares",

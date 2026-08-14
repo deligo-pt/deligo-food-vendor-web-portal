@@ -35,6 +35,8 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       icon: <ShoppingBag size={18} />,
       items: [
         { name: t("all_orders"), path: "/vendor/all-orders" },
+        { name: t("pending_with_delivery"), path: "/vendor/pending-with-delivery" },
+        { name: t("pending_with_self_pickup"), path: "/vendor/pending-with-self" },
         { name: t("cancelled"), path: "/vendor/cancelled" },
         { name: t("completed"), path: "/vendor/completed" },
       ],
