@@ -1,6 +1,5 @@
 "use client";
 
-import OrderDetailsSheet from "@/src/components/Dashboard/Orders/OrderDetailsSheet";
 import OrderTable from "@/src/components/Dashboard/Orders/OrderTable";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
