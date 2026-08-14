@@ -15,7 +15,6 @@ import {
   AvatarImage,
 } from "@/src/components/ui/avatar";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { useStore } from "@/src/store/store";
 import { TOrder } from "@/src/types/order.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { format } from "date-fns";
@@ -23,6 +22,7 @@ import { motion } from "framer-motion";
 import {
   CalendarIcon,
   CheckCircleIcon,
+  ClockIcon,          // ← added
   Cog,
   EuroIcon,
   EyeIcon,
@@ -34,13 +34,34 @@ import { useRouter } from "next/navigation";
 
 interface IProps {
   orders: TOrder[];
-  viewOrder: (order: TOrder) => void;
 }
 
 export default function OrderTable({ orders }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { lang } = useStore();
+
+  // Helper to format pickup hour range
+  const formatPickupHour = (order: TOrder) => {
+    if (
+      order.fulfillmentType !== "PICKUP" ||
+      !order.pickup?.pickupTime ||
+      !order.pickup?.pickupSlotEndTime
+    ) {
+      return "—";
+    }
+
+    // Remove the trailing Z so the time is treated as local (no timezone shift)
+    const start = format(
+      new Date(order.pickup.pickupTime.replace(/Z$/, "")),
+      "h:mm a"
+    );
+    const end = format(
+      new Date(order.pickup.pickupSlotEndTime.replace(/Z$/, "")),
+      "h:mm a"
+    );
+
+    return `${start} - ${end}`;
+  };
 
   return (
     <motion.div
@@ -81,6 +102,15 @@ export default function OrderTable({ orders }: IProps) {
                 {t("date")}
               </div>
             </TableHead>
+
+            {/* NEW Hour column */}
+            <TableHead>
+              <div className="text-[#DC3173] flex gap-2 items-center">
+                <ClockIcon className="w-4" />
+                {t("hour")}
+              </div>
+            </TableHead>
+
             <TableHead>
               <div className="text-[#DC3173] flex gap-2 items-center">
                 <CheckCircleIcon className="w-4" />
@@ -89,30 +119,33 @@ export default function OrderTable({ orders }: IProps) {
             </TableHead>
             <TableHead className="text-right text-[#DC3173] flex gap-2 items-center justify-end">
               <Cog className="w-4" />
-              {t('actions')}
+              {t("actions")}
             </TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {orders?.length === 0 && (
             <TableRow>
               <TableCell
                 className="text-[#DC3173] text-lg text-center"
-                colSpan={7}
+                colSpan={8}
               >
                 {t("no_orders_found")}
               </TableCell>
             </TableRow>
           )}
+
           {orders?.map((order) => (
             <TableRow key={order._id}>
               <TableCell>{order.orderId}</TableCell>
+
               <TableCell>
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarImage src={order.customerId?.profilePhoto} />
                     <AvatarFallback>
-                      {order.customerId?.name?.firstName?.charAt(0)}
+                      {order.customerId?.name?.firstName?.charAt(0) || "N"}
                       {order.customerId?.name?.lastName?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
@@ -121,32 +154,43 @@ export default function OrderTable({ orders }: IProps) {
                       {order.customerId?.name?.firstName || "N/A"}{" "}
                       {order.customerId?.name?.lastName}
                     </div>
-                    {order.deliveryAddress && <div className="text-xs text-slate-500">
-                      {order.deliveryAddress.street},{" "}
-                      {order.deliveryAddress.city}
-                    </div>}
+                    {order.deliveryAddress && (
+                      <div className="text-xs text-slate-500">
+                        {order.deliveryAddress.street},{" "}
+                        {order.deliveryAddress.city}
+                      </div>
+                    )}
                   </div>
                 </div>
               </TableCell>
+
               <TableCell>
                 {order.items?.map((i, index) => (
                   <span key={index}>
-                    {i.productId?.name?.[lang]} x {i.itemSummary?.quantity}
+                    {i.name} x {i.itemSummary?.quantity}
                   </span>
                 ))}
               </TableCell>
+
               <TableCell>
                 €
                 {formatPrice(
                   (order?.payoutSummary?.vendor?.vendorNetPayout || 0) +
-                  (order?.payoutSummary?.deliGoCommission?.totalDeduction ||
-                    0),
+                  (order?.payoutSummary?.deliGoCommission?.totalDeduction || 0),
                 )}
               </TableCell>
+
               <TableCell>
                 {format(new Date(order.createdAt), "dd-MM-yyyy")}
               </TableCell>
+
+              {/* NEW Hour cell – only meaningful for PICKUP */}
+              <TableCell>
+                {formatPickupHour(order)}
+              </TableCell>
+
               <TableCell>{order.orderStatus}</TableCell>
+
               <TableCell className="text-right">
                 <Button
                   onClick={() =>

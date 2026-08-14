@@ -13,3 +13,8 @@ export const ORDER_STATUS = {
   DELIVERED: "DELIVERED",
   CANCELED: "CANCELED",
 };
+
+export const FULFILLMENT_TYPE = {
+  DELIVERY: 'DELIVERY',
+  PICKUP: 'PICKUP',
+};
