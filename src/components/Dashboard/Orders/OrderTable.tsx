@@ -145,7 +145,7 @@ export default function OrderTable({ orders }: IProps) {
                   <Avatar>
                     <AvatarImage src={order.customerId?.profilePhoto} />
                     <AvatarFallback>
-                      {order.customerId?.name?.firstName?.charAt(0)}
+                      {order.customerId?.name?.firstName?.charAt(0) || "N"}
                       {order.customerId?.name?.lastName?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
