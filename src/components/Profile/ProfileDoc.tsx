@@ -1,6 +1,4 @@
 import { useTranslation } from "@/src/hooks/use-translation";
-import { motion } from "framer-motion";
-import Image from "next/image";
 import { DocumentViewer, IDocSection } from "../Modals/DocumentViewer";
 
 export interface IVendorDocs {

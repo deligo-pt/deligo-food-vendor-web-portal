@@ -751,6 +751,8 @@ export const en = {
   footerVendors: "Vendors",
   footerLegal: "Legal",
   footerConnect: "Connect",
+  get_app: "Get App",
+  enjoy_full_experience: "Enjoy the full experience on your mobile device",
   footerLanguage: "Language",
   footerCopyright: "DeliGo — Powered with",
   footerCopyrightEfficiency: "Efficiency",
