@@ -79,6 +79,7 @@ export type TVendor = {
 
   // Documents & Verification
   documents?: {
+    myPhoto?: string[];
     businessLicenseDoc?: string[];
     taxDoc?: string[];
     idProofFront?: string[];
@@ -86,6 +87,7 @@ export type TVendor = {
     storePhoto?: string[];
     menuUpload?: string[];
     agoserisHaccpCertificate?: string[];
+    ibanProof: string[];
   };
 
   // Security & Access Control
