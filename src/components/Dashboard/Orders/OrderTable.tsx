@@ -14,6 +14,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/src/components/ui/avatar";
+import { getOrderStatusLabel } from "@/src/consts/order.const";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TOrder } from "@/src/types/order.type";
 import { formatPrice } from "@/src/utils/formatPrice";
@@ -189,7 +190,7 @@ export default function OrderTable({ orders }: IProps) {
                 {formatPickupHour(order)}
               </TableCell>
 
-              <TableCell>{order.orderStatus}</TableCell>
+              <TableCell>{getOrderStatusLabel(order?.orderStatus)}</TableCell>
 
               <TableCell className="text-right">
                 <Button

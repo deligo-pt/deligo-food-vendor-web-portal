@@ -71,14 +71,15 @@ export type TVendor = {
 
   // Bank & Payment Information
   bankDetails?: {
-    bankName: string;
+    bankName?: string;
     accountHolderName: string;
     iban: string;
-    swiftCode: string;
+    swiftCode?: string;
   };
 
   // Documents & Verification
   documents?: {
+    myPhoto?: string[];
     businessLicenseDoc?: string[];
     taxDoc?: string[];
     idProofFront?: string[];
@@ -86,6 +87,7 @@ export type TVendor = {
     storePhoto?: string[];
     menuUpload?: string[];
     agoserisHaccpCertificate?: string[];
+    ibanProof: string[];
   };
 
   // Security & Access Control

@@ -87,6 +87,16 @@ const RecentOrders = ({ recentOrders }: IProps) => {
       color: "text-sky-500",
       icon: TruckIcon,
     },
+    PICKED_UP_BY_CUSTOMER: {
+      label: t("on_the_way"),
+      color: "text-sky-500",
+      icon: TruckIcon,
+    },
+    NO_SHOW: {
+      label: t("on_the_way"),
+      color: "text-sky-500",
+      icon: TruckIcon,
+    },
     DELIVERED: {
       label: t("delivered"),
       color: "text-green-500",
