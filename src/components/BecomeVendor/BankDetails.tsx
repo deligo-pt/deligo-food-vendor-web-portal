@@ -5,7 +5,6 @@ import {
   ArrowLeftCircle,
   CreditCard,
   FileText,
-  Globe,
   Save,
   User,
 } from "lucide-react";
@@ -26,13 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/src/components/ui/input";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { updateVendorReq } from "@/src/services/becomeVendor/become-vendor";
@@ -42,8 +34,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
-import { cn } from "@/lib/utils";
-import { bankNames } from "@/src/consts/bankNames.const";
 
 type TBankForm = z.infer<typeof bankDetailsValidation>;
 
@@ -52,10 +42,10 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
   const form = useForm<TBankForm>({
     resolver: zodResolver(bankDetailsValidation),
     defaultValues: {
-      bankName: vendor?.bankDetails?.bankName || "",
+      // bankName: vendor?.bankDetails?.bankName || "",
       accountHolderName: vendor?.bankDetails?.accountHolderName || "",
       iban: vendor?.bankDetails?.iban || "",
-      swiftCode: vendor?.bankDetails?.swiftCode || "",
+      // swiftCode: vendor?.bankDetails?.swiftCode || "",
     },
   });
   const router = useRouter();
@@ -123,7 +113,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                 className="space-y-6"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <FormField
                       control={form.control}
                       name="bankName"
@@ -160,7 +150,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <FormField
@@ -212,7 +202,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                     />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <FormField
                       control={form.control}
                       name="swiftCode"
@@ -235,7 +225,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="pt-4">

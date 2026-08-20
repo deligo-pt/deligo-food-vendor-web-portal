@@ -134,7 +134,7 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
       {/* Back */}
       <motion.div
         variants={itemVariants as Variants}
-        className="flex items-center gap-4 mb-4"
+        className="flex justify-between items-center gap-4 mb-4"
       >
         <button
           onClick={() => router.push("/vendor/all-items")}
@@ -142,6 +142,13 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
         >
           <ArrowLeftIcon className="w-4 h-4" />
           {t("back_to_items")}
+        </button>
+        <button
+          onClick={() => setIsEditDialogOpen(true)}
+          className="bg-[#DC3173] hover:bg-[#c71d62] text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+        >
+          <Edit2Icon className="w-5 h-5" />
+          <span>{t("edit_product")}</span>
         </button>
       </motion.div>
 
@@ -450,13 +457,6 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
             </motion.div>
             {/* Action Button */}
             <div className="pt-4 flex items-center gap-2 justify-end">
-              <button
-                onClick={() => setIsEditDialogOpen(true)}
-                className="bg-[#DC3173] hover:bg-[#c71d62] text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
-              >
-                <Edit2Icon className="w-5 h-5" />
-                <span>{t("edit_product")}</span>
-              </button>
               <button
                 onClick={() => setIsDeleteDialogOpen(true)}
                 className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"

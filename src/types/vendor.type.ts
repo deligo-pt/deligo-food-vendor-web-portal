@@ -71,10 +71,10 @@ export type TVendor = {
 
   // Bank & Payment Information
   bankDetails?: {
-    bankName: string;
+    bankName?: string;
     accountHolderName: string;
     iban: string;
-    swiftCode: string;
+    swiftCode?: string;
   };
 
   // Documents & Verification
