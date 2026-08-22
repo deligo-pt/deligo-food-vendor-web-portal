@@ -21,7 +21,8 @@ const PendingWithSelfPickupOrdersPage = async ({ searchParams }: IProps) => {
         page,
         sortBy,
         ...(searchTerm ? { searchTerm } : {}),
-        orderStatus: ORDER_STATUS.PENDING,
+        // orderStatus: ORDER_STATUS.PENDING,
+        excludeStatus: `${ORDER_STATUS.PICKED_UP_BY_CUSTOMER}`,
         fulfillmentType: FULFILLMENT_TYPE.PICKUP
     };
 

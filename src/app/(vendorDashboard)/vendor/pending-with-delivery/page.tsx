@@ -22,7 +22,8 @@ const PendingDeliveryOrdersPage = async ({ searchParams }: IProps) => {
         page,
         sortBy,
         ...(searchTerm ? { searchTerm } : {}),
-        orderStatus: ORDER_STATUS.PENDING,
+        // orderStatus: ORDER_STATUS.PENDING,
+        excludeStatus: `${ORDER_STATUS.ON_THE_WAY},${ORDER_STATUS.DELIVERED}`,
         fulfillmentType: FULFILLMENT_TYPE.DELIVERY
     };
 
