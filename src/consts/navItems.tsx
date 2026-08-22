@@ -10,6 +10,7 @@ import {
   MessageCircle,
   Settings,
   ShoppingBag,
+  SquaresSubtract,
   Star,
 } from "lucide-react";
 
@@ -28,6 +29,15 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       title: t("dashboard"),
       icon: <LayoutDashboard size={18} />,
       path: "/vendor/dashboard",
+    },
+    {
+      id: "branches",
+      title: t("branch_management"),
+      icon: <SquaresSubtract size={18} />,
+      items: [
+        { name: t("add_branch"), path: "/vendor/branches/add" },
+        { name: t("all_branches"), path: "/vendor/branches" },
+      ],
     },
     {
       id: "orders",

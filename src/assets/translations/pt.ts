@@ -783,6 +783,9 @@ export const pt = {
 
   // -> sidebar
   dashboard: "Painel",
+  branch_management: "Gestão de Filiais",
+  add_branch: "Adicionar Filial",
+  all_branches: "Todas as Filiais",
   all_orders: "Todos os Pedidos",
   pending_with_delivery: "Pendentes - Com Entrega",
   pending_with_self_pickup: "Pendentes - Com Recolha pelo Cliente",
@@ -891,6 +894,12 @@ export const pt = {
   on_the_way: "A Caminho",
   delivered: "Entregue",
   order_status: "Status do Pedido",
+
+  // branch
+  // --> add branch
+  add_new_branch: "Adicionar nova filial",
+  add_new_branch_of_your_brand: "Adicionar nova filial da sua marca",
+  verify_branch_email: "Verifique o e-mail da sua filial",
 
   // all-orders
   manage_all_orders_from_here: "Gerencie todos os pedidos por aqui",

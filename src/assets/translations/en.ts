@@ -769,6 +769,9 @@ export const en = {
   lowest_rated: "Lowest Rated",
   // -> sidebar
   dashboard: "Dashboard",
+  branch_management: "Branch Management",
+  add_branch: "Add Branch",
+  all_branches: "All Branches",
   orders: "Orders",
   all_orders: "All Orders",
   pending_with_delivery: "Pending - With Delivery",
@@ -862,6 +865,12 @@ export const en = {
   on_the_way: "On The Way",
   delivered: "Delivered",
   order_status: "Order Status",
+
+  // branch
+  // --> add branch
+  add_new_branch: "Add New Branch",
+  add_new_branch_of_your_brand: "Add New Branch of your Brand",
+  verify_branch_email: "Verify your branch email",
 
   // all-orders
   manage_all_orders_from_here: "Manage all orders from here",
