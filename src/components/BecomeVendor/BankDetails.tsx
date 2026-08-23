@@ -37,7 +37,12 @@ import z from "zod";
 
 type TBankForm = z.infer<typeof bankDetailsValidation>;
 
-export default function BankDetails({ vendor }: { vendor: TVendor }) {
+interface IProps {
+  onNext?: () => void;
+  vendor: TVendor;
+}
+
+export default function BankDetails({ onNext, vendor }: IProps) {
   const { t } = useTranslation();
   const form = useForm<TBankForm>({
     resolver: zodResolver(bankDetailsValidation),
@@ -50,6 +55,8 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
   });
   const router = useRouter();
   const { formState: { isSubmitting } } = form;
+
+  const isSubVendor = vendor?.role === "SUB_VENDOR";
 
   const onSubmit = async (data: TBankForm) => {
     const toastId = toast.loading("Updating...");
@@ -64,8 +71,14 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
       toast.success("Bank details updated successfully!", {
         id: toastId,
       });
-      router.push("/become-vendor/document-image-details");
-      return;
+
+      if (isSubVendor) {
+        onNext?.();
+        return;
+      } else {
+        router.push("/become-vendor/document-image-details");
+        return;
+      }
     }
 
     toast.error(result.message || "Bank details update failed", {
@@ -83,7 +96,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
     >
       <div className="max-w-3xl mx-auto">
         <Card className="rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
-          <div className="relative p-0">
+          {!isSubVendor && <div className="relative p-0">
             <Button
               onClick={() => router.push("/become-vendor/business-location")}
               variant="link"
@@ -91,7 +104,7 @@ export default function BankDetails({ vendor }: { vendor: TVendor }) {
             >
               <ArrowLeftCircle /> {t("goBack")}
             </Button>
-          </div>
+          </div>}
           <CardHeader className="bg-linear-to-r from-[#DC3173] to-pink-600 text-white p-6">
             <div className="flex items-center gap-4">
               <div className="rounded-xl bg-white/25 p-3 shadow-md">

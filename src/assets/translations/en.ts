@@ -881,6 +881,8 @@ export const en = {
   re_submit: "Re-Submit",
   cuisine_type: "Cuisine Type",
   store_status: "Store Status",
+  closed: "Closed",
+  open: "Open",
   street: "Street",
   state: "State",
   zip_code: "Zip Code",
@@ -891,6 +893,9 @@ export const en = {
   submitted_for_approval: "Submitted For Approval",
   approved_rejected_blocked_at: "Approved/Rejected/Blocked At",
   parent_vendor_id: "Parent Vendor ID",
+  // --> edit branch
+  branch: "Branch",
+  complete_the_form_below: "Complete the form below",
 
   // all-orders
   manage_all_orders_from_here: "Manage all orders from here",

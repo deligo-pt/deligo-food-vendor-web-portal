@@ -910,6 +910,8 @@ export const pt = {
   re_submit: "Reenviar",
   cuisine_type: "Tipo de Culinária",
   store_status: "Estado da Loja",
+  closed: "Fechado",
+  open: "Aberto",
   street: "Rua",
   state: "Estado",
   zip_code: "Código Postal",
@@ -920,6 +922,9 @@ export const pt = {
   submitted_for_approval: "Submetido para Aprovação",
   approved_rejected_blocked_at: "Aprovado/Rejeitado/Bloqueado em",
   parent_vendor_id: "ID do Fornecedor Principal",
+  // --> edit branch
+  branch: "Filial",
+  complete_the_form_below: "Preencha o formulário abaixo",
 
   // all-orders
   manage_all_orders_from_here: "Gerencie todos os pedidos por aqui",
