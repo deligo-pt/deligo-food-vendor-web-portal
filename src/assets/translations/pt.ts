@@ -905,6 +905,21 @@ export const pt = {
   user_id: "ID do Utilizador",
   branch_name: "Nome da Filial",
   created_at: "Criado em",
+  // --> branch details
+  update_information: "Atualizar Informações",
+  re_submit: "Reenviar",
+  cuisine_type: "Tipo de Culinária",
+  store_status: "Estado da Loja",
+  street: "Rua",
+  state: "Estado",
+  zip_code: "Código Postal",
+  operational_data: "Dados Operacionais",
+  rating: "Classificação",
+  account_information: "Informações da Conta",
+  last_updated: "Última Atualização",
+  submitted_for_approval: "Submetido para Aprovação",
+  approved_rejected_blocked_at: "Aprovado/Rejeitado/Bloqueado em",
+  parent_vendor_id: "ID do Fornecedor Principal",
 
   // all-orders
   manage_all_orders_from_here: "Gerencie todos os pedidos por aqui",

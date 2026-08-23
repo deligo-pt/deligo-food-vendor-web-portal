@@ -3,7 +3,7 @@ import { USER_STATUS } from "@/src/consts/user.const";
 export type TVendor = {
   _id?: string;
   userId: string;
-  role: "VENDOR";
+  role: "VENDOR" | "SUB_VENDOR";
   email: string;
   password: string;
   status: keyof typeof USER_STATUS;
@@ -48,6 +48,9 @@ export type TVendor = {
     businessName: string;
     businessType: string;
     branchName?: string;
+    isHalal?: boolean;
+    preparationTimeMinutes?: string;
+    isStoreOpen?: boolean;
     businessTypeSlug?: string;
     restaurantCuisineType?: string[];
     businessLicenseNumber?: string;
@@ -107,6 +110,10 @@ export type TVendor = {
   approvedBy?: string;
   rejectedBy?: string;
   remarks?: string;
+
+  submittedForApprovalAt?: Date | string;
+  approvedOrRejectedOrBlockedAt?: Date | string;
+  parentVendorId?: string;
 
   createdAt: Date | string;
   updatedAt: Date | string;

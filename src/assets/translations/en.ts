@@ -876,6 +876,21 @@ export const en = {
   user_id: "User ID",
   branch_name: "Branch Name",
   created_at: "Created At",
+  // --> branch details
+  update_information: "Update Information",
+  re_submit: "Re-Submit",
+  cuisine_type: "Cuisine Type",
+  store_status: "Store Status",
+  street: "Street",
+  state: "State",
+  zip_code: "Zip Code",
+  operational_data: "Operational Data",
+  rating: "Rating",
+  account_information: "Account Information",
+  last_updated: "Last Updated",
+  submitted_for_approval: "Submitted For Approval",
+  approved_rejected_blocked_at: "Approved/Rejected/Blocked At",
+  parent_vendor_id: "Parent Vendor ID",
 
   // all-orders
   manage_all_orders_from_here: "Manage all orders from here",
