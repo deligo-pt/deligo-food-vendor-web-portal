@@ -900,6 +900,11 @@ export const pt = {
   add_new_branch: "Adicionar nova filial",
   add_new_branch_of_your_brand: "Adicionar nova filial da sua marca",
   verify_branch_email: "Verifique o e-mail da sua filial",
+  // --> all branches
+  all_branches_of_your_brand: "Todas as filiais da sua marca",
+  user_id: "ID do Utilizador",
+  branch_name: "Nome da Filial",
+  created_at: "Criado em",
 
   // all-orders
   manage_all_orders_from_here: "Gerencie todos os pedidos por aqui",

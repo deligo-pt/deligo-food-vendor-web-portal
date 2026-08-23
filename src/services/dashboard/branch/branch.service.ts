@@ -31,3 +31,14 @@ export const addNewBranch = async (payload: { email: string; password: string })
 
     return result;
 };
+
+
+export const getAllBranches = async (id: string, query?: string) => {
+    const result = await catchAsync(async () => {
+        const response = await serverFetch.get(`/vendors/${id}/branches${query ? `?${query}` : ""}`);
+
+        return await response.json();
+    });
+
+    return result;
+};

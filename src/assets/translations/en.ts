@@ -860,7 +860,7 @@ export const en = {
   dispatching: "Dispatching",
   awaiting_partner: "Awaiting Partner",
   assigned: "Assigned",
-  reassignment_needed: " Reassignment Needed",
+  reassignment_needed: "Reassignment Needed",
   picked_up: "Picked Up",
   on_the_way: "On The Way",
   delivered: "Delivered",
@@ -871,6 +871,11 @@ export const en = {
   add_new_branch: "Add New Branch",
   add_new_branch_of_your_brand: "Add New Branch of your Brand",
   verify_branch_email: "Verify your branch email",
+  // --> all branches
+  all_branches_of_your_brand: "All branches of your brand",
+  user_id: "User ID",
+  branch_name: "Branch Name",
+  created_at: "Created At",
 
   // all-orders
   manage_all_orders_from_here: "Manage all orders from here",
