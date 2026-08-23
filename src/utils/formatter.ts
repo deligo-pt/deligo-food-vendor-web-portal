@@ -14,21 +14,19 @@ export function textLimitter(text: string, limit = 300): string {
 export function queryStringFormatter(searchParamsObj: {
   [key: string]: string | string[] | undefined;
 }): string {
-  let queryString = "";
+  const queryArray = Object.entries(searchParamsObj)
+    .filter(([key]) => key !== "lang")
+    .map(([key, value]) => {
+      if (Array.isArray(value)) {
+        return value.map((v) => `${key}=${encodeURIComponent(v)}`).join("&");
+      } else if (value !== undefined && value !== "") {
+        return `${key}=${encodeURIComponent(value)}`;
+      }
 
-  const queryArray = Object.entries(searchParamsObj).map(([key, value]) => {
-    if (Array.isArray(value)) {
-      return value.map((v) => `${key}=${encodeURIComponent(v)}`).join("&");
-    } else if (value !== undefined) {
-      return `${key}=${encodeURIComponent(value)}`;
-    }
+      return "";
+    });
 
-    return "";
-  });
-
-  queryString = queryArray.filter((q) => q !== "").join("&");
-
-  return queryString;
+  return queryArray.filter((q) => q !== "").join("&");
 }
 
 export function formatDateTime(date: string | Date): string {
