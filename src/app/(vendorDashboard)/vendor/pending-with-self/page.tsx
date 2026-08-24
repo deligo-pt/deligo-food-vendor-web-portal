@@ -15,13 +15,14 @@ const PendingWithSelfPickupOrdersPage = async ({ searchParams }: IProps) => {
     const page = Number(queries.page || 1);
     const searchTerm = queries.searchTerm || "";
     const sortBy = queries.sortBy || "-createdAt";
+    const orderStatus = queries.orderStatus || "";
 
     const query = {
         limit,
         page,
         sortBy,
         ...(searchTerm ? { searchTerm } : {}),
-        // orderStatus: ORDER_STATUS.PENDING,
+        ...(orderStatus && { orderStatus }),
         excludeStatus: `${ORDER_STATUS.PICKED_UP_BY_CUSTOMER}`,
         fulfillmentType: FULFILLMENT_TYPE.PICKUP
     };

@@ -122,14 +122,6 @@ export default function AllFilters({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-          <div className="w-full lg:w-48">
-            <SelectFilter
-              paramName="sortBy"
-              options={sortOptions}
-              placeholder={t("sort_by")}
-            />
-          </div>
-
           {filterOptions && (
             <Button
               variant="outline"
@@ -149,6 +141,13 @@ export default function AllFilters({
               )?.length || ""}
             </Button>
           )}
+          <div className="w-full lg:w-48">
+            <SelectFilter
+              paramName="sortBy"
+              options={sortOptions}
+              placeholder={t("sort_by")}
+            />
+          </div>
         </div>
       </div>
 

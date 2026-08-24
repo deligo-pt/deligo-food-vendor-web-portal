@@ -250,7 +250,7 @@ const BusinessLocation = ({ onNext, vendor }: IProps) => {
     const result = await updateVendorReq(vendor?.userId, payload);
 
     if (result.success) {
-      toast.success("Business location updated!", { id: toastId });
+      toast.success(result?.message || "Business location updated!", { id: toastId });
 
       if (isSubVendor) {
         onNext?.();

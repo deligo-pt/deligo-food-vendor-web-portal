@@ -74,7 +74,7 @@ export default function PersonalDetails({ onNext, vendor }: IProps) {
     const result = await updateVendorReq(vendor.userId, personalDetails);
 
     if (result.success) {
-      toast.success("Personal details updated successfully!", {
+      toast.success(result?.message || "Personal details updated successfully!", {
         id: toastId,
       });
 

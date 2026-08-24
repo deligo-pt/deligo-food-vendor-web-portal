@@ -134,7 +134,7 @@ export default function BusinessDetailsForm({
     const result = await updateVendorReq(vendor?.userId, businessDetailsPayload);
 
     if (result && result?.success) {
-      toast.success("Business details updated successfully!", { id: toastId });
+      toast.success(result?.message || "Business details updated successfully!", { id: toastId });
 
       if (isSubVendor) {
         onNext?.();

@@ -68,7 +68,7 @@ export default function BankDetails({ onNext, vendor }: IProps) {
     const result = await updateVendorReq(vendor?.userId, bankDetails);
 
     if (result.success) {
-      toast.success("Bank details updated successfully!", {
+      toast.success(result?.message || "Bank details updated successfully!", {
         id: toastId,
       });
 

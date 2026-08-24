@@ -323,8 +323,20 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
               variants={itemVariants as Variants}
             >
               <div>
-                <h3 className="text-sm font-medium text-gray-500">{t("category")}</h3>
+                <h3 className="text-sm font-semibold text-gray-500">{t("category")}</h3>
                 <p className="mt-1 text-gray-900">{product.category?.name?.[lang]}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500">{t("additional_categories")}</h3>
+                {(product.additionalCategories?.length ?? 0) > 0 ? (
+                  product.additionalCategories?.map((c) => (
+                    <p key={c?._id} className="mt-1 text-gray-900">
+                      {c?.name?.[lang]}
+                    </p>
+                  ))
+                ) : (
+                  <p className="mt-1 text-gray-900">N/A</p>
+                )}
               </div>
             </motion.div>
             {/* Variations */}

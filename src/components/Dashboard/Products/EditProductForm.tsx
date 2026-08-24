@@ -123,6 +123,10 @@ export function EditProductForm({
       images: prevData?.images || [],
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
+      additionalCategories:
+        prevData?.additionalCategories?.map(
+          (cat: any) => cat._id || cat.id
+        ) || [],
       price: prevData?.pricing?.price || 0,
       discountType: prevData?.pricing?.discountType ?? "",
       discount: prevData?.pricing?.discount ?? 0,
@@ -212,6 +216,14 @@ export function EditProductForm({
     // category
     if (hasChanged(data.category, prevData?.category?._id || "")) {
       productData.category = data.category;
+    }
+
+    // additionalCategories
+    const prevAdditionalCategoryIds =
+      prevData?.additionalCategories?.map((cat: any) => cat._id || cat.id) || [];
+
+    if (hasChanged(data.additionalCategories, prevAdditionalCategoryIds)) {
+      productData.additionalCategories = data.additionalCategories;
     }
 
     // addonGroups
@@ -401,6 +413,7 @@ export function EditProductForm({
           case "brand":
           case "description":
           case "category":
+          case "additionalCategories":
             newErrors[t("basic_info")] = true;
             return;
           case "price":
