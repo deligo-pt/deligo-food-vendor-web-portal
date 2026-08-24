@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 const backendUrl =
@@ -20,7 +20,7 @@ export const serverRequestHelper = async (
   const cookieStore = await cookies();
   const cookieStr = cookieStore.toString();
   const accessToken = cookieStore.get("accessToken")?.value || "";
-  const activeLang = cookieStore.get("lang")?.value || "pt";
+  const activeLang = cookieStore.get("lang")?.value === "pt" ? "pt" : "en";
 
   try {
     const res = await axiosInstance({
@@ -82,6 +82,7 @@ export const serverRequest = {
 
 // CREATE HEADERS
 async function createHeaders(
+  lang: string,
   headers?: HeadersInit
 ) {
 
@@ -94,7 +95,7 @@ async function createHeaders(
 
   return {
     ...headers,
-
+    "Accept-Language": lang,
     Authorization: accessToken
       ? `Bearer ${accessToken}`
       : "",
@@ -110,25 +111,58 @@ async function serverFetchHelper(
   endPoint: string,
   options: RequestInit = {},
 ): Promise<Response> {
-  const { headers, ...rest } = options;
+  let activeLang: string = "en";
 
-  // FIRST REQUEST
-  const response = await fetch(
-    `${backendUrl}${endPoint}`,
-    {
-      credentials: "include",
-      headers: await createHeaders(headers),
-      ...rest,
+  try {
+    const targetUrlParams = new URLSearchParams(endPoint.split("?")[1]);
+    if (targetUrlParams.has("lang")) {
+      activeLang = targetUrlParams.get("lang") || "en";
+    } else {
+      const headersList = await headers();
+      const referer = headersList.get("referer");
+
+      if (referer) {
+        const refererUrl = new URL(referer);
+        const langQuery = refererUrl.searchParams.get("lang");
+        if (langQuery === "en" || langQuery === "pt") {
+          activeLang = langQuery;
+        }
+      }
     }
-  );
-
-
-  if (response.status === 401) {
-    console.log("Unauthorized! Redirecting to login...");
-    redirect("/login?clearSession=true");
+  } catch (e) {
+    console.error("Failed to parse language query inside serverFetch, defaulting to 'en'", e);
   }
 
-  return response;
+  try {
+    const { headers, ...rest } = options;
+
+    const response = await fetch(
+      `${backendUrl}${endPoint}`,
+      {
+        ...rest,
+        credentials: "include",
+        headers: await createHeaders(activeLang, headers),
+      }
+    );
+
+    if (response.status === 401) {
+      console.log("Unauthorized! Redirecting to login...");
+      redirect("/?clearSession=true");
+    }
+
+    return response;
+  } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    console.error(
+      "Server Fetch Helper Error:",
+      error
+    );
+
+    throw error;
+  }
 }
 
 
