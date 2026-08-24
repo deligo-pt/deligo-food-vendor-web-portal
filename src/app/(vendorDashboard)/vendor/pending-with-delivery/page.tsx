@@ -16,13 +16,14 @@ const PendingDeliveryOrdersPage = async ({ searchParams }: IProps) => {
     const page = Number(queries.page || 1);
     const searchTerm = queries.searchTerm || "";
     const sortBy = queries.sortBy || "-createdAt";
+    const orderStatus = queries.orderStatus || "";
 
     const query = {
         limit,
         page,
         sortBy,
         ...(searchTerm ? { searchTerm } : {}),
-        // orderStatus: ORDER_STATUS.PENDING,
+        ...(orderStatus && { orderStatus }),
         excludeStatus: `${ORDER_STATUS.ON_THE_WAY},${ORDER_STATUS.DELIVERED}`,
         fulfillmentType: FULFILLMENT_TYPE.DELIVERY
     };
@@ -46,6 +47,7 @@ const PendingDeliveryOrdersPage = async ({ searchParams }: IProps) => {
     return (
         <Orders
             ordersResult={initialData}
+            showFilters={true}
             title="pending_with_delivery"
             subtitle="list_of_all_pending_orders_with_delivery"
         />
