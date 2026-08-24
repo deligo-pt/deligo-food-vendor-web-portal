@@ -109,6 +109,7 @@ export function ProductForm({
         pt: ""
       },
       category: "",
+      additionalCategories: [],
       price: 0,
       discountType: "PERCENTAGE",
       discount: 0,
@@ -157,6 +158,7 @@ export function ProductForm({
         name: translated.name,
         description: translated.description,
         category: data.category,
+        additionalCategories: data.additionalCategories,
         images: data.images,
         pricing: {
           price: data.price,
@@ -230,6 +232,7 @@ export function ProductForm({
           case "name":
           case "brand":
           case "category":
+          case "additionalCategories":
             newErrors[t("basic_info")] = true;
             return;
           case "description":
