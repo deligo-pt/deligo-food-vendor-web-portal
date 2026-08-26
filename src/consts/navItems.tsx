@@ -56,6 +56,9 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       title: t("menu_items"),
       icon: <Layers size={18} />,
       items: [
+        { name: t("create_menu"), path: "/vendor/menu/create" },
+        { name: t("all_menus"), path: "/vendor/menu/all" },
+        { name: t("create_section"), path: "/vendor/section/create" },
         { name: t("add_new_item"), path: "/vendor/add-item" },
         { name: t("all_items"), path: "/vendor/all-items" },
         { name: t("categories"), path: "/vendor/categories" },
