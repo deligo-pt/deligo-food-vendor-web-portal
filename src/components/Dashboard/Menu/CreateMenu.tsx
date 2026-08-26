@@ -107,8 +107,8 @@ const CreateMenu = () => {
             className="bg-white shadow-xl rounded-2xl overflow-hidden"
         >
             <TitleHeader
-                title={t("add_new_item")}
-                subtitle={t("fill_the_details_to_add_new_food_item")}
+                title={t("create_menu")}
+                subtitle={t("fill_the_details_to_create_menu")}
             />
 
             <Form {...form}>

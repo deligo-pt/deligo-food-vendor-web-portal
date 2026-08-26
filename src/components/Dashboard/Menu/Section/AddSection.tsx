@@ -118,7 +118,7 @@ const AddMenuSection = ({ menuId, open, onOpenChange }: IProps) => {
                         {t("add_section")}
                     </DialogTitle>
                     <DialogDescription className="text-sm text-white">
-                        {t("add_section_desc")}
+                        {t("add_required_sections_under_each_menu")}
                     </DialogDescription>
                 </DialogHeader>
 

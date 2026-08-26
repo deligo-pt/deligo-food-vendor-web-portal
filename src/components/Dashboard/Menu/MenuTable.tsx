@@ -82,7 +82,7 @@ export default function MenuTable({ menus }: IProps) {
                         <TableHead>
                             <div className="text-[#DC3173] flex gap-2 items-center">
                                 <ClockIcon className="w-4 h-4" />
-                                {t("hours")}
+                                {t("hour")}
                             </div>
                         </TableHead>
 

@@ -106,10 +106,10 @@ export default function MenuDetails({ menu, sections = [], products = [] }: IMen
                 <ArrowLeftCircle /> {t("goBack")}
             </Button>
             <TitleHeader
-                title={t("all_menus")}
-                subtitle={t("menus_that_are_created")}
+                title={t("menu_details")}
+                subtitle={t("you_will_get_each_nd_everything")}
                 buttonInfo={{
-                    text: t("edit_menu"),
+                    text: t("update_menu"),
                     icon: Edit2,
                     onClick: () => router.push(`/vendor/menu/edit/${menu?._id}`),
                 }}

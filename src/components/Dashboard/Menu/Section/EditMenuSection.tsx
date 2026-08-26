@@ -150,7 +150,7 @@ const EditMenuSection = ({ menuId, open, onOpenChange, section }: IProps) => {
                         {t("update_section")}
                     </DialogTitle>
                     <DialogDescription className="text-sm text-white">
-                        {t("update_section_desc")}
+                        {t("update_you_section_details_below")}
                     </DialogDescription>
                 </DialogHeader>
 

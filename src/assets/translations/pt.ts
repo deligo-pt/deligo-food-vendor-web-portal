@@ -798,6 +798,8 @@ export const pt = {
   cancelled: "Cancelados",
 
   menu_items: "Menu & Itens",
+  create_menu: "Criar Menu",
+  all_menus: "Todos os Menus",
   all_items: "Todos os Itens",
   add_new_item: "Adicionar Novo Item",
   stock_management: "Gestão de Stock",
@@ -1022,6 +1024,51 @@ export const pt = {
 
   // pending with self pickup
   list_of_all_pending_orders_with_self_pickup: "Lista de todos os pedidos pendentes para retirada no local",
+
+  // create menu
+  fill_the_details_to_create_menu: "Preencha os detalhes para criar o menu",
+  menu_name: "Nome do Menu",
+  menu_name_placeholder: "ex.: Menu de Almoço",
+  description_placeholder: "Disponível todos os dias ao almoço e ao jantar",
+  availability: "Disponibilidade",
+  days_of_week: "Dias da semana",
+  start_time: "Hora de início",
+  end_time: "Hora de término",
+  sort_order: "Ordem de exibição",
+  lower_number_will_appear: "Os números mais baixos aparecem primeiro",
+  is_active: "Ativo",
+  is_active_desc: "Mostrar este menu aos clientes",
+  reset: "Redefinir",
+  update_menu: "Atualizar Menu",
+  // update menu
+  change_whatever_need_to_update: "Altere o que for necessário atualizar no Menu",
+  // all menus
+  menus_that_are_created: "Os menus criados aparecerão aqui",
+  // menu details
+  menu_details: "Detalhes do Menu",
+  you_will_get_each_nd_everything: "Encontrará todas as informações sobre um menu",
+  no_sections_found: "Nenhuma secção encontrada",
+  add_sections_to_organize: "Adicione secções para agrupar produtos dentro deste menu.",
+  menu_sections: "Secções do Menu",
+  section: "Secção",
+  sections: "Secções",
+  item: "Item",
+  edit_section: "Editar Secção",
+  delete_section: "Eliminar Secção",
+  add_product: "Adicionar Produto",
+  no_products_in_section: "Sem produtos nesta secção",
+  remove_item: "Remover Item",
+  add_product_to_section: "Adicionar Produto à Secção",
+  select_product_desc: "Selecione um produto do seu catálogo para incluir nesta secção do menu.",
+  select_product: "Selecionar Produto",
+  search_products: "Pesquisar produtos...",
+  is_available: "Está disponível",
+  add_section: "Adicionar Secção",
+  soft_delete: "Eliminação Temporária",
+  permanent_delete: "Eliminação Permanente",
+  update_section: "Atualizar Secção",
+  update_you_section_details_below: "Atualize os detalhes da sua secção utilizando o formulário abaixo.",
+  add_required_sections_under_each_menu: "Adicione as secções necessárias sob cada menu",
 
   // all-items page
   food_items: "Itens Alimentares",

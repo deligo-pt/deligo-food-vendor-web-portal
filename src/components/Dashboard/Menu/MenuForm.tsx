@@ -61,15 +61,13 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                     render={({ field }) => (
                         <FormItem className="gap-1">
                             <FormLabel className="block text-sm font-medium text-gray-700">
-                                {t("menu_name") || "Menu Name"} (EN)
+                                {t("menu_name")}
                             </FormLabel>
                             <FormControl>
                                 <Input
                                     {...field}
                                     placeholder={
-                                        t("menu_name_placeholder") ||
-                                        "e.g. Lunch Menu"
-                                    }
+                                        t("menu_name_placeholder")}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                                 />
                             </FormControl>
@@ -117,9 +115,7 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                                     {...field}
                                     value={field.value ?? ""}
                                     placeholder={
-                                        t("description_placeholder") ||
-                                        "Available every day for lunch and dinner"
-                                    }
+                                        t("description_placeholder")}
                                     className="min-h-[90px] resize-none focus:border-[#DC3173] focus:ring-0"
                                 />
                             </FormControl>
@@ -169,7 +165,7 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                     render={() => (
                         <FormItem>
                             <FormLabel className="text-sm font-medium text-gray-700">
-                                {t("days_of_week") || "Days of the week"}
+                                {t("days_of_week")}
                             </FormLabel>
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {DAYS_OF_WEEK.map((day) => {
@@ -205,7 +201,7 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                         render={({ field }) => (
                             <FormItem className="gap-1">
                                 <FormLabel className="text-sm font-medium text-gray-700">
-                                    {t("start_time") || "Start time"}
+                                    {t("start_time")}
                                 </FormLabel>
                                 <FormControl>
                                     <Input
@@ -225,7 +221,7 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                         render={({ field }) => (
                             <FormItem className="gap-1">
                                 <FormLabel className="text-sm font-medium text-gray-700">
-                                    {t("end_time") || "End time"}
+                                    {t("end_time")}
                                 </FormLabel>
                                 <FormControl>
                                     <Input
@@ -250,14 +246,13 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                     render={({ field }) => (
                         <FormItem className="gap-1">
                             <FormLabel className="text-sm font-medium text-gray-700">
-                                {t("sort_order") || "Sort order"}
+                                {t("sort_order")}
                             </FormLabel>
                             <FormControl>
                                 <Input
                                     type="number"
                                     min={0}
                                     {...field}
-                                    // keep it as number for the form
                                     onChange={(e) =>
                                         field.onChange(
                                             e.target.value === ""
@@ -270,7 +265,7 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                                 />
                             </FormControl>
                             <FormDescription className="text-xs">
-                                Lower numbers appear first
+                                {t("lower_number_will_appear")}
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
@@ -284,11 +279,10 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                             <div className="space-y-0.5">
                                 <FormLabel className="text-sm font-medium">
-                                    {t("is_active") || "Active"}
+                                    {t("is_active")}
                                 </FormLabel>
                                 <FormDescription className="text-xs">
-                                    {t("is_active_desc") ||
-                                        "Show this menu to customers"}
+                                    {t("is_active_desc") }
                                 </FormDescription>
                             </div>
                             <FormControl>

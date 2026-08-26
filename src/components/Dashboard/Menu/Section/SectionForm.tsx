@@ -38,7 +38,7 @@ const MenuSectionForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, ty
                     render={({ field }) => (
                         <FormItem className="gap-1">
                             <FormLabel className="block text-sm font-medium text-gray-700">
-                                {t("menu_name") || "Menu Name"} (EN)
+                                {t("menu_name") || "Menu Name"}
                             </FormLabel>
                             <FormControl>
                                 <Input
@@ -61,7 +61,7 @@ const MenuSectionForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, ty
                     render={({ field }) => (
                         <FormItem className="gap-1">
                             <FormLabel className="block text-sm font-medium text-gray-700">
-                                {t("menu_name") || "Menu Name"} (PT)
+                                {t("menu_name") || "Menu Name"}
                             </FormLabel>
                             <FormControl>
                                 <Input
@@ -87,7 +87,7 @@ const MenuSectionForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, ty
                     render={({ field }) => (
                         <FormItem className="gap-1">
                             <FormLabel className="block text-sm font-medium text-gray-700">
-                                {t("description") || "Description"} (EN)
+                                {t("description") || "Description"}
                             </FormLabel>
                             <FormControl>
                                 <Textarea
@@ -111,7 +111,7 @@ const MenuSectionForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, ty
                     render={({ field }) => (
                         <FormItem className="gap-1">
                             <FormLabel className="block text-sm font-medium text-gray-700">
-                                {t("description") || "Description"} (PT)
+                                {t("description") || "Description"}
                             </FormLabel>
                             <FormControl>
                                 <Textarea

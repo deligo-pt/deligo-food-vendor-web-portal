@@ -48,7 +48,7 @@ const AllMenus = ({ menusResult }: IProps) => {
             {/* Filters */}
             <AllFilters
                 sortOptions={sortOptions}
-                {...(filterOptions && { filterOptions })}
+                // {...(filterOptions && { filterOptions })}
             />
 
             {/* Order Table */}

@@ -161,8 +161,8 @@ const EditMenu = ({ menu }: { menu: IMenu }) => {
             className="bg-white shadow-xl rounded-2xl overflow-hidden"
         >
             <TitleHeader
-                title={t("add_new_item")}
-                subtitle={t("fill_the_details_to_add_new_food_item")}
+                title={t("update_menu")}
+                subtitle={t("change_whatever_need_to_update")}
             />
 
             <Form {...form}>
