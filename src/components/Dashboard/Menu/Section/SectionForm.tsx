@@ -10,43 +10,20 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { CreateMenuFormValues } from "./CreateMenu";
 import { UseFormReturn } from "react-hook-form";
+import { CreateMenuSectionFormValues } from "./AddSection";
 
-
-const DAYS_OF_WEEK = [
-    { value: "MON", labelKey: "monday" },
-    { value: "TUE", labelKey: "tuesday" },
-    { value: "WED", labelKey: "wednesday" },
-    { value: "THU", labelKey: "thursday" },
-    { value: "FRI", labelKey: "friday" },
-    { value: "SAT", labelKey: "saturday" },
-    { value: "SUN", labelKey: "sunday" },
-] as const;
 
 interface MenuFormProps {
-    form: UseFormReturn<CreateMenuFormValues>;
-    onSubmit: (values: CreateMenuFormValues) => void | Promise<void>;
+    form: UseFormReturn<CreateMenuSectionFormValues>;
+    onSubmit: (values: CreateMenuSectionFormValues) => void | Promise<void>;
     selectedLanguage: "en" | "pt";
     t: (key: string) => string;
     isSubmitting: boolean;
     type: string;
 }
 
-const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: MenuFormProps) => {
-
-    const toggleDay = (day: (typeof DAYS_OF_WEEK)[number]["value"]) => {
-        const current = form.getValues("availability.daysOfWeek") ?? [];
-        const next = current.includes(day)
-            ? current.filter((d) => d !== day)
-            : [...current, day];
-
-        form.setValue("availability.daysOfWeek", next, {
-            shouldValidate: true,
-            shouldDirty: true,
-        });
-    };
+const MenuSectionForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: MenuFormProps) => {
 
     return (
         <form
@@ -153,94 +130,6 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                 />
             )}
 
-            {/* ── Availability (optional) ── */}
-            <div className="space-y-4 rounded-lg border p-4 bg-muted/20">
-                <h3 className="text-sm font-semibold text-gray-800">
-                    {t("availability") || "Availability"}{" "}
-                    <span className="text-xs font-normal text-muted-foreground">
-                        (optional)
-                    </span>
-                </h3>
-
-                {/* Days */}
-                <FormField
-                    control={form.control}
-                    name="availability.daysOfWeek"
-                    render={() => (
-                        <FormItem>
-                            <FormLabel className="text-sm font-medium text-gray-700">
-                                {t("days_of_week") || "Days of the week"}
-                            </FormLabel>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                                {DAYS_OF_WEEK.map((day) => {
-                                    const selected = form.watch("availability.daysOfWeek")?.includes(day.value) ?? false;
-
-                                    return (
-                                        <button
-                                            key={day.value}
-                                            type="button"
-                                            onClick={() => toggleDay(day.value)}
-                                            className={cn(
-                                                "px-3 py-1.5 text-sm rounded-full border transition-all",
-                                                selected
-                                                    ? "bg-[#DC3173] text-white border-[#DC3173]"
-                                                    : "bg-white text-gray-600 border-gray-300 hover:border-[#DC3173]"
-                                            )}
-                                        >
-                                            {t(day.labelKey) || day.value}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                {/* Times */}
-                <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                        control={form.control}
-                        name="availability.startTime"
-                        render={({ field }) => (
-                            <FormItem className="gap-1">
-                                <FormLabel className="text-sm font-medium text-gray-700">
-                                    {t("start_time") || "Start time"}
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="time"
-                                        {...field}
-                                        value={field.value ?? ""}
-                                        className="h-10 focus:border-[#DC3173] focus:ring-0"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="availability.endTime"
-                        render={({ field }) => (
-                            <FormItem className="gap-1">
-                                <FormLabel className="text-sm font-medium text-gray-700">
-                                    {t("end_time") || "End time"}
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="time"
-                                        {...field}
-                                        value={field.value ?? ""}
-                                        className="h-10 focus:border-[#DC3173] focus:ring-0"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-            </div>
 
             {/* ── Sort Order + Active ── */}
             <div className="grid grid-cols-2 gap-6">
@@ -319,11 +208,11 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                 >
                     {isSubmitting
                         ? t("saving")
-                        : type === 'create' ? t("create_menu") : t("update_menu")}
+                        : type === 'add' ? t("add_section") : t("update_section")}
                 </Button>
             </div>
         </form>
     );
 };
 
-export default MenuForm;
+export default MenuSectionForm;

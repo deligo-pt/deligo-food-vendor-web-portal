@@ -8,18 +8,41 @@ import {
     ClockIcon,
     Edit2,
     LayersIcon,
+    PlusCircleIcon,
+    Trash2Icon,
     XCircleIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { IMenu } from "@/src/types/menu.type";
+import { IMenu, IMenuSection } from "@/src/types/menu.type";
 import { useRouter } from "next/navigation";
 import TitleHeader from "../../TitleHeader/TitleHeader";
+import DeleteModal from "../../Modals/DeleteModal";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+    permanentDeleteMenu,
+    softDeleteMenu,
+} from "@/src/services/dashboard/menu/menu.service";
+import AddMenuSection from "./Section/AddSection";
+import MenuSectionsList from "./Section/MenuSectionList";
+import { TProduct } from "@/src/types/product.type";
 
-export default function MenuDetails({ menu }: { menu: IMenu }) {
+interface IMenuDetailsProps {
+    menu: IMenu;
+    sections?: IMenuSection[];
+    products?: TProduct[];
+}
+
+export default function MenuDetails({ menu, sections = [], products = [] }: IMenuDetailsProps) {
     const { t, lang } = useTranslation();
     const router = useRouter();
+
+    const [addSectionOpen, setAddSectionOpen] = useState(false);
+    const [isSoftDeleteOpen, setIsSoftDeleteOpen] = useState(false);
+    const [isPermanentDeleteOpen, setIsPermanentDeleteOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     if (!menu) {
         return (
@@ -28,6 +51,49 @@ export default function MenuDetails({ menu }: { menu: IMenu }) {
             </div>
         );
     }
+
+    // soft delete menu
+    const handleSoftDeleteMenu = async () => {
+        const toastId = toast.loading("Soft Deleting menu...");
+        setIsDeleting(true);
+
+        const result = await softDeleteMenu(menu?._id);
+
+        if (result.success) {
+            toast.success(result?.message || "Menu soft deleted successfully", {
+                id: toastId,
+            });
+            setIsSoftDeleteOpen(false);
+            router.push("/vendor/menu/all");
+            setIsDeleting(false);
+            return;
+        }
+
+        toast.error(result.message || "Menu deletion failed", { id: toastId });
+        setIsDeleting(false);
+    };
+
+    // permanent delete menu
+    const handlePermanentDeleteMenu = async () => {
+        const toastId = toast.loading("Permanent Deleting menu...");
+        setIsDeleting(true);
+
+        const result = await permanentDeleteMenu(menu?._id);
+
+        if (result.success) {
+            toast.success(
+                result?.message || "Menu Permanent deleted successfully",
+                { id: toastId }
+            );
+            setIsPermanentDeleteOpen(false);
+            router.push("/vendor/menu/all");
+            setIsDeleting(false);
+            return;
+        }
+
+        toast.error(result.message || "Menu deletion failed", { id: toastId });
+        setIsDeleting(false);
+    };
 
     return (
         <div className="space-y-6">
@@ -57,14 +123,13 @@ export default function MenuDetails({ menu }: { menu: IMenu }) {
             >
                 {/* Left Column: Localized Details */}
                 <div className="lg:col-span-2 bg-white shadow-md rounded-2xl p-6 border border-slate-100">
-                    {/* Localized Content Display */}
                     <div className="space-y-6">
                         <div>
                             <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                                 {t("menu_name") || "Menu Name"}
                             </label>
                             <h2 className="text-2xl font-bold text-slate-800 mt-1">
-                                {menu?.name?.[lang] || "—"}
+                                {menu?.name?.[lang as "en" | "pt"] || menu?.name?.en || "—"}
                             </h2>
                         </div>
 
@@ -73,7 +138,9 @@ export default function MenuDetails({ menu }: { menu: IMenu }) {
                                 {t("description") || "Description"}
                             </label>
                             <p className="text-slate-600 mt-1 leading-relaxed">
-                                {menu?.description?.[lang] || "—"}
+                                {menu?.description?.[lang as "en" | "pt"] ||
+                                    menu?.description?.en ||
+                                    "—"}
                             </p>
                         </div>
                     </div>
@@ -156,6 +223,58 @@ export default function MenuDetails({ menu }: { menu: IMenu }) {
                     </div>
                 </div>
             </motion.div>
+
+            {/* Menu Sections Component (Placed directly before Action Buttons) */}
+            <MenuSectionsList menuId={menu?._id} sections={sections} products={products} />
+
+            {/* Action Buttons */}
+            <div className="pt-4 flex items-center gap-2 justify-end">
+                {/* Add Section */}
+                <button
+                    onClick={() => setAddSectionOpen(true)}
+                    className="bg-[#DC3173] hover:bg-[#DC3173]/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+                >
+                    <PlusCircleIcon className="w-5 h-5" />
+                    <span>{t("add_section")}</span>
+                </button>
+
+                {/* Soft Delete */}
+                <button
+                    onClick={() => setIsSoftDeleteOpen(true)}
+                    className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+                >
+                    <Trash2Icon className="w-5 h-5" />
+                    <span>{t("soft_delete")}</span>
+                </button>
+
+                {/* Permanent Delete (Fixed handler target) */}
+                <button
+                    onClick={() => setIsPermanentDeleteOpen(true)}
+                    className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+                >
+                    <Trash2Icon className="w-5 h-5" />
+                    <span>{t("permanent_delete")}</span>
+                </button>
+            </div>
+
+            {/* Dialogs and Modals */}
+            <AddMenuSection
+                menuId={menu?._id}
+                open={addSectionOpen}
+                onOpenChange={setAddSectionOpen}
+            />
+            <DeleteModal
+                open={isSoftDeleteOpen}
+                onOpenChange={() => setIsSoftDeleteOpen(false)}
+                onConfirm={handleSoftDeleteMenu}
+                isDeleting={isDeleting}
+            />
+            <DeleteModal
+                open={isPermanentDeleteOpen}
+                onOpenChange={() => setIsPermanentDeleteOpen(false)}
+                onConfirm={handlePermanentDeleteMenu}
+                isDeleting={isDeleting}
+            />
         </div>
     );
 }

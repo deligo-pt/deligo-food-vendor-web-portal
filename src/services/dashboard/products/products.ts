@@ -4,7 +4,7 @@ import { serverRequest } from "@/lib/serverFetch";
 import { TProduct } from "@/src/types/product.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 
-export const getAllProductsReq = async ({ limit = 10 }) => {
+export const getAllProductsReq = async (limit?: number) => {
   return catchAsync<TProduct[]>(async () => {
     return await serverRequest.get("/products", {
       params: { limit },

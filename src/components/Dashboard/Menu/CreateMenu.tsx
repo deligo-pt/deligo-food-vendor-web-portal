@@ -37,7 +37,6 @@ const CreateMenu = () => {
         },
     });
 
-    // ── Real submit handler lives here ──
     const onSubmit = async (values: CreateMenuFormValues) => {
         const toastId = toast.loading("Creating menu...");
         setIsSubmitting(true);
