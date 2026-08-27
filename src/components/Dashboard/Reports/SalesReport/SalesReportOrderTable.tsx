@@ -118,25 +118,24 @@ export default function SalesReportOrderTable({ orders, t }: IProps) {
                       {order.customerId?.name?.firstName}{" "}
                       {order.customerId?.name?.lastName}
                     </div>
-                    <div className="text-xs text-slate-500">
-                      {order.deliveryAddress.street},{" "}
-                      {order.deliveryAddress.city}
-                    </div>
+                    {order?.deliveryAddress && <div className="text-xs text-slate-500">
+                      {order?.deliveryAddress.street},{" "}
+                      {order?.deliveryAddress.city}
+                    </div>}
                   </div>
                 </div>
               </TableCell>
               <TableCell>
                 {order.items?.map((i, index) => (
                   <span key={index}>
-                    {i.productId?.name?.[lang]} x {i.itemSummary?.quantity}
+                    {i?.name} x {i.itemSummary?.quantity}
                   </span>
                 ))}
               </TableCell>
               <TableCell>
                 {" "}
                 €
-                {order.payoutSummary?.grandTotal ||
-                  order.totalPrice?.toLocaleString()}
+                {order.payoutSummary?.grandTotal}
               </TableCell>
               <TableCell>{format(order.createdAt, "do MMM yyyy")}</TableCell>
               <TableCell>{order.orderStatus}</TableCell>

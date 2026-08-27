@@ -22,10 +22,10 @@ const PRIMARY = "#DC3173";
 
 export default function Sidebar({ open, setOpen, vendor }: IProps) {
   const { t } = useTranslation();
-const businessType =
-  vendor?.businessDetails?.businessType?.trim()?.toUpperCase();
+  const businessType =
+    vendor?.businessDetails?.businessType?.trim()?.toUpperCase();
 
-const navItems = getNavItems(t, businessType);
+  const navItems = getNavItems(t, businessType);
   const pathname = usePathname();
   const currentMenuId = navItems.find((menu) =>
     menu.items?.some((item) => pathname.includes(item.path)),
@@ -117,11 +117,10 @@ const navItems = getNavItems(t, businessType);
               {menu.path ? (
                 <Link
                   href={menu.path}
-                  className={`flex items-center w-full justify-between p-2 rounded-lg transition-colors ${
-                    pathname === menu.path
-                      ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
-                      : "hover:bg-pink-100"
-                  }`}
+                  className={`flex items-center w-full justify-between p-2 rounded-lg transition-colors ${pathname === menu.path
+                    ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
+                    : "hover:bg-pink-100"
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="text-pink-600">{menu.icon}</div>
@@ -167,11 +166,10 @@ const navItems = getNavItems(t, businessType);
                           <Link
                             key={sub.name}
                             href={sub.path}
-                            className={`text-sm px-2 py-1 rounded-md transition-all duration-300 ${
-                              pathname === sub.path
-                                ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
-                                : "text-gray-600 hover:text-pink-600 hover:bg-pink-50"
-                            }`}
+                            className={`text-sm px-2 py-1 rounded-md transition-all duration-300 ${pathname === sub.path
+                              ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
+                              : "text-gray-600 hover:text-pink-600 hover:bg-pink-50"
+                              }`}
                           >
                             {sub.name}
                           </Link>
@@ -200,12 +198,14 @@ const navItems = getNavItems(t, businessType);
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={() => setMobileOpen(false)}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 md:hidden flex"
           >
             <motion.div
               initial={{ x: -300 }}
               animate={{ x: 0 }}
               exit={{ x: -300 }}
+              onClick={(e) => e.stopPropagation()}
               transition={{ type: "spring", damping: 25 }}
               className="bg-white w-72 h-full p-4 shadow-xl overflow-y-auto no-scrollbar"
             >
@@ -227,11 +227,10 @@ const navItems = getNavItems(t, businessType);
                     <Link
                       href={menu.path}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-2 py-2 ${
-                        pathname === menu.path
-                          ? "text-pink-700 font-semibold"
-                          : "text-gray-800 hover:text-pink-600"
-                      }`}
+                      className={`flex items-center gap-2 py-2 ${pathname === menu.path
+                        ? "text-pink-700 font-semibold"
+                        : "text-gray-800 hover:text-pink-600"
+                        }`}
                     >
                       <div className="text-pink-600">{menu.icon}</div>
                       <span>{menu.title}</span>
@@ -248,9 +247,8 @@ const navItems = getNavItems(t, businessType);
                         </div>
                         <ChevronDown
                           size={16}
-                          className={`transition-transform ${
-                            expanded[menu.id] ? "rotate-180" : ""
-                          }`}
+                          className={`transition-transform ${expanded[menu.id] ? "rotate-180" : ""
+                            }`}
                         />
                       </button>
 
@@ -267,11 +265,10 @@ const navItems = getNavItems(t, businessType);
                                 key={sub.name}
                                 href={sub.path}
                                 onClick={() => setMobileOpen(false)}
-                                className={`text-sm py-1 transition-all ${
-                                  pathname === sub.path
-                                    ? "text-pink-700 font-semibold"
-                                    : "text-gray-600 hover:text-pink-600"
-                                }`}
+                                className={`text-sm py-1 transition-all ${pathname === sub.path
+                                  ? "text-pink-700 font-semibold"
+                                  : "text-gray-600 hover:text-pink-600"
+                                  }`}
                               >
                                 {sub.name}
                               </Link>

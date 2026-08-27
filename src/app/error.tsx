@@ -14,9 +14,11 @@ import {
   Utensils,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "../hooks/use-translation";
 
 export default function GlobalError() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const floatingItems = [
     { Icon: Pizza, x: "12%", y: "18%", size: 50, delay: 0, rotate: 10 },
@@ -30,7 +32,7 @@ export default function GlobalError() {
     <div className="relative min-h-screen w-full bg-white flex flex-col items-center justify-center overflow-hidden p-6">
       {/* Soft Background Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] left-[10%] w-[40%] h-[40%] bg-[#DC3173]/20 blur-3xl rounded-full" />
+        <div className="absolute top-[-20%] left-[10%] w-[40%] h-[40%] bg-[#DC3173]/20 blur-3xl rounded-full" />
         <div className="absolute bottom-[0%] right-[10%] w-[50%] h-[50%] bg-[#DC3173]/15 blur-3xl rounded-full" />
       </div>
 
@@ -90,14 +92,14 @@ export default function GlobalError() {
         </motion.div>
 
         <h1 className="text-4xl font-extrabold text-center mt-6 text-gray-900">
-          Something Went Wrong
+          {t("something_went_wrong")}
         </h1>
 
         <p className="text-gray-600 text-center mt-4 leading-relaxed text-lg">
-          Looks like our app ran into an unexpected issue
+          {t("looks_like_our_app_ran_into")}
         </p>
         <p className="text-gray-600 text-center leading-relaxed text-lg">
-          🍳 We’re working hard to get things working again!
+          🍳 {t("we_are_working_hard_to_get_things")}
         </p>
 
         {/* Chef Animated Icon */}
@@ -116,7 +118,7 @@ export default function GlobalError() {
             variant="default"
             className="bg-[#DC3173] hover:bg-[#bb1f61] text-white px-8 py-6 rounded-full text-lg font-semibold shadow-lg"
           >
-            <RefreshCw size={20} className="mr-2" /> Retry
+            <RefreshCw size={20} className="mr-2" /> {t("retry")}
           </Button>
 
           <Button
@@ -124,7 +126,7 @@ export default function GlobalError() {
             variant="outline"
             className="border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173]/10 px-8 py-6 rounded-full text-lg font-semibold"
           >
-            <Frown size={20} className="mr-2" /> Back Home
+            <Frown size={20} className="mr-2" /> {t("back_to_home")}
           </Button>
         </div>
       </motion.div>

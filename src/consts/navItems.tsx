@@ -10,6 +10,7 @@ import {
   MessageCircle,
   Settings,
   ShoppingBag,
+  SquaresSubtract,
   Star,
 } from "lucide-react";
 
@@ -30,11 +31,22 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       path: "/vendor/dashboard",
     },
     {
+      id: "branches",
+      title: t("branch_management"),
+      icon: <SquaresSubtract size={18} />,
+      items: [
+        { name: t("add_branch"), path: "/vendor/branches/add" },
+        { name: t("all_branches"), path: "/vendor/branches" },
+      ],
+    },
+    {
       id: "orders",
       title: t("orders"),
       icon: <ShoppingBag size={18} />,
       items: [
         { name: t("all_orders"), path: "/vendor/all-orders" },
+        { name: t("pending_with_delivery"), path: "/vendor/pending-with-delivery" },
+        { name: t("pending_with_self_pickup"), path: "/vendor/pending-with-self" },
         { name: t("cancelled"), path: "/vendor/cancelled" },
         { name: t("completed"), path: "/vendor/completed" },
       ],
@@ -44,6 +56,8 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       title: t("menu_items"),
       icon: <Layers size={18} />,
       items: [
+        { name: t("create_menu"), path: "/vendor/menu/create" },
+        { name: t("all_menus"), path: "/vendor/menu/all" },
         { name: t("add_new_item"), path: "/vendor/add-item" },
         { name: t("all_items"), path: "/vendor/all-items" },
         { name: t("categories"), path: "/vendor/categories" },

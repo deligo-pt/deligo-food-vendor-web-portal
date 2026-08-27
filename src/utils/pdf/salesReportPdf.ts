@@ -141,17 +141,17 @@ export const generateSalesReportPDF = (sales: TSalesReport) => {
       sales.orders?.map((order) => [
         order.orderId,
         `${order.customerId.name?.firstName} ${order.customerId.name?.lastName}`.trim() ||
-          "-",
+        "-",
         order.customerId.contactNumber || "-",
         order.items
           .map(
             (item) =>
-              `${item.productId?.name} (x${item.itemSummary?.quantity})`,
+              `${item?.name} (x${item.itemSummary?.quantity})`,
           )
           .join(", "),
         `€${formatPrice(
           (order?.payoutSummary?.vendor?.vendorNetPayout || 0) +
-            (order?.payoutSummary?.deliGoCommission?.totalDeduction || 0),
+          (order?.payoutSummary?.deliGoCommission?.totalDeduction || 0),
         )}`,
         format(new Date(order.createdAt), "yyyy-MM-dd"),
         order.orderStatus,

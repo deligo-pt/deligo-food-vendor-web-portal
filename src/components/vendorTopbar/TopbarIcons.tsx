@@ -11,6 +11,7 @@ import { logoutReq } from "@/src/services/auth/auth";
 import { useStore } from "@/src/store/store";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
+import { setLanguageCookie } from "@/src/utils/language";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle,
@@ -48,7 +49,9 @@ export default function TopbarIcons({ vendor }: IProps) {
 
   const handleLangChange = (value: "en" | "pt") => {
     setLang(value);
-    document.cookie = `lang=${value}; path=/`;
+
+    // Save cookie
+    setLanguageCookie(value);
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("lang", value);

@@ -39,7 +39,12 @@ type PersonalForm = {
   phoneNumber: string;
 };
 
-export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
+interface IProps {
+  onNext?: () => void;
+  vendor: TVendor;
+}
+
+export default function PersonalDetails({ onNext, vendor }: IProps) {
   const { t } = useTranslation();
   const phone = parsePhoneNumberFromString(vendor.contactNumber || "");
   const router = useRouter();
@@ -69,22 +74,35 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
     const result = await updateVendorReq(vendor.userId, personalDetails);
 
     if (result.success) {
-      toast.success("Personal details updated successfully!", {
+      toast.success(result?.message || "Personal details updated successfully!", {
         id: toastId,
       });
 
-      router.push("/become-vendor/business-details");
-      return;
+      if (vendor?.role === "SUB_VENDOR") {
+        onNext?.();
+        return;
+      } else {
+        router.push("/become-vendor/business-details");
+        return;
+      }
+
     }
 
-    toast.error(result.message || "Personal details update failed", {
-      id: toastId,
-    });
+    if (result?.data?.errorSources) {
+      result?.data?.errorSources?.map((err: { path: string, message: string }) => (
+        toast.error(err?.message, { id: toastId })
+      ));
+      return;
+    } else {
+      toast.error(result.message || "Personal details update failed", {
+        id: toastId,
+      });
+    }
     console.log(result);
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-linear-to-br from-pink-50 via-white to-purple-50 px-4">
+    <div className="flex justify-center items-center min-h-screen py-5 bg-linear-to-br from-pink-50 via-white to-purple-50 px-4">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -92,7 +110,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
         className="w-full max-w-lg"
       >
         <Card className="shadow-xl border border-white/60 backdrop-blur-xl bg-white/80 rounded-2xl p-6 relative">
-          <div className="absolute top-3 left-0">
+          {vendor?.role !== "SUB_VENDOR" && <div className="absolute top-3 left-0">
             <Button
               onClick={() => router.push("/")}
               variant="link"
@@ -100,7 +118,7 @@ export default function PersonalDetails({ vendor }: { vendor: TVendor }) {
             >
               <ArrowLeftCircle /> {t("goHome")}
             </Button>
-          </div>
+          </div>}
           <CardHeader className="text-center space-y-3">
             <motion.div
               initial={{ scale: 0 }}

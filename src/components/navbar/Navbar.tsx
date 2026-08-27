@@ -28,6 +28,18 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  // Close drawer automatically when resizing to desktop view (>= 768px)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setDrawerOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const urlLang = searchParams.get("lang");
     if (urlLang === "en" || urlLang === "pt") {
@@ -88,9 +100,7 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
     }
 
     toast.error(result?.message || "Logout failed", { id: toastId });
-
   };
-
 
   return (
     <nav className="bg-white shadow-md fixed w-full z-50">
@@ -98,12 +108,10 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
         <div className="flex justify-between h-16">
           {/* Left: Logo */}
           <div className="shrink-0 flex items-center">
-            {/* Logo Section */}
             <Link
               href="/"
               className="flex items-center gap-2 group transition-transform duration-300"
             >
-              {/* Animated Logo Image */}
               <div className="w-9 h-9 overflow-hidden rounded-full transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
                 <Image
                   src="/deligoLogo.png"
@@ -115,7 +123,6 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
                 />
               </div>
 
-              {/* Brand Text */}
               <span className="font-bold text-xl text-[#DC3173] group-hover:opacity-90 transition-opacity duration-300">
                 DeliGo
               </span>
@@ -149,7 +156,6 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
 
             {vendorData?.email ? (
               <>
-                {/* Dashboard Button */}
                 {vendorData?.status === "PENDING" ||
                   vendorData?.status === "SUBMITTED" ||
                   vendorData?.status === "REJECTED" ||
@@ -168,7 +174,6 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
                     Dashboard
                   </Link>
                 )}
-                {/* Logout Button */}
                 <Button
                   onClick={logOut}
                   variant="outline"
@@ -179,14 +184,12 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
               </>
             ) : (
               <>
-                {/* Become a Partner Button */}
                 <Link
                   href="/become-vendor"
                   className="ml-4 px-5 py-2 bg-[#DC3173] text-white font-semibold rounded-lg hover:bg-[#a72b5c] transition-all"
                 >
                   {t("becomeVendor")}
                 </Link>
-                {/* Login Button */}
                 <Link
                   href="/login"
                   className="ml-4 px-5 py-2 bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
@@ -225,21 +228,20 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer (Added md:hidden to hide automatically on desktop viewports) */}
       {drawerOpen && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex md:hidden">
           <div
-            className="fixed inset-0 bg-black bg-opacity-30 transition-opacity"
+            className="fixed inset-0 bg-opacity-30 transition-opacity"
             onClick={() => setDrawerOpen(false)}
           />
           <div className="relative w-64 bg-white shadow-lg h-full transition-transform transform translate-x-0">
             <div className="flex justify-between items-center p-6">
-              {/* Logo Section */}
               <Link
                 href="/"
                 className="flex items-center gap-2 group transition-transform duration-300"
+                onClick={() => setDrawerOpen(false)}
               >
-                {/* Animated Logo Image */}
                 <div className="w-9 h-9 overflow-hidden rounded-full transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
                   <Image
                     src="/deligoLogo.png"
@@ -251,7 +253,6 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
                   />
                 </div>
 
-                {/* Brand Text */}
                 <span className="font-bold text-xl text-[#DC3173] group-hover:opacity-90 transition-opacity duration-300">
                   DeliGo
                 </span>
@@ -269,30 +270,27 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
                 <Link
                   key={item.name}
                   href={item.href}
+                  onClick={() => setDrawerOpen(false)}
                   className="block text-gray-700 hover:text-[#DC3173] font-medium"
                 >
                   {item.name}
                 </Link>
               ))}
-              <Link
-                href="/login"
-                className="ml-4 px-5 py-2 bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
-              >
-                {t("login")}
-              </Link>
 
               {vendorData?.email ? (
                 <>
-                  {/* Dashboard Button */}
                   <Link
                     className="block text-gray-700 hover:text-[#DC3173] font-medium"
                     href="/vendor/dashboard"
+                    onClick={() => setDrawerOpen(false)}
                   >
                     Dashboard
                   </Link>
-                  {/* Logout Button */}
                   <Button
-                    onClick={logOut}
+                    onClick={() => {
+                      setDrawerOpen(false);
+                      logOut();
+                    }}
                     variant="outline"
                     className="w-full mt-4 px-4 border-[#DC3173] text-[#DC3173] font-semibold rounded-lg shadow-md hover:bg-[#DC3173] hover:text-white hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
                   >
@@ -300,12 +298,22 @@ export default function Navbar({ vendorData }: { vendorData: TVendor }) {
                   </Button>
                 </>
               ) : (
-                <Link
-                  href="/become-vendor"
-                  className="block mt-4 px-4 py-2 bg-[#DC3173] text-white font-semibold rounded-lg text-center hover:bg-[#a72b5c]"
-                >
-                  {t("becomePartner")}
-                </Link>
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setDrawerOpen(false)}
+                    className="px-5 py-2 bg-linear-to-r from-[#DC3173] to-[#a72b5c] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
+                  >
+                    {t("login")}
+                  </Link>
+                  <Link
+                    href="/become-vendor"
+                    onClick={() => setDrawerOpen(false)}
+                    className="block mt-4 px-4 py-2 bg-[#DC3173] text-white font-semibold rounded-lg text-center hover:bg-[#a72b5c]"
+                  >
+                    {t("becomePartner")}
+                  </Link>
+                </>
               )}
             </nav>
           </div>

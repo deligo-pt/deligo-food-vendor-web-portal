@@ -42,7 +42,7 @@ export function generateSalesReportCSV(data: TSalesReport) {
       order.customerId.contactNumber || "-",
       order.items
         .map(
-          (item) => `${item.productId?.name} (x${item.itemSummary?.quantity})`,
+          (item) => `${item?.name} (x${item.itemSummary?.quantity})`,
         )
         .join(", "),
       (order?.payoutSummary?.vendor?.vendorNetPayout || 0) +

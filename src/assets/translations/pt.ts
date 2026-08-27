@@ -3,6 +3,17 @@ export const pt = {
   english: "Inglês",
   portuguese: "Português",
 
+  // error page
+  something_went_wrong: "Algo Deu Errado",
+  looks_like_our_app_ran_into: "Parece que nosso aplicativo encontrou um problema inesperado",
+  we_are_working_hard_to_get_things: "Estamos trabalhando duro para colocar tudo para funcionar novamente!",
+  retry: "Tentar Novamente",
+  back_to_home: "Voltar para o Início",
+
+  // not found
+  page_not_found: "Página Não Encontrada",
+  oops_it_looks_like_your_are_stumbled_upon: "Ops! Parece que você caiu em um beco sem saída 🗺️. A página que você está procurando parece ter sido perdida ou movida para um local diferente.",
+
   // navigation
   home: "Início",
   tools: "Ferramentas",
@@ -753,6 +764,8 @@ export const pt = {
   footerVendors: "Vendedores",
   footerLegal: "Legal",
   footerConnect: "Conectar",
+  get_app: "Baixar Aplicativo",
+  enjoy_full_experience: "Aproveite a experiência completa no seu dispositivo móvel",
   footerLanguage: "Idioma",
   footerCopyright: "DeliGo — Impulsionado com",
   footerCopyrightEfficiency: "Eficiência",
@@ -770,7 +783,12 @@ export const pt = {
 
   // -> sidebar
   dashboard: "Painel",
+  branch_management: "Gestão de Filiais",
+  add_branch: "Adicionar Filial",
+  all_branches: "Todas as Filiais",
   all_orders: "Todos os Pedidos",
+  pending_with_delivery: "Pendentes - Com Entrega",
+  pending_with_self_pickup: "Pendentes - Com Recolha pelo Cliente",
   orders: "Pedidos",
   new_orders: "Novos Pedidos",
   preparing: "Em Preparação",
@@ -780,6 +798,8 @@ export const pt = {
   cancelled: "Cancelados",
 
   menu_items: "Menu & Itens",
+  create_menu: "Criar Menu",
+  all_menus: "Todos os Menus",
   all_items: "Todos os Itens",
   add_new_item: "Adicionar Novo Item",
   stock_management: "Gestão de Stock",
@@ -877,6 +897,37 @@ export const pt = {
   delivered: "Entregue",
   order_status: "Status do Pedido",
 
+  // branch
+  // --> add branch
+  add_new_branch: "Adicionar nova filial",
+  add_new_branch_of_your_brand: "Adicionar nova filial da sua marca",
+  verify_branch_email: "Verifique o e-mail da sua filial",
+  // --> all branches
+  all_branches_of_your_brand: "Todas as filiais da sua marca",
+  user_id: "ID do Utilizador",
+  branch_name: "Nome da Filial",
+  created_at: "Criado em",
+  // --> branch details
+  update_information: "Atualizar Informações",
+  re_submit: "Reenviar",
+  cuisine_type: "Tipo de Culinária",
+  store_status: "Estado da Loja",
+  closed: "Fechado",
+  open: "Aberto",
+  street: "Rua",
+  state: "Estado",
+  zip_code: "Código Postal",
+  operational_data: "Dados Operacionais",
+  rating: "Classificação",
+  account_information: "Informações da Conta",
+  last_updated: "Última Atualização",
+  submitted_for_approval: "Submetido para Aprovação",
+  approved_rejected_blocked_at: "Aprovado/Rejeitado/Bloqueado em",
+  parent_vendor_id: "ID do Fornecedor Principal",
+  // --> edit branch
+  branch: "Filial",
+  complete_the_form_below: "Preencha o formulário abaixo",
+
   // all-orders
   manage_all_orders_from_here: "Gerencie todos os pedidos por aqui",
   order_id: "ID do Pedido",
@@ -884,6 +935,7 @@ export const pt = {
   delivery_partner: "Parceiro de Entrega",
   amount: "Valor",
   date: "Data",
+  hour: "Hora",
   no_orders_found: "Nenhum pedido encontrado",
   page_lg: "Página",
   page_sm: "página",
@@ -897,8 +949,24 @@ export const pt = {
   order_items: "Itens do Pedido",
   items_sm: "itens",
   product_details: "Detalhes do Produto",
+  unit_price: "Preço Unitário",
   subtotal: "Subtotal",
+  pickup_location: "Local de Retirada",
   delivery_address: "Endereço de Entrega",
+  pickup_details: "Detalhes da Retirada",
+  pickup_slot: "Horário de Retirada",
+  ready_at: "Pronto em",
+  verified_at: "Verificado em",
+  generated_at: "Gerado em",
+  status_history: "Histórico de Status",
+  additional_info: "Informações Adicionais",
+  remarks: "Observações",
+  invoice_sync: "Sincronização da Fatura",
+  synced: "Sincronizado",
+  failed: "Falhou",
+  order_summary: "Resumo do Pedido",
+  transaction: "Transação",
+  refund: "Reembolso",
   customer_contact: "Contato do Cliente",
   payment_summary: "Resumo do Pagamento",
   total_amount: "Valor Total",
@@ -951,6 +1019,57 @@ export const pt = {
   reason: "Motivo",
   cancelled_at: "Cancelado em",
 
+  // pending with delivery
+  list_of_all_pending_orders_with_delivery: "Lista de todos os pedidos pendentes com entrega",
+
+  // pending with self pickup
+  list_of_all_pending_orders_with_self_pickup: "Lista de todos os pedidos pendentes para retirada no local",
+
+  // create menu
+  fill_the_details_to_create_menu: "Preencha os detalhes para criar o menu",
+  menu_name: "Nome do Menu",
+  menu_name_placeholder: "ex.: Menu de Almoço",
+  description_placeholder: "Disponível todos os dias ao almoço e ao jantar",
+  availability: "Disponibilidade",
+  days_of_week: "Dias da semana",
+  start_time: "Hora de início",
+  end_time: "Hora de término",
+  sort_order: "Ordem de exibição",
+  lower_number_will_appear: "Os números mais baixos aparecem primeiro",
+  is_active: "Ativo",
+  is_active_desc: "Mostrar este menu aos clientes",
+  reset: "Redefinir",
+  update_menu: "Atualizar Menu",
+  // update menu
+  change_whatever_need_to_update: "Altere o que for necessário atualizar no Menu",
+  // all menus
+  menus_that_are_created: "Os menus criados aparecerão aqui",
+  // menu details
+  menu_details: "Detalhes do Menu",
+  you_will_get_each_nd_everything: "Encontrará todas as informações sobre um menu",
+  no_sections_found: "Nenhuma secção encontrada",
+  add_sections_to_organize: "Adicione secções para agrupar produtos dentro deste menu.",
+  menu_sections: "Secções do Menu",
+  section: "Secção",
+  sections: "Secções",
+  item: "Item",
+  edit_section: "Editar Secção",
+  delete_section: "Eliminar Secção",
+  add_product: "Adicionar Produto",
+  no_products_in_section: "Sem produtos nesta secção",
+  remove_item: "Remover Item",
+  add_product_to_section: "Adicionar Produto à Secção",
+  select_product_desc: "Selecione um produto do seu catálogo para incluir nesta secção do menu.",
+  select_product: "Selecionar Produto",
+  search_products: "Pesquisar produtos...",
+  is_available: "Está disponível",
+  add_section: "Adicionar Secção",
+  soft_delete: "Eliminação Temporária",
+  permanent_delete: "Eliminação Permanente",
+  update_section: "Atualizar Secção",
+  update_you_section_details_below: "Atualize os detalhes da sua secção utilizando o formulário abaixo.",
+  add_required_sections_under_each_menu: "Adicione as secções necessárias sob cada menu",
+
   // all-items page
   food_items: "Itens Alimentares",
   manage_your_restaurants_food_delivery_items:
@@ -976,6 +1095,9 @@ export const pt = {
   featured: "Em Destaque",
   variation_options: "Opções de Variação",
   ratings_and_reviews: "Avaliações e Comentários",
+  origin: "Origem",
+  created: "Criado",
+  updated: "Atualizado",
   edit_product: "Editar Produto",
   delete_product: "Excluir Produto",
 
@@ -1005,6 +1127,9 @@ export const pt = {
   select_discount_type: "Selecionar Tipo de Desconto",
   select_tax: "Selecionar imposto",
   select_category_placeholder: "Selecione uma categoria",
+  additional_categories: "Additional Categories",
+  optional: "Optional",
+  select_additional_categories: "Select additional categories",
   select_language_placeholder: "Selecione um idioma",
   product_name_required: "O nome do produto é obrigatório",
   select_a_product_category: "Selecione uma categoria de produto",

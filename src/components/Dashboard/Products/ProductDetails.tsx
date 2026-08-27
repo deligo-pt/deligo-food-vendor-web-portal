@@ -130,11 +130,11 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
   };
 
   return (
-    <div className="p-6">
+    <div>
       {/* Back */}
       <motion.div
         variants={itemVariants as Variants}
-        className="flex items-center gap-4 mb-4"
+        className="flex justify-between items-center gap-4 mb-4"
       >
         <button
           onClick={() => router.push("/vendor/all-items")}
@@ -142,6 +142,13 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
         >
           <ArrowLeftIcon className="w-4 h-4" />
           {t("back_to_items")}
+        </button>
+        <button
+          onClick={() => setIsEditDialogOpen(true)}
+          className="bg-[#DC3173] hover:bg-[#c71d62] text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+        >
+          <Edit2Icon className="w-5 h-5" />
+          <span>{t("edit_product")}</span>
         </button>
       </motion.div>
 
@@ -316,8 +323,20 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
               variants={itemVariants as Variants}
             >
               <div>
-                <h3 className="text-sm font-medium text-gray-500">{t("category")}</h3>
+                <h3 className="text-sm font-semibold text-gray-500">{t("category")}</h3>
                 <p className="mt-1 text-gray-900">{product.category?.name?.[lang]}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500">{t("additional_categories")}</h3>
+                {(product.additionalCategories?.length ?? 0) > 0 ? (
+                  product.additionalCategories?.map((c) => (
+                    <p key={c?._id} className="mt-1 text-gray-900">
+                      {c?.name?.[lang]}
+                    </p>
+                  ))
+                ) : (
+                  <p className="mt-1 text-gray-900">N/A</p>
+                )}
               </div>
             </motion.div>
             {/* Variations */}
@@ -450,13 +469,6 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
             </motion.div>
             {/* Action Button */}
             <div className="pt-4 flex items-center gap-2 justify-end">
-              <button
-                onClick={() => setIsEditDialogOpen(true)}
-                className="bg-[#DC3173] hover:bg-[#c71d62] text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
-              >
-                <Edit2Icon className="w-5 h-5" />
-                <span>{t("edit_product")}</span>
-              </button>
               <button
                 onClick={() => setIsDeleteDialogOpen(true)}
                 className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"

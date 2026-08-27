@@ -48,12 +48,13 @@ import z from "zod";
 import { CuisineMultiSelect } from "./CuisineMultiSelect";
 
 interface IProps {
+  onNext?: () => void;
   businessCategories: TBusinessCategory[];
   cuisines: TCuisine[];
   vendor: TVendor;
 }
 
-type BusinessForm = z.infer<typeof businessDetailsValidation>;
+type BusinessForm = z.infer<ReturnType<typeof businessDetailsValidation>>;
 
 const daysOfWeek = [
   "Sunday",
@@ -66,19 +67,22 @@ const daysOfWeek = [
 ];
 
 export default function BusinessDetailsForm({
+  onNext,
   businessCategories,
   cuisines,
   vendor,
 }: IProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const isSubVendor = vendor?.role === "SUB_VENDOR";
   const form = useForm<BusinessForm>({
-    resolver: zodResolver(businessDetailsValidation),
+    resolver: zodResolver(businessDetailsValidation(isSubVendor)),
     defaultValues: {
       businessName: vendor?.businessDetails?.businessName || "",
-      businessType: vendor?.businessDetails?.businessType || "",
+      businessType: vendor?.businessDetails?.businessTypeSlug || "",
       restaurantCuisineType: vendor?.businessDetails?.restaurantCuisineType || [],
       NIF: vendor?.businessDetails?.NIF || "",
+      branchName: vendor?.businessDetails?.branchName || "",
       totalBranches: vendor?.businessDetails?.totalBranches?.toString() || "",
       openingHours: vendor?.businessDetails?.openingHours || "",
       closingHours: vendor?.businessDetails?.closingHours || "",
@@ -96,42 +100,73 @@ export default function BusinessDetailsForm({
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
 
-    const { restaurantCuisineType, ...restOfData } = data;
+    let businessDetailsPayload: Record<string, unknown>;
 
-    const processedData = businessType === "store"
-      ? restOfData
-      : { ...restOfData, restaurantCuisineType };
+    if (isSubVendor) {
+      // Sub-vendor can only update working hours
+      businessDetailsPayload = {
+        businessDetails: {
+          branchName: data?.branchName,
+          openingHours: data.openingHours,
+          closingHours: data.closingHours,
+          closingDays: data.closingDays || [],
+        },
+      };
+    } else {
+      // Main vendor – send full business details
+      const { restaurantCuisineType, ...restOfData } = data;
 
-    const businessDetails = {
-      businessDetails: {
-        ...processedData,
-        businessType: data.businessType,
-        NIF: data.NIF.toUpperCase(),
-        totalBranches: Number(data.totalBranches),
-      },
-    };
+      const processedData =
+        data.businessType === "store"
+          ? restOfData
+          : { ...restOfData, restaurantCuisineType };
 
-    const result = await updateVendorReq(vendor?.userId, businessDetails);
-
-    if (result && result?.success) {
-      toast.success("Business details updated successfully!", { id: toastId });
-      router.push("/become-vendor/business-location");
-      return;
+      businessDetailsPayload = {
+        businessDetails: {
+          ...processedData,
+          businessType: data.businessType,
+          NIF: data.NIF.toUpperCase(),
+          totalBranches: Number(data.totalBranches),
+        },
+      };
     }
 
-    toast.error(result?.message || "Business details update failed", { id: toastId });
+    const result = await updateVendorReq(vendor?.userId, businessDetailsPayload);
+
+    if (result && result?.success) {
+      toast.success(result?.message || "Business details updated successfully!", { id: toastId });
+
+      if (isSubVendor) {
+        onNext?.();
+        return;
+      } else {
+        router.push("/become-vendor/business-location");
+        return;
+      }
+    }
+
+    if (result?.data?.errorSources) {
+      result?.data?.errorSources?.map((err: { path: string, message: string }) => (
+        toast.error(err?.message, { id: toastId })
+      ));
+      return;
+    } else {
+      toast.error(result.message || "Business details update failed", {
+        id: toastId,
+      });
+    }
     console.log(result);
   };
 
   return (
     <motion.div
-      className="flex justify-center items-center min-h-screen bg-linear-to-br from-pink-50 via-white to-pink-100 px-4"
+      className="flex justify-center items-center min-h-screen bg-linear-to-br from-pink-50 via-white to-pink-100 p-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
       <Card className="w-full max-w-2xl p-6 shadow-2xl border-t-4 border-[#DC3173] bg-white rounded-2xl relative">
-        <div className="absolute top-3 left-0">
+        {!isSubVendor && <div className="absolute top-3 left-0">
           <Button
             onClick={() => router.push("/become-vendor/personal-details")}
             variant="link"
@@ -139,7 +174,8 @@ export default function BusinessDetailsForm({
           >
             <ArrowLeftCircle /> {t("goBack")}
           </Button>
-        </div>
+        </div>}
+
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold text-[#DC3173] mt-2">
             {t("businessDetails")}
@@ -166,7 +202,7 @@ export default function BusinessDetailsForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          {t("businessName")} <span className="text-red-500">*</span>
+                          {t("businessName")}{" "} <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="relative">
                           <Building2 className="absolute left-3 top-3.5 text-[#DC3173]" />
@@ -174,6 +210,7 @@ export default function BusinessDetailsForm({
                             <Input
                               placeholder="Business Name"
                               className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
+                              disabled={!!isSubVendor}
                               {...field}
                             />
                           </FormControl>
@@ -183,33 +220,31 @@ export default function BusinessDetailsForm({
                     )}
                   />
 
-                  {/* Business Type */}
+                  {/* Business Type – uses slug */}
                   <FormField
                     control={form.control}
                     name="businessType"
                     render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          {t("businessType")} <span className="text-red-500">*</span>
+                          {t("businessType")}{" "} <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="relative">
                           <Briefcase className="absolute left-3 top-3.5 text-[#DC3173]/80" />
                           <FormControl>
                             <Select
-                              {...field}
                               value={field.value}
-                              onValueChange={(value) => field.onChange(value)}
+                              onValueChange={field.onChange}
+                              disabled={!!isSubVendor}
                             >
                               <SelectTrigger
                                 className={cn(
-                                  "pl-11 pr-4 h-12 w-full bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer  ",
+                                  "pl-11 pr-4 h-12 w-full bg-white/90 text-gray-700 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md transition-all cursor-pointer",
                                   fieldState.invalid
                                     ? "border-destructive focus-visible:ring-destructive/20"
-                                    : "border-gray-300",
+                                    : "border-gray-300"
                                 )}
-                                style={{
-                                  height: "3rem",
-                                }}
+                                style={{ height: "3rem" }}
                               >
                                 <SelectValue placeholder={t("select_business_type")} />
                               </SelectTrigger>
@@ -232,7 +267,7 @@ export default function BusinessDetailsForm({
                     )}
                   />
 
-                  {/* NIF */}
+                  {/* NIF – changed to type="text" */}
                   <FormField
                     control={form.control}
                     name="NIF"
@@ -246,9 +281,10 @@ export default function BusinessDetailsForm({
                           <FormControl>
                             <Input
                               placeholder="NIF"
-                              type="number"
+                              type="text"
                               className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60 uppercase"
                               {...field}
+                              disabled={!!isSubVendor}
                             />
                           </FormControl>
                         </div>
@@ -256,9 +292,32 @@ export default function BusinessDetailsForm({
                       </FormItem>
                     )}
                   />
+
+                  {isSubVendor && <FormField
+                    control={form.control}
+                    name="branchName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
+                          {t("branch_name")}{" "} <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="relative">
+                          <Building2 className="absolute left-3 top-3.5 text-[#DC3173]" />
+                          <FormControl>
+                            <Input
+                              placeholder={t("branch_name")}
+                              className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
+                              {...field}
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />}
                 </div>
 
-                {/* if business type is restaurant */}
+                {/* Cuisine – only for restaurant */}
                 {businessType === "restaurant" && (
                   <FormField
                     control={form.control}
@@ -266,7 +325,7 @@ export default function BusinessDetailsForm({
                     render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700 mt-5">
-                          {t("restaurantCuisineType")} <span className="text-red-500">*</span>
+                          {t("restaurantCuisineType")}{" "} <span className="text-red-500">*</span>
                         </FormLabel>
 
                         <FormControl>
@@ -277,6 +336,7 @@ export default function BusinessDetailsForm({
                             invalid={fieldState.invalid}
                             placeholder={t("select_multiple_cuisine")}
                             t={t}
+                            disabled={!!isSubVendor}
                           />
                         </FormControl>
 
@@ -300,7 +360,8 @@ export default function BusinessDetailsForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          {t("no_of_branches")} <span className="text-red-500">*</span>
+                          {t("no_of_branches")}{" "}
+                          <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="relative">
                           <MapPin className="absolute left-3 top-3.5 text-[#DC3173]/80" />
@@ -311,6 +372,7 @@ export default function BusinessDetailsForm({
                               min="1"
                               className="pl-11 pr-4 h-12 rounded-xl border-gray-300 bg-white/90 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md"
                               {...field}
+                              disabled={!!isSubVendor}
                             />
                           </FormControl>
                         </div>
@@ -337,7 +399,8 @@ export default function BusinessDetailsForm({
                         <div className="relative">
                           <FormLabel className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                             <Clock className="w-4 h-4 text-[#DC3173]" />
-                            {t("openingTime")} <span className="text-red-500">*</span>
+                            {t("openingTime")}{" "}
+                            <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -361,7 +424,8 @@ export default function BusinessDetailsForm({
                         <div className="relative">
                           <FormLabel className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                             <Clock className="w-4 h-4 text-[#DC3173]" />
-                            {t("closingTime")} <span className="text-red-500">*</span>
+                            {t("closingTime")}{" "}
+                            <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -397,7 +461,7 @@ export default function BusinessDetailsForm({
                                 field.onChange(
                                   field.value?.includes(day)
                                     ? field.value.filter((d) => d !== day)
-                                    : [...(field.value || []), day],
+                                    : [...(field.value || []), day]
                                 );
                               }}
                               whileTap={{ scale: 0.95 }}
@@ -418,14 +482,12 @@ export default function BusinessDetailsForm({
               </div>
 
               {/* Submit Button */}
-              <motion.div
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full h-12 bg-[#DC3173] hover:bg-[#b12b61] text-white text-lg font-semibold shadow-md hover:shadow-lg transition-all ${isSubmitting ? "cursor-not-allowed opacity-70" : ""}`}
+                  className={`w-full h-12 bg-[#DC3173] hover:bg-[#b12b61] text-white text-lg font-semibold shadow-md hover:shadow-lg transition-all ${isSubmitting ? "cursor-not-allowed opacity-70" : ""
+                    }`}
                 >
                   {t("saveContinue")}
                 </Button>

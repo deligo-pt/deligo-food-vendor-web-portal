@@ -159,6 +159,7 @@ export default function UploadDocuments({
   );
 
   const isFormValid = REQUIRED_DOCS.every((key) => previews[key] !== null && previews[key]!.length > 0);
+  const isSubVendor = vendor?.role === "SUB_VENDOR";
 
   const documentLimits: Partial<Record<DocKey, number>> = {
     myPhoto: 1,
@@ -443,9 +444,15 @@ export default function UploadDocuments({
       toast.success("Request submitted successfully!", {
         id: toastId,
       });
-      setConfettiRunning(true);
-      setShowModal(true);
-      return;
+
+      if (isSubVendor) {
+        router.push('/vendor/branches');
+        return;
+      } else {
+        setConfettiRunning(true);
+        setShowModal(true);
+        return;
+      }
     }
 
     toast.error(result.message || "Request submission failed", {
@@ -470,7 +477,7 @@ export default function UploadDocuments({
     <div className="min-h-screen bg-linear-to-br from-white via-gray-50 to-gray-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <Card className="rounded-2xl shadow-2xl overflow-hidden border border-gray-200 relative">
-          <div className="relative p-0">
+          {!isSubVendor && <div className="relative p-0">
             <Button
               onClick={() => router.push("/become-vendor/bank-details")}
               variant="link"
@@ -478,7 +485,7 @@ export default function UploadDocuments({
             >
               <ArrowLeftCircle /> {t("goBack")}
             </Button>
-          </div>
+          </div>}
           <CardHeader className="bg-linear-to-r from-[#DC3173] to-pink-600 p-6 text-white">
             <div className="flex items-center gap-4">
               <div className="rounded-xl bg-white/20 p-3 shadow-md">

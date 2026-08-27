@@ -13,6 +13,7 @@ interface CuisineMultiSelectProps {
     invalid?: boolean;
     placeholder: string;
     t: (key: string) => string;
+    disabled?: boolean;
 }
 
 export function CuisineMultiSelect({
@@ -22,6 +23,7 @@ export function CuisineMultiSelect({
     invalid,
     placeholder,
     t,
+    disabled
 }: CuisineMultiSelectProps) {
     const [open, setOpen] = useState(false);
     const [tempSelected, setTempSelected] = useState<string[]>(value);
@@ -71,6 +73,7 @@ export function CuisineMultiSelect({
                                     type="button"
                                     onClick={() => handleRemoveCuisine(cuisine)}
                                     className="rounded-full outline-none hover:bg-[#DC3173]/20 p-0.5"
+                                    disabled={disabled}
                                 >
                                     <X className="h-3 w-3" />
                                 </button>
@@ -91,6 +94,7 @@ export function CuisineMultiSelect({
                                 : "border-gray-300"
                         )}
                         style={{ height: "3rem" }}
+                        disabled={disabled}
                     >
                         <SelectValue placeholder={placeholder} />
                     </SelectTrigger>
@@ -141,6 +145,7 @@ export function CuisineMultiSelect({
                             <Button
                                 type="button"
                                 onClick={handleAddSelected}
+                                disabled={disabled}
                                 className="w-full h-10 rounded-lg bg-[#DC3173] hover:bg-[#c21c5e] text-white text-sm font-medium"
                             >
                                 {t("add_selected")} ({tempSelected.length})

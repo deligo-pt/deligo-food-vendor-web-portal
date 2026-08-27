@@ -33,8 +33,12 @@ type LocationFormType = {
   longitude: number;
 };
 
+interface IProps {
+  onNext?: () => void;
+  vendor: TVendor;
+};
 
-const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
+const BusinessLocation = ({ onNext, vendor }: IProps) => {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -221,6 +225,8 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
     });
   }, [vendor, form]);
 
+  const isSubVendor = vendor?.role === "SUB_VENDOR";
+
   /** --- Submit Handler --- */
   const handleSave = async (data: Partial<LocationFormType>) => {
     if (!locationCoordinates.latitude || !locationCoordinates.longitude) {
@@ -244,14 +250,27 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
     const result = await updateVendorReq(vendor?.userId, payload);
 
     if (result.success) {
-      toast.success("Business location updated!", { id: toastId });
-      router.push("/become-vendor/bank-details");
-      return;
+      toast.success(result?.message || "Business location updated!", { id: toastId });
+
+      if (isSubVendor) {
+        onNext?.();
+        return;
+      } else {
+        router.push("/become-vendor/bank-details");
+        return;
+      }
     }
 
-    toast.error(result.message || "Business location update failed", {
-      id: toastId,
-    });
+    if (result?.data?.errorSources) {
+      result?.data?.errorSources?.map((err: { path: string, message: string }) => (
+        toast.error(err?.message, { id: toastId })
+      ));
+      return;
+    } else {
+      toast.error(result.message || "Business Location update failed", {
+        id: toastId,
+      });
+    }
     console.log(result);
   };
 
@@ -262,13 +281,13 @@ const BusinessLocation = ({ vendor }: { vendor: TVendor }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Button
+      {!isSubVendor && <Button
         onClick={() => router.push("/become-vendor/business-details")}
         variant="link"
         className="inline-flex items-center gap-2 text-[#DC3173] absolute top-0.5 px-0! cursor-pointer"
       >
         <ArrowLeftCircle /> {t("goBack")}
-      </Button>
+      </Button>}
 
       <Form {...form}>
         <form

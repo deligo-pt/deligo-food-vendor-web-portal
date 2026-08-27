@@ -3,7 +3,7 @@ import { USER_STATUS } from "@/src/consts/user.const";
 export type TVendor = {
   _id?: string;
   userId: string;
-  role: "VENDOR";
+  role: "VENDOR" | "SUB_VENDOR";
   email: string;
   password: string;
   status: keyof typeof USER_STATUS;
@@ -47,6 +47,10 @@ export type TVendor = {
   businessDetails?: {
     businessName: string;
     businessType: string;
+    branchName?: string;
+    isHalal?: boolean;
+    preparationTimeMinutes?: string;
+    isStoreOpen?: boolean;
     businessTypeSlug?: string;
     restaurantCuisineType?: string[];
     businessLicenseNumber?: string;
@@ -71,14 +75,15 @@ export type TVendor = {
 
   // Bank & Payment Information
   bankDetails?: {
-    bankName: string;
+    bankName?: string;
     accountHolderName: string;
     iban: string;
-    swiftCode: string;
+    swiftCode?: string;
   };
 
   // Documents & Verification
   documents?: {
+    myPhoto?: string[];
     businessLicenseDoc?: string[];
     taxDoc?: string[];
     idProofFront?: string[];
@@ -86,6 +91,7 @@ export type TVendor = {
     storePhoto?: string[];
     menuUpload?: string[];
     agoserisHaccpCertificate?: string[];
+    ibanProof: string[];
   };
 
   // Security & Access Control
@@ -104,6 +110,10 @@ export type TVendor = {
   approvedBy?: string;
   rejectedBy?: string;
   remarks?: string;
+
+  submittedForApprovalAt?: Date | string;
+  approvedOrRejectedOrBlockedAt?: Date | string;
+  parentVendorId?: string;
 
   createdAt: Date | string;
   updatedAt: Date | string;

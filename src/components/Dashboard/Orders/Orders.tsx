@@ -1,6 +1,5 @@
 "use client";
 
-import OrderDetailsSheet from "@/src/components/Dashboard/Orders/OrderDetailsSheet";
 import OrderTable from "@/src/components/Dashboard/Orders/OrderTable";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
@@ -109,7 +108,7 @@ export default function Orders({
       {/* Order Table */}
       <OrderTable
         orders={ordersResult?.data || []}
-        viewOrder={(order) => setSelected(order)}
+      // viewOrder={(order) => setSelected(order)}
       />
 
       {/* Pagination */}
@@ -126,11 +125,11 @@ export default function Orders({
       )}
 
       {/* Order details sheet */}
-      <OrderDetailsSheet
+      {/* <OrderDetailsSheet
         open={!!selected}
         onOpenChange={(open) => !open && setSelected(null)}
         selectedOrder={selected}
-      />
+      /> */}
     </div>
   );
 }

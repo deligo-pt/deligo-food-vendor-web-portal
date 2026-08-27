@@ -241,6 +241,9 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                                                 {group.title?.[lang]}
                                             </SelectItem>
                                         ))}
+                                        {addonGroupsData?.length === 0 && (
+                                            <p className='italic text-sm text-gray-500 text-center'>{t("no_add_ons_found")}</p>
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </FormControl>

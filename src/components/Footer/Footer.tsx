@@ -4,12 +4,10 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useStore } from "@/src/store/store";
+import Image from "next/image";
 
 export default function FooterDeligoPremium() {
   const { t } = useTranslation();
-  const { lang, setLang } = useStore();
 
   const companyLinks = [
     { name: t("footerAboutUs"), href: "/about-us" },
@@ -145,24 +143,47 @@ export default function FooterDeligoPremium() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
         >
-          <h3 className="text-lg font-bold mb-3 text-[#DC3173]">
-            {t("footerLanguage")}
+          <h3 className="text-lg mb-1 font-bold text-[#DC3173]">
+            {t("get_app")}
           </h3>
-          <Select
-            value={lang}
-            onValueChange={(value: "en" | "pt") => {
-              setLang(value);
-            }}
-          >
-            <SelectTrigger className="w-[140px] hover:border hover:border-[#DC3173]">
-              <SelectValue placeholder="Language" />
-            </SelectTrigger>
+          <p>{t("enjoy_full_experience")}</p>
+          <div className="flex flex-wrap items-center gap-3 pt-1">
 
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="pt">Português</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* App Store Button */}
+            <Link
+              href="https://apps.apple.com/pt/app/deligo-vendor/id6769970410?l=en-GB"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block transition-transform hover:scale-105 active:scale-95"
+            >
+              <Image
+                src="/app_store.jpeg"
+                alt="Download on App Store"
+                width={135}
+                height={40}
+                className="h-10 w-auto rounded-md object-contain"
+                priority={false}
+              />
+            </Link>
+
+            {/* Google Play Button */}
+            <Link
+              href="https://play.google.com/store/apps/details?id=com.deligo.vendor"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block transition-transform hover:scale-105 active:scale-95"
+            >
+              <Image
+                src="/google_play.jpeg"
+                alt="Get it on Google Play"
+                width={135}
+                height={40}
+                className="h-10 w-auto rounded-md object-contain"
+                priority={false}
+              />
+            </Link>
+
+          </div>
         </motion.div>
       </div>
 

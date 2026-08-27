@@ -1,0 +1,56 @@
+import { serverRequest } from "@/lib/serverFetch";
+import Orders from "@/src/components/Dashboard/Orders/Orders";
+import { FULFILLMENT_TYPE, ORDER_STATUS } from "@/src/consts/order.const";
+import { TMeta, TResponse } from "@/src/types";
+import { TOrder } from "@/src/types/order.type";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+
+type IProps = {
+    searchParams?: Promise<Record<string, string | undefined>>;
+};
+
+const PendingWithSelfPickupOrdersPage = async ({ searchParams }: IProps) => {
+    const queries = (await searchParams) || {};
+    const limit = Number(queries?.limit || 10);
+    const page = Number(queries.page || 1);
+    const searchTerm = queries.searchTerm || "";
+    const sortBy = queries.sortBy || "-createdAt";
+    const orderStatus = queries.orderStatus || "";
+
+    const query = {
+        limit,
+        page,
+        sortBy,
+        ...(searchTerm ? { searchTerm } : {}),
+        ...(orderStatus && { orderStatus }),
+        excludeStatus: `${ORDER_STATUS.PICKED_UP_BY_CUSTOMER}`,
+        fulfillmentType: FULFILLMENT_TYPE.PICKUP
+    };
+
+    const initialData: { data: TOrder[]; meta?: TMeta } = { data: [] };
+
+    try {
+        const result = (await serverRequest.get("/orders", {
+            params: query,
+        })) as TResponse<TOrder[]>;
+
+        if (result?.success) {
+            initialData.data = result.data;
+            initialData.meta = result.meta;
+        }
+    } catch (err) {
+        console.log("Server fetch error:", err);
+        if (isRedirectError(err)) throw err;
+    }
+
+    return (
+        <Orders
+            ordersResult={initialData}
+            title="pending_with_self_pickup"
+            subtitle="list_of_all_pending_orders_with_self_pickup"
+        />
+    );
+}
+
+
+export default PendingWithSelfPickupOrdersPage;
