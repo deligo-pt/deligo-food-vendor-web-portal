@@ -20,6 +20,7 @@ import { deleteMenuSection, removeSectionItem } from "@/src/services/dashboard/m
 import { toast } from "sonner";
 import { TProduct } from "@/src/types/product.type";
 import AddItemToSection from "./AddItemToSection";
+import UpdateItemSortOrder from "./UpdateItemSortOrder";
 
 interface IProps {
     menuId: string;
@@ -51,6 +52,10 @@ export default function MenuSectionsList({
     // ── Edit Section State ──
     const [isEditSectionOpen, setIsEditSectionOpen] = useState(false);
     const [selectedSectionToEdit, setSelectedSectionToEdit] = useState<IMenuSection | null>(null);
+    const [selectedItemToEdit, setSelectedItemToEdit] = useState<{
+        sectionId: string;
+        product: IProductItem;
+    } | null>(null);
 
     // ── Delete Section State ──
     const [isDeleteSectionOpen, setIsDeleteSectionOpen] = useState(false);
@@ -96,6 +101,10 @@ export default function MenuSectionsList({
     };
 
     // ── Item Actions ──
+    const handleUpdateItemSortOrder = (sectionId: string, product: IProductItem) => {
+        setSelectedItemToEdit({ sectionId, product });
+    };
+
     const handleRemoveItemTrigger = (sectionId: string, productId: string) => {
         setSelectedItemToRemove({ sectionId, productId });
         setIsRemoveItemOpen(true);
@@ -201,7 +210,7 @@ export default function MenuSectionsList({
                                         <div className="hidden sm:flex items-center gap-3 text-xs text-slate-500">
                                             <span className="px-2.5 py-1 bg-slate-100 text-slate-700 font-semibold rounded-lg flex items-center gap-1">
                                                 <PackageIcon className="w-3.5 h-3.5 text-[#DC3173]" />
-                                                {itemCount} {itemCount === 1 ? "Item" : "Items"}
+                                                {itemCount} {itemCount === 1 ? t('item') : t("items")}
                                             </span>
                                         </div>
 
@@ -311,6 +320,14 @@ export default function MenuSectionsList({
                                                                     <div className="flex items-center gap-1 border-l border-slate-100 pl-2">
                                                                         <button
                                                                             type="button"
+                                                                            onClick={() => handleUpdateItemSortOrder(section._id, item)}
+                                                                            className="p-1 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded-md transition-colors"
+                                                                            title={t("edit_item") || "Edit Item"}
+                                                                        >
+                                                                            <Edit2Icon className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
                                                                             onClick={() => handleRemoveItemTrigger(section._id, prod._id)}
                                                                             className="p-1 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded-md transition-colors"
                                                                             title={t("remove_item") || "Remove Item"}
@@ -331,28 +348,40 @@ export default function MenuSectionsList({
                         );
                     })}
                 </div>
-            </div>
+            </div >
 
             {/* add item section */}
-            <AddItemToSection
+            < AddItemToSection
                 sectionId={selectedSectionId}
-                open={!!selectedSectionId}
+                open={!!selectedSectionId
+                }
                 onOpenChange={() => setSelectedSectionId("")}
                 products={products}
             />
 
+            <UpdateItemSortOrder
+                open={!!selectedItemToEdit}
+                onOpenChange={(open) => {
+                    if (!open) setSelectedItemToEdit(null);
+                }}
+                sectionId={selectedItemToEdit?.sectionId as string}
+                item={selectedItemToEdit?.product as IProductItem}
+            />
+
             {/* ──  Edit Menu Section ── */}
-            {selectedSectionToEdit && (
-                <EditMenuSection
-                    open={isEditSectionOpen}
-                    onOpenChange={(open) => {
-                        setIsEditSectionOpen(open);
-                        if (!open) setSelectedSectionToEdit(null);
-                    }}
-                    menuId={menuId}
-                    section={selectedSectionToEdit}
-                />
-            )}
+            {
+                selectedSectionToEdit && (
+                    <EditMenuSection
+                        open={isEditSectionOpen}
+                        onOpenChange={(open) => {
+                            setIsEditSectionOpen(open);
+                            if (!open) setSelectedSectionToEdit(null);
+                        }}
+                        menuId={menuId}
+                        section={selectedSectionToEdit}
+                    />
+                )
+            }
 
             {/* ── Delete Menu Section ── */}
             <DeleteModal

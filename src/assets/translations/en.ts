@@ -786,6 +786,7 @@ export const en = {
   create_menu: "Create Menu",
   all_menus: "All Menus",
   all_items: "All Items",
+  product_categories: "Product Categories",
   add_new_item: "Add New Item",
   stock_management: "Stock Management",
   variation_management: "Variation Management",

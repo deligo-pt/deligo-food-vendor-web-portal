@@ -11,9 +11,10 @@ import { createMenuSchema } from "@/src/validations/menu/menu.validation";
 import TitleHeader from "../../TitleHeader/TitleHeader";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { toast } from "sonner";
-import {updateMenu } from "@/src/services/dashboard/menu/menu.service";
+import { updateMenu, updateMenuSortOrder } from "@/src/services/dashboard/menu/menu.service";
 import MenuForm from "./MenuForm";
 import { IMenu } from "@/src/types/menu.type";
+import { useRouter } from "next/navigation";
 
 
 export type CreateMenuFormValues = z.infer<ReturnType<typeof createMenuSchema>>;
@@ -21,6 +22,7 @@ export type CreateMenuFormValues = z.infer<ReturnType<typeof createMenuSchema>>;
 
 const EditMenu = ({ menu }: { menu: IMenu }) => {
     const { t, lang } = useTranslation();
+    const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<CreateMenuFormValues>({
@@ -53,96 +55,107 @@ const EditMenu = ({ menu }: { menu: IMenu }) => {
         };
 
         const before = menu;
+        const mainPayload: Record<string, unknown> = {};
 
-        const payload: Record<string, unknown> = {};
+        let isSortOrderChanged = false;
+        let newSortOrder = 0;
 
-        // ── Name ──
+        // ── Check sortOrder Change ──
+        if (hasChanged(before?.sortOrder, values.sortOrder)) {
+            isSortOrderChanged = true;
+            newSortOrder = values.sortOrder ?? before?.sortOrder;
+        }
+
+        // ── Name & Description Diffing & Translation ──
+        const textToTranslate: Record<string, { en?: string; pt?: string }> = {};
+
         if (hasChanged(before?.name, values.name)) {
-            const namePayload = {
+            textToTranslate.name = {
                 en: values.name?.en,
                 pt: values.name?.pt,
             };
-
-            const translated = await translateObject(
-                { name: namePayload },
-                lang
-            );
-
-            if (!translated) {
-                toast.error("Translation failed!", { id: toastId });
-                setIsSubmitting(false);
-                return;
-            }
-            payload.name = translated.name;
         }
 
-        // ── Description ──
         if (hasChanged(before?.description, values.description)) {
-            const descPayload = {
+            textToTranslate.description = {
                 en: values.description?.en || "",
                 pt: values.description?.pt || "",
             };
+        }
 
-            const translated = await translateObject(
-                { description: descPayload },
-                lang
-            );
+        // Only invoke translation API once if name or description changed
+        if (Object.keys(textToTranslate).length > 0) {
+            const translated = await translateObject(textToTranslate, lang);
 
             if (!translated) {
                 toast.error("Translation failed!", { id: toastId });
                 setIsSubmitting(false);
                 return;
             }
-            payload.description = translated.description;
+
+            if (translated.name) mainPayload.name = translated.name;
+            if (translated.description) mainPayload.description = translated.description;
         }
 
         // ── Availability ──
         if (hasChanged(before?.availability, values.availability)) {
-            payload.availability = values.availability;
-        }
-
-        // ── sortOrder ──
-        if (hasChanged(before?.sortOrder, values.sortOrder)) {
-            payload.sortOrder = values.sortOrder ?? 0;
+            mainPayload.availability = values.availability;
         }
 
         // ── isActive ──
         if (hasChanged(before?.isActive, values.isActive)) {
-            payload.isActive = values.isActive ?? true;
+            mainPayload.isActive = values.isActive ?? true;
         }
 
-        if (Object.keys(payload).length === 0) {
+        // ── Early return if no changes detected ──
+        const hasMainPayloadChanges = Object.keys(mainPayload).length > 0;
+
+        if (!hasMainPayloadChanges && !isSortOrderChanged) {
             toast.info("No changes detected", { id: toastId });
             setIsSubmitting(false);
             return;
         }
 
-        const result = await updateMenu(payload, menu?._id);
+        try {
+            // 1. Trigger separate sortOrder API if changed
+            if (isSortOrderChanged) {
+                const sortResult = await updateMenuSortOrder(
+                    { sortOrder: newSortOrder },
+                    menu?._id
+                );
 
-        if (result?.success) {
-            toast.success(
-                result?.message || "Menu updated successfully!",
-                { id: toastId }
-            );
-            form.reset(values);
-            setIsSubmitting(false);
-            return;
-        }
-
-        if (result?.data?.errorSources) {
-            result.data.errorSources.forEach(
-                (err: { path: string; message: string }) => {
-                    toast.error(err.message, { id: toastId });
+                if (!sortResult?.success) {
+                    toast.error(sortResult?.message || "Failed to update sort order", { id: toastId });
+                    setIsSubmitting(false);
+                    return;
                 }
-            );
-            setIsSubmitting(false);
-            return;
-        }
+            }
 
-        toast.error(result?.message || "Menu update failed", {
-            id: toastId,
-        });
-        setIsSubmitting(false);
+            // 2. Trigger main update API if other attributes changed
+            if (hasMainPayloadChanges) {
+                const result = await updateMenu(mainPayload, menu?._id);
+
+                if (!result?.success) {
+                    if (result?.data?.errorSources) {
+                        result.data.errorSources.forEach(
+                            (err: { path: string; message: string }) => {
+                                toast.error(err?.message, { id: toastId });
+                            }
+                        );
+                    } else {
+                        toast.error(result?.message || "Menu update failed", { id: toastId });
+                    }
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+
+            toast.success("Menu updated successfully!", { id: toastId });
+            router.push('/vendor/menu/all');
+            form.reset(values);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (

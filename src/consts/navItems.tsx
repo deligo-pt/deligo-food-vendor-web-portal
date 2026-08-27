@@ -60,8 +60,8 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
         { name: t("all_menus"), path: "/vendor/menu/all" },
         { name: t("add_new_item"), path: "/vendor/add-item" },
         { name: t("all_items"), path: "/vendor/all-items" },
-        { name: t("categories"), path: "/vendor/categories" },
-        ...(businessType === "STORE"
+        { name: t("product_categories"), path: "/vendor/categories" },
+        ...(businessType === "store"
           ? [{ name: t("stock_management"), path: "/vendor/stock" }]
           : []),
         { name: t("variation_management"), path: "/vendor/variation-management" },

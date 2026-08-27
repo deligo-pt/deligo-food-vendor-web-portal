@@ -801,6 +801,7 @@ export const pt = {
   create_menu: "Criar Menu",
   all_menus: "Todos os Menus",
   all_items: "Todos os Itens",
+  product_categories: "Categorias de Produtos",
   add_new_item: "Adicionar Novo Item",
   stock_management: "Gestão de Stock",
   variation_management: "Gerenciamento de Variações",
