@@ -23,6 +23,10 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
+import { useState } from "react";
+import { softDeleteMenu } from "@/src/services/dashboard/menu/menu.service";
+import { toast } from "sonner";
+import DeleteModal from "../../Modals/DeleteModal";
 
 interface IProps {
     menus: IMenu[];
@@ -31,6 +35,8 @@ interface IProps {
 export default function MenuTable({ menus }: IProps) {
     const { t, lang } = useTranslation();
     const router = useRouter();
+    const [selectedMenuId, setSelectedMenuId] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const getLocalizedText = (textObj?: { en: string; pt: string }) => {
         if (!textObj) return "—";
@@ -47,6 +53,27 @@ export default function MenuTable({ menus }: IProps) {
     const formatTimeRange = (startTime?: string, endTime?: string) => {
         if (!startTime || !endTime) return "—";
         return `${startTime} - ${endTime}`;
+    };
+
+    // soft delete menu
+    const handleSoftDeleteMenu = async () => {
+        const toastId = toast.loading("Soft Deleting menu...");
+        setIsDeleting(true);
+
+        const result = await softDeleteMenu(selectedMenuId);
+
+        if (result.success) {
+            toast.success(result?.message || "Menu soft deleted successfully", {
+                id: toastId,
+            });
+            setSelectedMenuId("");
+            router.push("/vendor/menu/all");
+            setIsDeleting(false);
+            return;
+        }
+
+        toast.error(result.message || "Menu deletion failed", { id: toastId });
+        setIsDeleting(false);
     };
 
     return (
@@ -178,6 +205,11 @@ export default function MenuTable({ menus }: IProps) {
                                         >
                                             {t("edit")}
                                         </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={() => setSelectedMenuId(menu._id)}
+                                        >
+                                            {t("soft_delete")}
+                                        </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>
@@ -185,6 +217,16 @@ export default function MenuTable({ menus }: IProps) {
                     ))}
                 </TableBody>
             </Table>
-        </motion.div>
+
+            {/* soft delete menu */}
+            <DeleteModal
+                open={!!selectedMenuId}
+                onOpenChange={(open) => {
+                    if (!open) setSelectedMenuId('')
+                }}
+                onConfirm={handleSoftDeleteMenu}
+                isDeleting={isDeleting}
+            />
+        </motion.div >
     );
 }
