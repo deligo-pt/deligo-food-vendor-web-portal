@@ -1135,6 +1135,14 @@ export const pt = {
   product_name_required: "O nome do produto é obrigatório",
   select_a_product_category: "Selecione uma categoria de produto",
   description_generation_failed: "Falha ao gerar a descrição",
+  // --> target product menu
+  select_target_menu: "Selecionar Menu de Destino",
+  select_menu_and_section: "Selecionar Menu e Secção",
+  target_menu_desc: "Escolha onde este produto deve ser colocado no seu menu.",
+  select_menu: "Selecionar menu",
+  choose_a_menu: "Escolher um menu",
+  select_section: "Selecionar secção",
+  fetching_menu_sections: "A obter secções do menu...",
 
   // -> image uploader
   drag_drop_product_images: "Arraste e largue as imagens do produto aqui",

@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { UseFormReturn } from "react-hook-form";
 import { CreateMenuSectionFormValues } from "./AddSection";
+import { Loader2 } from "lucide-react";
 
 
 interface MenuFormProps {
@@ -207,7 +208,7 @@ const MenuSectionForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, ty
                     disabled={isSubmitting}
                 >
                     {isSubmitting
-                        ? t("saving")
+                        ? <Loader2 />
                         : type === 'add' ? t("add_section") : t("update_section")}
                 </Button>
             </div>

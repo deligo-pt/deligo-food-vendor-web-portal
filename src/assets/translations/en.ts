@@ -1101,6 +1101,14 @@ export const en = {
   product_name_required: "Product name is required",
   select_a_product_category: "Select a product category",
   description_generation_failed: "Description generation failed",
+  // --> target product menu
+  select_target_menu: "Select Target Menu",
+  select_menu_and_section: "Select Menu & Section",
+  target_menu_desc: "Choose where this product should be placed in your menu.",
+  select_menu: "Select menu",
+  choose_a_menu: "Choose a menu",
+  select_section: "Select section",
+  fetching_menu_sections: "Fetching menu sections...",
 
   // -> image uploader
   drag_drop_product_images: "Drag & drop product images here",
