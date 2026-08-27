@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CreateMenuFormValues } from "./CreateMenu";
 import { UseFormReturn } from "react-hook-form";
+import { Loader2 } from "lucide-react";
 
 
 const DAYS_OF_WEEK = [
@@ -312,7 +313,7 @@ const MenuForm = ({ form, onSubmit, selectedLanguage, t, isSubmitting, type }: M
                     disabled={isSubmitting}
                 >
                     {isSubmitting
-                        ? t("saving")
+                        ? <Loader2 />
                         : type === 'create' ? t("create_menu") : t("update_menu")}
                 </Button>
             </div>

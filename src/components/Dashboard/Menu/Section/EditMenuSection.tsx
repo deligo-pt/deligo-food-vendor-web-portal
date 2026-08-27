@@ -17,7 +17,7 @@ import { translateObject } from "@/src/utils/translation/translationObject";
 import { toast } from "sonner";
 import { createMenuSectionSchema } from "@/src/validations/menu/section.validation";
 import MenuSectionForm from "./SectionForm";
-import { updateMenuSection } from "@/src/services/dashboard/menu/menu.service";
+import { updateMenuSection, updateSectionSortOrder } from "@/src/services/dashboard/menu/menu.service";
 import { IMenuSection } from "@/src/types/menu.type";
 
 export type CreateMenuSectionFormValues = z.infer<
@@ -54,7 +54,16 @@ const EditMenuSection = ({ menuId, open, onOpenChange, section }: IProps) => {
         };
 
         const before = section;
-        const payload: Record<string, unknown> = {};
+        const mainPayload: Record<string, unknown> = {};
+
+        let isSortOrderChanged = false;
+        let newSortOrder = 0;
+
+        // ── Check sortOrder Change ──
+        if (hasChanged(before?.sortOrder, values.sortOrder)) {
+            isSortOrderChanged = true;
+            newSortOrder = values.sortOrder ?? before?.sortOrder;
+        }
 
         // ── Name & Description Diffing & Translation ──
         const textToTranslate: Record<string, { en?: string; pt?: string }> = {};
@@ -83,55 +92,65 @@ const EditMenuSection = ({ menuId, open, onOpenChange, section }: IProps) => {
                 return;
             }
 
-            if (translated.name) payload.name = translated.name;
-            if (translated.description) payload.description = translated.description;
-        }
-
-        // ── sortOrder ──
-        if (hasChanged(before?.sortOrder, values.sortOrder)) {
-            payload.sortOrder = values.sortOrder ?? 0;
+            if (translated.name) mainPayload.name = translated.name;
+            if (translated.description) mainPayload.description = translated.description;
         }
 
         // ── isActive ──
         if (hasChanged(before?.isActive, values.isActive)) {
-            payload.isActive = values.isActive ?? true;
+            mainPayload.isActive = values.isActive ?? true;
         }
 
-        // ── Early return if no changes ──
-        if (Object.keys(payload).length === 0) {
+        // ── Early return if nothing changed at all ──
+        const hasMainPayloadChanges = Object.keys(mainPayload).length > 0;
+
+        if (!hasMainPayloadChanges && !isSortOrderChanged) {
             toast.info("No changes detected", { id: toastId });
             setIsSubmitting(false);
             return;
         }
 
-        // ── Send Payload to API ──
-        const result = await updateMenuSection(payload, section?._id, menuId,);
+        try {
+            // 1. Fire sort order API separately if changed
+            if (isSortOrderChanged) {
+                const sortResult = await updateSectionSortOrder(
+                    { sortOrder: newSortOrder },
+                    section?._id
+                );
+                console.log("hit");
+                if (!sortResult?.success) {
+                    toast.error(sortResult?.message || "Failed to update sort order", { id: toastId });
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
 
-        if (result?.success) {
-            toast.success(
-                result?.message || "Section updated successfully!",
-                { id: toastId }
-            );
+            // 2. Fire main update API if general fields changed
+            if (hasMainPayloadChanges) {
+                console.log("hit 2");
+                const result = await updateMenuSection(mainPayload, section?._id, menuId);
+
+                if (!result?.success) {
+                    if (result?.data?.errorSources) {
+                        result.data.errorSources.forEach(
+                            (err: { path: string; message: string }) => {
+                                toast.error(err?.message, { id: toastId });
+                            }
+                        );
+                    } else {
+                        toast.error(result?.message || "Section update failed", { id: toastId });
+                    }
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+
+            toast.success("Section updated successfully!", { id: toastId });
             form.reset(values);
             onOpenChange(false);
+        } finally {
             setIsSubmitting(false);
-            return;
         }
-
-        if (result?.data?.errorSources) {
-            result.data.errorSources.forEach(
-                (err: { path: string; message: string }) => {
-                    toast.error(err?.message, { id: toastId });
-                }
-            );
-            setIsSubmitting(false);
-            return;
-        }
-
-        toast.error(result?.message || "Section update failed", {
-            id: toastId,
-        });
-        setIsSubmitting(false);
     };
 
     // Reset form when dialog closes

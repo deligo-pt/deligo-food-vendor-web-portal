@@ -79,6 +79,26 @@ export const updateMenu = async (payload: Partial<CreateMenuFormValues>, menuId:
     return result;
 };
 
+// update menu order
+export const updateMenuSortOrder = async (payload: { sortOrder: number }, menuId: string) => {
+    const result = await catchAsync(async () => {
+        const response = await serverFetch.patch(`/menus/${menuId}/reorder`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        return await response.json();
+    });
+
+    if (result.success) {
+        revalidateTag("menus", {});
+    }
+
+    return result;
+};
+
 // soft delete menu
 export const softDeleteMenu = async (id: string) => {
     const result = await catchAsync(async () => {
@@ -110,7 +130,7 @@ export const permanentDeleteMenu = async (id: string) => {
 };
 
 
-// ---> menu apis
+// ---> section apis
 // create section in menu
 export const addMenuSection = async (payload: CreateMenuSectionFormValues, menuId: string) => {
     const result = await catchAsync(async () => {
@@ -168,6 +188,26 @@ export const updateMenuSection = async (payload: Partial<CreateMenuSectionFormVa
     return result;
 };
 
+// update section order
+export const updateSectionSortOrder = async (payload: { sortOrder: number }, sectionId: string) => {
+    const result = await catchAsync(async () => {
+        const response = await serverFetch.patch(`/menus/sections/${sectionId}/reorder`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        return await response.json();
+    });
+
+    if (result.success) {
+        revalidateTag("menu-section", {});
+    }
+
+    return result;
+};
+
 // delete menu section
 export const deleteMenuSection = async (sectionId: string) => {
     const result = await catchAsync(async () => {
@@ -214,6 +254,26 @@ export const addItemToSection = async (payload: AddItemToSectionSchema, sectionI
     if (result.success) {
         revalidateTag("menus", {});
         revalidateTag("menu-section", {});
+    }
+
+    return result;
+};
+
+// update menu order
+export const updateItemSortOrder = async (payload: { sortOrder: number }, sectionId: string, itemId: string) => {
+    const result = await catchAsync(async () => {
+        const response = await serverFetch.patch(`/menus/sections/${sectionId}/items/${itemId}/reorder`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        return await response.json();
+    });
+
+    if (result.success) {
+        revalidateTag("menus", {});
     }
 
     return result;

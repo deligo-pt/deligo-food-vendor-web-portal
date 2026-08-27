@@ -248,13 +248,13 @@ export default function MenuDetails({ menu, sections = [], products = [] }: IMen
                 </button>
 
                 {/* Permanent Delete (Fixed handler target) */}
-                <button
+                {/* <button
                     onClick={() => setIsPermanentDeleteOpen(true)}
                     className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
                 >
                     <Trash2Icon className="w-5 h-5" />
                     <span>{t("permanent_delete")}</span>
-                </button>
+                </button> */}
             </div>
 
             {/* Dialogs and Modals */}
