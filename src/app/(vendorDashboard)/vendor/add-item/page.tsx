@@ -2,34 +2,22 @@ export const dynamic = "force-dynamic";
 
 import { serverRequest } from "@/lib/serverFetch";
 import { ProductForm } from "@/src/components/Dashboard/Products/ProductForm";
+import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
 // import { getAllMenus } from "@/src/services/dashboard/menu/menu.service";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
-import { TProductCategoryResponse } from "@/src/types/category.type";
 import { TTax } from "@/src/types/tax.type";
 import { TVendor } from "@/src/types/vendor.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function AddItemPage() {
-  let productCategoriesData: TProductCategoryResponse[] = [];
+  const productCategoriesData = await getAllProductCategoriesReq();
   let addonGroupsData: TAddonGroup[] = [];
   let taxesData: TTax[] = [];
   const vendorData: TVendor = await getProfileData();
   // const {data} = await getAllMenus();
 
-  try {
-    const result = (await serverRequest.get(
-      "/categories/productCategory",
-    ));
-
-    if (result?.success) {
-      productCategoriesData = result?.data || [];
-    }
-  } catch (err) {
-    console.log("Server fetch error:", err);
-    if (isRedirectError(err)) throw err;
-  }
 
   try {
     const result = (await serverRequest.get("/add-ons")) as TResponse<
@@ -57,11 +45,11 @@ export default async function AddItemPage() {
 
   return (
     <ProductForm
-      productCategories={productCategoriesData}
+      productCategories={productCategoriesData?.data}
       addonGroupsData={addonGroupsData}
       taxesData={taxesData}
       businessTypeSlug={vendorData?.businessDetails?.businessTypeSlug as string}
-      // menus={data}
+    // menus={data}
     />
   );
 }

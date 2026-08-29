@@ -7,7 +7,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TAddonGroup } from "@/src/types/add-ons.type";
-import { TProductCategoryResponse } from "@/src/types/category.type";
+import { TProductCategory } from "@/src/types/category.type";
 import { TTax } from "@/src/types/tax.type";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,7 +50,7 @@ export function ProductForm({
   businessTypeSlug,
   // menus,
 }: {
-  productCategories: TProductCategoryResponse[];
+  productCategories: TProductCategory[];
   addonGroupsData: TAddonGroup[];
   taxesData: TTax[];
   businessTypeSlug: string;
@@ -116,7 +116,6 @@ export function ProductForm({
         pt: ""
       },
       category: "",
-      additionalCategories: [],
       price: 0,
       discountType: "PERCENTAGE",
       discount: 0,
@@ -169,7 +168,6 @@ export function ProductForm({
         name: translated.name,
         description: translated.description,
         category: data.category,
-        additionalCategories: data.additionalCategories,
         images: data.images,
         pricing: {
           price: data.price,
@@ -220,9 +218,17 @@ export function ProductForm({
         return;
       }
 
-      toast.error(result.message || "Product creation failed", {
-        id: toastId,
-      });
+      if (result?.data?.errorSources) {
+        result?.data?.errorSources?.map((err: { path: string, message: string }) => (
+          toast.error(err?.message, { id: toastId })
+        ));
+        return;
+      } else {
+        toast.error(result.message || "Product creation failed", {
+          id: toastId,
+        });
+      }
+
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong", {

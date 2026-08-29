@@ -326,7 +326,7 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
                 <h3 className="text-sm font-semibold text-gray-500">{t("category")}</h3>
                 <p className="mt-1 text-gray-900">{product.category?.name?.[lang]}</p>
               </div>
-              <div>
+              {/* <div>
                 <h3 className="text-sm font-semibold text-gray-500">{t("additional_categories")}</h3>
                 {(product.additionalCategories?.length ?? 0) > 0 ? (
                   product.additionalCategories?.map((c) => (
@@ -337,7 +337,7 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
                 ) : (
                   <p className="mt-1 text-gray-900">N/A</p>
                 )}
-              </div>
+              </div> */}
             </motion.div>
             {/* Variations */}
             {product.variations?.length > 0 && (
