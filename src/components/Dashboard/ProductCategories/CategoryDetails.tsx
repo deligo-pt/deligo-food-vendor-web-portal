@@ -79,7 +79,7 @@ const CategoryDetails = ({ category }: IProps) => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
                                     <span className="text-xs font-semibold text-slate-400 block mb-1">
-                                        English (EN)
+                                        {t("english_en")}
                                     </span>
                                     <span className="text-base font-semibold text-slate-800">
                                         {category.name?.en || "N/A"}
@@ -87,7 +87,7 @@ const CategoryDetails = ({ category }: IProps) => {
                                 </div>
                                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
                                     <span className="text-xs font-semibold text-slate-400 block mb-1">
-                                        Portuguese (PT)
+                                        {t("portugues_pt")}
                                     </span>
                                     <span className="text-base font-semibold text-slate-800">
                                         {category.name?.pt || "N/A"}
@@ -100,7 +100,7 @@ const CategoryDetails = ({ category }: IProps) => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                             <div className="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
                                 <span className="text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1">
-                                    <Hash className="w-3.5 h-3.5" /> Slug
+                                    <Hash className="w-3.5 h-3.5" /> {t("slug")}
                                 </span>
                                 <code className="text-sm font-semibold text-[#DC3173] bg-[#DC3173]/5 px-2 py-0.5 rounded-md">
                                     {category.slug}
@@ -108,7 +108,7 @@ const CategoryDetails = ({ category }: IProps) => {
                             </div>
                             <div className="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
                                 <span className="text-xs font-semibold text-slate-400 block mb-1">
-                                    Object ID
+                                    {t("object_id")}
                                 </span>
                                 <code className="text-xs font-mono text-slate-600 break-all">
                                     {category._id}
@@ -168,7 +168,7 @@ const CategoryDetails = ({ category }: IProps) => {
                         <CardHeader className="border-b bg-slate-50/50 px-6 py-4">
                             <CardTitle className="text-lg font-semibold flex items-center gap-2 text-slate-800">
                                 <Calendar className="w-5 h-5 text-slate-500" />
-                                {t("timestamps") || "Timestamps"}
+                                {t("timestamps") }
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6 space-y-4 text-sm">

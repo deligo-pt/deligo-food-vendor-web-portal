@@ -151,7 +151,7 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                                 <button
                                     onClick={() => router.push(`/vendor/product-categories/${cat._id}`)}
                                     className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-[#DC3173] hover:border-[#DC3173]/30 hover:bg-[#DC3173]/5 transition-all"
-                                    title="View Category"
+                                    title={t("view_category")}
                                 >
                                     <EyeIcon className="w-4 h-4" />
                                 </button>
@@ -160,7 +160,7 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                                 <button
                                     onClick={() => handleOpenEdit(cat)}
                                     className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-[#DC3173] hover:border-[#DC3173]/30 hover:bg-[#DC3173]/5 transition-all"
-                                    title="Edit Category"
+                                    title={t("edit_category")}
                                 >
                                     <Edit3Icon className="w-4 h-4" />
                                 </button>
@@ -170,7 +170,7 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                                     <button
                                         onClick={() => triggerPermanentDelete(cat._id)}
                                         className="p-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all"
-                                        title="Permanent Delete"
+                                        title={t("permanent_delete")}
                                     >
                                         <Trash2Icon className="w-4 h-4" />
                                     </button>
@@ -178,7 +178,7 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                                     <button
                                         onClick={() => triggerSoftDelete(cat._id)}
                                         className="p-2.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition-all"
-                                        title="Soft Delete (Archive)"
+                                        title={t("soft_delete_archive")}
                                     >
                                         <Trash2Icon className="w-4 h-4" />
                                     </button>

@@ -787,6 +787,8 @@ export const en = {
   all_menus: "All Menus",
   all_items: "All Items",
   product_categories: "Product Categories",
+  add_product_categories: "Add Product Categories",
+  all_product_categories: "All Product Categories",
   add_new_item: "Add New Item",
   stock_management: "Stock Management",
   variation_management: "Variation Management",
@@ -1068,7 +1070,31 @@ export const en = {
   updated: "Updated",
   edit_product: "Edit Product",
   delete_product: "Delete Product",
-  // categories page
+  // product categories pages
+  // --> add category
+  add_product_category: "Add Product Category",
+  create_new_product_category: "Create new product category",
+  category_name: "Category Name",
+  category_placeholder: "eg. Fast Foods, Beverage",
+  active_status: "Active Status",
+  // --> edit category
+  edit_product_category: "Edit Product Category",
+  update_category: "Update Category",
+  // ---> details page
+  category_information: "Category Information",
+  english_en: "English (EN)",
+  portugues_pt: "Portuguese (PT)",
+  slug: "Slug",
+  object_id: "Object ID",
+  status_and_visibility: "Status & Visibility",
+  delete_status: "Delete Status",
+  soft_deleted: "Soft Deleted",
+  false: "False",
+  timestamps: "Timestamps",
+  // --> all
+  view_category: "View Category",
+  edit_category: "Edit Category",
+  soft_delete_archive: "Soft Delete (Archive)",
   these_are_platform_managed_categories:
     "These are platform-managed categories. Vendors cannot create or edit categories.",
   platform: "Platform",
