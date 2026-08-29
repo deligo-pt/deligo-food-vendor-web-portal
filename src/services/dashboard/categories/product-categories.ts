@@ -41,6 +41,21 @@ export const getAllProductCategoriesReq = async (query?: string) => {
   return result;
 };
 
+// get single menu
+export const getSingleProductCategory = async (categoryId: string) => {
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.get(`/product-categories/${categoryId}`, {
+      next: {
+        tags: ["product-categories"]
+      }
+    });
+
+    return await response.json();
+  });
+
+  return result;
+};
+
 // update category
 export const updateProductCategory = async (payload: Partial<TProductCategory>, categoryId: string) => {
   const result = await catchAsync(async () => {
@@ -61,7 +76,6 @@ export const updateProductCategory = async (payload: Partial<TProductCategory>, 
 
   return result;
 };
-
 
 // soft delete category
 export const softDeleteProductCategory = async (id: string) => {
