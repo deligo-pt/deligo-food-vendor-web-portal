@@ -23,7 +23,7 @@ import { getAllTaxesReq } from "@/src/services/dashboard/taxes/taxes";
 import { useStore } from "@/src/store/store";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
-import { TProductCategoryResponse } from "@/src/types/category.type";
+import { TProductCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 import { TTax } from "@/src/types/tax.type";
 import { catchAsync } from "@/src/utils/catchAsync";
@@ -113,7 +113,7 @@ export function EditProductForm({
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
   });
-  const [productCategoriesData, setProductCategoriesData] = useState<TProductCategoryResponse[]>([]);
+  const [productCategoriesData, setProductCategoriesData] = useState<TProductCategory[]>([]);
   const [taxesData, setTaxesData] = useState<TTax[]>([]);
 
   const form = useForm<FormData>({
@@ -123,10 +123,6 @@ export function EditProductForm({
       images: prevData?.images || [],
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
-      additionalCategories:
-        prevData?.additionalCategories?.map(
-          (cat: any) => cat._id || cat.id
-        ) || [],
       price: prevData?.pricing?.price || 0,
       discountType: prevData?.pricing?.discountType ?? "",
       discount: prevData?.pricing?.discount ?? 0,
@@ -216,14 +212,6 @@ export function EditProductForm({
     // category
     if (hasChanged(data.category, prevData?.category?._id || "")) {
       productData.category = data.category;
-    }
-
-    // additionalCategories
-    const prevAdditionalCategoryIds =
-      prevData?.additionalCategories?.map((cat: any) => cat._id || cat.id) || [];
-
-    if (hasChanged(data.additionalCategories, prevAdditionalCategoryIds)) {
-      productData.additionalCategories = data.additionalCategories;
     }
 
     // addonGroups
@@ -366,11 +354,9 @@ export function EditProductForm({
     }
   };
 
-  const getProductCategories = async ({ limit = 10 }) => {
-    const result = await catchAsync<TProductCategoryResponse[]>(async () => {
-      return (await getAllProductCategoriesReq({
-        limit,
-      })) as unknown as TResponse<TProductCategoryResponse[]>;
+  const getProductCategories = async () => {
+    const result = await catchAsync<TProductCategory[]>(async () => {
+      return (await getAllProductCategoriesReq()) as unknown as TResponse<TProductCategory[]>;
     });
 
     if (result.success) {
@@ -390,7 +376,7 @@ export function EditProductForm({
 
   useEffect(() => {
     (() => getAddonsGroups({ limit: 10 }))();
-    (() => getProductCategories({ limit: 10 }))();
+    (() => getProductCategories())();
     (() => getTaxes({ limit: 10 }))();
   }, []);
 

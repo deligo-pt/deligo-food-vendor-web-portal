@@ -802,6 +802,8 @@ export const pt = {
   all_menus: "Todos os Menus",
   all_items: "Todos os Itens",
   product_categories: "Categorias de Produtos",
+  add_product_categories: "Adicionar Categorias de Produtos",
+  all_product_categories: "Todas as Categorias de Produtos",
   add_new_item: "Adicionar Novo Item",
   stock_management: "Gestão de Stock",
   variation_management: "Gerenciamento de Variações",
@@ -1101,8 +1103,31 @@ export const pt = {
   updated: "Atualizado",
   edit_product: "Editar Produto",
   delete_product: "Excluir Produto",
-
-  // categories page
+  // product categories pages
+  // --> add category
+  add_product_category: "Adicionar Categoria de Produto",
+  create_new_product_category: "Criar nova categoria de produto",
+  category_name: "Nome da Categoria",
+  category_placeholder: "ex.: Fast Food, Bebidas",
+  active_status: "Estado Ativo",
+  // --> edit category
+  edit_product_category: "Editar Categoria de Produto",
+  update_category: "Atualizar Categoria",
+  // ---> details page
+  category_information: "Informações da Categoria",
+  english_en: "Inglês (EN)",
+  portugues_pt: "Português (PT)",
+  slug: "Slug",
+  object_id: "ID do Objeto",
+  status_and_visibility: "Estado e Visibilidade",
+  delete_status: "Estado de Eliminação",
+  soft_deleted: "Eliminado Temporariamente",
+  false: "Falso",
+  timestamps: "Marcas de Tempo",
+  // ---> all
+  view_category: "Ver Categoria",
+  edit_category: "Editar Categoria",
+  soft_delete_archive: "Eliminar Temporariamente (Arquivar)",
   these_are_platform_managed_categories:
     "Estas são categorias geridas pela plataforma. Os vendedores não podem criar ou editar categorias.",
   platform: "Plataforma",
