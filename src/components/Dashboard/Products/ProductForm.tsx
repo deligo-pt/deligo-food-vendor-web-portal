@@ -17,7 +17,6 @@ import {
   ChevronRightIcon,
   ImageIcon,
   LayersIcon,
-  Menu,
   PackageIcon,
   SaveIcon,
   StarIcon,
@@ -41,9 +40,6 @@ import { TResponse } from "@/src/types";
 import { useStore } from "@/src/store/store";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { useRouter } from "next/navigation";
-import TargetProductMenu from "./TargetProductMenu";
-import { IMenu } from "@/src/types/menu.type";
-import { addItemToSection } from "@/src/services/dashboard/menu/menu.service";
 
 type FormData = z.infer<typeof productValidation>;
 
@@ -52,19 +48,19 @@ export function ProductForm({
   addonGroupsData,
   taxesData,
   businessTypeSlug,
-  menus,
+  // menus,
 }: {
   productCategories: TProductCategoryResponse[];
   addonGroupsData: TAddonGroup[];
   taxesData: TTax[];
   businessTypeSlug: string;
-  menus: IMenu[];
+  // menus: IMenu[];
 }) {
   const { lang } = useStore();
   const { t } = useTranslation();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
-  const [selectedSectionId, setSelectedSectionId] = useState("");
+  // const [selectedSectionId, setSelectedSectionId] = useState("");
 
   const tabs = useMemo(() => {
     const baseTabs = [
@@ -72,10 +68,10 @@ export function ProductForm({
         name: t("basic_info"),
         icon: <PackageIcon className="h-5 w-5" />,
       },
-      {
-        name: t("select_target_menu"),
-        icon: <Menu className="h-5 w-5" />,
-      },
+      // {
+      //   name: t("select_target_menu"),
+      //   icon: <Menu className="h-5 w-5" />,
+      // },
       {
         name: t("images"),
         icon: <ImageIcon className="h-5 w-5" />,
@@ -156,10 +152,10 @@ export function ProductForm({
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Translating and Creating product...");
-    if (!selectedSectionId) {
-      toast.error("Please select a menu", { id: toastId });
-      return;
-    };
+    // if (!selectedSectionId) {
+    //   toast.error("Please select a menu", { id: toastId });
+    //   return;
+    // };
 
     try {
       const translated = await translateObject(data, lang);
@@ -207,12 +203,12 @@ export function ProductForm({
       });
 
       if (result.success) {
-        const payload = {
-          productId: result?.data?._id as string,
-          sortOrder: 0,
-          isAvailable: true
-        };
-        await addItemToSection(payload, selectedSectionId);
+        // const payload = {
+        //   productId: result?.data?._id as string,
+        //   sortOrder: 0,
+        //   isAvailable: true
+        // };
+        // await addItemToSection(payload, selectedSectionId);
 
         toast.success(result.message || "Product created successfully!", {
           id: toastId,
@@ -340,20 +336,20 @@ export function ProductForm({
                     selectedLanguage={lang}
                   />
                 )}
-                {activeTab === 1 && (
+                {/* {activeTab === 1 && (
                   <TargetProductMenu
                     menus={menus}
                     selectedSectionId={selectedSectionId}
                     setSelectedSectionId={setSelectedSectionId}
                   />
-                )}
-                {activeTab === 2 && (
+                )} */}
+                {activeTab === 1 && (
                   <ImageAndDescriptionForm
                     form={form}
                     selectedLanguage={lang}
                   />
                 )}
-                {activeTab === 3 && (
+                {activeTab === 2 && (
                   <AddOnsAndVariants
                     form={form}
                     addonGroupsData={addonGroupsData}
@@ -363,7 +359,7 @@ export function ProductForm({
                     selectedLanguage={lang}
                   />
                 )}
-                {activeTab === 4 && (
+                {activeTab === 3 && (
                   <PricingForm
                     form={form}
                     taxesData={taxesData}
@@ -374,7 +370,7 @@ export function ProductForm({
                     watchDiscountType={watchDiscountType}
                   />
                 )}
-                {businessTypeSlug !== "restaurant" && activeTab === 5 && (
+                {businessTypeSlug !== "restaurant" && activeTab === 4 && (
                   <StockInformationForm
                     form={form}
                     watchVariations={watchVariations}
