@@ -1,3 +1,5 @@
+import { TMeta } from ".";
+
 export type TBusinessCategory = {
   _id: string;
   name: string;
@@ -14,13 +16,10 @@ export type TBusinessCategory = {
 export type TProductCategory = {
   _id: string;
   name: {
-    en: string;
-    pt: string;
+    en?: string;
+    pt?: string;
   };
   slug: string;
-  description?: string;
-  image?: string;
-  businessCategoryId: string;
   isActive: boolean;
   isDeleted: boolean;
   createdAt?: Date;
@@ -28,14 +27,8 @@ export type TProductCategory = {
 };
 
 export type TProductCategoryResponse = {
-  _id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  businessCategoryId: string;
-  isActive: boolean;
-  isDeleted: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  data: TProductCategory[];
+  meta?: TMeta;
+  success?: boolean;
+  message?: string;
 };

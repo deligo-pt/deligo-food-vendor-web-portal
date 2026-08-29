@@ -366,11 +366,9 @@ export function EditProductForm({
     }
   };
 
-  const getProductCategories = async ({ limit = 10 }) => {
+  const getProductCategories = async () => {
     const result = await catchAsync<TProductCategoryResponse[]>(async () => {
-      return (await getAllProductCategoriesReq({
-        limit,
-      })) as unknown as TResponse<TProductCategoryResponse[]>;
+      return (await getAllProductCategoriesReq()) as unknown as TResponse<TProductCategoryResponse[]>;
     });
 
     if (result.success) {
@@ -390,7 +388,7 @@ export function EditProductForm({
 
   useEffect(() => {
     (() => getAddonsGroups({ limit: 10 }))();
-    (() => getProductCategories({ limit: 10 }))();
+    (() => getProductCategories())();
     (() => getTaxes({ limit: 10 }))();
   }, []);
 

@@ -10,6 +10,7 @@ import {
   MessageCircle,
   Settings,
   ShoppingBag,
+  SquareChartGantt,
   SquaresSubtract,
   Star,
 } from "lucide-react";
@@ -52,6 +53,21 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       ],
     },
     {
+      id: "product-categories",
+      title: t("product_categories"),
+      icon: <SquareChartGantt size={18} />,
+      items: [
+        {
+          name: t("add_product_categories"),
+          path: "/vendor/product-categories/add",
+        },
+        {
+          name: t("all_product_categories"),
+          path: "/vendor/product-categories/all",
+        },
+      ],
+    },
+    {
       id: "menu",
       title: t("menu_items"),
       icon: <Layers size={18} />,
@@ -60,7 +76,6 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
         // { name: t("all_menus"), path: "/vendor/menu/all" },
         { name: t("add_new_item"), path: "/vendor/add-item" },
         { name: t("all_items"), path: "/vendor/all-items" },
-        { name: t("product_categories"), path: "/vendor/categories" },
         ...(businessType === "store"
           ? [{ name: t("stock_management"), path: "/vendor/stock" }]
           : []),
