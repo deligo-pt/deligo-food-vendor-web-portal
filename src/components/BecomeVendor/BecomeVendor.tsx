@@ -84,7 +84,7 @@ export default function BecomeVendor() {
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full max-w-3xl mb-10"
+        className="w-full max-w-5xl mb-10"
       >
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-[#DC3173]">
