@@ -2103,8 +2103,14 @@ export const en = {
   last_login: "Last Login",
   account_created: "Account Created",
   two_factor_auth: "Two-Factor Auth",
-
-
+  signed: "Signed",
+  party_signed: "Party Signed",
+  agreement_history: "Agreement History",
+  no_agreements_found: "No agreements found.",
+  signed_at: "Party Signed At",
+  deligo_signed_at: "Deligo Signed At",
+  view_draft: "Draft PDF",
+  signed_pdf: "Signed Document",
 
   // all sos alerts
   all_sos_alerts: "All SOS Alerts",

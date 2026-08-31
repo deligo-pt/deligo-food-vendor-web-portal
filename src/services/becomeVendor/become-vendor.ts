@@ -90,3 +90,19 @@ export const getSingleAgreement = async (id: string) => {
 
   return result;
 };
+
+// get vendor agreement history
+export const getAgreementHistory = async (vendorId: string, query?: string) => {
+  console.log("vendorId", vendorId);
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.get(`/agreements/party/${vendorId}${query ? `?${query}` : ""}`, {
+      next: {
+        tags: ["agreements"]
+      }
+    });
+
+    return await response.json();
+  });
+
+  return result;
+};

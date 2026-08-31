@@ -2165,6 +2165,14 @@ export const pt = {
   last_login: "Último Acesso",
   account_created: "Conta Criada em",
   two_factor_auth: "Autenticação de Dois Fatores",
+  signed: "Assinado",
+  party_signed: "Assinado pela Parte",
+  agreement_history: "Histórico de Acordos",
+  no_agreements_found: "Nenhum acordo encontrado.",
+  signed_at: "Assinado pela Parte Em",
+  deligo_signed_at: "Assinado pela Deligo Em",
+  view_draft: "Rascunho em PDF",
+  signed_pdf: "Documento Assinado",
 
   // all sos alerts
   all_sos_alerts: "Todos os Alertas de SOS",
