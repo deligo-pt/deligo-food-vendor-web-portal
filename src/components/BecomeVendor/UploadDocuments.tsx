@@ -462,6 +462,22 @@ export default function UploadDocuments({
     setIsSubmitting(false);
   };
 
+  const handleNextStep = async () => {
+    const optionalDefaults: DocKey[] = [
+      "myPhoto",
+      // "storePhoto",
+      "menuUpload",
+    ];
+
+    for (const key of optionalDefaults) {
+      if (!previews[key] || previews[key]!.length === 0) {
+        await uploadDefaultDocument(key);
+      }
+    };
+
+    router.push("/become-vendor/create-agreement");
+  }
+
   function getActualFileName(url: string): string {
     try {
       const decoded = decodeURIComponent(url);
@@ -637,7 +653,7 @@ export default function UploadDocuments({
             <div className="pt-6">
               <div className="text-sm text-gray-500">{t("tipDesc")}.</div>
             </div>
-            <div className="pt-4">
+            {isSubVendor ? <div className="pt-4">
               <Button
                 disabled={!isFormValid || isSubmitting}
                 onClick={handleContinue}
@@ -648,7 +664,16 @@ export default function UploadDocuments({
               >
                 {t("completeRegistrationCTA")}
               </Button>
-            </div>
+            </div> : <Button
+              disabled={!isFormValid}
+              onClick={handleNextStep}
+              className={`bg-[#DC3173] hover:bg-[#b72a63] text-white px-6 py-3 rounded-xl shadow-lg ${isFormValid
+                ? "bg-[#DC3173] text-white hover:bg-[#c21c5e]"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+            >
+              {t("saveContinue")}
+            </Button>}
           </CardContent>
         </Card>
       </div>
