@@ -9,6 +9,12 @@ export const businessDetailsValidation = (isSubVendor = false) =>
         .max(50, "Business name must be at most 50 characters long")
         .nonempty("Business name is required"),
 
+      companyLegalName: z
+        .string()
+        .min(2, "Company legal name must be at least 2 characters long")
+        .max(50, "Company legal name must be at most 50 characters long")
+        .nonempty("Company legal name is required"),
+
       businessType: z
         .string()
         .min(2, "Business type must be at least 2 characters long")

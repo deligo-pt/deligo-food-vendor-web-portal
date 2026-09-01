@@ -3,6 +3,7 @@
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -79,6 +80,7 @@ export default function BusinessDetailsForm({
     resolver: zodResolver(businessDetailsValidation(isSubVendor)),
     defaultValues: {
       businessName: vendor?.businessDetails?.businessName || "",
+      companyLegalName: vendor?.businessDetails?.companyLegalName || "",
       businessType: vendor?.businessDetails?.businessTypeSlug || "",
       restaurantCuisineType: vendor?.businessDetails?.restaurantCuisineType || [],
       NIF: vendor?.businessDetails?.NIF || "",
@@ -130,7 +132,7 @@ export default function BusinessDetailsForm({
         },
       };
     }
-
+    console.log("b.payload", businessDetailsPayload);
     const result = await updateVendorReq(vendor?.userId, businessDetailsPayload);
 
     if (result && result?.success) {
@@ -214,6 +216,34 @@ export default function BusinessDetailsForm({
                               {...field}
                             />
                           </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Business Name */}
+                  <FormField
+                    control={form.control}
+                    name="companyLegalName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
+                          {t("company_legal_name")}{" "} <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="relative">
+                          <Building2 className="absolute left-3 top-3.5 text-[#DC3173]" />
+                          <FormControl>
+                            <Input
+                              placeholder={t("company_legal_name")}
+                              className="pl-10 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
+                              disabled={!!isSubVendor}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {t("company_legal_name_description")}
+                          </FormDescription>
                         </div>
                         <FormMessage />
                       </FormItem>
