@@ -651,6 +651,8 @@ export const pt = {
   basicInformation: "🏢 Informação Básica",
   branchInformation: "📍 Informação da Sucursal",
   businessName: "Nome da Empresa",
+  company_legal_name: "Nome Legal da Empresa",
+  company_legal_name_description: "O Nome Legal da Empresa e o Nome Comercial/Marca podem ser iguais",
   businessType: "Tipo de Empresa",
   select_business_type: "Selecione o Tipo de Negócio",
   restaurantCuisineType: "Tipo de Cozinha do Restaurante",

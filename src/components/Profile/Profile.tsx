@@ -22,6 +22,7 @@ import {
   FileTextIcon,
   GlobeIcon,
   HashIcon,
+  HelpCircleIcon,
   MailIcon,
   MapIcon,
   MapPinIcon,
@@ -222,6 +223,11 @@ export default function Profile({ vendor, agreementsData }: IProps) {
                 label={t("business_name")}
                 value={vendor.businessDetails?.businessName}
                 icon={BriefcaseIcon}
+              />
+              <ProfileInfoRow
+                label={t("company_legal_name")}
+                value={vendor.businessDetails?.companyLegalName}
+                icon={HelpCircleIcon}
               />
               <ProfileInfoRow
                 label={t("business_type")}

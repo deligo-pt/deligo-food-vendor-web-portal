@@ -46,6 +46,7 @@ export type TVendor = {
   // Business Details
   businessDetails?: {
     businessName: string;
+    companyLegalName?: string;
     businessType: string;
     branchName?: string;
     isHalal?: boolean;

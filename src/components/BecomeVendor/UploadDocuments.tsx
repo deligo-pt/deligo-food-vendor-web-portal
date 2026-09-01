@@ -63,39 +63,35 @@ export default function UploadDocuments({
   savedPreviews: Record<DocKey, FilePreview[] | null>;
   vendor: TVendor | null;
 }) {
+
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // store one preview per doc key
-  const [previews, setPreviews] = useState<
-    Record<DocKey, FilePreview[] | null>
-  >({
-    myPhoto: Array.isArray(savedPreviews.myPhoto)
-      ? savedPreviews.myPhoto
-      : null,
-    businessLicenseDoc: Array.isArray(savedPreviews.businessLicenseDoc)
-      ? savedPreviews.businessLicenseDoc
-      : null,
-    taxDoc: Array.isArray(savedPreviews.taxDoc) ? savedPreviews.taxDoc : null,
-    idProofFront: Array.isArray(savedPreviews.idProofFront)
-      ? savedPreviews.idProofFront
-      : null,
-    idProofBack: Array.isArray(savedPreviews.idProofBack)
-      ? savedPreviews.idProofBack
-      : null,
-    storePhoto: Array.isArray(savedPreviews.storePhoto)
-      ? savedPreviews.storePhoto
-      : null,
-    menuUpload: Array.isArray(savedPreviews.menuUpload)
-      ? savedPreviews.menuUpload
-      : null,
-    agoserisHaccpCertificate: Array.isArray(savedPreviews.agoserisHaccpCertificate)
-      ? savedPreviews.agoserisHaccpCertificate
-      : null,
-    ibanProof: Array.isArray(savedPreviews.ibanProof)
-      ? savedPreviews.ibanProof
-      : null,
-  });
 
+  // Helper function to safely format incoming previews
+  const parseSavedPreviews = (
+    data: Record<DocKey, FilePreview[] | null>
+  ): Record<DocKey, FilePreview[] | null> => {
+    const keys: DocKey[] = [...REQUIRED_DOCS, ...OPTIONAL_DOCS];
+    const initial: Partial<Record<DocKey, FilePreview[] | null>> = {};
+
+    keys.forEach((key) => {
+      initial[key] = Array.isArray(data?.[key]) ? data[key] : null;
+    });
+
+    return initial as Record<DocKey, FilePreview[] | null>;
+  };
+
+  // Initial State
+  const [previews, setPreviews] = useState<Record<DocKey, FilePreview[] | null>>(
+    () => parseSavedPreviews(savedPreviews)
+  );
+
+  // Sync state when savedPreviews updates asynchronously
+  useEffect(() => {
+    if (savedPreviews) {
+      setPreviews(parseSavedPreviews(savedPreviews));
+    }
+  }, [savedPreviews]);
   // file input refs to trigger the browser picker
   const inputsRef = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -463,6 +459,9 @@ export default function UploadDocuments({
   };
 
   const handleNextStep = async () => {
+    const toastId = toast.loading("Processing....");
+    setIsSubmitting(true);
+
     const optionalDefaults: DocKey[] = [
       "myPhoto",
       // "storePhoto",
@@ -475,7 +474,11 @@ export default function UploadDocuments({
       }
     };
 
-    router.push("/become-vendor/create-agreement");
+    setTimeout(() => {
+      toast.success("Documents uploaded successfully", { id: toastId });
+      router.push("/become-vendor/create-agreement");
+      setIsSubmitting(false);
+    }, 2000);
   }
 
   function getActualFileName(url: string): string {
@@ -523,6 +526,7 @@ export default function UploadDocuments({
               {visibleDocuments?.map((d, idx) => {
                 const preview = previews[d.key];
                 const isSelected = !(!preview || preview?.length === 0);
+                // console.log("preview", preview);
                 return (
                   <motion.div
                     key={d.key}
@@ -665,7 +669,7 @@ export default function UploadDocuments({
                 {t("completeRegistrationCTA")}
               </Button>
             </div> : <Button
-              disabled={!isFormValid}
+              disabled={!isFormValid || isSubmitting}
               onClick={handleNextStep}
               className={`bg-[#DC3173] hover:bg-[#b72a63] text-white px-6 py-3 rounded-xl shadow-lg ${isFormValid
                 ? "bg-[#DC3173] text-white hover:bg-[#c21c5e]"
