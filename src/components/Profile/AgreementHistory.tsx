@@ -107,7 +107,7 @@ export default function AgreementHistory({ agreementsData }: IAgreementsProps) {
                                     <span className="text-gray-400 block">{t("payment_option") || "Payment Option"}:</span>
                                     <span className="font-medium text-gray-800 flex items-center gap-1 mt-0.5">
                                         <CreditCardIcon className="w-3 h-3 text-[#DC3173]" />
-                                        {item.posPaymentOption.replace("_", " ")}
+                                        {item.posPaymentOption === "MONTHLY_RENTAL" ? "Monthly" : "Three Installments"}
                                     </span>
                                 </div>
                                 {item.signedAt && (
