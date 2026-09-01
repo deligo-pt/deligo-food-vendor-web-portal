@@ -196,7 +196,7 @@ export default function BusinessDetailsForm({
                   {t("basicInformation")}
                 </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
                   {/* Business Name */}
                   <FormField
                     control={form.control}
@@ -241,10 +241,10 @@ export default function BusinessDetailsForm({
                               {...field}
                             />
                           </FormControl>
-                          <FormDescription>
-                            {t("company_legal_name_description")}
-                          </FormDescription>
                         </div>
+                        <FormDescription>
+                          {t("company_legal_name_description")}
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
