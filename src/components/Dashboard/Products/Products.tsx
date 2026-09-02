@@ -8,18 +8,24 @@ import PaginationComponent from "@/src/components/Filtering/PaginationComponent"
 import { useTranslation } from "@/src/hooks/use-translation";
 import { deleteProductReq } from "@/src/services/dashboard/products/products";
 import { TMeta } from "@/src/types";
+import { TProductCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
   businessTypeSlug: string;
+  productCategories: TProductCategory[];
 }
 
-export default function Products({ productsData, businessTypeSlug }: IProps) {
+export default function Products({
+  productsData,
+  businessTypeSlug,
+  productCategories,
+}: IProps) {
   const { t } = useTranslation();
   const [products, setProducts] = useState(productsData.data);
   const [selectedProduct, setSelectedProduct] = useState<{
@@ -46,21 +52,52 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
       placeholder: "Select a status",
       type: "select",
       items: [
-        {
-          label: t("in_stock"),
-          value: t("in_stock"),
-        },
-        {
-          label: t("out_of_stock"),
-          value: t("out_of_stock"),
-        },
-        {
-          label: t("limited"),
-          value: t("limited"),
-        },
+        { label: t("in_stock"), value: t("in_stock") },
+        { label: t("out_of_stock"), value: t("out_of_stock") },
+        { label: t("limited"), value: t("limited") },
       ],
     },
   ];
+
+  // Group products by category
+  const groupedProducts = useMemo(() => {
+    const groups: Record<
+      string,
+      {
+        category: TProductCategory | null;
+        products: TProduct[];
+      }
+    > = {};
+
+    // First create groups for all known categories (to keep order)
+    productCategories.forEach((cat) => {
+      groups[cat._id] = {
+        category: cat,
+        products: [],
+      };
+    });
+
+    // Add products into their category groups
+    products.forEach((product) => {
+      const categoryId = product.category?._id;
+
+      if (categoryId && groups[categoryId]) {
+        groups[categoryId].products.push(product);
+      } else {
+        // Products without category or unknown category
+        if (!groups["uncategorized"]) {
+          groups["uncategorized"] = {
+            category: null,
+            products: [],
+          };
+        }
+        groups["uncategorized"].products.push(product);
+      }
+    });
+
+    // Return only groups that have products
+    return Object.values(groups).filter((group) => group.products.length > 0);
+  }, [products, productCategories]);
 
   const openDeleteDialog = (id: string) => {
     setSelectedProduct({ id, action: "delete" });
@@ -77,13 +114,11 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
 
       if (result.success) {
         setProducts((prev) =>
-          prev.filter((product) => product.productId !== selectedProduct.id),
+          prev.filter((product) => product.productId !== selectedProduct.id)
         );
 
         toast.success("Product deleted successfully", { id: toastId });
-
         setSelectedProduct({ id: null, action: null });
-
         return;
       }
 
@@ -94,10 +129,17 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
 
   useEffect(() => {
     setProducts(productsData.data);
-  }, [productsData])
+  }, [productsData]);
+
+  // Helper to get category name
+  const getCategoryName = (category: TProductCategory | null) => {
+    if (!category) return t("uncategorized") || "Uncategorized";
+    return category.name?.en || category.name?.pt || "Unnamed";
+  };
 
   return (
     <div className="w-full">
+      {/* Header */}
       <div className="bg-linear-to-r from-[#DC3173] to-[#FF6CAB] p-6 rounded-lg mb-6 shadow-lg">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
@@ -117,6 +159,7 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
         {...(businessTypeSlug !== "restaurant" ? { filterOptions } : {})}
       />
 
+      {/* Showing count */}
       {productsData.data?.length > 0 && (
         <div className="flex justify-between items-center mb-4">
           <p className="text-sm text-gray-500">
@@ -127,41 +170,53 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
             -{" "}
             {Math.min(
               (productsData.meta?.page || 1) * (productsData.meta?.limit || 10),
-              productsData.meta?.total || 0,
+              productsData.meta?.total || 0
             )}{" "}
             {t("of")} {productsData.meta?.total || 0} {t("items")}
           </p>
         </div>
       )}
 
-      {products?.length > 0 ? (
-        <motion.div
-          layout
-          className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
-          key={
-            (productsData?.meta?.limit || 10) + (productsData?.meta?.page || 1)
-          }
-        >
-          <AnimatePresence mode="popLayout">
-            {products?.map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                onDelete={openDeleteDialog}
-                onEdit={onEditClick}
-                t={t}
-              />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+      {/* Grouped by Category */}
+      {groupedProducts.length > 0 ? (
+        <div className="space-y-10">
+          {groupedProducts.map((group) => (
+            <div key={group.category?._id || "uncategorized"}>
+              {/* Category Title */}
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide">
+                  {getCategoryName(group.category)}
+                </h2>
+                <span className="text-sm text-gray-500">
+                  {group.products.length}{" "}
+                  {group.products.length === 1 ? t("item") || "item" : t("items") || "items"}
+                </span>
+              </div>
+
+              {/* Products of this category */}
+              <motion.div
+                layout
+                className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
+              >
+                <AnimatePresence mode="popLayout">
+                  {group.products.map((product) => (
+                    <ProductCard
+                      key={product._id}
+                      product={product}
+                      onDelete={openDeleteDialog}
+                      onEdit={onEditClick}
+                      t={t}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+          ))}
+        </div>
       ) : (
         <motion.div
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           className="flex flex-col items-center justify-center py-12 text-center"
         >
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -174,6 +229,7 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
         </motion.div>
       )}
 
+      {/* Pagination */}
       {!!productsData?.meta?.total && productsData?.meta?.total > 0 && (
         <div className="pb-4 my-3">
           <PaginationComponent
@@ -182,6 +238,7 @@ export default function Products({ productsData, businessTypeSlug }: IProps) {
         </div>
       )}
 
+      {/* Dialogs */}
       <DeleteProductDialog
         open={!!selectedProduct.id && selectedProduct.action === "delete"}
         onOpenChange={() =>

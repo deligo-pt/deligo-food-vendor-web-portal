@@ -1,5 +1,6 @@
 import { serverRequest } from "@/lib/serverFetch";
 import Products from "@/src/components/Dashboard/Products/Products";
+import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TMeta } from "@/src/types";
 import { TProduct, TProductsQueryParams } from "@/src/types/product.type";
@@ -22,6 +23,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
   let vendorData: TVendor | null = null;
   const productsData: { data: TProduct[]; meta?: TMeta } = { data: [] };
   const taxesData: { data: TTax[]; meta?: TMeta } = { data: [] };
+  const { data } = await getAllProductCategoriesReq();
 
   try {
     vendorData = await getProfileData();
@@ -67,6 +69,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
     <Products
       productsData={productsData}
       businessTypeSlug={vendorData?.businessDetails?.businessTypeSlug as string}
+      productCategories={data}
     />
   );
 }
