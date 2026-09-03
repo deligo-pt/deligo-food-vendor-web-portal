@@ -202,7 +202,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
     try {
       setIsLoadingProducts(true);
 
-      const result = await getAllProductsReq({ limit });
+      const result = await getAllProductsReq(limit);
 
       if (result.success) {
         setItemsResult({

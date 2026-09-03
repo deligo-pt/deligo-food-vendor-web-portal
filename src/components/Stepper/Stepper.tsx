@@ -8,6 +8,8 @@ import {
   CreditCard,
   FileText,
   CheckCircle2,
+  PenBoxIcon,
+  FormInputIcon,
 } from "lucide-react";
 
 export default function StepperFlow() {
@@ -40,6 +42,18 @@ export default function StepperFlow() {
     },
     {
       id: 5,
+      title: t("agreement"),
+      subtitle: t("vendor_agreement"),
+      icon: <PenBoxIcon className="w-5 h-5" />,
+    },
+    {
+      id: 6,
+      title: t("agreement_sign"),
+      subtitle: t("agreement_details"),
+      icon: <FormInputIcon className="w-5 h-5" />,
+    },
+    {
+      id: 7,
       title: t("processTitle5"),
       subtitle: t("processSubTitle5"),
       icon: <CheckCircle2 className="w-5 h-5" />,
@@ -69,7 +83,7 @@ export default function StepperFlow() {
           {/* Line */}
           <div className="absolute top-1/2 left-0 right-0 h-[3px] -translate-y-1/2 bg-linear-to-r from-[#DC3173]/70 to-[#a72b5c]/70 rounded-full" />
 
-          <ol className="relative flex justify-between items-center flex-wrap gap-y-8">
+          <ol className="relative flex justify-between items-center gap-y-8">
             {steps.map((s, i) => (
               <motion.li
                 key={s.id}

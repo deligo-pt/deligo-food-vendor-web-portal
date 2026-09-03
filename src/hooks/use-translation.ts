@@ -38,5 +38,5 @@ export const useTranslation = () => {
         changeLanguage: (newLang: Language) => setLang(newLang),
     }
 
-    return { t, i18n }
+    return { t, i18n, lang };
 }

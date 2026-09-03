@@ -7,7 +7,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TAddonGroup } from "@/src/types/add-ons.type";
-import { TProductCategoryResponse } from "@/src/types/category.type";
+import { TProductCategory } from "@/src/types/category.type";
 import { TTax } from "@/src/types/tax.type";
 import { productValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,16 +48,19 @@ export function ProductForm({
   addonGroupsData,
   taxesData,
   businessTypeSlug,
+  // menus,
 }: {
-  productCategories: TProductCategoryResponse[];
+  productCategories: TProductCategory[];
   addonGroupsData: TAddonGroup[];
   taxesData: TTax[];
   businessTypeSlug: string;
+  // menus: IMenu[];
 }) {
   const { lang } = useStore();
   const { t } = useTranslation();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
+  // const [selectedSectionId, setSelectedSectionId] = useState("");
 
   const tabs = useMemo(() => {
     const baseTabs = [
@@ -65,6 +68,10 @@ export function ProductForm({
         name: t("basic_info"),
         icon: <PackageIcon className="h-5 w-5" />,
       },
+      // {
+      //   name: t("select_target_menu"),
+      //   icon: <Menu className="h-5 w-5" />,
+      // },
       {
         name: t("images"),
         icon: <ImageIcon className="h-5 w-5" />,
@@ -109,7 +116,6 @@ export function ProductForm({
         pt: ""
       },
       category: "",
-      additionalCategories: [],
       price: 0,
       discountType: "PERCENTAGE",
       discount: 0,
@@ -145,6 +151,10 @@ export function ProductForm({
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Translating and Creating product...");
+    // if (!selectedSectionId) {
+    //   toast.error("Please select a menu", { id: toastId });
+    //   return;
+    // };
 
     try {
       const translated = await translateObject(data, lang);
@@ -158,7 +168,6 @@ export function ProductForm({
         name: translated.name,
         description: translated.description,
         category: data.category,
-        additionalCategories: data.additionalCategories,
         images: data.images,
         pricing: {
           price: data.price,
@@ -192,10 +201,16 @@ export function ProductForm({
       });
 
       if (result.success) {
+        // const payload = {
+        //   productId: result?.data?._id as string,
+        //   sortOrder: 0,
+        //   isAvailable: true
+        // };
+        // await addItemToSection(payload, selectedSectionId);
+
         toast.success(result.message || "Product created successfully!", {
           id: toastId,
         });
-
         form.reset();
         setTabError({});
         setActiveTab(0);
@@ -203,9 +218,17 @@ export function ProductForm({
         return;
       }
 
-      toast.error(result.message || "Product creation failed", {
-        id: toastId,
-      });
+      if (result?.data?.errorSources) {
+        result?.data?.errorSources?.map((err: { path: string, message: string }) => (
+          toast.error(err?.message, { id: toastId })
+        ));
+        return;
+      } else {
+        toast.error(result.message || "Product creation failed", {
+          id: toastId,
+        });
+      }
+
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong", {
@@ -319,6 +342,13 @@ export function ProductForm({
                     selectedLanguage={lang}
                   />
                 )}
+                {/* {activeTab === 1 && (
+                  <TargetProductMenu
+                    menus={menus}
+                    selectedSectionId={selectedSectionId}
+                    setSelectedSectionId={setSelectedSectionId}
+                  />
+                )} */}
                 {activeTab === 1 && (
                   <ImageAndDescriptionForm
                     form={form}

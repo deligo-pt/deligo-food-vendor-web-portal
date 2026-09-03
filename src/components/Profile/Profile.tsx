@@ -22,6 +22,7 @@ import {
   FileTextIcon,
   GlobeIcon,
   HashIcon,
+  HelpCircleIcon,
   MailIcon,
   MapIcon,
   MapPinIcon,
@@ -32,8 +33,15 @@ import {
   StarIcon,
   UserIcon,
 } from "lucide-react";
+import AgreementHistory from "./AgreementHistory";
+import { IAgreementsResponse } from "@/src/types/agreement.type";
 
-export default function Profile({ vendor }: { vendor: TVendor }) {
+interface IProps {
+  vendor: TVendor;
+  agreementsData: IAgreementsResponse;
+}
+
+export default function Profile({ vendor, agreementsData }: IProps) {
   const { t } = useTranslation();
   const getStatusColor = (status: keyof typeof USER_STATUS) => {
     const colors = {
@@ -89,7 +97,7 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
         />
       </div>
 
-      <div className="px-4 md:px-6 -mt-20 pb-12">
+      <div className="-mt-20 pb-12">
         {/* Profile Header Card */}
         <motion.div
           className="bg-white rounded-3xl shadow-xl p-8 mb-8 relative"
@@ -215,6 +223,11 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
                 label={t("business_name")}
                 value={vendor.businessDetails?.businessName}
                 icon={BriefcaseIcon}
+              />
+              <ProfileInfoRow
+                label={t("company_legal_name")}
+                value={vendor.businessDetails?.companyLegalName}
+                icon={HelpCircleIcon}
               />
               <ProfileInfoRow
                 label={t("business_type")}
@@ -371,6 +384,11 @@ export default function Profile({ vendor }: { vendor: TVendor }) {
               />
             </div>
           </ProfileSection>
+
+          {/* Agreements Section */}
+          <div className="lg:col-span-2">
+            <AgreementHistory agreementsData={agreementsData} />
+          </div>
         </div>
       </div>
     </div>

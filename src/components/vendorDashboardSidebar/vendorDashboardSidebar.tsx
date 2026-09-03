@@ -22,8 +22,7 @@ const PRIMARY = "#DC3173";
 
 export default function Sidebar({ open, setOpen, vendor }: IProps) {
   const { t } = useTranslation();
-  const businessType =
-    vendor?.businessDetails?.businessType?.trim()?.toUpperCase();
+  const businessType = vendor?.businessDetails?.businessTypeSlug;
 
   const navItems = getNavItems(t, businessType);
   const pathname = usePathname();

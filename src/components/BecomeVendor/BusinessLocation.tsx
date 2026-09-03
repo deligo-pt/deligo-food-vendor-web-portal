@@ -105,7 +105,7 @@ const BusinessLocation = ({ onNext, vendor }: IProps) => {
       const address: Partial<LocationFormType> = {};
 
       components.forEach((component) => {
-        console.log("component", component);
+
         const types = component.types;
 
         if (types.includes("street_number")) {
