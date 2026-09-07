@@ -722,6 +722,7 @@ export const en = {
   payment_option: "Payment Option",
   three_installment_of_each: "Three installments of €50.00 each, which can be deducted from payments to the Merchant",
   monthly_machine_rental_cost: "Monthly rental of the machine at a cost of €7.50 (excluding VAT).",
+  agreement_version: "Agreement Version",
   submit_agreement: "Submit Agreement",
   by_clicking_submit_agreement_you_legally: "By clicking 'Submit Agreement', you legally acknowledge and accept all terms and conditions outlined in this service provision contract.",
   uploaded_successfully: "Uploaded successfully",
@@ -2113,6 +2114,8 @@ export const en = {
   deligo_signed_at: "Deligo Signed At",
   view_draft: "Draft PDF",
   signed_pdf: "Signed Document",
+  re_sign_agreement: "Re Sign your Agreement",
+  review_nd_sign_the_agreement_below: "Review and sign the agreement below. After signing, you can access everything",
 
   // all sos alerts
   all_sos_alerts: "All SOS Alerts",

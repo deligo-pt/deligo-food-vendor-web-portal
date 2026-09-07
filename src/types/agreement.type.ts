@@ -41,6 +41,7 @@ export interface IAgreement {
     partySignatoryType: TPartySignatoryType;
     signedPdfPath: string;
     status: TAgreementStatus;
+    versionNumber?: number;
     posPaymentOption: TPosPaymentOption;
     signedAt: string;
     deligoSignedAt: string | null;

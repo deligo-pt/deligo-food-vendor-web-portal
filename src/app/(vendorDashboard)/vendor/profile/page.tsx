@@ -1,6 +1,6 @@
 import { serverRequest } from "@/lib/serverFetch";
 import Profile from "@/src/components/Profile/Profile";
-import { getAgreementHistory } from "@/src/services/becomeVendor/become-vendor";
+import { getAgreementHistory, getCurrentAgreementVersion } from "@/src/services/becomeVendor/become-vendor";
 import { IAgreementsResponse } from "@/src/types/agreement.type";
 import { TVendor } from "@/src/types/vendor.type";
 import { queryStringFormatter } from "@/src/utils/formatter";
@@ -27,8 +27,9 @@ const ProfilePage = async ({ searchParams }: IProps) => {
 
   const queryString = queryStringFormatter(params);
   const agreementsData = await getAgreementHistory(vendorData?.userId, queryString);
+  const currentAgreVersion = await getCurrentAgreementVersion();
 
-  return <Profile vendor={vendorData} agreementsData={agreementsData as IAgreementsResponse} />;
+  return <Profile vendor={vendorData} agreementsData={agreementsData as IAgreementsResponse} currentAgreement={currentAgreVersion?.data} />;
 }
 
 

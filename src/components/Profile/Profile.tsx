@@ -34,15 +34,21 @@ import {
   UserIcon,
 } from "lucide-react";
 import AgreementHistory from "./AgreementHistory";
-import { IAgreementsResponse } from "@/src/types/agreement.type";
+import { IAgreement, IAgreementsResponse } from "@/src/types/agreement.type";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface IProps {
   vendor: TVendor;
   agreementsData: IAgreementsResponse;
+  currentAgreement: IAgreement;
 }
 
-export default function Profile({ vendor, agreementsData }: IProps) {
+export default function Profile({ vendor, agreementsData, currentAgreement }: IProps) {
   const { t } = useTranslation();
+  const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const getStatusColor = (status: keyof typeof USER_STATUS) => {
     const colors = {
       APPROVED: "bg-green-100 text-green-700 border-green-200",
@@ -189,6 +195,19 @@ export default function Profile({ vendor, agreementsData }: IProps) {
             </div>
           </div>
         </motion.div>
+
+        {/* re sign agreement button */}
+        {(currentAgreement && currentAgreement?.status) && <div className="mb-4 flex flex-row justify-end items-center">
+          <Button type="button" disabled={isRedirecting} className="bg-[#DC3173] text-white" variant="outline" onClick={() => {
+            setTimeout(() => {
+              setIsRedirecting(true);
+              router.push('/vendor/profile/re-sign-agreement');
+              setIsRedirecting(false);
+            }, 1000)
+          }}>
+            {isRedirecting ? "Redirecting.." : "Re Sign Agreement"}
+          </Button>
+        </div>}
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -28,12 +28,13 @@ import { FileUploadZone } from "./FileUploadZone";
 interface AgreementViewerProps {
     agreement: any;
     vendorId?: string;
+    type?: "new" | "re-sign";
 }
 
 type SignatureMethod = "DRAWN" | "UPLOADED";
 type PosPaymentOption = "THREE_INSTALLMENTS" | "MONTHLY_RENTAL";
 
-export default function AgreementViewer({ agreement, vendorId }: AgreementViewerProps) {
+export default function AgreementViewer({ agreement, vendorId, type = "new" }: AgreementViewerProps) {
     const { t } = useTranslation();
     const router = useRouter();
     const [, startTransition] = useTransition();
@@ -200,6 +201,9 @@ export default function AgreementViewer({ agreement, vendorId }: AgreementViewer
                 startTransition(() => {
                     router.refresh();
                 });
+                if (type === "re-sign") {
+                    router.push('/vendor/profile');
+                }
                 return;
             }
 
