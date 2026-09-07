@@ -806,6 +806,7 @@ export const pt = {
   footerCopyrightEfficiency: "Eficiência",
 
   // vendor dashboard
+  please_visit_profile_page: "Por favor, visite o seu Perfil para voltar a assinar o seu acordo",
   // sorting
   newest_first: "Mais recentes primeiro",
   oldest_first: "Mais antigos primeiro",

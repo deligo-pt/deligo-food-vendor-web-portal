@@ -795,6 +795,8 @@ export const en = {
   footerCopyrightEfficiency: "Efficiency",
 
   // vendor dashboard
+  // topbar 
+  please_visit_profile_page: "Please visit your Profile for re-sign your agreement",
   // sorting
   newest_first: "Newest First",
   oldest_first: "Oldest First",
