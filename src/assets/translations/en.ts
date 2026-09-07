@@ -1296,6 +1296,7 @@ export const en = {
   ingredients_marketplace: "Ingredients Marketplace",
   purchase_ingredients_for_store: "Purchase ingredients for your store",
   buy: "Buy",
+  get: "Get",
   choose_your_preferred_payment_method: "Choose your preferred payment method to complete your order.",
   delivery_charges_notification: "Delivery Charges Notification",
   if_your_location_is_under: "If your location is under",

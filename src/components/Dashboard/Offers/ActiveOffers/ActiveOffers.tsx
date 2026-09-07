@@ -177,7 +177,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                         : offer.offerType === "FLAT"
                           ? `€ ${offer.discountValue} Off`
                           : offer.offerType === "BOGO"
-                            ? `Buy ${offer.bogo?.buyQty} Get ${offer.bogo?.getQty}`
+                            ? `${t("buy")} ${offer.bogo?.buyQty} ${t("get")} ${offer.bogo?.getQty}`
                             : ""}
                     </p>
                   </div>

@@ -1333,6 +1333,7 @@ export const pt = {
   ingredients_marketplace: "Mercado de Ingredientes",
   purchase_ingredients_for_store: "Compre ingredientes para a sua loja",
   buy: "Comprar",
+  get: "Obter",
   choose_your_preferred_payment_method: "Escolha o seu método de pagamento preferido para concluir o pedido.",
   delivery_charges_notification: "Notificação de Taxas de Entrega",
   if_your_location_is_under: "Se a sua localização for abaixo de",
