@@ -125,7 +125,7 @@ export default function TopbarIcons({ vendor }: IProps) {
 
   return (
     <>
-      {(agreeVersion?.status) && <p className="text-[#DC3173] italic font-semibold">{t("")}</p>}
+      {(agreeVersion?.status) && <p className="text-[#DC3173] italic font-semibold">{t("please_visit_profile_page")}</p>}
       {/* Language */}
       <div className="relative z-1002">
         <Select

@@ -116,6 +116,7 @@ export function ProductForm({
         pt: ""
       },
       category: "",
+      additionalCategories: [],
       price: 0,
       discountType: "PERCENTAGE",
       discount: 0,
@@ -168,6 +169,7 @@ export function ProductForm({
         name: translated.name,
         description: translated.description,
         category: data.category,
+        ...(data.additionalCategories && { additionalCategories: data.additionalCategories }),
         images: data.images,
         pricing: {
           price: data.price,
