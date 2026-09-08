@@ -92,9 +92,9 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
   const { formState: { isSubmitting } } = form;
   const [isAutoApply, setIsAutoApply] = useState(false);
 
-  const [watchOfferType, watchApplicableProducts] = useWatch({
+  const [watchOfferType, watchApplicableProducts, buyQty, getQty] = useWatch({
     control: form.control,
-    name: ["offerType", "applicableProducts"],
+    name: ["offerType", "applicableProducts", "buyQty", "getQty"],
   });
 
   const onSubmit = async (data: TOfferForm) => {
@@ -316,7 +316,9 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                             <SelectItem value="FLAT">
                               {t("flat_amount_off")}
                             </SelectItem>
-                            <SelectItem value="BOGO">{t("buy_1_get_1")}</SelectItem>
+                            <SelectItem value="BOGO">
+                              {t("buy")} {buyQty} {t("get")} {getQty}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

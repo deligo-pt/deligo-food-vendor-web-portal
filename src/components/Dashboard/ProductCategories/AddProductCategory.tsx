@@ -72,12 +72,19 @@ export default function AddProductCategory() {
             return;
         }
 
-        toast.error(result.message || "Failed to add category", {
-            id: toastId,
-        });
+        if (result?.data?.errorSources) {
+            result?.data?.errorSources?.map((err: { path: string, message: string }) => (
+                toast.error(err?.message, { id: toastId })
+            ));
+            setIsSubmitting(false);
+            return;
+        } else {
+            toast.error(result.message || "Failed to add category", {
+                id: toastId,
+            });
+        }
         setIsSubmitting(false);
         console.log(result);
-        toast.dismiss()
     };
 
     return (
