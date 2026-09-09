@@ -521,7 +521,7 @@ export default function UploadDocuments({
             </div>
           </CardHeader>
 
-          <CardContent className="bg-white p-8 space-y-6">
+          <CardContent className="bg-white p-2 md:p-8 space-y-6">
             <div className="grid grid-cols-1 gap-4">
               {visibleDocuments?.map((d, idx) => {
                 const preview = previews[d.key];
@@ -570,7 +570,7 @@ export default function UploadDocuments({
                                     className="object-cover rounded-md border w-14 h-8"
                                     unoptimized
                                   />
-                                  <div className="truncate">
+                                  <div className="truncate hidden md:block">
                                     {f.file?.name ||
                                       getActualFileName(f.url || "")}
                                   </div>
@@ -584,7 +584,7 @@ export default function UploadDocuments({
                                   </div>
                                 </div>
                               )}
-                              <div className="flex items-center gap-2">
+                              <div className="flex flex-col md:flex-row items-center gap-2">
                                 <button
                                   onClick={() =>
                                     f.url
@@ -633,9 +633,9 @@ export default function UploadDocuments({
                         <>
                           <button
                             onClick={() => openPicker(d.key)}
-                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm border border-gray-200 hover:shadow"
+                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-xs md:text-sm border border-gray-200 hover:shadow"
                           >
-                            <Plus className="w-4 h-4 text-[#DC3173]" />{" "}
+                            <Plus className="w-4 h-4 hidden md:block text-[#DC3173]" />{" "}
                             {t("addMoreCTA")}
                           </button>
                         </>
