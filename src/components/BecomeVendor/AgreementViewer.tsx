@@ -163,11 +163,11 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
             }
         }
 
-        if (!posPaymentOption) {
-            toast.error("Please select a payment option.", { id: toastId });
-            setIsSubmitting(false);
-            return;
-        }
+        // if (!posPaymentOption) {
+        //     toast.error("Please select a payment option.", { id: toastId });
+        //     setIsSubmitting(false);
+        //     return;
+        // }
 
         let partySignature: string;
 
@@ -182,7 +182,7 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
         const payload: any = {
             partySignatureMethod,
             partySignature,
-            posPaymentOption,
+            ...(posPaymentOption && { posPaymentOption }),
         };
 
         // Only include stamp if uploaded (optional)
@@ -254,7 +254,7 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
 
     const isSubmitDisabled =
         isPartyEmpty ||
-        !posPaymentOption ||
+        // !posPaymentOption ||
         isSubmitting ||
         isUploading ||
         isUploadingStamp;
@@ -365,9 +365,9 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
                             />
 
                             {/* Payment Option */}
-                            <div className="space-y-3">
+                            {(type === "new" || (type === "re-sign" && !agreement?.hasPosPaymentDecision)) && <div className="space-y-3">
                                 <Label className="text-sm font-bold text-slate-700">
-                                    {t("payment_option")} <span className="text-[#DC3173]">*</span>
+                                    {t("payment_option")} <span className="text-slate-400 font-normal">(optional)</span>
                                 </Label>
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center space-x-2">
@@ -404,7 +404,7 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
                                         </Label>
                                     </div>
                                 </div>
-                            </div>
+                            </div>}
 
                             {/* Submit */}
                             <div className="w-full border-t border-slate-100 pt-4 flex flex-col items-center">
