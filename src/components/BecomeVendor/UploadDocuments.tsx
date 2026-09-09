@@ -147,7 +147,7 @@ export default function UploadDocuments({
   const DEFAULT_DOC_IMAGES: Partial<Record<DocKey, string>> = {
     myPhoto: "/defaults/my-photo.png",
     // storePhoto: "/defaults/store-photo.jpeg",
-    menuUpload: "/defaults/menu.jpeg",
+    // menuUpload: "/defaults/menu.jpeg",
   };
 
   const visibleDocuments = DOCUMENTS.filter(
