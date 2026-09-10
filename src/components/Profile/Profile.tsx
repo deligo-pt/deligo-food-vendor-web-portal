@@ -205,7 +205,7 @@ export default function Profile({ vendor, agreementsData, currentAgreement }: IP
               setIsRedirecting(false);
             }, 1000)
           }}>
-            {isRedirecting ? "Redirecting.." : "Re Sign Agreement"}
+            {isRedirecting ? t("redirecting") : t("re_sign_agreement")}
           </Button>
         </div>}
 
@@ -371,7 +371,7 @@ export default function Profile({ vendor, agreementsData, currentAgreement }: IP
             icon={FileTextIcon}
             delay={0.3}
           >
-            <ProfileDoc documents={vendor?.documents as IVendorDocs} />
+            <ProfileDoc documents={vendor?.documents as IVendorDocs} userId={vendor?.userId} />
           </ProfileSection>
 
           {/* Activity */}
