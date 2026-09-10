@@ -106,7 +106,7 @@ export const getAgreementHistory = async (vendorId: string, query?: string) => {
   return result;
 };
 
-// get vendor agreement history
+// get vendor current agreement
 export const getCurrentAgreementVersion = async () => {
   const result = await catchAsync(async () => {
     const response = await serverFetch.get(`/agreements/current`, {

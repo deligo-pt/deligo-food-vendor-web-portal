@@ -229,7 +229,7 @@ export default function BusinessDetailsForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          {t("company_legal_name")}{" "} <span className="text-red-500">*</span>
+                          {t("company_legal_name")}{" "} {!isSubVendor && <span className="text-red-500">*</span>}
                         </FormLabel>
                         <div className="relative">
                           <Building2 className="absolute left-3 top-3.5 text-[#DC3173]" />

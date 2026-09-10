@@ -696,6 +696,7 @@ export const pt = {
   viewCTA: "Ver",
   removeCTA: "Remover",
   addMoreCTA: "Adicionar Mais",
+  changeCTA: "Alterar",
   selectFileCTA: "Selecionar ficheiro",
   tipDesc:
     "Dica: pode pré-visualizar imagens e ver os nomes dos ficheiros PDF selecionados",
@@ -2180,6 +2181,10 @@ export const pt = {
   deligo_signed_at: "Assinado pela Deligo Em",
   view_draft: "Rascunho em PDF",
   signed_pdf: "Documento Assinado",
+  re_sign_agreement: "Voltar a Assinar Acordo",
+  redirecting: "A redirecionar...",
+  review_nd_sign_the_agreement_below: "Reveja e assine o acordo abaixo. Após assinar, terá acesso a tudo",
+  agreement_signed_successfully: "Agreement signed successfully!",
 
   // all sos alerts
   all_sos_alerts: "Todos os Alertas de SOS",
