@@ -112,6 +112,7 @@ export default function TopbarIcons({ vendor }: IProps) {
         const res = await getCurrentAgreementVersion();
 
         if (res?.data) {
+          router.refresh();
           setAgreeVersion(res.data);
           router.refresh();
         } else {
