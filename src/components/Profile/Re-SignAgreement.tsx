@@ -22,7 +22,7 @@ const Re_SignAgreement = ({ agreement, vendorId }: IProps) => {
             {
                 !agreement?.status ? (
                     <div className='flex flex-col justify-center items-center'>
-                        <p className='text-xl mb-3'>Agreement signed successfully!</p>
+                        <p className='text-xl mb-3'>{t("agreement_signed_successfully")}</p>
                         <Button type="button" className="bg-[#DC3173] text-white" variant="link" onClick={() => router.push("/vendor/dashboard")}>
                             {t("goBack")}
                         </Button>
