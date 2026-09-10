@@ -2184,7 +2184,7 @@ export const pt = {
   re_sign_agreement: "Voltar a Assinar Acordo",
   redirecting: "A redirecionar...",
   review_nd_sign_the_agreement_below: "Reveja e assine o acordo abaixo. Após assinar, terá acesso a tudo",
-  agreement_signed_successfully: "Agreement signed successfully!",
+  agreement_signed_successfully: "Acordo assinado com sucesso!",
 
   // all sos alerts
   all_sos_alerts: "Todos os Alertas de SOS",
