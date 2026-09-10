@@ -298,7 +298,7 @@ export const BranchDetails = ({ branch }: IProps) => {
                     title={t("documents")}
                     icon={<FileTextIcon />}
                 >
-                    <ProfileDoc documents={branch?.documents as IVendorDocs} />
+                    <ProfileDoc documents={branch?.documents as IVendorDocs} userId={branch?.userId} />
                 </BranchSection>
 
                 {/* Rating & Operational */}
