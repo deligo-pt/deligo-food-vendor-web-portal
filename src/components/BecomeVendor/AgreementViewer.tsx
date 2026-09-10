@@ -17,7 +17,7 @@ import SignatureCanvas from "react-signature-canvas";
 // import { signAgreementReq } from "@/services/agreement.service";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
+import { ArrowLeftCircle, CheckCircle2 } from "lucide-react";
 
 import { useTranslation } from "@/src/hooks/use-translation";
 import { uploadImagesReq } from "@/src/services/upload/upload.service";
@@ -28,12 +28,13 @@ import { FileUploadZone } from "./FileUploadZone";
 interface AgreementViewerProps {
     agreement: any;
     vendorId?: string;
+    type?: "new" | "re-sign";
 }
 
 type SignatureMethod = "DRAWN" | "UPLOADED";
 type PosPaymentOption = "THREE_INSTALLMENTS" | "MONTHLY_RENTAL";
 
-export default function AgreementViewer({ agreement, vendorId }: AgreementViewerProps) {
+export default function AgreementViewer({ agreement, vendorId, type = "new" }: AgreementViewerProps) {
     const { t } = useTranslation();
     const router = useRouter();
     const [, startTransition] = useTransition();
@@ -162,11 +163,11 @@ export default function AgreementViewer({ agreement, vendorId }: AgreementViewer
             }
         }
 
-        if (!posPaymentOption) {
-            toast.error("Please select a payment option.", { id: toastId });
-            setIsSubmitting(false);
-            return;
-        }
+        // if (!posPaymentOption) {
+        //     toast.error("Please select a payment option.", { id: toastId });
+        //     setIsSubmitting(false);
+        //     return;
+        // }
 
         let partySignature: string;
 
@@ -181,7 +182,7 @@ export default function AgreementViewer({ agreement, vendorId }: AgreementViewer
         const payload: any = {
             partySignatureMethod,
             partySignature,
-            posPaymentOption,
+            ...(posPaymentOption && { posPaymentOption }),
         };
 
         // Only include stamp if uploaded (optional)
@@ -200,6 +201,9 @@ export default function AgreementViewer({ agreement, vendorId }: AgreementViewer
                 startTransition(() => {
                     router.refresh();
                 });
+                if (type === "re-sign") {
+                    router.push('/vendor/profile');
+                }
                 return;
             }
 
@@ -250,13 +254,22 @@ export default function AgreementViewer({ agreement, vendorId }: AgreementViewer
 
     const isSubmitDisabled =
         isPartyEmpty ||
-        !posPaymentOption ||
+        // !posPaymentOption ||
         isSubmitting ||
         isUploading ||
         isUploadingStamp;
 
     return (
         <div className="w-full max-w-4xl mx-auto p-4">
+            <div className="relative pb-2">
+                <Button
+                    onClick={() => router.back()}
+                    variant="link"
+                    className="inline-flex items-center px-4 text-sm gap-2 text-[#DC3173] p-0 h-4 cursor-pointer"
+                >
+                    <ArrowLeftCircle className="w-4 h-4" /> {t("goBack")}
+                </Button>
+            </div>
             <div className="space-y-4">
                 <Card className="overflow-hidden border-none shadow-inner bg-slate-200 min-h-175 flex flex-col">
                     {/* PDF Viewer */}
@@ -361,9 +374,9 @@ export default function AgreementViewer({ agreement, vendorId }: AgreementViewer
                             />
 
                             {/* Payment Option */}
-                            <div className="space-y-3">
+                            {(type === "new" || (type === "re-sign" && !agreement?.hasPosPaymentDecision)) && <div className="space-y-3">
                                 <Label className="text-sm font-bold text-slate-700">
-                                    {t("payment_option")} <span className="text-[#DC3173]">*</span>
+                                    {t("payment_option")} <span className="text-slate-400 font-normal">(optional)</span>
                                 </Label>
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center space-x-2">
@@ -400,7 +413,7 @@ export default function AgreementViewer({ agreement, vendorId }: AgreementViewer
                                         </Label>
                                     </div>
                                 </div>
-                            </div>
+                            </div>}
 
                             {/* Submit */}
                             <div className="w-full border-t border-slate-100 pt-4 flex flex-col items-center">

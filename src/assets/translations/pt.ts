@@ -730,7 +730,7 @@ export const pt = {
   party_stamp: "Carimbo da Parte",
   payment_option: "Opção de Pagamento",
   three_installment_of_each: "Três prestações de €50,00 cada, que podem ser deduzidas dos pagamentos ao Comerciante",
-  monthly_machine_rental_cost: "Arrendamento mensal da máquina com um custo mensal de 7,5€ (com IVA incluído)",
+  monthly_machine_rental_cost: "Arrendamento mensal da máquina com um custo mensal de 7,5€ (sem IVA incluído)",
   submit_agreement: "Submeter Acordo",
   by_clicking_submit_agreement_you_legally: "Ao clicar em 'Submeter Acordo', reconhece e aceita legalmente todos os termos e condições descritos neste contrato de prestação de serviços.",
   uploaded_successfully: "Carregado com sucesso",
@@ -806,6 +806,7 @@ export const pt = {
   footerCopyrightEfficiency: "Eficiência",
 
   // vendor dashboard
+  please_visit_profile_page: "Por favor, visite o seu Perfil para voltar a assinar o seu acordo",
   // sorting
   newest_first: "Mais recentes primeiro",
   oldest_first: "Mais antigos primeiro",
@@ -1179,6 +1180,9 @@ export const pt = {
   generated_product_description: "Gerar Descrição do Produto",
   generate: "Gerar",
   product_category: "Categoria do Produto",
+  main: "Principal",
+  additional: "Adicional",
+  select_one_main_category: "Selecione uma categoria Principal e, em seguida, categorias Adicionais opcionais.",
   product_images: "Imagens do Produto",
   product_image: "Imagem do Produto",
   choose_add_on: "Escolher Complemento",
@@ -1332,6 +1336,7 @@ export const pt = {
   ingredients_marketplace: "Mercado de Ingredientes",
   purchase_ingredients_for_store: "Compre ingredientes para a sua loja",
   buy: "Comprar",
+  get: "Obter",
   choose_your_preferred_payment_method: "Escolha o seu método de pagamento preferido para concluir o pedido.",
   delivery_charges_notification: "Notificação de Taxas de Entrega",
   if_your_location_is_under: "Se a sua localização for abaixo de",

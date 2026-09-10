@@ -382,7 +382,7 @@ export default function RatingSummary({
       </motion.div>
 
       {/* Category Ratings — 2x2 grid */}
-      <motion.div variants={itemVariants}>
+      {/* <motion.div variants={itemVariants}>
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
           {t("category_scores")}
         </h3>
@@ -416,7 +416,7 @@ export default function RatingSummary({
             ),
           )}
         </div>
-      </motion.div>
+      </motion.div> */}
     </motion.div>
   );
 }

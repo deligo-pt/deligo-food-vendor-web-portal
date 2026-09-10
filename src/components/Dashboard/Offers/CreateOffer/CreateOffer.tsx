@@ -91,9 +91,9 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
   });
   const { formState: { isSubmitting } } = form;
 
-  const [watchOfferType, watchApplicableProducts] = useWatch({
+  const [watchOfferType, watchApplicableProducts, buyQty, getQty] = useWatch({
     control: form.control,
-    name: ["offerType", "applicableProducts"],
+    name: ["offerType", "applicableProducts", "buyQty", "getQty"],
   });
 
   const onSubmit = async (data: TOfferForm) => {
@@ -328,7 +328,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                 {t("flat_amount_off")}
                               </SelectItem>
                               <SelectItem value="BOGO">
-                                {t("buy_1_get_1")}
+                                {t("buy")} {buyQty} {t("get")} {getQty}
                               </SelectItem>
                             </SelectContent>
                           </Select>

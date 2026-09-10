@@ -93,9 +93,23 @@ export const getSingleAgreement = async (id: string) => {
 
 // get vendor agreement history
 export const getAgreementHistory = async (vendorId: string, query?: string) => {
-  console.log("vendorId", vendorId);
   const result = await catchAsync(async () => {
     const response = await serverFetch.get(`/agreements/party/${vendorId}${query ? `?${query}` : ""}`, {
+      next: {
+        tags: ["agreements"]
+      }
+    });
+
+    return await response.json();
+  });
+
+  return result;
+};
+
+// get vendor agreement history
+export const getCurrentAgreementVersion = async () => {
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.get(`/agreements/current`, {
       next: {
         tags: ["agreements"]
       }

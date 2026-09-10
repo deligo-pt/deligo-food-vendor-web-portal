@@ -1,6 +1,6 @@
 import { TMeta } from "./index";
 
-export type TAgreementStatus = "PARTY_SIGNED" | "SIGNED" | "PENDING" | "REJECTED";
+export type TAgreementStatus = "UNSIGNED" | "PARTY_SIGNED" | "SIGNED" | "PENDING" | "REJECTED";
 export type TPartySignatureMethod = "UPLOADED" | "DRAWN";
 export type TPartySignatoryType = "AUTHORIZED_REPRESENTATIVE" | "SELF";
 export type TPosPaymentOption = "MONTHLY_RENTAL" | "THREE_INSTALLMENTS";
@@ -41,6 +41,7 @@ export interface IAgreement {
     partySignatoryType: TPartySignatoryType;
     signedPdfPath: string;
     status: TAgreementStatus;
+    versionNumber?: number;
     posPaymentOption: TPosPaymentOption;
     signedAt: string;
     deligoSignedAt: string | null;

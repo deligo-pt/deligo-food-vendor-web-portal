@@ -1,3 +1,4 @@
+'use client';
 import {
   Select,
   SelectContent,
@@ -7,8 +8,11 @@ import {
 } from "@/components/ui/select";
 import SOSModal from "@/src/components/Dashboard/SOS/SOSModal";
 import TopbarNotification from "@/src/components/vendorTopbar/TopbarNotification";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { logoutReq } from "@/src/services/auth/auth";
+import { getCurrentAgreementVersion } from "@/src/services/becomeVendor/become-vendor";
 import { useStore } from "@/src/store/store";
+import { IAgreement } from "@/src/types/agreement.type";
 import { TVendor } from "@/src/types/vendor.type";
 import { removeCookie } from "@/src/utils/cookies";
 import { setLanguageCookie } from "@/src/utils/language";
@@ -33,8 +37,10 @@ type IProps = {
 
 export default function TopbarIcons({ vendor }: IProps) {
   const { lang, setLang } = useStore();
+  const { t } = useTranslation();
   const [profileOpen, setProfileOpen] = useState(false);
   const [openSosModal, setOpenSosModal] = useState(false);
+  const [agreeVersion, setAgreeVersion] = useState<IAgreement | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -100,8 +106,26 @@ export default function TopbarIcons({ vendor }: IProps) {
 
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getCurrentAgreementVersion();
+
+        if (res?.data) {
+          setAgreeVersion(res.data);
+          router.refresh();
+        } else {
+          setAgreeVersion(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch agreement version:", error);
+      }
+    })();
+  }, []);
+
   return (
     <>
+      {(agreeVersion?.status) && <p className="text-[#DC3173] italic font-semibold">{t("please_visit_profile_page")}</p>}
       {/* Language */}
       <div className="relative z-1002">
         <Select

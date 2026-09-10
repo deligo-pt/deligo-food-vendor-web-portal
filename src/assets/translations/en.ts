@@ -722,6 +722,7 @@ export const en = {
   payment_option: "Payment Option",
   three_installment_of_each: "Three installments of €50.00 each, which can be deducted from payments to the Merchant",
   monthly_machine_rental_cost: "Monthly rental of the machine at a cost of €7.50 (excluding VAT).",
+  agreement_version: "Agreement Version",
   submit_agreement: "Submit Agreement",
   by_clicking_submit_agreement_you_legally: "By clicking 'Submit Agreement', you legally acknowledge and accept all terms and conditions outlined in this service provision contract.",
   uploaded_successfully: "Uploaded successfully",
@@ -794,6 +795,8 @@ export const en = {
   footerCopyrightEfficiency: "Efficiency",
 
   // vendor dashboard
+  // topbar 
+  please_visit_profile_page: "Please visit your Profile for re-sign your agreement",
   // sorting
   newest_first: "Newest First",
   oldest_first: "Oldest First",
@@ -1147,6 +1150,9 @@ export const en = {
   generated_product_description: "Generate Product Description",
   generate: "Generate",
   product_category: "Product Category",
+  main: "Main",
+  additional: "Additional",
+  select_one_main_category: "Select one Main category, then optional Additional categories.",
   product_images: "Product Images",
   product_image: "Product Image",
   choose_add_on: "Choose Add-On",
@@ -1293,6 +1299,7 @@ export const en = {
   ingredients_marketplace: "Ingredients Marketplace",
   purchase_ingredients_for_store: "Purchase ingredients for your store",
   buy: "Buy",
+  get: "Get",
   choose_your_preferred_payment_method: "Choose your preferred payment method to complete your order.",
   delivery_charges_notification: "Delivery Charges Notification",
   if_your_location_is_under: "If your location is under",
@@ -2113,6 +2120,8 @@ export const en = {
   deligo_signed_at: "Deligo Signed At",
   view_draft: "Draft PDF",
   signed_pdf: "Signed Document",
+  re_sign_agreement: "Re Sign your Agreement",
+  review_nd_sign_the_agreement_below: "Review and sign the agreement below. After signing, you can access everything",
 
   // all sos alerts
   all_sos_alerts: "All SOS Alerts",

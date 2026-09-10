@@ -93,7 +93,7 @@ export default function AgreementHistory({ agreementsData }: IAgreementsProps) {
 
                             {/* Details & Metadata Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 my-4 text-xs text-gray-600">
-                              {item?.partySignatoryType === "AUTHORIZED_REPRESENTATIVE" && <div>
+                                {item?.partySignatoryType === "AUTHORIZED_REPRESENTATIVE" && <div>
                                     <span className="text-gray-400 block">{t("authorized_representative")}:</span>
                                     <span className="font-medium text-gray-800">
                                         {item.partyRepresentativeName} ({item.partyRepresentativeRole})
@@ -110,6 +110,14 @@ export default function AgreementHistory({ agreementsData }: IAgreementsProps) {
                                         {item.posPaymentOption === "MONTHLY_RENTAL" ? "Monthly" : "Three Installments"}
                                     </span>
                                 </div>
+                                {item.versionNumber && (
+                                    <div>
+                                        <span className="text-gray-400 block">{t("agreement_version")}:</span>
+                                        <span className="font-medium text-gray-800">
+                                            {item?.versionNumber}
+                                        </span>
+                                    </div>
+                                )}
                                 {item.signedAt && (
                                     <div>
                                         <span className="text-gray-400 block">{t("signed_at") || "Party Signed At"}:</span>
