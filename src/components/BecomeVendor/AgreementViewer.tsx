@@ -183,6 +183,7 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
             partySignatureMethod,
             partySignature,
             ...(posPaymentOption && { posPaymentOption }),
+            ...(posPaymentOption && { posPaymentDecision: "YES" }),
         };
 
         // Only include stamp if uploaded (optional)

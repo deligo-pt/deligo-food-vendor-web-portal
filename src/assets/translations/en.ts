@@ -688,6 +688,7 @@ export const en = {
   viewCTA: "View",
   removeCTA: "Remove",
   addMoreCTA: "Add More",
+  changeCTA: "Change",
   selectFileCTA: "Select file",
   tipDesc: "Tip: you can preview images and view filenames for selected PDFs",
   completeRegistrationCTA: "Complete Registration",
@@ -2122,6 +2123,8 @@ export const en = {
   signed_pdf: "Signed Document",
   re_sign_agreement: "Re Sign your Agreement",
   review_nd_sign_the_agreement_below: "Review and sign the agreement below. After signing, you can access everything",
+  redirecting: "Redirecting..",
+  agreement_signed_successfully: "Agreement signed successfully!",
 
   // all sos alerts
   all_sos_alerts: "All SOS Alerts",
