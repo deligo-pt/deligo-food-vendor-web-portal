@@ -74,7 +74,7 @@ export default function LoginForm({ redirect }: IProps) {
           role: string;
           status: string;
         };
-        if (decoded.role === "VENDOR") {
+        if (decoded.role === "VENDOR" || decoded?.role === "SUB_VENDOR") {
           setCookie("accessToken", result.data.accessToken, 7);
           setCookie("refreshToken", result.data.refreshToken, 365);
           toast.success(result?.message || "Login successful!", {
