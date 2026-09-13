@@ -9,13 +9,13 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TOrder } from "@/src/types/order.type";
 import { motion } from "framer-motion";
-import { useState } from "react";
 
 interface IProps {
   ordersResult: { data: TOrder[]; meta?: TMeta };
   showFilters?: boolean;
   title: string;
   subtitle?: string;
+  showExtraFilters?: boolean;
 }
 
 export default function Orders({
@@ -23,9 +23,9 @@ export default function Orders({
   title,
   subtitle,
   showFilters = false,
+  showExtraFilters = true,
 }: IProps) {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<TOrder | null>(null);
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
     { label: t("oldest_first"), value: "createdAt" },
@@ -94,6 +94,63 @@ export default function Orders({
     },
   ];
 
+  const extraSelectFilter = {
+    key: "orderStatus",
+    placeholder: t("order_status"),
+    type: "select",
+    // isAllNeeded: false,
+    options: [
+      {
+        label: t("pending"),
+        value: ORDER_STATUS.PENDING,
+      },
+      {
+        label: t("accepted"),
+        value: ORDER_STATUS.ACCEPTED,
+      },
+      {
+        label: t("rejected"),
+        value: ORDER_STATUS.REJECTED,
+      },
+      {
+        label: t("cancelled"),
+        value: ORDER_STATUS.CANCELED,
+      },
+      {
+        label: t("dispatching"),
+        value: ORDER_STATUS.DISPATCHING,
+      },
+      {
+        label: t("awaiting_partner"),
+        value: ORDER_STATUS.AWAITING_PARTNER,
+      },
+      {
+        label: t("assigned"),
+        value: ORDER_STATUS.ASSIGNED,
+      },
+      {
+        label: t("reassignment_needed"),
+        value: ORDER_STATUS.REASSIGNMENT_NEEDED,
+      },
+      {
+        label: t("preparing"),
+        value: ORDER_STATUS.PREPARING,
+      },
+      {
+        label: t("ready_for_pickup"),
+        value: ORDER_STATUS.READY_FOR_PICKUP,
+      },
+      {
+        label: t("on_the_way"),
+        value: ORDER_STATUS.ON_THE_WAY,
+      },
+      {
+        label: t("delivered"),
+        value: ORDER_STATUS.DELIVERED,
+      },
+    ],
+  };
+
   return (
     <div className="space-y-6 max-w-full">
       {/* Page Title */}
@@ -102,13 +159,13 @@ export default function Orders({
       {/* Filters */}
       <AllFilters
         sortOptions={sortOptions}
-        {...(showFilters && { filterOptions })}
+        // {...(showFilters && { filterOptions })}
+        {...(showExtraFilters && { extraSelectFilter })}
       />
 
       {/* Order Table */}
       <OrderTable
         orders={ordersResult?.data || []}
-      // viewOrder={(order) => setSelected(order)}
       />
 
       {/* Pagination */}
