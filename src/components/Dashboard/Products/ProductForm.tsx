@@ -128,6 +128,7 @@ export function ProductForm({
       variations: [],
       isFeatured: false,
       isAvailableForPreOrder: false,
+      isActive: true,
       businessTypeSlug,
       currentLang: lang
     },
@@ -157,6 +158,8 @@ export function ProductForm({
     //   return;
     // };
 
+    const status = data.isActive === true ? "ACTIVE" : "INACTIVE";
+
     try {
       const translated = await translateObject(data, lang);
 
@@ -183,6 +186,7 @@ export function ProductForm({
         meta: {
           isFeatured: data.isFeatured,
           isAvailableForPreOrder: data.isAvailableForPreOrder,
+          status,
         },
         ...(businessTypeSlug !== "restaurant"
           ? {
@@ -240,19 +244,25 @@ export function ProductForm({
   };
 
   useEffect(() => {
-    const errors = Object.entries(form.formState?.errors)?.filter(
-      (er) => er?.[1]?.message,
+    const errors = Object.entries(form.formState?.errors ?? {});
+    const newErrors = tabs.reduce(
+      (err, t) => {
+        err[t.name] = false;
+        return err;
+      },
+      {} as Record<string, boolean>,
     );
-    if (errors.length > 0) {
-      const newErrors = tabs.reduce(
-        (err, t) => {
-          err[t.name] = false;
-          return err;
-        },
-        {} as Record<string, boolean>,
-      );
 
-      errors.forEach(([key]) => {
+    if (errors.length > 0) {
+      errors.forEach(([key, value]) => {
+        // helper: treat nested objects (like description.en / description.pt) as errors too
+        const hasMessage =
+          !!value?.message ||
+          (typeof value === "object" &&
+            Object.values(value as any).some((v: any) => v?.message));
+
+        if (!hasMessage) return;
+
         switch (key) {
           case "name":
           case "brand":
@@ -261,6 +271,7 @@ export function ProductForm({
             newErrors[t("basic_info")] = true;
             return;
           case "description":
+          case "images":
             newErrors[t("images")] = true;
             return;
           case "price":
@@ -275,9 +286,9 @@ export function ProductForm({
             return;
         }
       });
-
-      setTabError(newErrors);
     }
+
+    setTabError(newErrors);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.formState?.errors]);
 
@@ -300,6 +311,27 @@ export function ProductForm({
         <TitleHeader
           title={t("add_new_item")}
           subtitle={t("fill_the_details_to_add_new_food_item")}
+          extraComponent={
+            <motion.button
+              whileHover={{
+                scale: 1.05,
+              }}
+              whileTap={{
+                scale: 0.98,
+              }}
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => form.handleSubmit(onSubmit)()}
+              className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2 shadow-lg shadow-pink-200/50 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              <SaveIcon className="h-5 w-5" />
+              {lang === "en" ? (
+                <span>Translate to PT and Save Product</span>
+              ) : (
+                <span>{t("translate_en")}</span>
+              )}
+            </motion.button>
+          }
         />
         <div className="flex flex-col md:flex-row">
           {/* Tabs */}
@@ -408,7 +440,7 @@ export function ProductForm({
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>
                   </motion.button>
-                  {activeTab === lastTabIndex && (
+                  {/* {activeTab === lastTabIndex && (
                     <motion.button
                       whileHover={{
                         scale: 1.05,
@@ -426,7 +458,7 @@ export function ProductForm({
                           <span>{t("translate_en")}</span>
                       }
                     </motion.button>
-                  )}
+                  )} */}
                   {activeTab < lastTabIndex && (
                     <motion.button
                       whileHover={{

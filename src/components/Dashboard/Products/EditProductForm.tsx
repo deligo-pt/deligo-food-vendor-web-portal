@@ -134,6 +134,7 @@ export function EditProductForm({
       availabilityStatus: prevData?.stock?.availabilityStatus || "",
       isFeatured: prevData?.meta?.isFeatured || false,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
+      isActive: prevData?.meta?.status === "ACTIVE" ? true : false,
       businessTypeSlug,
       currentLang: lang
     },
@@ -251,10 +252,13 @@ export function EditProductForm({
       }
     }
 
+    // meta update
     const originalMeta = prevData?.meta || {};
+    const originalStatus = originalMeta.status === "ACTIVE" ? true : false;
     const metaChanged =
       hasChanged(data.isFeatured, originalMeta.isFeatured || false) ||
-      hasChanged(data.isAvailableForPreOrder, originalMeta.isAvailableForPreOrder || false);
+      hasChanged(data.isAvailableForPreOrder, originalMeta.isAvailableForPreOrder || false) ||
+      hasChanged(data.isActive, originalStatus);
 
     if (metaChanged) {
       productData.meta = {};
@@ -263,6 +267,9 @@ export function EditProductForm({
       }
       if (hasChanged(data.isAvailableForPreOrder, originalMeta.isAvailableForPreOrder || false)) {
         productData.meta.isAvailableForPreOrder = data.isAvailableForPreOrder;
+      }
+      if (hasChanged(data.isActive, originalStatus)) {
+        productData.meta.status = data.isActive === true ? "ACTIVE" : "INACTIVE";
       }
     }
 
