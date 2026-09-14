@@ -102,10 +102,27 @@ export default function BusinessDetailsForm({
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
 
+    // ALWAYS convert names → slugs before sending
+    const cuisineSlugs =
+      data.businessType === "restaurant" && Array.isArray(data.restaurantCuisineType)
+        ? data.restaurantCuisineType
+          .map((item) => {
+            const found = cuisines?.find(
+              (c) =>
+                c.slug === item ||
+                c.name.toLowerCase() === item.toLowerCase()
+            );
+            return found?.slug;
+          })
+          .filter(Boolean) as string[]
+        : [];
+
+    // remove possible duplicates
+    const uniqueCuisineSlugs = [...new Set(cuisineSlugs)];
+
     let businessDetailsPayload: Record<string, unknown>;
 
     if (isSubVendor) {
-      // Sub-vendor can only update working hours
       businessDetailsPayload = {
         businessDetails: {
           branchName: data?.branchName,
@@ -115,13 +132,12 @@ export default function BusinessDetailsForm({
         },
       };
     } else {
-      // Main vendor – send full business details
       const { restaurantCuisineType, ...restOfData } = data;
 
       const processedData =
         data.businessType === "store"
           ? restOfData
-          : { ...restOfData, restaurantCuisineType };
+          : { ...restOfData, restaurantCuisineType: uniqueCuisineSlugs };
 
       businessDetailsPayload = {
         businessDetails: {
@@ -132,7 +148,7 @@ export default function BusinessDetailsForm({
         },
       };
     }
-    console.log("b.payload", businessDetailsPayload);
+
     const result = await updateVendorReq(vendor?.userId, businessDetailsPayload);
 
     if (result && result?.success) {
