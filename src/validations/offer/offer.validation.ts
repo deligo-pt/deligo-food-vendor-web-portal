@@ -82,6 +82,18 @@ export const offerValidation = z.object({
   )
   .refine(
     (data) => {
+      if (data.offerType === "PERCENT" && !data.discountValue) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Discount value is required",
+      path: ["discountValue"],
+    },
+  )
+  .refine(
+    (data) => {
       if (data.offerType === "BOGO") {
         return true;
       } else if (!data.isAutoApply && (!data.code || data.code === "")) {
