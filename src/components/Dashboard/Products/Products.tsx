@@ -11,18 +11,15 @@ import { TProductCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { toast } from "sonner";
+import TitleHeader from "../../TitleHeader/TitleHeader";
 
 interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
   businessTypeSlug: string;
   productCategories: TProductCategory[];
 }
-
-// Keep in sync with your actual fixed navbar's rendered height + a small gap.
-const NAVBAR_OFFSET = 112;
 
 export default function Products({
   productsData,
@@ -32,15 +29,14 @@ export default function Products({
   const { t } = useTranslation();
   const [products, setProducts] = useState(productsData.data);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
-  const [highlightedCategoryId, setHighlightedCategoryId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
     action: "edit" | "delete" | null;
     product?: TProduct | null;
   }>({ id: null, action: null });
 
-  const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
@@ -102,33 +98,20 @@ export default function Products({
     setProducts(productsData.data);
   }, [productsData]);
 
-  useEffect(() => {
-    return () => {
-      if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
-    };
-  }, []);
-
   const getCategoryName = (category: TProductCategory | null) => {
     if (!category) return t("uncategorized") || "Uncategorized";
     return category.name?.en || category.name?.pt || "Unnamed";
   };
 
-  const scrollToCategory = (id: string) => {
-    setActiveCategoryId(id);
-    const el = categoryRefs.current[id];
-    if (!el) return;
+  const openDeleteDialog = (id: string) =>
+    setSelectedProduct({ id, action: "delete" });
 
-    const targetY = el.getBoundingClientRect().top + window.scrollY - NAVBAR_OFFSET;
-    window.scrollTo({ top: targetY, behavior: "smooth" });
-
-    if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
-    setHighlightedCategoryId(id);
-    highlightTimeoutRef.current = setTimeout(() => setHighlightedCategoryId(null), 1200);
-  };
-
-  const openDeleteDialog = (id: string) => setSelectedProduct({ id, action: "delete" });
   const onEditClick = (product: TProduct) =>
-    setSelectedProduct({ id: product._id as string, action: "edit", product });
+    setSelectedProduct({
+      id: product._id as string,
+      action: "edit",
+      product,
+    });
 
   const handleDeleteProduct = async () => {
     const toastId = toast.loading("Deleting product...");
@@ -146,152 +129,132 @@ export default function Products({
     }
   };
 
-  // ---- Bulletproof sidebar pinning (independent of any ancestor CSS) ----
-  const [mounted, setMounted] = useState(false);
-  const [isPinned, setIsPinned] = useState(false);
-  const [pinRect, setPinRect] = useState<{ left: number; width: number } | null>(null);
-
-  const wrapperRef = useRef<HTMLDivElement | null>(null); // reserves layout space
-  const sentinelRef = useRef<HTMLDivElement | null>(null); // 1px trip-wire at natural top
-
-  useEffect(() => setMounted(true), []);
-
-  // Measure where the sidebar should sit once pinned (left offset + width),
-  // and keep it correct on resize.
-  useLayoutEffect(() => {
-    const measure = () => {
-      if (!wrapperRef.current) return;
-      const rect = wrapperRef.current.getBoundingClientRect();
-      setPinRect({ left: rect.left, width: rect.width });
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
-
-  // IntersectionObserver trip-wire: fires only when the boundary is actually
-  // crossed, not on every scroll frame — this is what eliminates the
-  // "jumps to top then snaps back" flicker on fast scrolling.
-  useEffect(() => {
-    if (!sentinelRef.current) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsPinned(!entry.isIntersecting),
-      { rootMargin: `-${NAVBAR_OFFSET}px 0px 0px 0px`, threshold: 0 }
-    );
-    observer.observe(sentinelRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const sidebarInner = (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
-      <h3 className="text-sm font-semibold text-gray-800 mb-3">
-        {t("product_categories") || "Product categories"}
-      </h3>
-
-      <div className="space-y-1">
-        {groupedProducts.map((group) => {
-          const id = group.category?._id || "uncategorized";
-          const isActive = activeCategoryId === id;
-
-          return (
-            <button
-              key={id}
-              onClick={() => scrollToCategory(id)}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
-                ? "bg-[#DC3173]/10 text-[#DC3173]"
-                : "text-gray-600 hover:bg-gray-50"
-                }`}
-            >
-              <span className="truncate uppercase tracking-wide">
-                {getCategoryName(group.category)}
-              </span>
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${isActive
-                  ? "bg-[#DC3173]/15 text-[#DC3173]"
-                  : "bg-gray-100 text-gray-500"
-                  }`}
-              >
-                {group.products.length}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
+  const scrollToCategory = (id: string) => {
+    setActiveCategoryId(id);
+    const target = sectionRefs.current[id];
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="bg-linear-to-r from-[#DC3173] to-[#FF6CAB] p-6 rounded-lg mb-6 shadow-lg">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">
-              {t("food_items")}
-            </h1>
-            <p className="text-pink-100 mt-1">
-              {t("manage_your_restaurants_food_delivery_items")}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <AllFilters
-        sortOptions={sortOptions}
-        {...(businessTypeSlug !== "restaurant" ? { filterOptions } : {})}
+    <div className="w-full flex flex-col h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] overflow-hidden">
+      {/* Header – fixed height */}
+      <TitleHeader
+        title={t("food_items")}
+        subtitle={t("manage_your_restaurants_food_delivery_items")}
       />
 
-      {groupedProducts.length > 0 ? (
-        <div className="flex gap-6 mt-6 items-start">
-          {/* LEFT SIDEBAR COLUMN – always reserves the layout space */}
-          <div ref={wrapperRef} className="hidden lg:block w-64 shrink-0 self-start relative">
-            {/* 1px trip-wire the IntersectionObserver watches */}
-            <div ref={sentinelRef} className="absolute top-0 left-0 h-px w-full" />
+      {/* Filters – fixed height */}
+      <div className="shrink-0 mb-4">
+        <AllFilters
+          sortOptions={sortOptions}
+          {...(businessTypeSlug !== "restaurant" ? { filterOptions } : {})}
+        />
+      </div>
 
-            {isPinned ? (
-              <>
-                {/* Placeholder keeps the flex row from collapsing while the
-                    real sidebar is portaled out to <body> as `fixed`. */}
-                <div aria-hidden="true" style={{ height: 1 }} />
-                {mounted &&
-                  pinRect &&
-                  createPortal(
-                    <div
-                      className="fixed z-20"
-                      style={{ top: NAVBAR_OFFSET, left: pinRect.left, width: pinRect.width }}
+      {/* Main content area – takes remaining height */}
+      {groupedProducts.length > 0 ? (
+        <div className="flex flex-1 min-h-0 gap-6 overflow-hidden">
+          {/* LEFT SIDEBAR – fixed, scrolls independently if needed */}
+          <div className="hidden lg:block w-64 shrink-0 h-full overflow-y-auto">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sticky top-0">
+              <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                {t("product_categories") || "Product categories"}
+              </h3>
+
+              <div className="space-y-1">
+                {groupedProducts.map((group) => {
+                  const id = group.category?._id || "uncategorized";
+                  const isActive = activeCategoryId === id;
+
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => {
+                        setActiveCategoryId(id);
+                        scrollToCategory(id)
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
+                        ? "bg-[#DC3173]/10 text-[#DC3173]"
+                        : "text-gray-600 hover:bg-gray-50"
+                        }`}
                     >
-                      {sidebarInner}
-                    </div>,
-                    document.body
-                  )}
-              </>
-            ) : (
-              sidebarInner
-            )}
+                      <span className="truncate uppercase tracking-wide">
+                        {getCategoryName(group.category)}
+                      </span>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full ${isActive
+                          ? "bg-[#DC3173]/15 text-[#DC3173]"
+                          : "bg-gray-100 text-gray-500"
+                          }`}
+                      >
+                        {group.products.length}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          {/* RIGHT CONTENT */}
-          <div className="flex-1 min-w-0 space-y-10">
-            {groupedProducts.map((group) => {
+          {/* RIGHT CONTENT – scrolls */}
+          <div className="flex-1 min-w-0 h-full overflow-y-auto space-y-10 pr-1">
+            <div
+              ref={scrollContainerRef}
+              className="flex-1 min-w-0 h-full overflow-y-auto space-y-10 pr-1"
+            >
+              {groupedProducts.map((group) => {
+                const id = group.category?._id || "uncategorized";
+
+                return (
+                  <div
+                    key={id}
+                    id={`category-${id}`}
+                    ref={(el) => {
+                      sectionRefs.current[id] = el;
+                    }}
+                    className="rounded-xl"
+                  >
+                    <div className="p-2">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide">
+                          {getCategoryName(group.category)}
+                        </h2>
+                        <span className="text-sm text-gray-500">
+                          {group.products.length}{" "}
+                          {group.products.length === 1
+                            ? t("item") || "item"
+                            : t("items") || "items"}
+                        </span>
+                      </div>
+
+                      <motion.div
+                        layout
+                        className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                      >
+                        <AnimatePresence mode="popLayout">
+                          {group.products.map((product) => (
+                            <ProductCard
+                              key={product._id}
+                              product={product}
+                              onDelete={openDeleteDialog}
+                              onEdit={onEditClick}
+                              t={t}
+                            />
+                          ))}
+                        </AnimatePresence>
+                      </motion.div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {/* {groupedProducts.map((group) => {
               const id = group.category?._id || "uncategorized";
-              const isHighlighted = highlightedCategoryId === id;
 
               return (
-                <motion.div
-                  key={id}
-                  ref={(el) => {
-                    categoryRefs.current[id] = el;
-                  }}
-                  id={`category-${id}`}
-                  className="scroll-mt-32 rounded-xl"
-                  animate={{
-                    backgroundColor: isHighlighted
-                      ? "rgba(220,49,115,0.06)"
-                      : "rgba(220,49,115,0)",
-                  }}
-                  transition={{ duration: isHighlighted ? 0.3 : 0.9, ease: "easeOut" }}
-                >
+                <div key={id} id={`category-${id}`} className="rounded-xl">
                   <div className="p-2">
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide">
@@ -305,7 +268,10 @@ export default function Products({
                       </span>
                     </div>
 
-                    <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                    <motion.div
+                      layout
+                      className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                    >
                       <AnimatePresence mode="popLayout">
                         {group.products.map((product) => (
                           <ProductCard
@@ -319,17 +285,13 @@ export default function Products({
                       </AnimatePresence>
                     </motion.div>
                   </div>
-                </motion.div>
+                </div>
               );
-            })}
+            })} */}
           </div>
         </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center py-16 text-center"
-        >
+        <div className="flex-1 flex flex-col items-center justify-center py-16 text-center">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <Search className="h-8 w-8 text-gray-400" />
           </div>
@@ -337,19 +299,23 @@ export default function Products({
           <p className="text-gray-500 max-w-md">
             {t("no_items_match_current_filters")}
           </p>
-        </motion.div>
+        </div>
       )}
 
       {/* Dialogs */}
       <DeleteProductDialog
         open={!!selectedProduct.id && selectedProduct.action === "delete"}
-        onOpenChange={() => setSelectedProduct({ id: null, action: null, product: null })}
+        onOpenChange={() =>
+          setSelectedProduct({ id: null, action: null, product: null })
+        }
         onConfirm={handleDeleteProduct}
         t={t}
       />
       <EditProductDialog
         open={!!selectedProduct.id && selectedProduct.action === "edit"}
-        onOpenChange={() => setSelectedProduct({ id: null, action: null, product: null })}
+        onOpenChange={() =>
+          setSelectedProduct({ id: null, action: null, product: null })
+        }
         prevData={selectedProduct?.product as TProduct}
         businessTypeSlug={businessTypeSlug}
       />
