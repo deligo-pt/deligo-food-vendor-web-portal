@@ -21,7 +21,7 @@ type Props = {
     productCategries: TProductCategory[];
 };
 
-const ApplyIncrease = ({ products, productCategries }: Props) => {
+const ApplyDecrease = ({ products, productCategries }: Props) => {
     const { t } = useTranslation();
     const router = useRouter();
 
@@ -100,7 +100,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
     const getDiscountedPrice = (price: number) => {
         const pct = Number(percentage);
         if (isNaN(pct) || pct <= 0) return null;
-        const discounted = price * (1 + pct / 100);
+        const discounted = price * (1 - pct / 100);
         return Math.max(0, Number(discounted.toFixed(2)));
     };
 
@@ -123,7 +123,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
         const toastId = toast.loading("Applying...");
 
         const payload = {
-            type: 'INCREASE' as const,
+            type: 'DECREASE' as const,
             percentage: numericPercentage,
             productIds: selectedProductIds,
         };
@@ -132,7 +132,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
         try {
             const result = await applyIncreaseDecrease(payload);
             if (result.success) {
-                toast.success(result?.message || "Increase applied successfully!", { id: toastId });
+                toast.success(result?.message || "Decrease applied successfully!", { id: toastId });
 
                 setPercentage('');
                 setSelectedProductIds([]);
@@ -145,7 +145,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                 ));
                 return;
             } else {
-                toast.error(result.message || "Increase applied failed", {
+                toast.error(result.message || "Decrease applied failed", {
                     id: toastId,
                 });
             }
@@ -161,8 +161,8 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
     return (
         <div className="space-y-6">
             <TitleHeader
-                title={t('apply_price_increase')}
-                subtitle={t('update_the_base_price_your_products')}
+                title={t('apply_price_decrease')}
+                subtitle={t('decrease_any_products_if_you_want')}
             />
 
             {/* Control bar */}
@@ -346,4 +346,4 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
     );
 };
 
-export default ApplyIncrease;
+export default ApplyDecrease;
