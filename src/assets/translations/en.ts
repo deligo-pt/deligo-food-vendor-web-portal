@@ -722,7 +722,7 @@ export const en = {
   party_stamp: "Party Stamp",
   payment_option: "Payment Option",
   three_installment_of_each: "Three installments of €50.00 each, which can be deducted from payments to the Merchant",
-  monthly_machine_rental_cost: "Monthly rental of the machine at a cost of €7.50 (excluding VAT).",
+  monthly_machine_rental_cost: "Monthly rental of the machine with a weekly cost of €2.50 (excluding VAT).",
   agreement_version: "Agreement Version",
   submit_agreement: "Submit Agreement",
   by_clicking_submit_agreement_you_legally: "By clicking 'Submit Agreement', you legally acknowledge and accept all terms and conditions outlined in this service provision contract.",
