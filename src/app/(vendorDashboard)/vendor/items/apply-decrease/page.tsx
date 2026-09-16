@@ -1,4 +1,4 @@
-import ApplyDiscount from "@/src/components/Dashboard/Products/ApplyDiscount/ApplyDiscount";
+import ApplyDecrease from "@/src/components/Dashboard/Products/ApplyDecrease/ApplyDecrease";
 import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
 import { getAllProducts } from "@/src/services/dashboard/products/products";
 
@@ -9,7 +9,7 @@ const ApplyProductDiscountPage = async () => {
 
     return (
         <div>
-            <ApplyDiscount products={data} productCategries={productCategries?.data} />
+            <ApplyDecrease products={data} productCategries={productCategries?.data} />
         </div>
     );
 };

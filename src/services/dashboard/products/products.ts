@@ -19,6 +19,32 @@ export const getAllProducts = async (query?: string) => {
   return result;
 };
 
+export const applyIncreaseDecrease = async (
+  payload: {
+    type: "INCREASE" | "DECREASE",
+    percentage: number,
+    productIds: string[],
+  },
+) => {
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.patch(`/products/adjust-price`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return await response.json();
+  });
+
+  if (result.success) {
+    revalidateTag("products", {});
+    revalidatePath("/vendor/items/apply-decrease");
+    revalidatePath("/vendor/items/apply-increase");
+  }
+
+  return result;
+};
 
 export const updateProduct = async (
   productId: string,

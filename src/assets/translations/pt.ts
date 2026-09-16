@@ -1288,9 +1288,12 @@ export const pt = {
   are_you_absolutely_sure: "Você tem certeza absoluta?",
   this_action_cannot_be_undone: "Esta ação não pode ser desfeita. Isso excluirá estes dados e não poderá ser desfeito.",
 
-  // apply discount
-  apply_price_discount: "Aplicar Desconto no Preço",
-  update_discount_on_your_products: "Atualizar desconto nos seus produtos",
+  // apply decrease
+  apply_price_decrease: "Aplicar Redução de Preço",
+  decrease_any_products_if_you_want: "Reduza o preço de quaisquer produtos, se desejar",
+  selected: "selecionados",
+  select_categories_or_individual: "Selecione categorias ou produtos individuais",
+  partial: "Parcial",
   uncategorized: "Sem Categoria",
   base: "Base",
   final: "Final",

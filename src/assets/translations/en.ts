@@ -1252,9 +1252,12 @@ export const en = {
   are_you_absolutely_sure: "Are you absolutely sure?",
   this_action_cannot_be_undone: "This action cannot be undone. This will delete this data and cannot be undone.",
 
-  // apply discount
-  apply_price_discount: "Apply Price Discount",
-  update_discount_on_your_products: "Update discount on your products",
+  // apply decrease
+  apply_price_decrease: "Apply Price Decrease",
+  decrease_any_products_if_you_want: "Decrease any products if you want",
+  selected: "selected",
+  select_categories_or_individual: "Select categories or individual products",
+  partial: "Partial",
   uncategorized: 'Uncategorized',
   base: "Base",
   final: "Final",
