@@ -327,7 +327,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                                                     {currency} {discounted}
                                                                 </span>
                                                                 <span className="text-[#DC3173] text-[10px]">
-                                                                    (−{percentage}%)
+                                                                    (+{percentage}%)
                                                                 </span>
                                                             </>
                                                         )}
