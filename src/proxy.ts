@@ -109,7 +109,7 @@ export async function proxy(req: NextRequest) {
   };
 
   // Enforce correct role
-  if (role !== USER_ROLE.VENDOR) {
+  if (role !== USER_ROLE.VENDOR && role !== USER_ROLE.SUB_VENDOR) {
     const response = NextResponse.redirect(loginUrl);
     response.cookies.delete("accessToken");
     response.cookies.delete("refreshToken");

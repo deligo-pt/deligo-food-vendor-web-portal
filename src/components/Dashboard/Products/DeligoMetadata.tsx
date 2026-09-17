@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Checkbox } from "@/components/ui/checkbox";
+
 import {
     FormControl,
     FormField,
@@ -8,6 +8,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from 'framer-motion';
 
@@ -39,51 +40,68 @@ const DeligoMetadata = ({ form }: IProps) => {
                     control={form.control}
                     name="isFeatured"
                     render={({ field }) => (
-                        <FormItem className="gap-1">
+                        <FormItem className="flex items-center justify-between gap-3">
+                            <FormLabel
+                                htmlFor="isFeatured"
+                                className="text-sm text-gray-700"
+                            >
+                                {t("featured_product")}
+                            </FormLabel>
                             <FormControl>
-                                <div className="">
-                                    <FormLabel
-                                        htmlFor="isFeatured"
-                                        className="text-sm text-gray-700 flex items-center"
-                                    >
-                                        <Checkbox
-                                            id="isFeatured"
-                                            checked={!!field.value}
-                                            onCheckedChange={(checked) =>
-                                                field.onChange(checked)
-                                            }
-                                            className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
-                                        />
-                                        {t("featured_product")}
-                                    </FormLabel>
-                                </div>
+                                <Switch
+                                    id="isFeatured"
+                                    checked={!!field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="data-[state=checked]:bg-[#DC3173]"
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
+
                 <FormField
                     control={form.control}
                     name="isAvailableForPreOrder"
                     render={({ field }) => (
-                        <FormItem className="gap-1">
+                        <FormItem className="flex items-center justify-between gap-3">
+                            <FormLabel
+                                htmlFor="isAvailableForPreOrder"
+                                className="text-sm text-gray-700"
+                            >
+                                {t("available_for_pre_order")}
+                            </FormLabel>
                             <FormControl>
-                                <div className="">
-                                    <FormLabel
-                                        htmlFor="isAvailableForPreOrder"
-                                        className="text-sm text-gray-700 flex items-center"
-                                    >
-                                        <Checkbox
-                                            id="isAvailableForPreOrder"
-                                            checked={!!field.value}
-                                            onCheckedChange={(checked) =>
-                                                field.onChange(checked)
-                                            }
-                                            className="h-4 w-4 text-[#DC3173] focus:ring-[#DC3173] border-gray-300 rounded data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
-                                        />
-                                        {t("available_for_pre_order")}
-                                    </FormLabel>
-                                </div>
+                                <Switch
+                                    id="isAvailableForPreOrder"
+                                    checked={!!field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="data-[state=checked]:bg-[#DC3173]"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="isActive"
+                    render={({ field }) => (
+                        <FormItem className="flex items-center justify-between gap-3">
+                            <FormLabel
+                                htmlFor="isActive"
+                                className="text-sm text-gray-700"
+                            >
+                                {t("active_status")}
+                            </FormLabel>
+                            <FormControl>
+                                <Switch
+                                    id="isActive"
+                                    checked={!!field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="data-[state=checked]:bg-[#DC3173]"
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

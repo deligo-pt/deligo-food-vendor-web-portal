@@ -842,6 +842,8 @@ export const pt = {
   add_product_categories: "Adicionar Categorias de Produtos",
   all_product_categories: "Todas as Categorias de Produtos",
   add_new_item: "Adicionar Novo Item",
+  apply_discount: "Aplicar Desconto",
+  apply_increase_decrease: "Aplicar Aumento / Redução",
   stock_management: "Gestão de Stock",
   variation_management: "Gerenciamento de Variações",
   add_ons: "Extras",
@@ -1285,6 +1287,22 @@ export const pt = {
   delete: "Excluir",
   are_you_absolutely_sure: "Você tem certeza absoluta?",
   this_action_cannot_be_undone: "Esta ação não pode ser desfeita. Isso excluirá estes dados e não poderá ser desfeito.",
+
+  // apply decrease
+  apply_price_decrease: "Aplicar Redução de Preço",
+  decrease_any_products_if_you_want: "Reduza o preço de quaisquer produtos, se desejar",
+  selected: "selecionados",
+  select_categories_or_individual: "Selecione categorias ou produtos individuais",
+  partial: "Parcial",
+  uncategorized: "Sem Categoria",
+  base: "Base",
+  final: "Final",
+  saving: "Poupança",
+  save: "Guardar",
+
+  // apply increase
+  apply_price_increase: "Aplicar Aumento de Preço",
+  update_the_base_price_your_products: "Atualizar o preço base dos seus produtos",
 
   // stock-management page
   update_product_stock_in_real_time:

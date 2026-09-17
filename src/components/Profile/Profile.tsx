@@ -405,9 +405,9 @@ export default function Profile({ vendor, agreementsData, currentAgreement }: IP
           </ProfileSection>
 
           {/* Agreements Section */}
-          <div className="lg:col-span-2">
+          {vendor?.role === "VENDOR" && <div className="lg:col-span-2">
             <AgreementHistory agreementsData={agreementsData} />
-          </div>
+          </div>}
         </div>
       </div>
     </div>

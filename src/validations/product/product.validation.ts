@@ -61,6 +61,8 @@ export const productValidation = z.object({
 
   isAvailableForPreOrder: z.boolean().optional(),
 
+  isActive: z.boolean().optional(),
+
   businessTypeSlug: z.string(),
   currentLang: z.enum(["en", "pt"]),
 })

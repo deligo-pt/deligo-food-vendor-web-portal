@@ -3,6 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -36,7 +37,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -62,6 +63,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
   const form = useForm<TOfferForm>({
     resolver: zodResolver(offerValidation),
+    mode: "onChange",
     defaultValues: {
       title: {
         en: "",
@@ -72,15 +74,15 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         pt: ""
       },
       offerType: "PERCENT",
-      discountValue: 0,
-      maxDiscountAmount: 0,
+      discountValue: undefined,
+      maxDiscountAmount: undefined,
       buyQty: 1,
       getQty: 1,
       buyProductId: "",
       getProductId: "",
       validFrom: new Date(),
       expiresAt: new Date(),
-      minOrderAmount: 0,
+      minOrderAmount: undefined,
       code: "",
       isAutoApply: false,
       maxUsageCount: "",
@@ -95,6 +97,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     control: form.control,
     name: ["offerType", "applicableProducts", "buyQty", "getQty"],
   });
+
 
   const onSubmit = async (data: TOfferForm) => {
     const toastId = toast.loading("Creating offer...");
@@ -127,7 +130,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         offerType: data.offerType,
         validFrom: data.validFrom,
         expiresAt: data.expiresAt,
-        minOrderAmount: data.minOrderAmount,
+        ...(data.minOrderAmount && { minOrderAmount: data.minOrderAmount }),
         ...(data.discountValue && { discountValue: data.discountValue }),
         ...(data.maxDiscountAmount && { maxDiscountAmount: data.maxDiscountAmount }),
         ...(data.code && { code: data.code }),
@@ -139,10 +142,14 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
             bogo: {
               buyQty: data.buyQty as number,
               getQty: data.getQty as number,
-              buyProductId: data.buyProductId as string,
+              buyProductId: Array.isArray(data.buyProductId)
+                ? (data.buyProductId[0] as string)
+                : (data.buyProductId as unknown as string),
               ...(data.getProductId && {
-                getProductId: data.getProductId as string,
-              })
+                getProductId: Array.isArray(data.getProductId)
+                  ? (data.getProductId[0] as string)
+                  : (data.getProductId as unknown as string),
+              }),
             },
           }
           : {}),
@@ -180,10 +187,17 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         return;
       }
 
-      toast.error(
-        result.message || "Offer creation failed",
-        { id: toastId }
-      );
+      if (result?.data?.errorSources) {
+        result?.data?.errorSources?.map((err: { path: string, message: string }) => (
+          toast.error(err?.message, { id: toastId })
+        ));
+        return;
+      } else {
+        toast.error(result.message || "Offer creation failed",
+          { id: toastId }
+        );
+      }
+      console.log(result);
     } catch (error: any) {
       console.error(error);
 
@@ -195,6 +209,21 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       );
     }
   };
+
+  const productsByCategory = useMemo(() => {
+    const groups: Record<string, TProduct[]> = {};
+    (itemsResult.data || []).forEach((item) => {
+      const cat =
+        (item as any).category?.name?.[lang] ||
+        (item as any).category?.name ||
+        (item as any).categoryName ||
+        "Uncategorized";
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(item);
+    });
+    return Object.entries(groups);
+  }, [itemsResult.data, lang]);
+
 
   return (
     <div className="min-h-screen space-y-10">
@@ -380,7 +409,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             <Input
                               placeholder={t("max_discount_amount")}
                               type="number"
-                              min={0}
+                              min={10}
                               max={1000}
                               className="h-12 text-base w-full"
                               {...field}
@@ -428,6 +457,56 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
                 {watchOfferType === "BOGO" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="buyQty"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("buy_quantity")} <span className="text-red-600">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("buy_quantity")}
+                              type="number"
+                              min={1}
+                              className="h-12 text-base"
+                              {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="getQty"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-medium text-sm text-gray-700">
+                            {t("get_quantity")} <span className="text-red-600">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t("get_quantity")}
+                              type="number"
+                              min={1}
+                              className="h-12 text-base"
+                              {...field}
+                              value={String(field.value)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="buyProductId"
@@ -495,56 +574,6 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                 </SelectContent>
                               </Select>
                             </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="buyQty"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("buy_quantity")} <span className="text-red-600">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={t("buy_quantity")}
-                              type="number"
-                              min={1}
-                              className="h-12 text-base"
-                              {...field}
-                              value={String(field.value)}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="getQty"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("get_quantity")} <span className="text-red-600">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={t("get_quantity")}
-                              type="number"
-                              min={1}
-                              className="h-12 text-base"
-                              {...field}
-                              value={String(field.value)}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -624,7 +653,8 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           </FormLabel>
                           <Input
                             type="number"
-                            min={0}
+                            placeholder={t("minimum_order_amount")}
+                            min={1}
                             className="h-12 text-base"
                             {...field}
                             value={String(field.value)}

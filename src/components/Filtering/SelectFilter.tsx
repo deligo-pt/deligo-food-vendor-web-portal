@@ -14,15 +14,19 @@ export default function SelectFilter({
   placeholder,
   paramName,
   options,
+  isAllNeeded = true,
+  defaultValue,
 }: {
   placeholder: string;
   paramName: string;
   options: { label: string; value: string }[];
+  isAllNeeded?: boolean;
+  defaultValue?: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const currentValue = searchParams.get(paramName) || "";
+  const currentValue = searchParams.get(paramName) || defaultValue || "";
 
   const handleChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -50,7 +54,7 @@ export default function SelectFilter({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="All">All</SelectItem>
+        {isAllNeeded && <SelectItem value="All">All</SelectItem>}
         {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>
             {option.label}
