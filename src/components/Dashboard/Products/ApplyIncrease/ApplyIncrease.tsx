@@ -234,7 +234,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                         'flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-all cursor-pointer',
                                         categorySelected
                                             ? 'border-[#DC3173]/50 bg-[#DC3173]/5'
-                                            : 'border-border/60 bg-muted/20 hover:bg-muted/30'
+                                            : 'border-border/90 bg-muted/20 hover:bg-muted/30'
                                     )}
                                     onClick={() => toggleCategory(catProducts)}
                                 >
@@ -295,7 +295,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                                     'flex items-center gap-2 rounded-md border px-2.5 py-1.5 transition-all cursor-pointer',
                                                     isSelected
                                                         ? 'border-[#DC3173]/40 bg-[#DC3173]/5'
-                                                        : 'border-border/50 hover:bg-muted/20'
+                                                        : 'border-[#DC3173]/30 hover:bg-muted/20'
                                                 )}
                                                 onClick={() => toggleProduct(product)}
                                             >
