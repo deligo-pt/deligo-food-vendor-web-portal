@@ -28,7 +28,7 @@ const ApplyDecrease = ({ products, productCategries }: Props) => {
     const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
     const [percentage, setPercentage] = useState<string>('');
     const [isUpdating, setIsUpdating] = useState(false);
-    console.log("products", products);
+
     // Group products by category
     const groupedProducts = useMemo(() => {
         const groups: Record<
