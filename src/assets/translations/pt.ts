@@ -1287,6 +1287,13 @@ export const pt = {
   delete: "Excluir",
   are_you_absolutely_sure: "Você tem certeza absoluta?",
   this_action_cannot_be_undone: "Esta ação não pode ser desfeita. Isso excluirá estes dados e não poderá ser desfeito.",
+  //--> copy to branch
+  copying_product: "A copiar produto...",
+  copy_to_branch: "Copiar para Filial",
+  select_a_branch_to_copy_this_product: "Selecione uma filial para copiar este produto",
+  no_branches_found: "Nenhuma filial encontrada",
+  copy_product: "Copiar Produto",
+  copying: "A copiar...",
 
   // apply decrease
   apply_price_decrease: "Aplicar Redução de Preço",

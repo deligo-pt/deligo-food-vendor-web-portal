@@ -6,6 +6,7 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { deleteProductReq } from "@/src/services/dashboard/products/products";
 import { useStore } from "@/src/store/store";
 import { TProduct } from "@/src/types/product.type";
+import { TVendor } from "@/src/types/vendor.type";
 import { format } from "date-fns";
 import { motion, Variants } from "framer-motion";
 import {
@@ -16,6 +17,7 @@ import {
   InfoIcon,
   PackageIcon,
   ShoppingBagIcon,
+  SquaresSubtract,
   StarIcon,
   Trash2Icon,
   XCircleIcon,
@@ -24,19 +26,22 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import CopyToBranchDialog from "./CopyToBranchDialog";
 
 interface IProps {
   product: TProduct;
   businessTypeSlug: string;
+  branches: TVendor[];
 }
 
-export default function ProductDetails({ product, businessTypeSlug }: IProps) {
+export default function ProductDetails({ product, businessTypeSlug, branches }: IProps) {
   const { t } = useTranslation();
   const { lang } = useStore();
   const router = useRouter();
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isCopyToBranchOpen, setIsCopyToBranchOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const getStockStatusColor = (status: string) => {
@@ -470,6 +475,13 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
             {/* Action Button */}
             <div className="pt-4 flex items-center gap-2 justify-end">
               <button
+                onClick={() => setIsCopyToBranchOpen(true)}
+                className="bg-[#DC3173] hover:bg-[#DC3173]/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+              >
+                <SquaresSubtract className="w-5 h-5" />
+                <span>{t("copy_to_branch")}</span>
+              </button>
+              <button
                 onClick={() => setIsDeleteDialogOpen(true)}
                 className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
               >
@@ -479,6 +491,14 @@ export default function ProductDetails({ product, businessTypeSlug }: IProps) {
             </div>
           </div>
         </div>
+
+        <CopyToBranchDialog
+          open={isCopyToBranchOpen}
+          onOpenChange={setIsCopyToBranchOpen}
+          productId={product.productId}
+          branches={branches}
+          t={t}
+        />
 
         <DeleteProductDialog
           open={isDeleteDialogOpen}

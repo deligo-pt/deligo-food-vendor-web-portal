@@ -1251,6 +1251,13 @@ export const en = {
   delete: "Delete",
   are_you_absolutely_sure: "Are you absolutely sure?",
   this_action_cannot_be_undone: "This action cannot be undone. This will delete this data and cannot be undone.",
+  //--> copy to branch
+  copying_product: "Copying product...",
+  copy_to_branch: "Copy to Branch",
+  select_a_branch_to_copy_this_product: "Select a branch to copy this product",
+  no_branches_found: "No branches found",
+  copy_product: "Copy Product",
+  copying: "Copying....",
 
   // apply decrease
   apply_price_decrease: "Apply Price Decrease",
