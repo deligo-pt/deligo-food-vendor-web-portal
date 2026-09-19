@@ -318,6 +318,8 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         ) {
           offerData.scopeType = "SPECIFIC_PRODUCTS";
           offerData.scopeProducts = data.scopeProducts;
+        } else {
+          offerData.scopeType = "ALL_PRODUCTS"
         }
 
         if (!data.isAutoApply && data.code) {
@@ -358,7 +360,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
         offerData.buyAndReward = { buy, reward };
       }
-
+      console.log("payload", offerData);
       const result = await createOfferReq(offerData as Partial<TOffer>);
 
       if (result.success) {
@@ -628,7 +630,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               className="w-4 h-4 accent-[#DC3173]"
                               checked={!watchScopeType}
                               onChange={() => {
-                                setValue("scopeType", undefined);
+                                setValue("scopeType", "ALL_PRODUCTS");
                                 setValue("scopeProducts", []);
                               }}
                             />

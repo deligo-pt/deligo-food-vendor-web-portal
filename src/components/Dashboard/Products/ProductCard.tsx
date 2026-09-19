@@ -30,6 +30,13 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
     Limited: "bg-yellow-100 text-yellow-800",
   };
 
+  // VAT helpers (supports common field names)
+  const taxPercentage = product.pricing?.taxRate ?? null;
+  const taxAmount = product.pricing?.taxAmount ?? null;
+
+  const hasTax =
+    (taxAmount !== null && taxAmount !== undefined);
+
   return (
     <motion.div
       className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100"
@@ -72,12 +79,15 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
           </div>
         )}
         <div
-          className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${statusColors[product.isDeleted ? "DELETED" : product.meta.status]
+          className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${statusColors[
+            product.isDeleted ? "DELETED" : product.meta.status
+          ]
             }`}
         >
           {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
       </div>
+
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-bold text-gray-900 truncate">
@@ -93,37 +103,67 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
             </span>
           </div>
         </div>
+
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.description?.[lang]}
         </p>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <span className="text-lg font-bold text-[#DC3173]">
-              {product.pricing.currency}{" "}
-              {new Intl.NumberFormat("de-DE", {
-                minimumFractionDigits: 2,
-              }).format(product.pricing.finalPrice)}
-            </span>
-            {product?.pricing?.discount ? (
-              <span className="text-xs line-through text-gray-400 ml-2">
+
+        {/* Price + VAT section */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
+              <span className="text-lg font-bold text-[#DC3173]">
                 {product.pricing.currency}{" "}
                 {new Intl.NumberFormat("de-DE", {
                   minimumFractionDigits: 2,
-                }).format(product.pricing.price)}
+                }).format(product.pricing.finalPrice)}
               </span>
-            ) : (
-              ""
+
+              {product?.pricing?.discount ? (
+                <span className="text-xs line-through text-gray-400">
+                  {product.pricing.currency}{" "}
+                  {new Intl.NumberFormat("de-DE", {
+                    minimumFractionDigits: 2,
+                  }).format(product.pricing.price)}
+                </span>
+              ) : null}
+
+              {/* VAT inline */}
+              {hasTax && (
+                <span className="inline-flex items-center gap-1 text-xs text-gray-500 ml-1">
+                  <span className="text-gray-400">•</span>
+                  <span className="font-medium text-gray-600">incl. VAT</span>
+
+                  {taxPercentage !== null && taxPercentage !== undefined && (
+                    <span className="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded">
+                      {taxPercentage}%
+                    </span>
+                  )}
+
+                  {taxAmount !== null && taxAmount !== undefined && (
+                    <span>
+                      ({product.pricing.currency}{" "}
+                      {new Intl.NumberFormat("de-DE", {
+                        minimumFractionDigits: 2,
+                      }).format(taxAmount)}
+                      )
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+
+            {product.stock?.availabilityStatus && (
+              <div
+                className={`text-xs px-2 py-1 rounded-full ${availabilityColors[product.stock.availabilityStatus]
+                  }`}
+              >
+                {product.stock.availabilityStatus}
+              </div>
             )}
           </div>
-          {product.stock?.availabilityStatus && (
-            <div
-              className={`text-xs px-2 py-1 rounded-full ${availabilityColors[product.stock.availabilityStatus]
-                }`}
-            >
-              {product.stock.availabilityStatus}
-            </div>
-          )}
         </div>
+
         {product.deliveryInfo && (
           <div className="flex items-center text-xs text-gray-500 mb-3">
             <Clock className="h-3 w-3 mr-1" />
@@ -135,44 +175,33 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
             )}
           </div>
         )}
+
         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
           <div className="text-xs text-gray-500">
             {product.vendor?.vendorName}
           </div>
           <div className="flex space-x-2">
             <motion.button
-              whileHover={{
-                scale: 1.05,
-              }}
-              whileTap={{
-                scale: 0.95,
-              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() =>
                 router.push(`/vendor/all-items/${product.productId}`)
               }
               className="text-xs px-3 py-1 rounded-md border border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173] hover:text-white transition-colors"
             >
-              {t('view')}
+              {t("view")}
             </motion.button>
             <motion.button
-              whileHover={{
-                scale: 1.05,
-              }}
-              whileTap={{
-                scale: 0.95,
-              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => onEdit(product)}
               className="text-xs px-3 py-1 rounded-md border border-[#DC3173] text-[#DC3173] hover:bg-[#DC3173] hover:text-white transition-colors"
             >
               {t("edit")}
             </motion.button>
             <motion.button
-              whileHover={{
-                scale: 1.05,
-              }}
-              whileTap={{
-                scale: 0.95,
-              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => onDelete(product.productId)}
               className="text-xs px-3 py-1 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
             >

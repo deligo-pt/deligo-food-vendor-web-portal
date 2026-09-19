@@ -46,6 +46,25 @@ export const applyIncreaseDecrease = async (
   return result;
 };
 
+export const copyProductToBranchReq = async (targetVendorId: string, productId: string) => {
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.post(`/products/${productId}/copy-to-branch`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ targetVendorId }),
+    });
+
+    return await response.json();
+  });
+
+  if (result.success) {
+    revalidateTag("products", {});
+  }
+
+  return result;
+};
+
 export const updateProduct = async (
   productId: string,
   data: Record<string, unknown>

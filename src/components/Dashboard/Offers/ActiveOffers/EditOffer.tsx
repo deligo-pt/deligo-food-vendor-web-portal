@@ -47,6 +47,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Resolver, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { ProductSelector } from "../CreateOffer/ProductSelection";
+import { useRouter } from "next/navigation";
 
 const PRIMARY = "#DC3173";
 
@@ -60,6 +61,7 @@ interface IProps {
 
 export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
   const { lang } = useStore();
+  const router = useRouter();
   const [products, setProducts] = useState<TProduct[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
@@ -404,6 +406,8 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
         ) {
           offerData.scopeType = "SPECIFIC_PRODUCTS";
           offerData.scopeProducts = data.scopeProducts;
+        } else {
+          offerData.scopeType = "ALL_PRODUCTS"
         }
 
         if (!data.isAutoApply && data.code) {
@@ -443,7 +447,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
         }
 
         offerData.buyAndReward = { buy, reward };
-      }
+      };
 
       const result = await updateOfferReq(offer._id, offerData as Partial<TOffer>);
 
@@ -452,6 +456,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
           id: toastId,
         });
         onOpenChange(false);
+        router.refresh();
         return;
       }
 

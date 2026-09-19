@@ -37,7 +37,7 @@ export const offerValidation = z.object({
   discountValue: z.number().min(0).max(100).optional(),
   maxDiscountAmount: z.number().min(0).max(1000).optional(),
 
-  scopeType: z.enum(["SPECIFIC_PRODUCTS"]).optional(),
+  scopeType: z.enum(["ALL_PRODUCTS", "SPECIFIC_PRODUCTS"]).optional(),
   scopeCategories: z.array(z.string()).optional(),
   scopeProducts: z.array(z.string()).optional(),
 
@@ -59,7 +59,6 @@ export const offerValidation = z.object({
   currentLang: z.enum(["en", "pt"]),
 })
   .superRefine((data, ctx) => {
-    console.log("lang", data.currentLang);
     validateLocalizedField(
       data.title,
       data.currentLang,
