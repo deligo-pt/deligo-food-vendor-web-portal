@@ -97,7 +97,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
     };
 
     // Calculate discounted price
-    const getDiscountedPrice = (price: number) => {
+    const getIncreasedPrice = (price: number) => {
         const pct = Number(percentage);
         if (isNaN(pct) || pct <= 0) return null;
         const discounted = price * (1 + pct / 100);
@@ -234,7 +234,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                         'flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-all cursor-pointer',
                                         categorySelected
                                             ? 'border-[#DC3173]/50 bg-[#DC3173]/5'
-                                            : 'border-border/60 bg-muted/20 hover:bg-muted/30'
+                                            : 'border-border/90 bg-muted/20 hover:bg-muted/30'
                                     )}
                                     onClick={() => toggleCategory(catProducts)}
                                 >
@@ -275,64 +275,122 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                     </Badge>
                                 </div>
 
-                                {/* Products - more compact, more columns */}
+                                {/* Products - compact + variations support */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-1.5 ml-10">
                                     {catProducts.map((product) => {
                                         const productKey = getProductKey(product);
-                                        const isSelected =
-                                            selectedProductIds.includes(productKey);
+                                        const isSelected = selectedProductIds.includes(productKey);
 
                                         const originalPrice = product.pricing.price;
                                         const currency = product.pricing.currency;
-                                        const discounted = isSelected
-                                            ? getDiscountedPrice(originalPrice)
+                                        const increased = isSelected
+                                            ? getIncreasedPrice(originalPrice)
                                             : null;
+
+                                        const hasVariations =
+                                            Array.isArray(product.variations) &&
+                                            product.variations.length > 0;
 
                                         return (
                                             <div
                                                 key={product._id}
                                                 className={cn(
-                                                    'flex items-center gap-2 rounded-md border px-2.5 py-1.5 transition-all cursor-pointer',
+                                                    'rounded-md border transition-all',
                                                     isSelected
                                                         ? 'border-[#DC3173]/40 bg-[#DC3173]/5'
-                                                        : 'border-border/50 hover:bg-muted/20'
+                                                        : 'border-[#DC3173]/30 hover:bg-muted/20'
                                                 )}
-                                                onClick={() => toggleProduct(product)}
                                             >
-                                                <Checkbox
-                                                    checked={isSelected}
-                                                    onCheckedChange={() =>
-                                                        toggleProduct(product)
-                                                    }
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="h-3.5 w-3.5 data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
-                                                />
+                                                {/* Main product row */}
+                                                <div
+                                                    className="flex items-center gap-2 px-2.5 py-1.5 cursor-pointer"
+                                                    onClick={() => toggleProduct(product)}
+                                                >
+                                                    <Checkbox
+                                                        checked={isSelected}
+                                                        onCheckedChange={() => toggleProduct(product)}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="h-3.5 w-3.5 data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
+                                                    />
 
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-medium text-[13px] leading-tight line-clamp-1">
-                                                        {getLocalizedName(product.name)}
-                                                    </p>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-medium text-[13px] leading-tight line-clamp-1">
+                                                            {getLocalizedName(product.name)}
+                                                        </p>
 
-                                                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 text-[11px] mt-0.5">
-                                                        <span className="text-muted-foreground">
-                                                            {currency} {originalPrice}
-                                                        </span>
+                                                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 text-[11px] mt-0.5">
+                                                            <span className="text-muted-foreground">
+                                                                {currency} {originalPrice}
+                                                            </span>
 
-                                                        {discounted !== null && (
-                                                            <>
-                                                                <span className="text-muted-foreground">
-                                                                    →
-                                                                </span>
-                                                                <span className="font-semibold text-[#DC3173]">
-                                                                    {currency} {discounted}
-                                                                </span>
-                                                                <span className="text-[#DC3173] text-[10px]">
-                                                                    (−{percentage}%)
-                                                                </span>
-                                                            </>
-                                                        )}
+                                                            {increased !== null && (
+                                                                <>
+                                                                    <span className="text-muted-foreground">→</span>
+                                                                    <span className="font-semibold text-[#DC3173]">
+                                                                        {currency} {increased}
+                                                                    </span>
+                                                                    <span className="text-[#DC3173] text-[10px]">
+                                                                        (+{percentage}%)
+                                                                    </span>
+                                                                </>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
+
+                                                {/* Variations (if any) */}
+                                                {hasVariations && (
+                                                    <div className="border-t border-dashed border-[#DC3173]/20 px-2.5 pb-2 pt-1.5 space-y-1.5">
+                                                        {product.variations.map((variation, vIdx) => (
+                                                            <div key={vIdx} className="space-y-1">
+                                                                {/* Variation group name */}
+                                                                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide pl-5">
+                                                                    {getLocalizedName(variation.name)}
+                                                                </p>
+
+                                                                {/* Options */}
+                                                                <div className="space-y-1">
+                                                                    {variation.options?.map((option, oIdx) => {
+                                                                        const optionPrice = option.price;
+                                                                        const optionIncreased = isSelected
+                                                                            ? getIncreasedPrice(optionPrice)
+                                                                            : null;
+
+                                                                        return (
+                                                                            <div
+                                                                                key={oIdx}
+                                                                                className="flex items-center gap-2 pl-5 text-[11px]"
+                                                                            >
+                                                                                <span className="text-muted-foreground/70">└</span>
+                                                                                <div className="flex-1 min-w-0 flex flex-wrap items-center gap-x-1.5">
+                                                                                    <span className="font-medium text-foreground/90 line-clamp-1">
+                                                                                        {getLocalizedName(option.label)}
+                                                                                    </span>
+
+                                                                                    <span className="text-muted-foreground">
+                                                                                        {currency} {optionPrice}
+                                                                                    </span>
+
+                                                                                    {optionIncreased !== null && (
+                                                                                        <>
+                                                                                            <span className="text-muted-foreground">→</span>
+                                                                                            <span className="font-semibold text-[#DC3173]">
+                                                                                                {currency} {optionIncreased}
+                                                                                            </span>
+                                                                                            <span className="text-[#DC3173] text-[10px]">
+                                                                                                (+{percentage}%)
+                                                                                            </span>
+                                                                                        </>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })}
