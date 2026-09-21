@@ -73,11 +73,11 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
             <ShoppingBag className="h-12 w-12 text-gray-400" />
           </div>
         )}
-        {product.meta.isFeatured && (
+        {/* {product.meta.isFeatured && (
           <div className="absolute top-2 right-2 bg-[#DC3173] text-white text-xs font-bold px-2 py-1 rounded-md">
             Featured
           </div>
-        )}
+        )} */}
         <div
           className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${statusColors[
             product.isDeleted ? "DELETED" : product.meta.status
@@ -86,6 +86,11 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
         >
           {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
+        {product?.pricing?.discount && <div
+          className={`absolute top-2 right-2 text-xs font-medium px-2 py-1 rounded-md bg-[#DC3173] text-white`}
+        >
+          {product.pricing?.discount} %
+        </div>}
       </div>
 
       <div className="p-4">
@@ -132,7 +137,7 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
               {hasTax && (
                 <span className="inline-flex items-center gap-1 text-xs text-gray-500 ml-1">
                   <span className="text-gray-400">•</span>
-                  <span className="font-medium text-gray-600">incl. VAT</span>
+                  <span className="font-medium text-gray-600">{t("inc_vat")}</span>
 
                   {taxPercentage !== null && taxPercentage !== undefined && (
                     <span className="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded">

@@ -34,7 +34,7 @@ export default function Products({
     action: "edit" | "delete" | null;
     product?: TProduct | null;
   }>({ id: null, action: null });
-  console.log("products", products);
+
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
