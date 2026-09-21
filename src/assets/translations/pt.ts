@@ -1135,6 +1135,7 @@ export const pt = {
   back_to_items: "Voltar aos Itens",
   product_id: "ID do Produto",
   featured: "Em Destaque",
+  inc_vat: "Com IVA",
   variation_options: "Opções de Variação",
   ratings_and_reviews: "Avaliações e Comentários",
   origin: "Origem",

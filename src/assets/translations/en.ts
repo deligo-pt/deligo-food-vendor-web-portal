@@ -1105,6 +1105,7 @@ export const en = {
   back_to_items: "Back to Items",
   product_id: "Product ID",
   featured: "Featured",
+  inc_vat: "Inc. VAT",
   variation_options: "Variation Options",
   ratings_and_reviews: "Ratings & Reviews",
   origin: "Origin",

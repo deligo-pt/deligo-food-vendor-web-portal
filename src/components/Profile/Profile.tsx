@@ -342,11 +342,11 @@ export default function Profile({ vendor, agreementsData, currentAgreement }: IP
             delay={0.25}
           >
             <div className="space-y-1">
-              <ProfileInfoRow
+              {/* <ProfileInfoRow
                 label={t("bankName")}
                 value={vendor.bankDetails?.bankName}
                 icon={Building2Icon}
-              />
+              /> */}
               <ProfileInfoRow
                 label={t("accountHolder")}
                 value={vendor.bankDetails?.accountHolderName}
@@ -357,11 +357,11 @@ export default function Profile({ vendor, agreementsData, currentAgreement }: IP
                 value={vendor.bankDetails?.iban.replace(/(.{4})/g, "$1 ")}
                 icon={FileTextIcon}
               />
-              <ProfileInfoRow
+              {/* <ProfileInfoRow
                 label={t("swift_code")}
                 value={vendor.bankDetails?.swiftCode}
                 icon={HashIcon}
-              />
+              /> */}
             </div>
           </ProfileSection>
 
