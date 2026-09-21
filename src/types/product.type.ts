@@ -39,6 +39,8 @@ export type TProduct = {
     discountType: "PERCENTAGE" | "FLAT";
     discount?: number;
     taxId?: string;
+    taxAmount?: number;
+    taxRate?: number;
     finalPrice: number;
     currency: string;
   };

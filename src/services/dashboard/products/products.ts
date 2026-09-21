@@ -1,8 +1,92 @@
 "use server";
 
-import { serverRequest } from "@/lib/serverFetch";
+import { serverFetch, serverRequest } from "@/lib/serverFetch";
 import { TProduct } from "@/src/types/product.type";
 import { catchAsync } from "@/src/utils/catchAsync";
+import { revalidatePath, revalidateTag } from "next/cache";
+
+export const getAllProducts = async (query?: string) => {
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.get(`/products${query ? `?${query}` : ""}`, {
+      next: {
+        tags: ["products"]
+      }
+    });
+
+    return await response.json();
+  });
+
+  return result;
+};
+
+export const applyIncreaseDecrease = async (
+  payload: {
+    type: "INCREASE" | "DECREASE",
+    percentage: number,
+    productIds: string[],
+  },
+) => {
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.patch(`/products/adjust-price`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return await response.json();
+  });
+
+  if (result.success) {
+    revalidateTag("products", {});
+    revalidatePath("/vendor/items/apply-decrease");
+    revalidatePath("/vendor/items/apply-increase");
+  }
+
+  return result;
+};
+
+export const copyProductToBranchReq = async (targetVendorId: string, productId: string) => {
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.post(`/products/${productId}/copy-to-branch`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ targetVendorId }),
+    });
+
+    return await response.json();
+  });
+
+  if (result.success) {
+    revalidateTag("products", {});
+  }
+
+  return result;
+};
+
+export const updateProduct = async (
+  productId: string,
+  data: Record<string, unknown>
+) => {
+  const result = await catchAsync(async () => {
+    const response = await serverFetch.patch(`/products/${productId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    return await response.json();
+  });
+
+  if (result.success) {
+    revalidateTag("products", {});
+    revalidatePath("/vendor/items/apply-discount");
+  }
+
+  return result;
+};
 
 export const getAllProductsReq = async (limit?: number) => {
   return catchAsync<TProduct[]>(async () => {

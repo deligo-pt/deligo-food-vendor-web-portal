@@ -10,15 +10,11 @@ type IProps = {
 
 export default async function CreateOfferPage({ searchParams }: IProps) {
   const queries = (await searchParams) || {};
-  const limit = Number(queries?.limit || 10);
-  const page = Number(queries.page || 1);
   const searchTerm = queries.searchTerm || "";
   const sortBy = queries.sortBy || "-createdAt";
   const availability = queries.status || "";
 
   const query: Partial<TProductsQueryParams> = {
-    limit,
-    page,
     sortBy,
     ...(searchTerm ? { searchTerm: searchTerm } : {}),
     ...(availability ? { "stock.availabilityStatus": availability } : {}),

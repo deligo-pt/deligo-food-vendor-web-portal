@@ -31,19 +31,21 @@ import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
 import { translateObject } from "@/src/utils/translation/translationObject";
-import { offerValidation } from "@/src/validations/offer/offer.validation";
+import {
+  getProductSkuOptions,
+  offerValidation,
+  productHasVariations,
+  TOfferForm,
+} from "@/src/validations/offer/offer.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { Resolver, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
-import z from "zod";
+import { ProductSelector } from "./ProductSelection";
 
 const PRIMARY = "#DC3173";
-
-type TOfferForm = z.infer<typeof offerValidation>;
 
 interface IProps {
   itemsResult: { data: TProduct[]; meta?: TMeta };
@@ -54,151 +56,345 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
   const { lang } = useStore();
   const router = useRouter();
 
-  const [isSelectedAllProducts, setIsSelectedAllProducts] = useState(true);
-  const [filteredItems, setFilteredItems] = useState<TProduct[]>(
-    itemsResult.data || [],
-  );
-  const [isAutoApply, setIsAutoApply] = useState(false);
+  const products = useMemo(() => itemsResult.data || [], [itemsResult.data]);
+  const [initialDates] = useState(() => {
+    const validFrom = new Date();
+    return {
+      validFrom,
+      expiresAt: new Date(validFrom.getTime() + 30 * 24 * 60 * 60 * 1000),
+    };
+  });
 
   const form = useForm<TOfferForm>({
-    resolver: zodResolver(offerValidation),
+    resolver: zodResolver(offerValidation) as unknown as Resolver<TOfferForm>,
+    mode: "onChange",
     defaultValues: {
-      title: {
-        en: "",
-        pt: ""
-      },
-      description: {
-        en: "",
-        pt: ""
-      },
+      title: { en: "", pt: "" },
+      description: { en: "", pt: "" },
       offerType: "PERCENT",
-      discountValue: 0,
-      maxDiscountAmount: 0,
-      buyQty: 1,
-      getQty: 1,
-      buyProductId: "",
-      getProductId: "",
-      validFrom: new Date(),
-      expiresAt: new Date(),
-      minOrderAmount: 0,
+      discountValue: undefined,
+      maxDiscountAmount: undefined,
+      scopeType: undefined,
+      scopeCategories: [],
+      scopeProducts: [],
+      buyAndReward: {
+        buy: {
+          scope: "SPECIFIC_PRODUCTS",
+          productIds: [],
+          categoryIds: [],
+          quantity: 1,
+        },
+        reward: {
+          type: "SAME_PRODUCT",
+          quantity: 1,
+          productId: "",
+          variationSku: "",
+          options: [],
+        },
+      },
+      validFrom: initialDates.validFrom,
+      expiresAt: initialDates.expiresAt,
+      minOrderAmount: undefined,
       code: "",
-      isAutoApply: false,
-      maxUsageCount: "",
+      isAutoApply: true,
       userUsageLimit: "",
-      applicableProducts: [],
-      currentLang: lang
+      isActive: true,
+      currentLang: lang,
     },
   });
-  const { formState: { isSubmitting } } = form;
 
-  const [watchOfferType, watchApplicableProducts, buyQty, getQty] = useWatch({
-    control: form.control,
-    name: ["offerType", "applicableProducts", "buyQty", "getQty"],
+  const {
+    formState: { isSubmitting },
+    control,
+    setValue,
+    getValues,
+    setError,
+    clearErrors,
+  } = form;
+
+  const [
+    watchOfferType,
+    watchIsAutoApply,
+    watchScopeType,
+    watchRewardType,
+    watchScopeProducts,
+    watchBuyProductIds,
+    watchRewardProductId,
+    // watchRewardVariationSku,
+    watchRewardOptions,
+  ] = useWatch({
+    control,
+    name: [
+      "offerType",
+      "isAutoApply",
+      "scopeType",
+      "buyAndReward.reward.type",
+      "scopeProducts",
+      "buyAndReward.buy.productIds",
+      "buyAndReward.reward.productId",
+      // "buyAndReward.reward.variationSku",
+      "buyAndReward.reward.options",
+    ],
   });
 
-  const onSubmit = async (data: TOfferForm) => {
-    const toastId = toast.loading("Creating offer...");
-    let isAutoApply = data.isAutoApply;
-    if (data.offerType === "BOGO") {
-      isAutoApply = true;
-    } else if (data.offerType === "FLAT") {
-      delete data.maxDiscountAmount;
-    } else if (isAutoApply) {
-      delete data.code;
+  const productsById = useMemo(() => {
+    const map = new Map<string, TProduct>();
+    products.forEach((p) => map.set(p._id as string, p));
+    return map;
+  }, [products]);
+
+  const fixedRewardProduct = watchRewardProductId
+    ? productsById.get(watchRewardProductId)
+    : undefined;
+  const fixedNeedsSku = fixedRewardProduct
+    ? productHasVariations(fixedRewardProduct)
+    : false;
+  const fixedSkuOptions = fixedRewardProduct
+    ? getProductSkuOptions(fixedRewardProduct, lang)
+    : [];
+
+  const toggleInArray = (
+    fieldName: "scopeProducts" | "buyAndReward.buy.productIds",
+    id: string,
+  ) => {
+    const current = (getValues(fieldName) as string[]) || [];
+    const next = current.includes(id)
+      ? current.filter((x) => x !== id)
+      : [...current, id];
+    setValue(fieldName, next, { shouldValidate: true });
+  };
+
+  const toggleCategoryProducts = (
+    fieldName: "scopeProducts" | "buyAndReward.buy.productIds",
+    categoryId: string,
+    selectAll: boolean,
+  ) => {
+    const idsInCat = products
+      .filter((p) => {
+        const catId = (p as any).category?._id || "uncategorized";
+        return catId === categoryId;
+      })
+      .map((p) => p._id as string);
+
+    const current = (getValues(fieldName) as string[]) || [];
+    const next = selectAll
+      ? Array.from(new Set([...current, ...idsInCat]))
+      : current.filter((id) => !idsInCat.includes(id));
+
+    setValue(fieldName, next, { shouldValidate: true });
+  };
+
+  const selectSingleRewardProduct = (productId: string) => {
+    const current = getValues("buyAndReward.reward.productId");
+    const next = current === productId ? "" : productId;
+    setValue("buyAndReward.reward.productId", next, { shouldValidate: true });
+    setValue("buyAndReward.reward.variationSku", "", { shouldValidate: true });
+  };
+
+  const toggleRewardOptionProduct = (productId: string) => {
+    const current =
+      (getValues("buyAndReward.reward.options") as any[]) || [];
+    const exists = current.find((o) => o.productId === productId);
+
+    if (exists) {
+      setValue(
+        "buyAndReward.reward.options",
+        current.filter((o) => o.productId !== productId),
+        { shouldValidate: true },
+      );
     } else {
-      isAutoApply = data.isAutoApply;
+      setValue(
+        "buyAndReward.reward.options",
+        [...current, { productId, variationSku: "" }],
+        { shouldValidate: true },
+      );
+    }
+  };
+
+  const setOptionSku = (productId: string, sku: string) => {
+    const current =
+      (getValues("buyAndReward.reward.options") as any[]) || [];
+    setValue(
+      "buyAndReward.reward.options",
+      current.map((o) =>
+        o.productId === productId ? { ...o, variationSku: sku } : o,
+      ),
+      { shouldValidate: true },
+    );
+  };
+
+  const selectedRewardOptionIds = useMemo(() => {
+    return (watchRewardOptions || [])
+      .map((o: any) => o.productId)
+      .filter(Boolean);
+  }, [watchRewardOptions]);
+
+  /** Validate SKUs required for products with variations before submit */
+  const validateVariationSkus = (data: TOfferForm): boolean => {
+    clearErrors("buyAndReward.reward.variationSku");
+    clearErrors("buyAndReward.reward.options");
+
+    if (data.offerType !== "BUY_AND_REWARD" || !data.buyAndReward) return true;
+
+    const reward = data.buyAndReward.reward;
+
+    if (reward.type === "FIXED_PRODUCT" && reward.productId) {
+      const prod = productsById.get(reward.productId);
+      if (prod && productHasVariations(prod)) {
+        if (!reward.variationSku || !reward.variationSku.trim()) {
+          setError("buyAndReward.reward.variationSku", {
+            type: "manual",
+            message: "Variation SKU is required for this product",
+          });
+          return false;
+        }
+      }
     }
 
+    if (reward.type === "CUSTOMER_CHOICE" && reward.options?.length) {
+      for (let i = 0; i < reward.options.length; i++) {
+        const opt = reward.options[i];
+        const prod = productsById.get(opt.productId);
+        if (prod && productHasVariations(prod)) {
+          if (!opt.variationSku || !opt.variationSku.trim()) {
+            setError("buyAndReward.reward.options", {
+              type: "manual",
+              message: `Variation SKU is required for ${prod.name?.[lang as "en" | "pt"] || "selected product"}`,
+            });
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  };
+
+  const onSubmit = async (data: TOfferForm) => {
+    if (!validateVariationSkus(data)) {
+      toast.error("Please select variation SKU for products that have variations");
+      return;
+    }
+
+    const toastId = toast.loading("Creating offer...");
+
     try {
-      const transPayload = {
-        title: data.title,
-        description: data.description
-      };
-      const translated = await translateObject(transPayload, lang);
+      const translated = await translateObject(
+        { title: data.title, description: data.description },
+        lang,
+      );
 
       if (!translated) {
         toast.error("Translation failed!", { id: toastId });
         return;
       }
 
-      const offerData: Partial<TOffer> = {
+      const offerData: Record<string, any> = {
         title: translated.title,
         description: translated.description,
         offerType: data.offerType,
-        validFrom: data.validFrom,
-        expiresAt: data.expiresAt,
-        minOrderAmount: data.minOrderAmount,
-        ...(data.discountValue && { discountValue: data.discountValue }),
-        ...(data.maxDiscountAmount && { maxDiscountAmount: data.maxDiscountAmount }),
-        ...(data.code && { code: data.code }),
-        ...(isAutoApply && { isAutoApply: isAutoApply }),
-        applicableProducts: data.applicableProducts,
-
-        ...(data.offerType === "BOGO"
-          ? {
-            bogo: {
-              buyQty: data.buyQty as number,
-              getQty: data.getQty as number,
-              buyProductId: data.buyProductId as string,
-              ...(data.getProductId && {
-                getProductId: data.getProductId as string,
-              })
-            },
-          }
+        validFrom: format(data.validFrom, "yyyy-MM-dd"),
+        expiresAt: format(data.expiresAt, "yyyy-MM-dd"),
+        ...(data.minOrderAmount != null && data.minOrderAmount > 0
+          ? { minOrderAmount: data.minOrderAmount }
           : {}),
-
-        ...(data.maxUsageCount
-          ? { maxUsageCount: Number(data.maxUsageCount) }
-          : {}),
-
         ...(data.userUsageLimit
           ? { userUsageLimit: Number(data.userUsageLimit) }
           : {}),
+        isActive: data.isActive ?? true,
+        isAutoApply: data.isAutoApply ?? false,
       };
 
-      if (isSelectedAllProducts) {
-        delete offerData.applicableProducts;
+      if (data.offerType === "PERCENT" || data.offerType === "FLAT") {
+        offerData.discountValue = data.discountValue;
+
+        if (data.offerType === "PERCENT" && data.maxDiscountAmount != null) {
+          offerData.maxDiscountAmount = data.maxDiscountAmount;
+        }
+
+        if (
+          data.scopeType === "SPECIFIC_PRODUCTS" &&
+          data.scopeProducts?.length
+        ) {
+          offerData.scopeType = "SPECIFIC_PRODUCTS";
+          offerData.scopeProducts = data.scopeProducts;
+        } else {
+          offerData.scopeType = "ALL_PRODUCTS"
+        }
+
+        if (!data.isAutoApply && data.code) {
+          offerData.code = data.code.toUpperCase();
+        }
       }
 
-      if (data.maxUsageCount === "") {
-        delete offerData.maxUsageCount;
-      }
+      if (data.offerType === "BUY_AND_REWARD" && data.buyAndReward) {
+        offerData.isAutoApply = true;
 
-      if (data.userUsageLimit === "") {
-        delete offerData.userUsageLimit;
-      }
+        const buy: Record<string, any> = {
+          scope: "SPECIFIC_PRODUCTS",
+          productIds: data.buyAndReward.buy.productIds || [],
+          quantity: data.buyAndReward.buy.quantity,
+        };
 
-      const result = await createOfferReq(offerData);
+        const reward: Record<string, any> = {
+          type: data.buyAndReward.reward.type,
+          quantity: data.buyAndReward.reward.quantity,
+        };
+
+        if (data.buyAndReward.reward.type === "FIXED_PRODUCT") {
+          reward.productId = data.buyAndReward.reward.productId;
+          if (data.buyAndReward.reward.variationSku) {
+            reward.variationSku = data.buyAndReward.reward.variationSku;
+          }
+        }
+
+        if (data.buyAndReward.reward.type === "CUSTOMER_CHOICE") {
+          reward.options = (data.buyAndReward.reward.options || [])
+            .filter((opt) => opt.productId)
+            .map((opt) => {
+              const o: any = { productId: opt.productId };
+              if (opt.variationSku) o.variationSku = opt.variationSku;
+              return o;
+            });
+        }
+
+        offerData.buyAndReward = { buy, reward };
+      }
+      console.log("payload", offerData);
+      const result = await createOfferReq(offerData as Partial<TOffer>);
 
       if (result.success) {
-        toast.success(
-          result.message || "Offer created successfully!",
-          { id: toastId }
-        );
+        toast.success(result.message || "Offer created successfully!", {
+          id: toastId,
+        });
         form.reset();
-        router.push('/vendor/offers');
+        router.push("/vendor/offers");
         return;
       }
 
-      toast.error(
-        result.message || "Offer creation failed",
-        { id: toastId }
-      );
+      if (result?.data?.errorSources) {
+        result.data.errorSources.forEach(
+          (err: { path: string; message: string }) => {
+            toast.error(err.message, { id: toastId });
+          },
+        );
+        return;
+      }
+
+      toast.error(result.message || "Offer creation failed", { id: toastId });
     } catch (error: any) {
       console.error(error);
-
       toast.error(
         error?.response?.data?.message ||
         error?.message ||
         "Offer creation failed",
-        { id: toastId }
+        { id: toastId },
       );
     }
   };
 
   return (
     <div className="min-h-screen space-y-10">
-      {/* HEADER */}
       <TitleHeader
         title={t("create_new_offer")}
         subtitle={t("add_promotion_boost_restaurant")}
@@ -206,7 +402,6 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
       <Card className="rounded-3xl bg-white border shadow-lg">
         <CardContent className="p-0">
-          {/* OFFER DETAILS */}
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -216,208 +411,42 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                 <h2 className="font-bold text-lg">{t("offer_details")}</h2>
                 <Separator />
 
-                {lang === "en" && <FormField
-                  control={form.control}
-                  name="title.en"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("offer_title_20_perc_off")} <span className="text-red-600">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t("offer_title_20_perc_off")}
-                          className="h-12 text-base"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />}
-
-                {lang === "pt" && <FormField
-                  control={form.control}
-                  name="title.pt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("offer_title_20_perc_off")} <span className="text-red-600">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t("offer_title_20_perc_off")}
-                          className="h-12 text-base"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />}
-
-                {lang === "en" && <FormField
-                  control={form.control}
-                  name="description.en"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("offer_description")} <span className="text-red-600">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder={t("offer_description")}
-                          className="text-base"
-                          rows={4}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />}
-
-                {lang === "pt" && <FormField
-                  control={form.control}
-                  name="description.pt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-medium text-sm text-gray-700">
-                        {t("offer_description")} <span className="text-red-600">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder={t("offer_description")}
-                          className="text-base"
-                          rows={4}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />}
-
-                <FormField
-                  control={form.control}
-                  name="offerType"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormControl>
-                        <div className="space-y-2">
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("offer_type")} <span className="text-red-600">*</span>
-                          </FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <SelectTrigger
-                              className={cn(
-                                "w-full h-12!",
-                                fieldState.invalid ? "border-destructive" : "",
-                              )}
-                            >
-                              <SelectValue placeholder={t("select_type")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="PERCENT">
-                                {t("percentage_discount")}
-                              </SelectItem>
-                              <SelectItem value="FLAT">
-                                {t("flat_amount_off")}
-                              </SelectItem>
-                              <SelectItem value="BOGO">
-                                {t("buy")} {buyQty} {t("get")} {getQty}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* CONDITIONAL INPUTS */}
-                {watchOfferType === "PERCENT" && (
-                  <div className="flex flex-col md:flex-row items-center gap-5 w-full">
-                    <FormField
-                      control={form.control}
-                      name="discountValue"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("discount_perc_20")} <span className="text-red-600">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={t("discount_perc_20")}
-                              type="number"
-                              min={0}
-                              max={100}
-                              className="h-12 text-base w-full"
-                              {...field}
-                              value={String(field.value)}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="maxDiscountAmount"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("max_discount_amount")}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={t("max_discount_amount")}
-                              type="number"
-                              min={0}
-                              max={1000}
-                              className="h-12 text-base w-full"
-                              {...field}
-                              value={String(field.value)}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-
-                {watchOfferType === "FLAT" && (
+                {lang === "en" ? (
                   <FormField
-                    control={form.control}
-                    name="discountValue"
+                    control={control}
+                    name="title.en"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-medium text-sm text-gray-700">
-                          {t("discount_value")} <span className="text-red-600">*</span>
+                        <FormLabel>
+                          {t("offer_title_20_perc_off")}{" "}
+                          <span className="text-red-600">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder={t("flat_discount")}
-                            type="number"
-                            min={0}
-                            max={100}
-                            className="h-12 text-base"
+                            placeholder={t("offer_title_20_perc_off")}
+                            className="h-12"
                             {...field}
-                            value={String(field.value)}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <FormField
+                    control={control}
+                    name="title.pt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t("offer_title_20_perc_off")}{" "}
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t("offer_title_20_perc_off")}
+                            className="h-12"
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -426,185 +455,678 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   />
                 )}
 
-                {watchOfferType === "BOGO" && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="buyProductId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("buy_product")} <span className="text-red-600">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <div className="space-y-2">
+                {lang === "en" ? (
+                  <FormField
+                    control={control}
+                    name="description.en"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t("offer_description")}{" "}
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder={t("offer_description")}
+                            rows={3}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <FormField
+                    control={control}
+                    name="description.pt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t("offer_description")}{" "}
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder={t("offer_description")}
+                            rows={3}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                <FormField
+                  control={control}
+                  name="offerType"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("offer_type")}{" "}
+                        <span className="text-red-600">*</span>
+                      </FormLabel>
+                      <Select
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          if (val === "BUY_AND_REWARD") {
+                            setValue("isAutoApply", true);
+                          }
+                        }}
+                        value={field.value}
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            "w-full h-12",
+                            fieldState.invalid && "border-destructive",
+                          )}
+                        >
+                          <SelectValue placeholder={t("select_type")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="PERCENT">
+                            {t("percentage_discount")}
+                          </SelectItem>
+                          <SelectItem value="FLAT">
+                            {t("flat_amount_off")}
+                          </SelectItem>
+                          <SelectItem value="BUY_AND_REWARD">
+                            Buy & Reward
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {(watchOfferType === "PERCENT" ||
+                  watchOfferType === "FLAT") && (
+                    <>
+                      <div className="flex flex-col md:flex-row gap-5">
+                        <FormField
+                          control={control}
+                          name="discountValue"
+                          render={({ field }) => (
+                            <FormItem className="w-full">
+                              <FormLabel>
+                                {watchOfferType === "PERCENT"
+                                  ? t("discount_perc_20")
+                                  : t("discount_value")}{" "}
+                                <span className="text-red-600">*</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  placeholder={
+                                    watchOfferType === "PERCENT"
+                                      ? t("discount_perc_20")
+                                      : t("discount_value")
+                                  }
+                                  min={0}
+                                  max={
+                                    watchOfferType === "PERCENT"
+                                      ? 100
+                                      : undefined
+                                  }
+                                  className="h-12"
+                                  value={field.value ?? ""}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.value === ""
+                                        ? undefined
+                                        : Number(e.target.value),
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {watchOfferType === "PERCENT" && (
+                          <FormField
+                            control={control}
+                            name="maxDiscountAmount"
+                            render={({ field }) => (
+                              <FormItem className="w-full">
+                                <FormLabel>
+                                  {t("max_discount_amount")}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder={t("max_discount_amount")}
+                                    min={0}
+                                    className="h-12"
+                                    value={field.value ?? ""}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        e.target.value === ""
+                                          ? undefined
+                                          : Number(e.target.value),
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label className="font-medium text-sm text-gray-700">
+                          Applicable Products
+                        </Label>
+                        <div className="flex flex-wrap gap-6">
+                          <Label className="flex items-center gap-2 cursor-pointer">
+                            <Input
+                              type="radio"
+                              className="w-4 h-4 accent-[#DC3173]"
+                              checked={!watchScopeType}
+                              onChange={() => {
+                                setValue("scopeType", "ALL_PRODUCTS");
+                                setValue("scopeProducts", []);
+                              }}
+                            />
+                            <span className="text-sm">All Products</span>
+                          </Label>
+                          <Label className="flex items-center gap-2 cursor-pointer">
+                            <Input
+                              type="radio"
+                              className="w-4 h-4 accent-[#DC3173]"
+                              checked={
+                                watchScopeType === "SPECIFIC_PRODUCTS"
+                              }
+                              onChange={() => {
+                                setValue("scopeType", "SPECIFIC_PRODUCTS");
+                              }}
+                            />
+                            <span className="text-sm">
+                              Specific Products
+                            </span>
+                          </Label>
+                        </div>
+
+                        {watchScopeType === "SPECIFIC_PRODUCTS" && (
+                          <FormField
+                            control={control}
+                            name="scopeProducts"
+                            render={() => (
+                              <FormItem className="space-y-2 pt-1">
+                                <ProductSelector
+                                  products={products}
+                                  lang={lang}
+                                  selectionMode="multi"
+                                  selectedIds={watchScopeProducts || []}
+                                  onToggle={(id) =>
+                                    toggleInArray("scopeProducts", id)
+                                  }
+                                  onToggleCategory={(catId, selectAll) =>
+                                    toggleCategoryProducts(
+                                      "scopeProducts",
+                                      catId,
+                                      selectAll,
+                                    )
+                                  }
+                                  height="h-72"
+                                />
+                                {(watchScopeProducts?.length ?? 0) > 0 && (
+                                  <p className="text-xs text-muted-foreground">
+                                    {watchScopeProducts!.length} product
+                                    {watchScopeProducts!.length === 1
+                                      ? ""
+                                      : "s"}{" "}
+                                    selected
+                                  </p>
+                                )}
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                {watchOfferType === "BUY_AND_REWARD" && (
+                  <div className="space-y-6 border border-gray-200 rounded-xl p-5 bg-gray-50/50 grid grid-cols-1 lg:grid-cols-2 lg:gap-8">
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-base">
+                        Buy Condition
+                      </h3>
+
+                      <FormField
+                        control={control}
+                        name="buyAndReward.buy.quantity"
+                        render={({ field }) => (
+                          <FormItem className="max-w-xs">
+                            <FormLabel>
+                              Buy Quantity{" "}
+                              <span className="text-red-600">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min={1}
+                                className="h-12"
+                                value={field.value ?? 1}
+                                onChange={(e) =>
+                                  field.onChange(
+                                    Number(e.target.value) || 1,
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={control}
+                        name="buyAndReward.buy.productIds"
+                        render={() => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-sm font-medium">
+                              Products to buy{" "}
+                              <span className="text-red-600">*</span>
+                            </FormLabel>
+                            <ProductSelector
+                              products={products}
+                              lang={lang}
+                              selectionMode="multi"
+                              selectedIds={watchBuyProductIds || []}
+                              onToggle={(id) =>
+                                toggleInArray(
+                                  "buyAndReward.buy.productIds",
+                                  id,
+                                )
+                              }
+                              onToggleCategory={(catId, selectAll) =>
+                                toggleCategoryProducts(
+                                  "buyAndReward.buy.productIds",
+                                  catId,
+                                  selectAll,
+                                )
+                              }
+                              height="h-64"
+                            />
+                            {(watchBuyProductIds?.length ?? 0) > 0 && (
+                              <p className="text-xs text-muted-foreground">
+                                {watchBuyProductIds!.length} product
+                                {watchBuyProductIds!.length === 1
+                                  ? ""
+                                  : "s"}{" "}
+                                selected
+                              </p>
+                            )}
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-base">Reward</h3>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={control}
+                          name="buyAndReward.reward.type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Reward Type</FormLabel>
                               <Select
-                                onValueChange={field.onChange}
+                                onValueChange={(val) => {
+                                  field.onChange(val);
+                                  setValue(
+                                    "buyAndReward.reward.productId",
+                                    "",
+                                  );
+                                  setValue(
+                                    "buyAndReward.reward.variationSku",
+                                    "",
+                                  );
+                                  setValue(
+                                    "buyAndReward.reward.options",
+                                    [],
+                                  );
+                                }}
                                 value={field.value}
                               >
-                                <SelectTrigger className="w-full h-12!">
-                                  <SelectValue
-                                    placeholder={t("choose_an_item")}
-                                  />
+                                <SelectTrigger className="h-12">
+                                  <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {itemsResult?.data.map((item: TProduct) => (
-                                    <SelectItem
-                                      key={item._id}
-                                      value={item._id as string}
-                                    >
-                                      {item.name?.[lang]}
-                                    </SelectItem>
-                                  ))}
+                                  <SelectItem value="SAME_PRODUCT">
+                                    Same Product
+                                  </SelectItem>
+                                  <SelectItem value="FIXED_PRODUCT">
+                                    Fixed Product
+                                  </SelectItem>
+                                  <SelectItem value="CUSTOMER_CHOICE">
+                                    Customer Choice
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="getProductId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("get_product")}
-                          </FormLabel>
-                          <FormControl>
-                            <div className="space-y-2">
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <SelectTrigger className="w-full h-12!">
-                                  <SelectValue
-                                    placeholder={t("choose_an_item")}
-                                  />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {itemsResult?.data.map((item: TProduct) => (
-                                    <SelectItem
-                                      key={item._id}
-                                      value={item._id as string}
-                                    >
-                                      {item.name?.[lang]}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="buyQty"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("buy_quantity")} <span className="text-red-600">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={t("buy_quantity")}
-                              type="number"
-                              min={1}
-                              className="h-12 text-base"
-                              {...field}
-                              value={String(field.value)}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={control}
+                          name="buyAndReward.reward.quantity"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                Reward Quantity{" "}
+                                <span className="text-red-600">*</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  min={1}
+                                  className="h-12"
+                                  value={field.value ?? 1}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      Number(e.target.value) || 1,
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {watchRewardType === "FIXED_PRODUCT" && (
+                        <div className="space-y-3">
+                          <FormField
+                            control={control}
+                            name="buyAndReward.reward.productId"
+                            render={() => (
+                              <FormItem className="space-y-2">
+                                <FormLabel className="text-sm font-medium">
+                                  Reward Product{" "}
+                                  <span className="text-red-600">*</span>
+                                </FormLabel>
+                                <ProductSelector
+                                  products={products}
+                                  lang={lang}
+                                  selectionMode="single"
+                                  selectedIds={
+                                    watchRewardProductId
+                                      ? [watchRewardProductId]
+                                      : []
+                                  }
+                                  onToggle={(id) =>
+                                    selectSingleRewardProduct(id)
+                                  }
+                                  onToggleCategory={() => { }}
+                                  height="h-56"
+                                />
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {fixedNeedsSku && (
+                            <FormField
+                              control={control}
+                              name="buyAndReward.reward.variationSku"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>
+                                    Variation SKU{" "}
+                                    <span className="text-red-600">*</span>
+                                  </FormLabel>
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value || ""}
+                                  >
+                                    <SelectTrigger className="h-12">
+                                      <SelectValue placeholder="Select variation SKU" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {fixedSkuOptions.map((opt) => (
+                                        <SelectItem
+                                          key={opt.sku}
+                                          value={opt.sku}
+                                        >
+                                          {opt.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                          )}
+                        </div>
                       )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="getQty"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("get_quantity")} <span className="text-red-600">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={t("get_quantity")}
-                              type="number"
-                              min={1}
-                              className="h-12 text-base"
-                              {...field}
-                              value={String(field.value)}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+
+                      {watchRewardType === "CUSTOMER_CHOICE" && (
+                        <FormField
+                          control={control}
+                          name="buyAndReward.reward.options"
+                          render={() => (
+                            <FormItem className="space-y-3">
+                              <FormLabel className="text-sm font-medium">
+                                Reward Options{" "}
+                                <span className="text-red-600">*</span>
+                              </FormLabel>
+                              <ProductSelector
+                                products={products}
+                                lang={lang}
+                                selectionMode="multi"
+                                selectedIds={selectedRewardOptionIds}
+                                onToggle={(id) =>
+                                  toggleRewardOptionProduct(id)
+                                }
+                                onToggleCategory={(catId, selectAll) => {
+                                  const idsInCat = products
+                                    .filter((p) => {
+                                      const cId =
+                                        (p as any).category?._id ||
+                                        "uncategorized";
+                                      return cId === catId;
+                                    })
+                                    .map((p) => p._id as string);
+
+                                  const current =
+                                    (getValues(
+                                      "buyAndReward.reward.options",
+                                    ) as any[]) || [];
+
+                                  if (selectAll) {
+                                    const existingIds = new Set(
+                                      current.map((o) => o.productId),
+                                    );
+                                    const toAdd = idsInCat
+                                      .filter((id) => !existingIds.has(id))
+                                      .map((id) => ({
+                                        productId: id,
+                                        variationSku: "",
+                                      }));
+                                    setValue(
+                                      "buyAndReward.reward.options",
+                                      [...current, ...toAdd],
+                                      { shouldValidate: true },
+                                    );
+                                  } else {
+                                    setValue(
+                                      "buyAndReward.reward.options",
+                                      current.filter(
+                                        (o) =>
+                                          !idsInCat.includes(o.productId),
+                                      ),
+                                      { shouldValidate: true },
+                                    );
+                                  }
+                                }}
+                                height="h-56"
+                              />
+
+                              {/* SKU per selected option when product has variations */}
+                              {selectedRewardOptionIds.length > 0 && (
+                                <div className="space-y-3 pt-2 border-t border-gray-100">
+                                  {(watchRewardOptions || []).map(
+                                    (opt: any) => {
+                                      if (!opt.productId) return null;
+                                      const prod = productsById.get(
+                                        opt.productId,
+                                      );
+                                      if (
+                                        !prod ||
+                                        !productHasVariations(prod)
+                                      )
+                                        return null;
+                                      const skuOpts = getProductSkuOptions(
+                                        prod,
+                                        lang,
+                                      );
+                                      return (
+                                        <div
+                                          key={opt.productId}
+                                          className="space-y-1"
+                                        >
+                                          <Label className="text-sm">
+                                            SKU for{" "}
+                                            {prod.name?.[
+                                              lang as "en" | "pt"
+                                            ] || "product"}{" "}
+                                            <span className="text-red-600">
+                                              *
+                                            </span>
+                                          </Label>
+                                          <Select
+                                            value={opt.variationSku || ""}
+                                            onValueChange={(sku) =>
+                                              setOptionSku(
+                                                opt.productId,
+                                                sku,
+                                              )
+                                            }
+                                          >
+                                            <SelectTrigger className="h-11">
+                                              <SelectValue placeholder="Select variation SKU" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              {skuOpts.map((s) => (
+                                                <SelectItem
+                                                  key={s.sku}
+                                                  value={s.sku}
+                                                >
+                                                  {s.label}
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                      );
+                                    },
+                                  )}
+                                </div>
+                              )}
+
+                              {selectedRewardOptionIds.length > 0 && (
+                                <p className="text-xs text-muted-foreground">
+                                  {selectedRewardOptionIds.length} option
+                                  {selectedRewardOptionIds.length === 1
+                                    ? ""
+                                    : "s"}{" "}
+                                  selected
+                                </p>
+                              )}
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       )}
-                    />
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* VALIDITY */}
               <div className="space-y-4">
                 <h2 className="font-bold text-lg">{t("validity")}</h2>
                 <Separator />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
-                    control={form.control}
+                    control={control}
                     name="validFrom"
                     render={({ field }) => (
                       <FormItem>
+                        <FormLabel>
+                          {t("start_date")}{" "}
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <div className="space-y-2">
-                            <FormLabel className="font-medium text-sm text-gray-700">
-                              {t("start_date")} <span className="text-red-600">*</span>
-                            </FormLabel>
-                            <Input
-                              type="date"
-                              className="h-12"
-                              min={format(new Date(), "yyyy-MM-dd")}
-                              value={field.value ? format(new Date(field.value), "yyyy-MM-dd") : ""}
-                              onChange={(e) =>
-                                field.onChange(e.target.value ? new Date(e.target.value) : null)
-                              }
-                            />
-                          </div>
+                          <Input
+                            type="date"
+                            className="h-12"
+                            min={format(new Date(), "yyyy-MM-dd")}
+                            value={
+                              field.value
+                                ? format(
+                                  new Date(field.value),
+                                  "yyyy-MM-dd",
+                                )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value
+                                  ? new Date(e.target.value)
+                                  : null,
+                              )
+                            }
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={control}
                     name="expiresAt"
                     render={({ field }) => (
                       <FormItem>
+                        <FormLabel>
+                          {t("end_date")}{" "}
+                          <span className="text-red-600">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <div className="space-y-2">
-                            <FormLabel className="font-medium text-sm text-gray-700">
-                              {t("end_date")} <span className="text-red-600">*</span>
-                            </FormLabel>
-                            <Input
-                              type="date"
-                              className="h-12"
-                              min={format(new Date(), "yyyy-MM-dd")}
-                              value={field.value ? format(new Date(field.value), "yyyy-MM-dd") : ""}
-                              onChange={(e) =>
-                                field.onChange(e.target.value ? new Date(e.target.value) : null)
-                              }
-                            />
-                          </div>
+                          <Input
+                            type="date"
+                            className="h-12"
+                            min={format(new Date(), "yyyy-MM-dd")}
+                            value={
+                              field.value
+                                ? format(
+                                  new Date(field.value),
+                                  "yyyy-MM-dd",
+                                )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value
+                                  ? new Date(e.target.value)
+                                  : null,
+                              )
+                            }
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -613,133 +1135,26 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                 </div>
 
                 <FormField
-                  control={form.control}
+                  control={control}
                   name="minOrderAmount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormControl>
-                        <div className="space-y-2">
-                          <FormLabel className="font-medium text-sm text-gray-700">
-                            {t("minimum_order_amount")}
-                          </FormLabel>
-                          <Input
-                            type="number"
-                            min={0}
-                            className="h-12 text-base"
-                            {...field}
-                            value={String(field.value)}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="maxUsageCount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="space-y-2">
-                            <FormLabel className="font-medium text-sm text-gray-700">
-                              {t("maximum_usage_count")}
-                            </FormLabel>
-                            <Input
-                              placeholder={t("maximum_usage_count")}
-                              type="number"
-                              min={0}
-                              className="h-12 text-base"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="userUsageLimit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="space-y-2">
-                            <FormLabel className="font-medium text-sm text-gray-700">
-                              {t("users_usage_limit")}
-                            </FormLabel>
-                            <Input
-                              placeholder={t("users_usage_limit")}
-                              type="number"
-                              min={0}
-                              className="h-12 text-base"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {watchOfferType !== "BOGO" && <FormField
-                  control={form.control}
-                  name="isAutoApply"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <FormLabel className="flex space-y-2 gap-2 items-center">
-                          <Input
-                            type="checkbox"
-                            placeholder={t("offer_description")}
-                            className="w-4 h-4 mb-0"
-                            {...field}
-                            checked={field.value ? true : false}
-                            value={"true"}
-                            onChange={(e) => {
-                              field.onChange(e.target.checked)
-                              setIsAutoApply(e.target.checked);
-                            }}
-                          />
-                          <span
-                            onClick={() => {
-                              setIsAutoApply(!field.value);
-                              field.onChange(!field.value)
-                            }}
-                            className="font-medium text-sm text-gray-700"
-                          >
-                            {t("will_auto_apply")}
-                          </span>
-                        </FormLabel>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />}
-              </div>
-
-              {/* PROMO CODE */}
-              {(watchOfferType !== "BOGO" && !isAutoApply) && <div className="space-y-4">
-                <h2 className="font-bold text-lg">{t("promo_code")}</h2>
-                <Separator />
-                <FormField
-                  control={form.control}
-                  name="code"
-                  render={({ field }) => (
-                    <FormItem>
+                      <FormLabel>
+                        {t("minimum_order_amount")}
+                      </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t("enter_promo_code")}
-                          className="h-12 text-base uppercase"
-                          {...field}
+                          type="number"
+                          placeholder={t("minimum_order_amount")}
+                          min={0}
+                          className="h-12"
+                          value={field.value ?? ""}
                           onChange={(e) =>
-                            field.onChange(e.target.value.toUpperCase())
+                            field.onChange(
+                              e.target.value === ""
+                                ? undefined
+                                : Number(e.target.value),
+                            )
                           }
                         />
                       </FormControl>
@@ -747,139 +1162,102 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     </FormItem>
                   )}
                 />
-              </div>}
 
-              {/* APPLICABLE PRODUCTS */}
-              {watchOfferType !== "BOGO" && <div className="space-y-4">
-                <h2 className="font-bold text-lg">{t("applicable_products")}</h2>
-                <Separator />
-
-                <div className="flex items-center w-full gap-4">
-                  <Label className="font-medium text-sm text-gray-700">
-                    <Input
-                      className="w-4 h-4"
-                      name="products"
-                      type="radio"
-                      checked={isSelectedAllProducts}
-                      onChange={() => {
-                        setIsSelectedAllProducts(true);
-                      }}
-                    />
-                    <span>{t("all_products")}</span>
-                  </Label>
-                  <Label className="font-medium text-sm text-gray-700">
-                    <Input
-                      className="w-4 h-4"
-                      name="products"
-                      type="radio"
-                      checked={!isSelectedAllProducts}
-                      onChange={() => {
-                        setIsSelectedAllProducts(false);
-                      }}
-                    />
-                    <span>{t("selected_products")}</span>
-                  </Label>
-                </div>
-
-                {!isSelectedAllProducts &&
-                  watchApplicableProducts &&
-                  watchApplicableProducts?.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-1">
-                      {watchApplicableProducts?.map((itemId) => (
-                        <div
-                          key={itemId}
-                          className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
-                        >
-                          <span>
-                            {itemsResult.data.find((i) => i._id === itemId)
-                              ?.name?.[lang] || "-"}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setFilteredItems((prev) => {
-                                const removedItem = itemsResult.data.find(
-                                  (i) => i._id === itemId,
-                                );
-                                if (removedItem) {
-                                  return [...prev, removedItem];
-                                }
-                                return prev;
-                              });
-                              form.setValue(
-                                "applicableProducts",
-                                watchApplicableProducts.filter(
-                                  (i) => i !== itemId,
-                                ),
-                              );
-                            }}
-                            className="ml-2 text-white hover:text-[#CCC]"
-                          >
-                            <XIcon className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                <FormField
+                  control={control}
+                  name="userUsageLimit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("users_usage_limit")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder={t("users_usage_limit")}
+                          min={1}
+                          className="h-12"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
+                />
 
-                {!isSelectedAllProducts && (
+                {watchOfferType !== "BUY_AND_REWARD" && (
                   <FormField
-                    control={form.control}
-                    name="applicableProducts"
+                    control={control}
+                    name="isAutoApply"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <div className="space-y-2">
-                            <Select
-                              onValueChange={(value) => {
-                                const newValue = [
-                                  ...(field.value || []),
-                                  value,
-                                ];
-                                field.onChange(newValue);
-                                setFilteredItems((prev) =>
-                                  prev.filter((item) => item._id !== value),
-                                );
-                              }}
-                              value="select_products"
-                            >
-                              <SelectTrigger className="w-full h-12!">
-                                <SelectValue placeholder={t("select_products")} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="select_products">
-                                  {t("select_products")}
-                                </SelectItem>
-                                {filteredItems?.map((item: TProduct) => (
-                                  <SelectItem
-                                    key={item._id}
-                                    value={item._id as string}
-                                  >
-                                    {item.name?.[lang]}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
+                        <FormLabel className="flex items-center gap-2 cursor-pointer">
+                          <Input
+                            type="checkbox"
+                            className="w-4 h-4"
+                            checked={!!field.value}
+                            onChange={(e) =>
+                              field.onChange(e.target.checked)
+                            }
+                          />
+                          <span>{t("will_auto_apply")}</span>
+                        </FormLabel>
                       </FormItem>
                     )}
                   />
                 )}
-              </div>}
+              </div>
 
-              {/* ACTION */}
+              {watchOfferType !== "BUY_AND_REWARD" &&
+                !watchIsAutoApply && (
+                  <div className="space-y-4">
+                    <h2 className="font-bold text-lg">
+                      {t("promo_code")}
+                    </h2>
+                    <Separator />
+                    <FormField
+                      control={control}
+                      name="code"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder={t("enter_promo_code")}
+                              className="h-12 uppercase"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value.toUpperCase(),
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+
               <div className="pt-4 flex justify-end gap-4">
-                <Button variant="outline" className="h-12 px-6 text-base">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-12 px-6"
+                  onClick={() => router.back()}
+                >
                   {t("cancel")}
                 </Button>
                 <Button
-                  className="h-12 px-6 text-base text-white"
+                  type="submit"
+                  className="h-12 px-6 text-white"
                   style={{ background: PRIMARY }}
                   disabled={isSubmitting}
                 >
-                  {t("create_offer")}
+                  {isSubmitting
+                    ? "Creating..."
+                    : t("create_offer")}
                 </Button>
               </div>
             </form>

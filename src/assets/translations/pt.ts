@@ -842,6 +842,8 @@ export const pt = {
   add_product_categories: "Adicionar Categorias de Produtos",
   all_product_categories: "Todas as Categorias de Produtos",
   add_new_item: "Adicionar Novo Item",
+  update_discounts: "Atualizar Descontos",
+  increase_prices: "Aumentar Preços",
   stock_management: "Gestão de Stock",
   variation_management: "Gerenciamento de Variações",
   add_ons: "Extras",
@@ -1133,6 +1135,7 @@ export const pt = {
   back_to_items: "Voltar aos Itens",
   product_id: "ID do Produto",
   featured: "Em Destaque",
+  inc_vat: "Com IVA",
   variation_options: "Opções de Variação",
   ratings_and_reviews: "Avaliações e Comentários",
   origin: "Origem",
@@ -1285,6 +1288,29 @@ export const pt = {
   delete: "Excluir",
   are_you_absolutely_sure: "Você tem certeza absoluta?",
   this_action_cannot_be_undone: "Esta ação não pode ser desfeita. Isso excluirá estes dados e não poderá ser desfeito.",
+  //--> copy to branch
+  copying_product: "A copiar produto...",
+  copy_to_branch: "Copiar para Filial",
+  select_a_branch_to_copy_this_product: "Selecione uma filial para copiar este produto",
+  no_branches_found: "Nenhuma filial encontrada",
+  copy_product: "Copiar Produto",
+  copying: "A copiar...",
+
+  // apply decrease
+  apply_price_decrease: "Aplicar Redução de Preço",
+  decrease_any_products_if_you_want: "Reduza o preço de quaisquer produtos, se desejar",
+  selected: "selecionados",
+  select_categories_or_individual: "Selecione categorias ou produtos individuais",
+  partial: "Parcial",
+  uncategorized: "Sem Categoria",
+  base: "Base",
+  final: "Final",
+  saving: "Poupança",
+  save: "Guardar",
+
+  // apply increase
+  apply_price_increase: "Aplicar Aumento de Preço",
+  update_the_base_price_your_products: "Atualizar o preço base dos seus produtos",
 
   // stock-management page
   update_product_stock_in_real_time:

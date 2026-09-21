@@ -1,10 +1,10 @@
-import { serverRequest } from "@/lib/serverFetch";
+
 import Profile from "@/src/components/Profile/Profile";
 import { getAgreementHistory, getCurrentAgreementVersion } from "@/src/services/becomeVendor/become-vendor";
+import { getVendorDetails } from "@/src/services/dashboard/profile/profile.service";
 import { IAgreementsResponse } from "@/src/types/agreement.type";
-import { TVendor } from "@/src/types/vendor.type";
 import { queryStringFormatter } from "@/src/utils/formatter";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { getDecodedToken } from "@/src/utils/getDecodedToken";
 
 type IProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -12,24 +12,14 @@ type IProps = {
 
 const ProfilePage = async ({ searchParams }: IProps) => {
   const params = await searchParams;
-  let vendorData: TVendor = {} as TVendor;
+  const decoded = await getDecodedToken();
 
-  try {
-    const result = await serverRequest.get("/profile");
-
-    if (result?.success) {
-      vendorData = result?.data;
-    }
-  } catch (err) {
-    console.log("Server fetch error:", err);
-    if (isRedirectError(err)) throw err;
-  }
-
+  const result = await getVendorDetails(decoded?.userId as string);
   const queryString = queryStringFormatter(params);
-  const agreementsData = await getAgreementHistory(vendorData?.userId, queryString);
+  const agreementsData = await getAgreementHistory(decoded?.userId as string, queryString);
   const currentAgreVersion = await getCurrentAgreementVersion();
 
-  return <Profile vendor={vendorData} agreementsData={agreementsData as IAgreementsResponse} currentAgreement={currentAgreVersion?.data} />;
+  return <Profile vendor={result?.data} agreementsData={agreementsData as IAgreementsResponse} currentAgreement={currentAgreVersion?.data} />;
 }
 
 

@@ -1,5 +1,6 @@
 import { serverRequest } from "@/lib/serverFetch";
 import ProductDetails from "@/src/components/Dashboard/Products/ProductDetails";
+import { getAllBranches } from "@/src/services/dashboard/branch/branch.service";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TResponse } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
@@ -34,11 +35,13 @@ export default async function ProductDetailsPage({
   }
 
   const vendorData: TVendor = await getProfileData();
+  const branchResults = await getAllBranches(vendorData?.userId);
 
   return (
     <ProductDetails
       product={initialData}
       businessTypeSlug={vendorData?.businessDetails?.businessTypeSlug as string}
+      branches={branchResults.data}
     />
   );
 }

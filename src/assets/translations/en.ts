@@ -830,6 +830,8 @@ export const en = {
   add_product_categories: "Add Product Categories",
   all_product_categories: "All Product Categories",
   add_new_item: "Add New Item",
+  update_discounts: "Update Discounts",
+  increase_prices: "Increase Prices",
   stock_management: "Stock Management",
   variation_management: "Variation Management",
   add_ons: "Add-Ons",
@@ -1103,6 +1105,7 @@ export const en = {
   back_to_items: "Back to Items",
   product_id: "Product ID",
   featured: "Featured",
+  inc_vat: "Inc. VAT",
   variation_options: "Variation Options",
   ratings_and_reviews: "Ratings & Reviews",
   origin: "Origin",
@@ -1249,6 +1252,30 @@ export const en = {
   delete: "Delete",
   are_you_absolutely_sure: "Are you absolutely sure?",
   this_action_cannot_be_undone: "This action cannot be undone. This will delete this data and cannot be undone.",
+  //--> copy to branch
+  copying_product: "Copying product...",
+  copy_to_branch: "Copy to Branch",
+  select_a_branch_to_copy_this_product: "Select a branch to copy this product",
+  no_branches_found: "No branches found",
+  copy_product: "Copy Product",
+  copying: "Copying....",
+
+  // apply decrease
+  apply_price_decrease: "Apply Price Decrease",
+  decrease_any_products_if_you_want: "Decrease any products if you want",
+  selected: "selected",
+  select_categories_or_individual: "Select categories or individual products",
+  partial: "Partial",
+  uncategorized: 'Uncategorized',
+  base: "Base",
+  final: "Final",
+  saving: "Saving",
+  save: "Save",
+
+  // apply increase
+  apply_price_increase: "Apply Price Increase",
+  update_the_base_price_your_products: "Update the base price of your products",
+
 
   // stock-management page
   update_product_stock_in_real_time: "Update product stock in real-time —",

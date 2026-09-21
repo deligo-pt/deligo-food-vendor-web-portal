@@ -53,6 +53,7 @@ import ImageAndDescriptionForm from "./Image&DescriptionForm";
 import PricingForm from "./PricingForm";
 import StockInformationForm from "./StockInformationForm";
 import DeligoMetadata from "./DeligoMetadata";
+import TitleHeader from "../../TitleHeader/TitleHeader";
 
 type FormData = z.infer<typeof productValidation>;
 
@@ -134,6 +135,7 @@ export function EditProductForm({
       availabilityStatus: prevData?.stock?.availabilityStatus || "",
       isFeatured: prevData?.meta?.isFeatured || false,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
+      isActive: prevData?.meta?.status === "ACTIVE" ? true : false,
       businessTypeSlug,
       currentLang: lang
     },
@@ -251,10 +253,13 @@ export function EditProductForm({
       }
     }
 
+    // meta update
     const originalMeta = prevData?.meta || {};
+    const originalStatus = originalMeta.status === "ACTIVE" ? true : false;
     const metaChanged =
       hasChanged(data.isFeatured, originalMeta.isFeatured || false) ||
-      hasChanged(data.isAvailableForPreOrder, originalMeta.isAvailableForPreOrder || false);
+      hasChanged(data.isAvailableForPreOrder, originalMeta.isAvailableForPreOrder || false) ||
+      hasChanged(data.isActive, originalStatus);
 
     if (metaChanged) {
       productData.meta = {};
@@ -263,6 +268,9 @@ export function EditProductForm({
       }
       if (hasChanged(data.isAvailableForPreOrder, originalMeta.isAvailableForPreOrder || false)) {
         productData.meta.isAvailableForPreOrder = data.isAvailableForPreOrder;
+      }
+      if (hasChanged(data.isActive, originalStatus)) {
+        productData.meta.status = data.isActive === true ? "ACTIVE" : "INACTIVE";
       }
     }
 
@@ -436,10 +444,27 @@ export function EditProductForm({
         }}
         className="bg-white overflow-hidden"
       >
-        <div className="px-6 py-8 bg-linear-to-r from-[#DC3173] to-[#FF6B98] text-white">
-          <h1 className="text-3xl font-bold">{t("update_item")}</h1>
-          <p className="mt-2 text-pink-100">{t("update_product_details")}</p>
-        </div>
+        <TitleHeader
+          title={t("update_item")}
+          subtitle={t("update_product_details")}
+          extraComponent={
+            <motion.button
+              whileHover={{
+                scale: 1.05,
+              }}
+              whileTap={{
+                scale: 0.98,
+              }}
+              type="submit"
+              disabled={isSubmitting}
+              onClick={() => form.handleSubmit(onSubmit)()}
+              className="px-6 py-2 bg-[#DC3173] hover:bg-[#B02458] text-white rounded-lg flex items-center space-x-2 shadow-lg shadow-pink-200/50"
+            >
+              <SaveIcon className="h-5 w-5" />
+              <span>{t("save_product")}</span>
+            </motion.button>
+          }
+        />
         <div className="flex flex-col md:flex-row">
           {/* Tabs */}
           <div className="md:w-52 lg:w-64 bg-gray-50 p-4">
@@ -674,7 +699,7 @@ export function EditProductForm({
                     <ChevronLeftIcon className="h-4 w-4" />
                     <span>{t("previous")}</span>
                   </motion.button>
-                  {activeTab === lastTabIndex && (
+                  {/* {activeTab === lastTabIndex && (
                     <motion.button
                       whileHover={{
                         scale: 1.05,
@@ -689,7 +714,7 @@ export function EditProductForm({
                       <SaveIcon className="h-5 w-5" />
                       <span>{t("save_product")}</span>
                     </motion.button>
-                  )}
+                  )} */}
                   {activeTab < lastTabIndex && (
                     <motion.button
                       whileHover={{
