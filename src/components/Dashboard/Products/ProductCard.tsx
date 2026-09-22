@@ -109,9 +109,9 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
           </div>
         </div>
 
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+        {product.description?.[lang] && <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.description?.[lang]}
-        </p>
+        </p>}
 
         {/* Price + VAT section */}
         <div className="mb-3">
