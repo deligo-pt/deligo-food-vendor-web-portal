@@ -311,7 +311,7 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
               </motion.div>
             )}
             {/* Description */}
-            <motion.div variants={itemVariants as Variants}>
+            {product.description?.[lang] && <motion.div variants={itemVariants as Variants}>
               <div className="flex items-center gap-2 mb-2">
                 <InfoIcon className="w-5 h-5 text-[#DC3173]" />
                 <h2 className="text-lg font-semibold text-gray-900">
@@ -321,7 +321,7 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
               <p className="text-gray-700 leading-relaxed">
                 {product.description?.[lang]}
               </p>
-            </motion.div>
+            </motion.div>}
             {/* Category */}
             <motion.div
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
