@@ -89,7 +89,7 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
         {product?.pricing?.discount && <div
           className={`absolute top-2 right-2 text-xs font-medium px-2 py-1 rounded-md bg-[#DC3173] text-white`}
         >
-          {product.pricing?.discount} %
+          {product.pricing?.discount} % OFF
         </div>}
       </div>
 

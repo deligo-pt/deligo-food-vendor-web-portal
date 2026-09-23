@@ -202,7 +202,7 @@ export default function Products({
           <div className="flex-1 min-w-0 h-full overflow-y-auto space-y-10 pr-1">
             <div
               ref={scrollContainerRef}
-              className="flex-1 min-w-0 h-full overflow-y-auto space-y-10 pr-1"
+              className="flex-1 min-w-0 h-full overflow-y-auto space-y-10 pr-1 no-scrollbar"
             >
               {groupedProducts.map((group) => {
                 const id = group.category?._id || "uncategorized";
