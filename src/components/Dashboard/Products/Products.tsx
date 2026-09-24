@@ -9,8 +9,11 @@ import { deleteProductReq } from "@/src/services/dashboard/products/products";
 import { TMeta } from "@/src/types";
 import { TProductCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
+import { TVendor } from "@/src/types/vendor.type";
+import CopyToBranchDialog from "@/src/components/Dashboard/Products/CopyToBranchDialog";
+import { approvedBranches, productCode } from "@/src/utils/productCopy";
 import { AnimatePresence, motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { CheckSquare, Search, SquaresSubtract, X } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { toast } from "sonner";
 import TitleHeader from "../../TitleHeader/TitleHeader";
@@ -19,12 +22,15 @@ interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
   businessTypeSlug: string;
   productCategories: TProductCategory[];
+  /** Copy targets. Empty when the vendor has none, which hides the whole feature. */
+  branches: TVendor[];
 }
 
 export default function Products({
   productsData,
   businessTypeSlug,
   productCategories,
+  branches,
 }: IProps) {
   const { t } = useTranslation();
   const [products, setProducts] = useState(productsData.data);
@@ -34,6 +40,18 @@ export default function Products({
     action: "edit" | "delete" | null;
     product?: TProduct | null;
   }>({ id: null, action: null });
+
+  // Selecting is a mode rather than a permanent control on every card: the card
+  // already carries View / Edit / Delete, and a fourth button on each of them
+  // would cost more than it gives.
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  // "All products" is the API's own `copyAllProducts`, not this page's list —
+  // the catalogue is paginated, so a list would silently mean "this page only".
+  const [copyAll, setCopyAll] = useState(false);
+  const [isCopyOpen, setIsCopyOpen] = useState(false);
+
+  const copyTargets = useMemo(() => approvedBranches(branches), [branches]);
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -129,6 +147,43 @@ export default function Products({
     }
   };
 
+  const toggleProduct = (product: TProduct) => {
+    const code = productCode(product);
+    if (!code) return;
+    setCopyAll(false);
+    setSelectedIds((prev) =>
+      prev.includes(code) ? prev.filter((id) => id !== code) : [...prev, code]
+    );
+  };
+
+  const toggleCategory = (categoryProducts: TProduct[]) => {
+    const codes = categoryProducts.map(productCode).filter(Boolean);
+    const allSelected = codes.every((code) => selectedIds.includes(code));
+    setCopyAll(false);
+    setSelectedIds((prev) =>
+      allSelected
+        ? prev.filter((id) => !codes.includes(id))
+        : Array.from(new Set([...prev, ...codes]))
+    );
+  };
+
+  const isCategoryFullySelected = (categoryProducts: TProduct[]) => {
+    const codes = categoryProducts.map(productCode).filter(Boolean);
+    return codes.length > 0 && codes.every((code) => selectedIds.includes(code));
+  };
+
+  const clearSelection = () => {
+    setSelectedIds([]);
+    setCopyAll(false);
+  };
+
+  const exitSelectMode = () => {
+    clearSelection();
+    setSelectMode(false);
+  };
+
+  const selectionCount = copyAll ? productsData.meta?.total ?? products.length : selectedIds.length;
+
   const scrollToCategory = (id: string) => {
     setActiveCategoryId(id);
     const target = sectionRefs.current[id];
@@ -146,12 +201,98 @@ export default function Products({
       />
 
       {/* Filters – fixed height */}
-      <div className="shrink-0 mb-4">
-        <AllFilters
-          sortOptions={sortOptions}
-          {...(businessTypeSlug !== "restaurant" ? { filterOptions } : {})}
-        />
+      <div className="shrink-0 mb-4 flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <AllFilters
+            sortOptions={sortOptions}
+            {...(businessTypeSlug !== "restaurant" ? { filterOptions } : {})}
+          />
+        </div>
+
+        {/* Hidden entirely when there is nowhere to copy to. */}
+        {copyTargets.length > 0 && products.length > 0 && (
+          <button
+            type="button"
+            onClick={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
+            className={`shrink-0 inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${selectMode
+              ? "border-[#DC3173] bg-[#DC3173]/5 text-[#DC3173]"
+              : "border-gray-200 text-gray-600 hover:bg-gray-50"
+              }`}
+          >
+            {selectMode ? (
+              <>
+                <X className="h-4 w-4" />
+                {t("cancel")}
+              </>
+            ) : (
+              <>
+                <CheckSquare className="h-4 w-4" />
+                {t("select")}
+              </>
+            )}
+          </button>
+        )}
       </div>
+
+      {/* The selection bar. Sticky above the grid rather than floating over it,
+          so it never covers the last row of cards. */}
+      {selectMode && (
+        <div className="shrink-0 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#DC3173]/30 bg-[#DC3173]/5 px-4 py-3">
+          <div className="text-sm text-gray-700">
+            {selectionCount > 0 ? (
+              <span className="font-medium">
+                {selectionCount} {t("selected")}
+                {copyAll && (
+                  <span className="font-normal text-muted-foreground">
+                    {" "}
+                    — {t("all_products_in_catalogue")}
+                  </span>
+                )}
+              </span>
+            ) : (
+              <span className="text-muted-foreground">
+                {t("select_items_to_copy")}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedIds([]);
+                setCopyAll((prev) => !prev);
+              }}
+              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${copyAll
+                ? "border-[#DC3173] bg-[#DC3173]/10 text-[#DC3173]"
+                : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+            >
+              {t("select_all_products")}
+            </button>
+
+            {selectionCount > 0 && (
+              <button
+                type="button"
+                onClick={clearSelection}
+                className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+              >
+                {t("clear")}
+              </button>
+            )}
+
+            <button
+              type="button"
+              disabled={selectionCount === 0}
+              onClick={() => setIsCopyOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-[#DC3173] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#c71d62] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <SquaresSubtract className="h-4 w-4" />
+              {t("copy_to_branch")}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main content area – takes remaining height */}
       {groupedProducts.length > 0 ? (
@@ -218,9 +359,22 @@ export default function Products({
                   >
                     <div className="p-2">
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide">
-                          {getCategoryName(group.category)}
-                        </h2>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide truncate">
+                            {getCategoryName(group.category)}
+                          </h2>
+                          {selectMode && !copyAll && (
+                            <button
+                              type="button"
+                              onClick={() => toggleCategory(group.products)}
+                              className="shrink-0 rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50"
+                            >
+                              {isCategoryFullySelected(group.products)
+                                ? t("deselect_all")
+                                : t("select_all")}
+                            </button>
+                          )}
+                        </div>
                         <span className="text-sm text-gray-500">
                           {group.products.length}{" "}
                           {group.products.length === 1
@@ -241,6 +395,9 @@ export default function Products({
                               onDelete={openDeleteDialog}
                               onEdit={onEditClick}
                               t={t}
+                              selectable={selectMode && !copyAll}
+                              selected={selectedIds.includes(productCode(product))}
+                              onToggleSelect={toggleProduct}
                             />
                           ))}
                         </AnimatePresence>
@@ -310,6 +467,15 @@ export default function Products({
         }
         onConfirm={handleDeleteProduct}
         t={t}
+      />
+      <CopyToBranchDialog
+        open={isCopyOpen}
+        onOpenChange={setIsCopyOpen}
+        productIds={copyAll ? [] : selectedIds}
+        copyAllProducts={copyAll}
+        branches={branches}
+        t={t}
+        onCopied={exitSelectMode}
       />
       <EditProductDialog
         open={!!selectedProduct.id && selectedProduct.action === "edit"}

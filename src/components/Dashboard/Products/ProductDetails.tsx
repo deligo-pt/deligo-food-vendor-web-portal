@@ -495,7 +495,7 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
         <CopyToBranchDialog
           open={isCopyToBranchOpen}
           onOpenChange={setIsCopyToBranchOpen}
-          productId={product.productId}
+          productIds={[product.productId]}
           branches={branches}
           t={t}
         />

@@ -1,7 +1,12 @@
 "use server";
 
 import { serverFetch, serverRequest } from "@/lib/serverFetch";
-import { TProduct } from "@/src/types/product.type";
+import {
+  TCopyProductsInput,
+  TProduct,
+  TProductCopyResult,
+} from "@/src/types/product.type";
+import { buildCopyPayload } from "@/src/utils/productCopy";
 import { catchAsync } from "@/src/utils/catchAsync";
 import { revalidatePath, revalidateTag } from "next/cache";
 
@@ -46,13 +51,26 @@ export const applyIncreaseDecrease = async (
   return result;
 };
 
-export const copyProductToBranchReq = async (targetVendorId: string, productId: string) => {
-  const result = await catchAsync(async () => {
-    const response = await serverFetch.post(`/products/${productId}/copy-to-branch`, {
+/**
+ * Copy products to approved branches.
+ *
+ * Replaces `copyProductToBranchReq`, which posted to
+ * `/products/:productId/copy-to-branch` — a route that does not exist and
+ * answered 404 on every attempt, which is why the dialog never worked.
+ *
+ * The body is built by `buildCopyPayload` so the endpoint's exclusive pairs
+ * cannot both be sent; see `src/utils/productCopy.ts` for which id belongs in
+ * which field.
+ */
+export const copyProductsToBranchesReq = async (input: TCopyProductsInput) => {
+  const payload = buildCopyPayload(input);
+
+  const result = await catchAsync<TProductCopyResult>(async () => {
+    const response = await serverFetch.post(`/products/copy-to-sub-vendors`, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ targetVendorId }),
+      body: JSON.stringify(payload),
     });
 
     return await response.json();
