@@ -2170,5 +2170,25 @@ export const en = {
   latitude: "Latitude",
   longitude: "Longitude",
   incident_description: "Incident Description",
+
+  // copy products to branches
+  select: "Select",
+  clear: "Clear",
+  branches: "Branches",
+  select_all: "Select all",
+  deselect_all: "Deselect all",
+  select_items_to_copy: "Select items to copy to a branch",
+  select_all_products: "All products",
+  all_products_in_catalogue: "your whole catalogue",
+  all_products_will_be_copied: "Every product in your catalogue",
+  products_selected: "products selected",
+  copying_products: "Copying products...",
+  approved_branches: "approved branches",
+  no_approved_branches: "None of your branches are approved yet",
+  branch_not_approved: "Cannot receive products yet",
+  copy_failed: "Failed to copy",
+  copied_to_branches: "copied to",
+  copy_nothing_new: "Already in the selected branches — nothing new to copy",
+  rest_already_in_branches: "the rest were already there",
 };
 

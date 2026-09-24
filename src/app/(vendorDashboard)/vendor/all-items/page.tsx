@@ -1,5 +1,6 @@
 import { serverRequest } from "@/lib/serverFetch";
 import Products from "@/src/components/Dashboard/Products/Products";
+import { getAllBranches } from "@/src/services/dashboard/branch/branch.service";
 import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TMeta } from "@/src/types";
@@ -65,11 +66,19 @@ export default async function ProductsPage({ searchParams }: IProps) {
     }
   }
 
+  // The copy targets. Fetched here as well as on the product page, because the
+  // catalogue can now copy a whole selection; an empty list hides the feature
+  // rather than offering a copy with nowhere to go.
+  const branchResults = vendorData?.userId
+    ? await getAllBranches(vendorData.userId)
+    : null;
+
   return (
     <Products
       productsData={productsData}
       businessTypeSlug={vendorData?.businessDetails?.businessTypeSlug as string}
       productCategories={data}
+      branches={branchResults?.data ?? []}
     />
   );
 }

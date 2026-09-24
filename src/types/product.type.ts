@@ -98,3 +98,43 @@ export type TProductsQueryParams = {
   "stock.availabilityStatus"?: string;
   category?: string;
 };
+
+/** What the vendor picked, before it becomes a request body. */
+export type TCopyProductsInput = {
+  /** `PROD-XXXXXX` codes — the only product id `/products/copy-to-sub-vendors` resolves. */
+  productIds: string[];
+  /** A branch's Mongo `_id` or its `SV-…` userId; both are accepted. */
+  targetSubVendorIds: string[];
+  /** Every product this vendor owns, not just the ones on the current page. */
+  copyAllProducts?: boolean;
+  /** Every approved branch. */
+  copyToAllTargetSubVendors?: boolean;
+};
+
+/** The request body. The two exclusive pairs can never both be present. */
+export type TCopyProductsPayload = {
+  copyAllProducts: boolean;
+  productIds?: string[];
+  targetSubVendorIds?: string[];
+  copyToAllTargetSubVendors?: boolean;
+};
+
+/** The `data` block of a successful copy. `copiedCount: 0` is still a 200. */
+export type TProductCopyResult = {
+  copiedCount: number;
+  targetCount: number;
+  copiedProductIds: string[];
+  /** Echoed as userIds whichever id shape was sent. */
+  copiedTargetSubVendorUserIds: string[];
+  copiedCategoryCount: number;
+  copiedAddonGroupCount: number;
+};
+
+/** The result, reduced to the line the customer reads. */
+export type TProductCopySummary = {
+  tone: "success" | "partial" | "info";
+  key: "copy_done" | "copy_partial" | "copy_nothing_new";
+  copied: number;
+  targets: number;
+  requestedProductCount: number;
+};

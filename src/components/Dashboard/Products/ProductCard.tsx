@@ -3,7 +3,7 @@
 import { useStore } from "@/src/store/store";
 import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
-import { Clock, ShoppingBag, Star } from "lucide-react";
+import { Check, Clock, ShoppingBag, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -12,9 +12,21 @@ interface IProps {
   onEdit: (product: TProduct) => void;
   onDelete: (id: string) => void;
   t: (key: string) => string;
+  /** Selection is off unless the catalogue asks for it, so the card is unchanged by default. */
+  selectable?: boolean;
+  selected?: boolean;
+  onToggleSelect?: (product: TProduct) => void;
 }
 
-export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
+export default function ProductCard({
+  product,
+  onEdit,
+  onDelete,
+  t,
+  selectable = false,
+  selected = false,
+  onToggleSelect,
+}: IProps) {
   const { lang } = useStore();
   const router = useRouter();
 
@@ -39,7 +51,12 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
 
   return (
     <motion.div
-      className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100"
+      onClick={selectable ? () => onToggleSelect?.(product) : undefined}
+      className={`bg-white rounded-lg shadow-md overflow-hidden border transition-all ${selectable ? "cursor-pointer" : ""
+        } ${selected
+          ? "border-[#DC3173] ring-2 ring-[#DC3173]/30"
+          : "border-gray-100"
+        }`}
       initial={{
         opacity: 0,
         y: 20,
@@ -86,6 +103,17 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
         >
           {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
+        {selectable && (
+          <div
+            className={`absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-md border-2 transition-colors ${selected
+              ? "border-[#DC3173] bg-[#DC3173] text-white"
+              : "border-white bg-white/80 text-transparent"
+              }`}
+            aria-hidden="true"
+          >
+            <Check className="h-4 w-4" />
+          </div>
+        )}
         {product?.pricing?.discount && <div
           className={`absolute top-2 right-2 text-xs font-medium px-2 py-1 rounded-md bg-[#DC3173] text-white`}
         >
@@ -185,7 +213,10 @@ export default function ProductCard({ product, onEdit, onDelete, t }: IProps) {
           <div className="text-xs text-gray-500">
             {product.vendor?.vendorName}
           </div>
-          <div className="flex space-x-2">
+          <div
+            className="flex space-x-2"
+            onClick={(event) => event.stopPropagation()}
+          >
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
