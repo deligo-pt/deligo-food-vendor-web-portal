@@ -2196,5 +2196,6 @@ export const en = {
   select_file: "Select File",
   only_one_image_allowed: "You can upload only one image",
   upload_image_files_only: "Please upload only image files",
+  replace_image: "Replace image",
 };
 
