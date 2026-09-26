@@ -2255,4 +2255,5 @@ export const pt = {
   select_file: "Selecionar Ficheiro",
   only_one_image_allowed: "Só pode carregar uma imagem",
   upload_image_files_only: "Carregue apenas ficheiros de imagem",
+  replace_image: "Substituir imagem",
 };

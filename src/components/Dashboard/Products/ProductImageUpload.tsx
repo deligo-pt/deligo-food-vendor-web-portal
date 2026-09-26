@@ -23,6 +23,8 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
   const [error, setError] = useState<string | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  /** The hidden picker behind "Replace image". */
+  const replaceRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -65,6 +67,41 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
 
     toast.error(result.message || "Image upload failed", { id: toastId });
     console.log(result);
+  };
+
+  /**
+   * Swap the picture without deleting it first.
+   *
+   * The slot is capped at one, so `handleFiles` would refuse this as "only one
+   * image". Replacing is the ordinary way to change a product's photo, and it
+   * used to require finding a delete button that only appears on hover, over a
+   * thumbnail — which is unusable the moment the thumbnail itself will not
+   * render.
+   *
+   * The previous file is left in storage rather than deleted: the swap is not
+   * saved until the vendor saves the product, and deleting here would destroy
+   * the old image even if they then cancelled.
+   */
+  const replaceFile = async (files: FileList) => {
+    setError(null);
+    const file = files[0];
+    if (!file) return;
+    if (!file.type.match("image.*")) {
+      setError(t("upload_image_files_only"));
+      return;
+    }
+
+    const toastId = toast.loading(t("Uploading images..."));
+    const result = await uploadImagesReq([file]);
+
+    if (result.success && result.data?.[0]) {
+      toast.success(result.message || "Images uploaded successfully!", { id: toastId });
+      onChange([result.data[0]]);
+      if (replaceRef.current) replaceRef.current.value = "";
+      return;
+    }
+
+    toast.error(result.message || "Image upload failed", { id: toastId });
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -194,9 +231,27 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
       )}
       {images.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-2">
-            {t("uploaded_images")} ({images.length}/{MAX_PRODUCT_IMAGES})
-          </h3>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-sm font-medium text-gray-700">
+              {t("uploaded_images")} ({images.length}/{MAX_PRODUCT_IMAGES})
+            </h3>
+            {/* Always visible, and never dependent on the thumbnail rendering:
+                the delete control next to it only appears on hover, over the
+                picture itself. */}
+            <label className="inline-flex items-center gap-2 rounded-lg border border-[#DC3173] px-3 py-1.5 text-sm font-medium text-[#DC3173] cursor-pointer hover:bg-[#DC3173]/5 transition-colors">
+              <UploadIcon className="h-4 w-4" />
+              {t("replace_image")}
+              <input
+                ref={replaceRef}
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) replaceFile(e.target.files);
+                }}
+              />
+            </label>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <AnimatePresence>
               {images.map((image, index) => (
