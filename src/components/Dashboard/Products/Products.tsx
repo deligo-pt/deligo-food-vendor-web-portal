@@ -150,7 +150,15 @@ export default function Products({
   const toggleProduct = (product: TProduct) => {
     const code = productCode(product);
     if (!code) return;
-    setCopyAll(false);
+    // The ticks are a display of "all products", not a list — the mode covers
+    // the whole catalogue, and this page holds only the first 20 of it. So a
+    // tap here leaves the mode rather than turning it into "these 19", which
+    // would silently drop everything on the pages the vendor cannot see.
+    if (copyAll) {
+      setCopyAll(false);
+      setSelectedIds([]);
+      return;
+    }
     setSelectedIds((prev) =>
       prev.includes(code) ? prev.filter((id) => id !== code) : [...prev, code]
     );
@@ -363,7 +371,7 @@ export default function Products({
                           <h2 className="text-xl font-bold text-gray-800 uppercase tracking-wide truncate">
                             {getCategoryName(group.category)}
                           </h2>
-                          {selectMode && !copyAll && (
+                          {selectMode && !copyAll && ( // every card is already ticked in "all products"
                             <button
                               type="button"
                               onClick={() => toggleCategory(group.products)}
@@ -395,8 +403,11 @@ export default function Products({
                               onDelete={openDeleteDialog}
                               onEdit={onEditClick}
                               t={t}
-                              selectable={selectMode && !copyAll}
-                              selected={selectedIds.includes(productCode(product))}
+                              selectable={selectMode}
+                              // "All products" ticks every card: the bar says the
+                              // whole catalogue is going, and cards showing no tick
+                              // underneath it read as nothing being selected.
+                              selected={copyAll || selectedIds.includes(productCode(product))}
                               onToggleSelect={toggleProduct}
                             />
                           ))}

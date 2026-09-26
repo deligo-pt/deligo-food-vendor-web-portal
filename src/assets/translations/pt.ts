@@ -1194,7 +1194,7 @@ export const pt = {
   stock_quantity: "Quantidade em Estoque",
   add_stock_quantity: "Adicionar quantidade em estoque",
   select_discount_type: "Selecionar Tipo de Desconto",
-  select_tax: "Selecionar imposto",
+  select_tax: "IVA Padrão (23%)",
   select_category_placeholder: "Selecione uma categoria",
   additional_categories: "Additional Categories",
   optional: "Optional",

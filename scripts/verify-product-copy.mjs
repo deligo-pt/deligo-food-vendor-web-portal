@@ -280,6 +280,17 @@ section("The catalogue's selection");
     /copyAllProducts,/.test(dialog),
   );
   check(
+    "🔴 'all products' ticks every card",
+    /selected=\{copyAll \|\| selectedIds\.includes\(productCode\(product\)\)\}/.test(catalogue) &&
+      /selectable=\{selectMode\}/.test(catalogue),
+    "cards showing no tick under 'the whole catalogue is going' read as nothing selected",
+  );
+  check(
+    "🔴 …and a tap leaves the mode rather than narrowing it to this page",
+    /if \(copyAll\) \{\s*setCopyAll\(false\);\s*setSelectedIds\(\[\]\);\s*return;/.test(catalogue),
+    "the list is paginated: 'these 19' would silently drop every later page",
+  );
+  check(
     "the card is unchanged unless selection is on",
     /selectable = false/.test(card) && /selectable \? \(\) => onToggleSelect\?\.\(product\) : undefined/.test(card),
   );

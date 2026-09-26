@@ -169,7 +169,7 @@ const PricingForm = ({
                             <FormControl>
                                 <Select onValueChange={field.onChange} value={field.value}>
                                     <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10">
-                                        <SelectValue placeholder="Select tax" />
+                                        <SelectValue placeholder={t("select_tax")} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {taxesData?.map((tax) => (

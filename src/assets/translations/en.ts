@@ -1164,7 +1164,7 @@ export const en = {
   stock_quantity: "Stock Quantity",
   add_stock_quantity: "Add stock quantity",
   select_discount_type: "Select Discount Type",
-  select_tax: "Select tax",
+  select_tax: "Standard VAT (23%)",
   select_category_placeholder: "Select a category",
   additional_categories: "Additional Categories",
   optional: "Optional",
