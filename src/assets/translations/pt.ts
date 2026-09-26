@@ -2249,4 +2249,10 @@ export const pt = {
   copied_to_branches: "copiados para",
   copy_nothing_new: "Já estão nas filiais selecionadas — nada de novo para copiar",
   rest_already_in_branches: "os restantes já lá estavam",
+
+  // imagens de produto
+  drag_drop_product_image: "Arraste e solte a imagem do produto aqui",
+  select_file: "Selecionar Ficheiro",
+  only_one_image_allowed: "Só pode carregar uma imagem",
+  upload_image_files_only: "Carregue apenas ficheiros de imagem",
 };

@@ -21,6 +21,7 @@ import { getAddOnsGroupReq } from "@/src/services/dashboard/add-ons/add-ons";
 import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
 import { getAllTaxesReq } from "@/src/services/dashboard/taxes/taxes";
 import { useStore } from "@/src/store/store";
+import { DEFAULT_PRODUCT_IMAGE } from "@/src/consts/product.const";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TProductCategory } from "@/src/types/category.type";
@@ -231,6 +232,11 @@ export function EditProductForm({
 
     if (newlyUploaded.length > 0) {
       productData.images = newlyUploaded;
+    } else if (currentImages.length === 0 && originalImages.length > 0) {
+      // The vendor removed their only picture. Sending an empty array would
+      // leave the product with none at all, so the default takes the slot back
+      // — the same rule the create form applies.
+      productData.images = [DEFAULT_PRODUCT_IMAGE];
     }
 
     // pricing update

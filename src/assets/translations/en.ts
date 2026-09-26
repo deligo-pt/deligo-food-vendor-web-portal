@@ -2190,5 +2190,11 @@ export const en = {
   copied_to_branches: "copied to",
   copy_nothing_new: "Already in the selected branches — nothing new to copy",
   rest_already_in_branches: "the rest were already there",
+
+  // product images
+  drag_drop_product_image: "Drag & drop product image here",
+  select_file: "Select File",
+  only_one_image_allowed: "You can upload only one image",
+  upload_image_files_only: "Please upload only image files",
 };
 

@@ -9,6 +9,7 @@ import { ImageIcon, UploadIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
+import { MAX_PRODUCT_IMAGES } from "@/src/consts/product.const";
 
 interface IProps {
   images: string[];
@@ -35,16 +36,19 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
 
   const handleFiles = async (files: FileList) => {
     setError(null);
-    if (images.length + files.length > 5) {
-      setError("You can upload a maximum of 5 images");
+    // One image per product. A second file is not silently ignored — the
+    // vendor is told, because the picture they just chose is the one they
+    // expect to see.
+    if (images.length + files.length > MAX_PRODUCT_IMAGES) {
+      setError(t("only_one_image_allowed"));
       return;
     }
-    Array.from(files).forEach((file) => {
+    for (const file of Array.from(files)) {
       if (!file.type.match("image.*")) {
-        setError("Please upload only image files");
+        setError(t("upload_image_files_only"));
         return;
       }
-    });
+    }
 
     const toastId = toast.loading(t("Uploading images..."));
 
@@ -112,8 +116,14 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
     }
   };
 
+  const slotTaken = images.length >= MAX_PRODUCT_IMAGES;
+
   return (
     <div className="space-y-4">
+      {/* Hidden once an image is in: the cap is one, so an upload control here
+          could only ever answer with the "one image" error. Removing the
+          picture brings it back. */}
+      {!slotTaken && (
       <div
         onDragEnter={handleDrag}
         className={`border-2 border-dashed rounded-lg p-8 text-center ${dragActive
@@ -141,7 +151,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
         >
           <ImageIcon className="h-12 w-12 text-gray-400 mb-3" />
           <p className="text-lg font-medium text-gray-700">
-            {t("drag_drop_product_images")}
+            {t("drag_drop_product_image")}
           </p>
           <p className="text-sm text-gray-500 mt-1">{t("or_click")}</p>
           <p className="text-xs text-gray-400 mt-2">{t("png_jpg_svg")}</p>
@@ -156,7 +166,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
               className="inline-flex items-center px-4 py-2 bg-[#DC3173] text-white rounded-md cursor-pointer hover:bg-[#B02458] transition-colors"
             >
               <UploadIcon className="h-4 w-4 mr-2" />
-              {t("select_files")}
+              {t("select_file")}
             </motion.span>
             <input
               ref={inputRef}
@@ -164,11 +174,11 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
               className="hidden"
               onChange={handleChange}
               accept="image/*"
-              multiple
             />
           </label>
         </motion.div>
       </div>
+      )}
       {error && (
         <motion.p
           initial={{
@@ -185,7 +195,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
       {images.length > 0 && (
         <div>
           <h3 className="text-sm font-medium text-gray-700 mb-2">
-            {t("uploaded_images")} ({images.length}/5)
+            {t("uploaded_images")} ({images.length}/{MAX_PRODUCT_IMAGES})
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <AnimatePresence>

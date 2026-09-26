@@ -38,6 +38,7 @@ import { postData } from "@/src/utils/requests";
 import { TProduct } from "@/src/types/product.type";
 import { TResponse } from "@/src/types";
 import { useStore } from "@/src/store/store";
+import { DEFAULT_PRODUCT_IMAGE } from "@/src/consts/product.const";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { useRouter } from "next/navigation";
 
@@ -151,6 +152,19 @@ export function ProductForm({
       name: ["price", "discount", "discountType", "taxId", "addonGroups", "variations"],
     });
 
+  // The header carries the product's name from the moment it is typed, so the
+  // later steps — Images, Add-Ons, Pricing — still say which product is being
+  // filled in. Watched rather than read once: clearing the field takes the
+  // name back out of the heading.
+  const [nameEn, namePt] = useWatch({
+    control: form.control,
+    name: ["name.en", "name.pt"],
+  });
+  const productName = (lang === "pt" ? namePt || nameEn : nameEn || namePt)?.trim();
+  const headerTitle = productName
+    ? `${t("add_new_item")} - ${productName}`
+    : t("add_new_item");
+
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading("Translating and Creating product...");
     // if (!selectedSectionId) {
@@ -173,7 +187,10 @@ export function ProductForm({
         description: translated.description,
         category: data.category,
         ...(data.additionalCategories && { additionalCategories: data.additionalCategories }),
-        images: data.images,
+        // The vendor may skip the step entirely; every product still ships with
+        // a picture. Applied here rather than in the uploader, so the default
+        // is never shown, never selectable and never deletable.
+        images: data.images?.length ? data.images : [DEFAULT_PRODUCT_IMAGE],
         pricing: {
           price: data.price,
           discountType: data.discountType,
@@ -309,7 +326,7 @@ export function ProductForm({
         className="bg-white shadow-xl rounded-2xl overflow-hidden"
       >
         <TitleHeader
-          title={t("add_new_item")}
+          title={headerTitle}
           subtitle={t("fill_the_details_to_add_new_food_item")}
           extraComponent={
             <motion.button

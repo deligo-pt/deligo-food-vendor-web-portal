@@ -5,6 +5,7 @@ import EditProductDialog from "@/src/components/Dashboard/Products/EditProductDi
 import ProductCard from "@/src/components/Dashboard/Products/ProductCard";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { useStore } from "@/src/store/store";
 import { deleteProductReq } from "@/src/services/dashboard/products/products";
 import { TMeta } from "@/src/types";
 import { TProductCategory } from "@/src/types/category.type";
@@ -17,6 +18,24 @@ import { CheckSquare, Search, SquaresSubtract, X } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { toast } from "sonner";
 import TitleHeader from "../../TitleHeader/TitleHeader";
+
+/**
+ * A `{ en, pt }` field as the active language reads it.
+ *
+ * Tolerant of a plain string, because the product and category endpoints do not
+ * agree: some responses resolve the name, others send the raw bag. A field with
+ * nothing readable sorts as `""` rather than throwing the grid away.
+ */
+function localizedText(value: unknown, lang: string): string {
+  if (typeof value === "string") return value.trim();
+  if (!value || typeof value !== "object") return "";
+  const bag = value as Record<string, unknown>;
+  for (const key of [lang, "en", "pt"]) {
+    const found = bag[key];
+    if (typeof found === "string" && found.trim()) return found.trim();
+  }
+  return "";
+}
 
 interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
@@ -33,6 +52,8 @@ export default function Products({
   branches,
 }: IProps) {
   const { t } = useTranslation();
+  // Collation and the name half both follow the language the vendor is reading.
+  const { lang } = useStore();
   const [products, setProducts] = useState(productsData.data);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<{
@@ -55,6 +76,8 @@ export default function Products({
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  /** The pill a click chose, held until the smooth scroll reaches it. */
+  const clickedRef = useRef<string | null>(null);
 
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
@@ -103,8 +126,37 @@ export default function Products({
       }
     });
 
-    return Object.values(groups).filter((group) => group.products.length > 0);
-  }, [products, productCategories]);
+    // One comparator for both levels, so a heading and the cards under it are
+    // never ordered by different rules. `localeCompare` rather than `<`: the
+    // Portuguese catalogue has names like `Chá` and `Açorda`, and comparing
+    // code points files accented letters after `Z`.
+    const byName = (a: string, b: string) =>
+      a.localeCompare(b, lang, { sensitivity: "base", numeric: true });
+
+    const rendered = Object.values(groups).filter(
+      (group) => group.products.length > 0,
+    );
+
+    rendered.forEach((group) => {
+      group.products.sort((a, b) =>
+        byName(localizedText(a.name, lang), localizedText(b.name, lang)),
+      );
+    });
+
+    // "Uncategorized" is pinned last rather than sorted in: it is not one of
+    // the vendor's own categories, and in PT ("Sem categoria") it would land
+    // mid-list reading like one.
+    const own = rendered.filter((group) => group.category);
+    const uncategorized = rendered.filter((group) => !group.category);
+    own.sort((a, b) =>
+      byName(
+        localizedText(a.category?.name, lang),
+        localizedText(b.category?.name, lang),
+      ),
+    );
+
+    return [...own, ...uncategorized];
+  }, [products, productCategories, lang]);
 
   useEffect(() => {
     if (groupedProducts.length > 0 && !activeCategoryId) {
@@ -112,13 +164,68 @@ export default function Products({
     }
   }, [groupedProducts, activeCategoryId]);
 
+  // The highlight follows the scroll. Without this it only ever moved on a
+  // click, so scrolling past DESSERT left DINNER MENU lit and the sidebar
+  // stopped describing the page.
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || groupedProducts.length === 0) return;
+
+    const onScroll = () => {
+      // A click owns the highlight until its animation arrives; the first
+      // scroll event after that hands control back.
+      if (clickedRef.current) {
+        const target = sectionRefs.current[clickedRef.current];
+        if (
+          target &&
+          Math.abs(target.offsetTop - container.offsetTop - container.scrollTop) < 8
+        ) {
+          clickedRef.current = null;
+        }
+        return;
+      }
+
+      // At the very bottom the last section wins outright: it is often shorter
+      // than the viewport, so its heading never reaches the top line and the
+      // pill could otherwise never light up however far the vendor scrolls.
+      const atBottom =
+        container.scrollTop + container.clientHeight >= container.scrollHeight - 4;
+      if (atBottom) {
+        const last = groupedProducts[groupedProducts.length - 1];
+        const lastId = last?.category?._id || "uncategorized";
+        setActiveCategoryId((prev) => (prev === lastId ? prev : lastId));
+        return;
+      }
+
+      // Otherwise the heading nearest the top of the viewport wins, so a
+      // half-scrolled section does not light up before it is being read.
+      let current = groupedProducts[0]?.category?._id || "uncategorized";
+      for (const group of groupedProducts) {
+        const id = group.category?._id || "uncategorized";
+        const el = sectionRefs.current[id];
+        if (!el) continue;
+        if (el.offsetTop - container.offsetTop - container.scrollTop <= 24) {
+          current = id;
+        }
+      }
+      setActiveCategoryId((prev) => (prev === current ? prev : current));
+    };
+
+    onScroll();
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => container.removeEventListener("scroll", onScroll);
+  }, [groupedProducts]);
+
   useEffect(() => {
     setProducts(productsData.data);
   }, [productsData]);
 
   const getCategoryName = (category: TProductCategory | null) => {
     if (!category) return t("uncategorized") || "Uncategorized";
-    return category.name?.en || category.name?.pt || "Unnamed";
+    // Reads the active language first. It used to prefer `en` outright, so a
+    // Portuguese vendor saw English headings — and, now that the list is
+    // sorted, would have seen them in an order their own names do not explain.
+    return localizedText(category.name, lang) || "Unnamed";
   };
 
   const openDeleteDialog = (id: string) =>
@@ -195,9 +302,19 @@ export default function Products({
   const scrollToCategory = (id: string) => {
     setActiveCategoryId(id);
     const target = sectionRefs.current[id];
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    const container = scrollContainerRef.current;
+    if (!target || !container) return;
+
+    // Positioned against the container rather than handed to `scrollIntoView`:
+    // that scrolls every ancestor that can scroll, which here meant the page
+    // moved as well as the list. `clickedRef` holds the pill the vendor chose
+    // until the animation lands, so the observer below cannot overwrite it
+    // with every heading the scroll passes on the way.
+    clickedRef.current = id;
+    container.scrollTo({
+      top: target.offsetTop - container.offsetTop,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -347,12 +464,17 @@ export default function Products({
             </div>
           </div>
 
-          {/* RIGHT CONTENT – scrolls */}
-          <div className="flex-1 min-w-0 h-full overflow-y-auto space-y-10 pr-1">
-            <div
-              ref={scrollContainerRef}
-              className="flex-1 min-w-0 h-full overflow-y-auto space-y-10 pr-1 no-scrollbar"
-            >
+          {/* RIGHT CONTENT – the one scroller.
+              There used to be two, nested, with identical classes: the wheel
+              handed off between them and `scrollIntoView` moved whichever one
+              it found first, which is what made this list feel like it fought
+              back. `scroll-smooth` replaces the per-call behaviour so a click
+              and a drag agree. */}
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 min-w-0 h-full overflow-y-auto scroll-smooth space-y-10 pr-1 no-scrollbar"
+          >
+            <div className="space-y-10">
               {groupedProducts.map((group) => {
                 const id = group.category?._id || "uncategorized";
 
@@ -393,7 +515,7 @@ export default function Products({
 
                       <motion.div
                         layout
-                        className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                        className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
                       >
                         <AnimatePresence mode="popLayout">
                           {group.products.map((product) => (
@@ -438,7 +560,7 @@ export default function Products({
 
                     <motion.div
                       layout
-                      className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                      className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
                     >
                       <AnimatePresence mode="popLayout">
                         {group.products.map((product) => (
