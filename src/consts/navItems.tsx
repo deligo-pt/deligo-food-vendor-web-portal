@@ -17,7 +17,19 @@ import {
 
 type TFunction = (key: string) => string;
 
-export const getNavItems = (t: TFunction, businessType?: string) => {
+/**
+ * The sidebar's sections.
+ *
+ * `isBranch` hides Branch Management: a branch cannot have branches of its own,
+ * and the section offered it "Add Branch" / "All Branches" regardless. Only the
+ * menu is hidden — `/vendor/branches` is still reachable by URL, which is the
+ * proxy's job to close if that is wanted.
+ */
+export const getNavItems = (
+  t: TFunction,
+  businessType?: string,
+  isBranch?: boolean,
+) => {
   return [
     {
       id: "home",
@@ -31,15 +43,19 @@ export const getNavItems = (t: TFunction, businessType?: string) => {
       icon: <LayoutDashboard size={18} />,
       path: "/vendor/dashboard",
     },
-    {
-      id: "branches",
-      title: t("branch_management"),
-      icon: <SquaresSubtract size={18} />,
-      items: [
-        { name: t("add_branch"), path: "/vendor/branches/add" },
-        { name: t("all_branches"), path: "/vendor/branches" },
-      ],
-    },
+    ...(isBranch
+      ? []
+      : [
+          {
+            id: "branches",
+            title: t("branch_management"),
+            icon: <SquaresSubtract size={18} />,
+            items: [
+              { name: t("add_branch"), path: "/vendor/branches/add" },
+              { name: t("all_branches"), path: "/vendor/branches" },
+            ],
+          },
+        ]),
     {
       id: "orders",
       title: t("orders"),

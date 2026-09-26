@@ -52,7 +52,10 @@ export default function ProductCard({
   return (
     <motion.div
       onClick={selectable ? () => onToggleSelect?.(product) : undefined}
-      className={`bg-white rounded-lg shadow-md overflow-hidden border transition-all ${selectable ? "cursor-pointer" : ""
+      // `h-full` + a column: the grid stretches the card, and without this the
+      // spare height pooled at the bottom instead of being distributed, so two
+      // cards in the same row put their buttons at different heights.
+      className={`flex h-full flex-col bg-white rounded-lg shadow-md overflow-hidden border transition-all ${selectable ? "cursor-pointer" : ""
         } ${selected
           ? "border-[#DC3173] ring-2 ring-[#DC3173]/30"
           : "border-gray-100"
@@ -76,12 +79,15 @@ export default function ProductCard({
         },
       }}
     >
-      <div className="relative h-48 flex items-center justify-center overflow-hidden">
+      <div className="relative h-48 shrink-0 flex items-center justify-center overflow-hidden">
         {product.images && product.images.length > 0 ? (
           <Image
             src={product.images[0]}
             alt={product?.name?.[lang] as string}
-            className="w-full h-full object-fill"
+            // `cover`, not `fill`: `fill` stretches a photo to the box, which
+            // is why a wide banner and a square dish looked differently
+            // proportioned side by side.
+            className="w-full h-full object-cover"
             width={500}
             height={500}
           />
@@ -121,7 +127,7 @@ export default function ProductCard({
         </div>}
       </div>
 
-      <div className="p-4">
+      <div className="flex flex-1 flex-col p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-bold text-gray-900 truncate">
             {product.name?.[lang]}
@@ -137,9 +143,12 @@ export default function ProductCard({
           </div>
         </div>
 
-        {product.description?.[lang] && <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+        {/* Rendered even when empty. Dropping the element moved the price and
+            the buttons up by two lines, so a product without a description
+            never lined up with the one beside it. */}
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">
           {product.description?.[lang]}
-        </p>}
+        </p>
 
         {/* Price + VAT section */}
         <div className="mb-3">
@@ -209,7 +218,7 @@ export default function ProductCard({
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+        <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
           <div className="text-xs text-gray-500">
             {product.vendor?.vendorName}
           </div>

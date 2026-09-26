@@ -25,8 +25,10 @@ export const productValidation = z.object({
         .url("Each image must be a valid URL")
         .nonempty("Image URL is required"),
     )
-    .min(1, "At least one image is required")
-    .max(5, "No more than 5 images are allowed"),
+    // No minimum: leaving this empty is allowed, and the form fills the slot
+    // with `DEFAULT_PRODUCT_IMAGE` on save. A minimum here would block the
+    // vendor at validation before that could ever happen.
+    .max(1, "Only one image is allowed"),
 
   price: z.number().optional(),
 

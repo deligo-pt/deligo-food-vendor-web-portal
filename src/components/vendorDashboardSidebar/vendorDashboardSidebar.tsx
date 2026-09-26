@@ -10,6 +10,7 @@ import TopbarIcons from "@/src/components/vendorTopbar/TopbarIcons";
 import { getNavItems } from "@/src/consts/navItems";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TVendor } from "@/src/types/vendor.type";
+import { USER_ROLE } from "@/src/consts/user.const";
 import Image from "next/image";
 
 interface IProps {
@@ -23,8 +24,16 @@ const PRIMARY = "#DC3173";
 export default function Sidebar({ open, setOpen, vendor }: IProps) {
   const { t } = useTranslation();
   const businessType = vendor?.businessDetails?.businessTypeSlug;
+  // A sub-vendor *is* a branch, so it has no branches to manage. `role` rather
+  // than `parentVendorId`: it is what the token carries and what `proxy.ts`
+  // already gates on, so the menu and the routing agree on who is who.
+  // Two signals, because either alone has failed once: `role` was missing
+  // entirely while `/profile` was answering 403 for branches, and
+  // `parentVendorId` is only populated on a branch record.
+  const isBranch =
+    vendor?.role === USER_ROLE.SUB_VENDOR || Boolean(vendor?.parentVendorId);
 
-  const navItems = getNavItems(t, businessType);
+  const navItems = getNavItems(t, businessType, isBranch);
   const pathname = usePathname();
   const currentMenuId = navItems.find((menu) =>
     menu.items?.some((item) => pathname.includes(item.path)),
