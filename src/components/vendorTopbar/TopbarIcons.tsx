@@ -126,7 +126,15 @@ export default function TopbarIcons({ vendor }: IProps) {
 
   return (
     <>
-      {(agreeVersion?.status) && <p className="text-[#DC3173] italic font-semibold">{t("please_visit_profile_page")}</p>}
+      {/* Hidden on phones: it sat beside the logo with no truncation and was
+          cut off mid-word, and widening the header is what pushed the rest of
+          the page out of line. The same prompt is on the profile page itself,
+          which is where the vendor has to go anyway. */}
+      {agreeVersion?.status && (
+        <p className="hidden md:block max-w-[28rem] truncate text-[#DC3173] italic font-semibold">
+          {t("please_visit_profile_page")}
+        </p>
+      )}
       {/* Language */}
       <div className="relative z-1002">
         <Select
