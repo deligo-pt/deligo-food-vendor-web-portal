@@ -215,7 +215,12 @@ export default function ProductCard({
           </div>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-gray-100">
+        {/* `flex-wrap`: the button group is `shrink-0`, so on a narrow card the
+            row used to overflow and press the tick flat against View — worst
+            on products with no vendor name, where nothing sits between them to
+            absorb it. Wrapping drops the buttons to their own line instead;
+            at normal widths nothing moves. */}
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-3 pt-3 border-t border-gray-100">
           {/* The tick lives here rather than over the photo: this row is always
               white, so the mark cannot be lost against a pink dish, and it sits
               beside the controls the vendor is already looking at. It stays
@@ -225,7 +230,7 @@ export default function ProductCard({
           <div className="flex min-w-0 items-center gap-2">
             {selectable && (
               <span
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-colors ${selected
+                className={`mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-colors ${selected
                   ? "border-[#DC3173] bg-[#DC3173] text-white"
                   // Empty box, brand border: grey read as disabled, and the
                   // control is the one thing on the card that has to look

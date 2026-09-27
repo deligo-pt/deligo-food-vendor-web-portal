@@ -55,7 +55,7 @@ export default function Products({
   // Collation and the name half both follow the language the vendor is reading.
   const { lang } = useStore();
   const [products, setProducts] = useState(productsData.data);
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  const [pickedCategoryId, setPickedCategoryId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
     action: "edit" | "delete" | null;
@@ -158,28 +158,44 @@ export default function Products({
     return [...own, ...uncategorized];
   }, [products, productCategories, lang]);
 
-  useEffect(() => {
-    if (groupedProducts.length > 0 && !activeCategoryId) {
-      setActiveCategoryId(groupedProducts[0].category?._id || "uncategorized");
-    }
-  }, [groupedProducts, activeCategoryId]);
+  // Derived, not stored: "nothing picked yet" means the first group, and an
+  // effect that wrote that default back into state was a cascading render for
+  // a value already knowable during render.
+  const activeCategoryId =
+    pickedCategoryId ?? groupedProducts[0]?.category?._id ?? "uncategorized";
 
-  // The highlight follows the scroll. Without this it only ever moved on a
-  // click, so scrolling past DESSERT left DINNER MENU lit and the sidebar
-  // stopped describing the page.
+  /**
+   * The element that actually scrolls.
+   *
+   * Desktop has its own pane; below `lg` that element is not a scroller at all
+   * and the window is. Decided by measurement rather than by a breakpoint
+   * constant, so the two can never disagree about where the list lives.
+   */
+  const activeScroller = (): HTMLDivElement | null => {
+    const el = scrollContainerRef.current;
+    return el && el.scrollHeight > el.clientHeight + 4 ? el : null;
+  };
+
+  /** A section's distance from the top of whatever is scrolling. */
+  const offsetInScroller = (el: HTMLElement, scroller: HTMLDivElement | null) =>
+    scroller
+      ? el.getBoundingClientRect().top - scroller.getBoundingClientRect().top
+      : el.getBoundingClientRect().top;
+
+  // The highlight follows the scroll — on the desktop pane, and on the window
+  // below `lg`, where that pane is no longer a scroller. Listening only to the
+  // pane would leave the chips frozen on the first category on every phone.
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container || groupedProducts.length === 0) return;
+    if (groupedProducts.length === 0) return;
 
     const onScroll = () => {
+      const scroller = activeScroller();
+
       // A click owns the highlight until its animation arrives; the first
       // scroll event after that hands control back.
       if (clickedRef.current) {
         const target = sectionRefs.current[clickedRef.current];
-        if (
-          target &&
-          Math.abs(target.offsetTop - container.offsetTop - container.scrollTop) < 8
-        ) {
+        if (target && Math.abs(offsetInScroller(target, scroller)) < 100) {
           clickedRef.current = null;
         }
         return;
@@ -187,38 +203,45 @@ export default function Products({
 
       // At the very bottom the last section wins outright: it is often shorter
       // than the viewport, so its heading never reaches the top line and the
-      // pill could otherwise never light up however far the vendor scrolls.
-      const atBottom =
-        container.scrollTop + container.clientHeight >= container.scrollHeight - 4;
+      // chip could otherwise never light up however far the vendor scrolls.
+      const atBottom = scroller
+        ? scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4
+        : window.scrollY + window.innerHeight >=
+          document.documentElement.scrollHeight - 4;
       if (atBottom) {
         const last = groupedProducts[groupedProducts.length - 1];
         const lastId = last?.category?._id || "uncategorized";
-        setActiveCategoryId((prev) => (prev === lastId ? prev : lastId));
+        setPickedCategoryId((prev) => (prev === lastId ? prev : lastId));
         return;
       }
 
-      // Otherwise the heading nearest the top of the viewport wins, so a
-      // half-scrolled section does not light up before it is being read.
+      // Otherwise the heading nearest the top wins, so a half-scrolled section
+      // does not light up before it is the one being read.
       let current = groupedProducts[0]?.category?._id || "uncategorized";
       for (const group of groupedProducts) {
         const id = group.category?._id || "uncategorized";
         const el = sectionRefs.current[id];
         if (!el) continue;
-        if (el.offsetTop - container.offsetTop - container.scrollTop <= 24) {
-          current = id;
-        }
+        if (offsetInScroller(el, scroller) <= 120) current = id;
       }
-      setActiveCategoryId((prev) => (prev === current ? prev : current));
+      setPickedCategoryId((prev) => (prev === current ? prev : current));
     };
 
-    onScroll();
-    container.addEventListener("scroll", onScroll, { passive: true });
-    return () => container.removeEventListener("scroll", onScroll);
+    // The first sync runs after paint rather than in the effect body: setState
+    // there is a cascading render, and this one only needs to measure a layout
+    // that does not exist until the browser has drawn it.
+    const first = requestAnimationFrame(onScroll);
+    const pane = scrollContainerRef.current;
+    pane?.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(first);
+      pane?.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [groupedProducts]);
-
-  useEffect(() => {
-    setProducts(productsData.data);
-  }, [productsData]);
 
   const getCategoryName = (category: TProductCategory | null) => {
     if (!category) return t("uncategorized") || "Uncategorized";
@@ -300,10 +323,10 @@ export default function Products({
   const selectionCount = copyAll ? productsData.meta?.total ?? products.length : selectedIds.length;
 
   const scrollToCategory = (id: string) => {
-    setActiveCategoryId(id);
+    setPickedCategoryId(id);
     const target = sectionRefs.current[id];
-    const container = scrollContainerRef.current;
-    if (!target || !container) return;
+    if (!target) return;
+    const container = activeScroller();
 
     // Positioned against the container rather than handed to `scrollIntoView`:
     // that scrolls every ancestor that can scroll, which here meant the page
@@ -311,14 +334,27 @@ export default function Products({
     // until the animation lands, so the observer below cannot overwrite it
     // with every heading the scroll passes on the way.
     clickedRef.current = id;
-    container.scrollTo({
-      top: target.offsetTop - container.offsetTop,
+    if (container) {
+      container.scrollTo({
+        top: target.offsetTop - container.offsetTop,
+        behavior: "smooth",
+      });
+      return;
+    }
+    // Page scroll, with a little room above the heading so it does not land
+    // flush against the sticky top bar.
+    window.scrollTo({
+      top: target.getBoundingClientRect().top + window.scrollY - 96,
       behavior: "smooth",
     });
   };
 
   return (
-    <div className="w-full flex flex-col h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] overflow-hidden">
+    /* The height lock is `lg:` only. On a phone the banner, the search field,
+       Sort By and the selection bar stack vertically and ate nearly all of
+       `100dvh`, leaving the inner scroller a sliver — one card, half cut off.
+       Below `lg` the page scrolls like a page and the grid flows down it. */
+    <div className="w-full flex flex-col lg:h-[calc(100dvh-1rem)] lg:max-h-[calc(100dvh-1rem)] lg:overflow-hidden">
       {/* Header – fixed height */}
       <TitleHeader
         title={t("food_items")}
@@ -421,8 +457,32 @@ export default function Products({
 
       {/* Main content area – takes remaining height */}
       {groupedProducts.length > 0 ? (
-        <div className="flex flex-1 min-h-0 gap-6 overflow-hidden">
+        <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-6 lg:overflow-hidden">
           {/* LEFT SIDEBAR – fixed, scrolls independently if needed */}
+          {/* Below `lg` the sidebar is hidden and nothing replaced it, so a
+              phone had no way to jump between categories at all. Same groups,
+              same scroll target — laid out as a scrollable strip because a
+              vertical list would push the products off the screen again. */}
+          <div className="lg:hidden -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 no-scrollbar">
+            {groupedProducts.map((group) => {
+              const id = group.category?._id || "uncategorized";
+              const isActive = activeCategoryId === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => scrollToCategory(id)}
+                  className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium uppercase tracking-wide transition-colors ${isActive
+                    ? "bg-[#DC3173]/10 text-[#DC3173]"
+                    : "bg-gray-100 text-gray-600"
+                    }`}
+                >
+                  {getCategoryName(group.category)} ({group.products.length})
+                </button>
+              );
+            })}
+          </div>
+
           <div className="hidden lg:block w-64 shrink-0 h-full overflow-y-auto">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sticky top-0">
               <h3 className="text-sm font-semibold text-gray-800 mb-3">
@@ -438,7 +498,7 @@ export default function Products({
                     <button
                       key={id}
                       onClick={() => {
-                        setActiveCategoryId(id);
+                        setPickedCategoryId(id);
                         scrollToCategory(id)
                       }}
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
@@ -472,7 +532,7 @@ export default function Products({
               and a drag agree. */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 min-w-0 h-full overflow-y-auto scroll-smooth space-y-10 pr-1 no-scrollbar"
+            className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto scroll-smooth space-y-10 pr-1 no-scrollbar"
           >
             <div className="space-y-10">
               {groupedProducts.map((group) => {
