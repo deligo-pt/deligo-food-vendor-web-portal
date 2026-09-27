@@ -80,6 +80,14 @@ export default function ProductCard({
       }}
     >
       <div className="relative h-48 shrink-0 flex items-center justify-center overflow-hidden">
+        {/* A brand wash over the photo while selected. The mark tells you which
+            card; this tells you at a glance how many, without reading corners. */}
+        {selectable && selected && (
+          <div
+            className="pointer-events-none absolute inset-0 z-[1] bg-[#DC3173]/15"
+            aria-hidden="true"
+          />
+        )}
         {product.images && product.images.length > 0 ? (
           <Image
             src={product.images[0]}
@@ -97,31 +105,20 @@ export default function ProductCard({
           </div>
         )}
         {/* {product.meta.isFeatured && (
-          <div className="absolute top-2 right-2 bg-[#DC3173] text-white text-xs font-bold px-2 py-1 rounded-md">
+          <div className="absolute top-2 right-2 z-[2] bg-[#DC3173] text-white text-xs font-bold px-2 py-1 rounded-md">
             Featured
           </div>
         )} */}
         <div
-          className={`absolute top-2 left-2 text-xs font-medium px-2 py-1 rounded-md ${statusColors[
+          className={`absolute top-2 left-2 z-[2] text-xs font-medium px-2 py-1 rounded-md ${statusColors[
             product.isDeleted ? "DELETED" : product.meta.status
           ]
             }`}
         >
           {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
-        {selectable && (
-          <div
-            className={`absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-md border-2 transition-colors ${selected
-              ? "border-[#DC3173] bg-[#DC3173] text-white"
-              : "border-white bg-white/80 text-transparent"
-              }`}
-            aria-hidden="true"
-          >
-            <Check className="h-4 w-4" />
-          </div>
-        )}
         {product?.pricing?.discount && <div
-          className={`absolute top-2 right-2 text-xs font-medium px-2 py-1 rounded-md bg-[#DC3173] text-white`}
+          className={`absolute top-2 right-2 z-[2] text-xs font-medium px-2 py-1 rounded-md bg-[#DC3173] text-white`}
         >
           {product.pricing?.discount} % OFF
         </div>}
@@ -218,12 +215,35 @@ export default function ProductCard({
           </div>
         )}
 
-        <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
-          <div className="text-xs text-gray-500">
-            {product.vendor?.vendorName}
+        <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-gray-100">
+          {/* The tick lives here rather than over the photo: this row is always
+              white, so the mark cannot be lost against a pink dish, and it sits
+              beside the controls the vendor is already looking at. It stays
+              *outside* the button group below, which stops propagation so
+              View/Edit/Delete still work while selecting — inside it, the tick
+              would never toggle anything. */}
+          <div className="flex min-w-0 items-center gap-2">
+            {selectable && (
+              <span
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-colors ${selected
+                  ? "border-[#DC3173] bg-[#DC3173] text-white"
+                  // Empty box, brand border: grey read as disabled, and the
+                  // control is the one thing on the card that has to look
+                  // clickable before anything is picked. The faint tick inside
+                  // says what it will become without claiming it already is.
+                  : "border-[#DC3173] bg-white text-[#DC3173]/25"
+                  }`}
+                aria-hidden="true"
+              >
+                <Check className="h-4 w-4" strokeWidth={3} />
+              </span>
+            )}
+            <span className="truncate text-xs text-gray-500">
+              {product.vendor?.vendorName}
+            </span>
           </div>
           <div
-            className="flex space-x-2"
+            className="flex shrink-0 space-x-2"
             onClick={(event) => event.stopPropagation()}
           >
             <motion.button
