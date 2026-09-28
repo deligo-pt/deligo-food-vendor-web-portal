@@ -147,10 +147,22 @@ export default function ProductCard({
           {product.description?.[lang]}
         </p>
 
-        {/* Price + VAT section */}
-        <div className="mb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
+        {/* Price + VAT section.
+
+            🔴 Two fixed rows, never one wrapping row. Price, struck-through
+            original and the VAT used to share a single `flex-wrap` line, so
+            whether the tax fit beside the price depended on how long that
+            particular price happened to be: "€ 9,00 €10,00 · Inc. VAT 6%" fits,
+            "EUR 0,40 EUR 1,00 · Inc. VAT 13%" does not. One card's block was a
+            line tall, its neighbour's two, and the divider and buttons below
+            them sat at different heights across a row of cards.
+
+            Giving VAT its own line makes the shape the same by construction
+            rather than by measurement — which also survives Portuguese, where
+            the API returns "EUR" and it renders wider than "€". */}
+        <div className="mb-3 space-y-1">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-baseline gap-2">
               <span className="text-lg font-bold text-[#DC3173]">
                 {product.pricing.currency}{" "}
                 {new Intl.NumberFormat("de-DE", {
@@ -167,38 +179,43 @@ export default function ProductCard({
                 </span>
               ) : null}
 
-              {/* VAT inline */}
-              {hasTax && (
-                <span className="inline-flex items-center gap-1 text-xs text-gray-500 ml-1">
-                  <span className="text-gray-400">•</span>
-                  <span className="font-medium text-gray-600">{t("inc_vat")}</span>
-
-                  {taxPercentage !== null && taxPercentage !== undefined && (
-                    <span className="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded">
-                      {taxPercentage}%
-                    </span>
-                  )}
-
-                  {taxAmount !== null && taxAmount !== undefined && (
-                    <span>
-                      ({product.pricing.currency}{" "}
-                      {new Intl.NumberFormat("de-DE", {
-                        minimumFractionDigits: 2,
-                      }).format(taxAmount)}
-                      )
-                    </span>
-                  )}
-                </span>
-              )}
             </div>
 
             {product.stock?.availabilityStatus && (
               <div
-                className={`text-xs px-2 py-1 rounded-full ${availabilityColors[product.stock.availabilityStatus]
+                className={`shrink-0 text-xs px-2 py-1 rounded-full ${availabilityColors[product.stock.availabilityStatus]
                   }`}
               >
                 {product.stock.availabilityStatus}
               </div>
+            )}
+          </div>
+
+          {/* The line is rendered whether or not there is a tax, for the same
+              reason the description is: dropping it would pull everything below
+              up by one line, and a product without VAT would stop lining up
+              with the one beside it. */}
+          <div className="flex min-h-[1.5rem] items-center gap-1 text-xs text-gray-500">
+            {hasTax && (
+              <>
+                <span className="font-medium text-gray-600">{t("inc_vat")}</span>
+
+                {taxPercentage !== null && taxPercentage !== undefined && (
+                  <span className="rounded bg-gray-100 px-1.5 py-0.5 text-gray-700">
+                    {taxPercentage}%
+                  </span>
+                )}
+
+                {taxAmount !== null && taxAmount !== undefined && (
+                  <span>
+                    ({product.pricing.currency}{" "}
+                    {new Intl.NumberFormat("de-DE", {
+                      minimumFractionDigits: 2,
+                    }).format(taxAmount)}
+                    )
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>

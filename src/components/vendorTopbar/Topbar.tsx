@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import TopbarIcons from "@/src/components/vendorTopbar/TopbarIcons";
 import { TVendor } from "@/src/types/vendor.type";
 import { Store } from "lucide-react";
+import { vendorDisplayName } from "@/src/utils/vendorName";
 
 type Props = {
   vendor?: TVendor;
@@ -20,9 +21,11 @@ type Props = {
 };
 
 export default function Topbar({ vendor, sidebarOpen }: Props) {
-  // Trimmed, so a name that is only whitespace renders nothing rather than an
-  // empty pill sitting in the header.
-  const businessName = vendor?.businessDetails?.businessName?.trim();
+  // A branch is its branch name, the parent is its business name — a vendor
+  // signed into a branch needs the header to tell the two apart, since nothing
+  // else on the screen does. Trimmed and falling back either way, so a name
+  // that is only whitespace renders nothing rather than an empty pill.
+  const businessName = vendorDisplayName(vendor);
 
   return (
     <>
