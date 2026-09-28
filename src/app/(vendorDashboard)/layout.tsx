@@ -30,7 +30,7 @@ export default async function VendorLayout({
         <div className="w-full sticky top-0 z-40">
           <Topbar vendor={vendorData} />
         </div>
-        <main className="flex-1 p-4 overflow-y-auto">{children}</main>
+        <main className="deligo-scroll flex-1 p-4 overflow-y-auto">{children}</main>
         <NotificationToast />
       </div>
 

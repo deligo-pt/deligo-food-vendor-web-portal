@@ -13,6 +13,12 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    // Lets one pure helper import another by its real filename, which is what
+    // `pnpm verify:product-copy` needs: it loads these modules directly under
+    // Node's `--experimental-strip-types`, where there is no bundler to resolve
+    // `@/` aliases and no extension guessing. Safe with `noEmit` — Next builds
+    // through its own bundler and never sees these specifiers.
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",

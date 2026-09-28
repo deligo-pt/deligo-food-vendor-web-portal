@@ -78,6 +78,33 @@ export function branchDisplayName(branch: TVendor | null | undefined, fallback: 
 }
 
 /**
+ * Whether this record is the parent account rather than one of its branches.
+ *
+ * `/vendors/{id}/branches` answers with the vendor's own row alongside the
+ * branches, and copying a product from a store to itself is not a thing to
+ * offer — the backend refuses the parent as a target with a 403.
+ *
+ * Decided only on **positive** evidence: `role` when the payload carries it,
+ * and otherwise the id shape, where a parent is `V-…` and a branch is `SV-…`.
+ * A record that says neither is *not* called a parent, because an over-eager
+ * test here empties the copy picker and the feature disappears with nothing on
+ * screen to explain why. The topbar is unharmed by the same choice: an
+ * unlabelled record falls through to the business name regardless.
+ *
+ * 🔴 **It lives here rather than in `vendorName.ts`, which is the module that
+ * reads more naturally**, because `pnpm verify:product-copy` imports this file
+ * under bare Node with `--experimental-strip-types`: no bundler, so no `@/`
+ * path aliases. A value import across one would break the guard. The topbar
+ * imports it from here instead, and the dependency points the "wrong" way on
+ * purpose.
+ */
+export function isMainBranch(branch: TVendor | null | undefined): boolean {
+  if (branch?.role === "VENDOR") return true;
+  if (branch?.role === "SUB_VENDOR") return false;
+  return /^V-/i.test(branch?.userId ?? "");
+}
+
+/**
  * Whether a branch can receive products at all.
  *
  * Only approved sub-vendors are copied to. An unapproved one is **silently
@@ -86,7 +113,9 @@ export function branchDisplayName(branch: TVendor | null | undefined, fallback: 
  * is told a copy happened that did not.
  */
 export function isCopyTarget(branch: TVendor | null | undefined): boolean {
-  return branch?.status === "APPROVED" && !branch?.isDeleted;
+  return (
+    !!branch && !isMainBranch(branch) && branch.status === "APPROVED" && !branch.isDeleted
+  );
 }
 
 /** The branches worth showing in the picker, in the order they arrived. */

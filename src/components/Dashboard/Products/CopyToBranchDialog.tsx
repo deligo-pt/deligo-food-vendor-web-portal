@@ -7,7 +7,6 @@ import {
     DialogContent,
     DialogHeader,
 } from "@/components/ui/dialog";
-import { BranchStatusBadge } from "@/src/components/Dashboard/BranchManagement/BranchHelpers";
 import { TVendor } from "@/src/types/vendor.type";
 import { cn } from "@/lib/utils";
 import { Building2, Check, Store } from "lucide-react";
@@ -20,7 +19,6 @@ import {
     branchTargetId,
     copyBlockedReason,
     describeCopyResult,
-    isCopyTarget,
 } from "@/src/utils/productCopy";
 
 interface Props {
@@ -56,10 +54,6 @@ export default function CopyToBranchDialog({
     // rejected by the backend — it is dropped from the copy without a word — so
     // offering it would promise something that never happens.
     const eligible = useMemo(() => approvedBranches(branches), [branches]);
-    const ineligible = useMemo(
-        () => (branches ?? []).filter((branch) => !isCopyTarget(branch)),
-        [branches],
-    );
 
     const productCount = copyAllProducts ? 0 : productIds.length;
     const hasProducts = copyAllProducts || productIds.length > 0;
@@ -264,29 +258,6 @@ export default function CopyToBranchDialog({
                                 );
                             })}
 
-                            {/* Shown, never selectable: a customer who cannot see their
-                                pending branch here would reasonably think it was lost. */}
-                            {ineligible.map((branch) => (
-                                <div
-                                    key={branch.userId}
-                                    className="w-full flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 opacity-60"
-                                >
-                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-400">
-                                        <Building2 className="h-5 w-5" />
-                                    </div>
-
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm text-gray-700 truncate">
-                                            {branchDisplayName(branch, t("branch"))}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground truncate">
-                                            {t("branch_not_approved")}
-                                        </p>
-                                    </div>
-
-                                    <BranchStatusBadge status={branch.status} />
-                                </div>
-                            ))}
                         </div>
                     )}
                 </div>

@@ -48,7 +48,12 @@ export default function DesktopSidebar({
         </div>
 
         {/* Page content */}
-        <main className="flex-1 min-w-0 overflow-x-hidden p-4 overflow-y-auto">{children}</main>
+        {/* The dashboard's scroller, and so the one that wears the custom
+            scrollbar. It used to sit on the products grid's own pane; that
+            pane is gone, and with it the second scrollbar this page had. */}
+        <main className="deligo-scroll flex-1 min-w-0 overflow-x-hidden p-4 overflow-y-auto">
+          {children}
+        </main>
       </div>
     </div>
   );

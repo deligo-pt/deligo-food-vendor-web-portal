@@ -62,6 +62,7 @@ const {
   describeCopyResult,
   approvedBranches,
   isCopyTarget,
+  isMainBranch,
   branchTargetId,
   branchDisplayName,
   productCode,
@@ -208,19 +209,35 @@ section("🔴 Only approved branches receive anything");
       /copyTargets\.length > 0/.test(catalogue),
   );
   check(
-    "unapproved branches are still shown, with their status",
-    /ineligible\.map\(\(branch\)/.test(dialog) && /<BranchStatusBadge status=\{branch\.status\} \/>/.test(dialog),
-    "a branch that vanishes from the list looks lost",
+    "\ud83d\udd34 an unapproved branch is not listed at all",
+    !/ineligible/.test(dialog) && !/BranchStatusBadge/.test(dialog),
+    "PENDING and SUBMITTED rows read as choices that are merely disabled today",
   );
   check(
-    "approvedBranches keeps only APPROVED",
+    "\ud83d\udd34 the parent account is never a target",
+    !isCopyTarget({ status: "APPROVED", role: "VENDOR", userId: "V-IN0AMES9" }) &&
+      isCopyTarget({ status: "APPROVED", role: "SUB_VENDOR", userId: "SV-A0V2NRD9" }),
+    "/vendors/{id}/branches returns the vendor's own row, and copying a store to itself 403s",
+  );
+  check(
+    "…decided on evidence, so a payload that says neither is kept",
+    isMainBranch({ role: "VENDOR" }) === true &&
+      isMainBranch({ role: "SUB_VENDOR", userId: "V-WEIRD" }) === false &&
+      isMainBranch({ userId: "V-IN0AMES9" }) === true &&
+      isMainBranch({ userId: "SV-A0V2NRD9" }) === false &&
+      isMainBranch({}) === false,
+    "an over-eager test here empties the picker and the feature vanishes silently",
+  );
+  check(
+    "approvedBranches keeps only approved branches",
     approvedBranches([
-      { status: "APPROVED", userId: "a" },
-      { status: "PENDING", userId: "b" },
-      { status: "REJECTED", userId: "c" },
+      { status: "APPROVED", userId: "SV-a" },
+      { status: "PENDING", userId: "SV-b" },
+      { status: "REJECTED", userId: "SV-c" },
+      { status: "APPROVED", userId: "V-main" },
     ])
       .map((b) => b.userId)
-      .join() === "a",
+      .join() === "SV-a",
   );
 }
 

@@ -76,6 +76,15 @@ export default function Products({
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  /**
+   * Where a heading counts as "at the top", in viewport pixels.
+   *
+   * The same number `scroll-mt-24` gives the sections, so the heading a jump
+   * lands on is the heading the highlight then picks. Two numbers here drifted
+   * apart and a click lit up the category above the one it scrolled to.
+   */
+  const HEADING_LINE = 96;
   /** The pill a click chose, held until the smooth scroll reaches it. */
   const clickedRef = useRef<string | null>(null);
 
@@ -165,37 +174,51 @@ export default function Products({
     pickedCategoryId ?? groupedProducts[0]?.category?._id ?? "uncategorized";
 
   /**
-   * The element that actually scrolls.
+   * A section's distance from the top of the window.
    *
-   * Desktop has its own pane; below `lg` that element is not a scroller at all
-   * and the window is. Decided by measurement rather than by a breakpoint
-   * constant, so the two can never disagree about where the list lives.
+   * Viewport coordinates, so it does not matter which element is doing the
+   * scrolling — `<main>` on this page today, the window on a layout that drops
+   * it tomorrow. The old version had to find the scroller first and measure
+   * against it, which is the kind of question that only had an answer while
+   * there were two of them.
    */
-  const activeScroller = (): HTMLDivElement | null => {
-    const el = scrollContainerRef.current;
-    return el && el.scrollHeight > el.clientHeight + 4 ? el : null;
+  const distanceFromTop = (el: HTMLElement) => el.getBoundingClientRect().top;
+
+  /**
+   * The element the list is actually scrolling inside.
+   *
+   * The list's own pane at `lg`; below that the pane is not a scroller and the
+   * enclosing `<main>` is — note **`main`**, not the window, which is why this
+   * walks the ancestors instead of assuming `document.scrollingElement`.
+   * Wanted only for the "am I at the bottom" test, which is the one question
+   * viewport coordinates cannot answer.
+   */
+  const activeScroller = (): HTMLElement | null => {
+    const pane = scrollContainerRef.current;
+    if (pane && pane.scrollHeight > pane.clientHeight + 4) return pane;
+
+    let node = pane?.parentElement ?? null;
+    while (node) {
+      const { overflowY } = getComputedStyle(node);
+      const scrolls = overflowY === "auto" || overflowY === "scroll";
+      if (scrolls && node.scrollHeight > node.clientHeight + 4) return node;
+      node = node.parentElement;
+    }
+    return null;
   };
 
-  /** A section's distance from the top of whatever is scrolling. */
-  const offsetInScroller = (el: HTMLElement, scroller: HTMLDivElement | null) =>
-    scroller
-      ? el.getBoundingClientRect().top - scroller.getBoundingClientRect().top
-      : el.getBoundingClientRect().top;
-
-  // The highlight follows the scroll — on the desktop pane, and on the window
-  // below `lg`, where that pane is no longer a scroller. Listening only to the
-  // pane would leave the chips frozen on the first category on every phone.
+  // The highlight follows the scroll. Listened for in the **capture** phase on
+  // `document`: scroll events do not bubble, and the element that scrolls here
+  // is `<main>`, not the window — a listener on `window` alone would never fire.
   useEffect(() => {
     if (groupedProducts.length === 0) return;
 
     const onScroll = () => {
-      const scroller = activeScroller();
-
       // A click owns the highlight until its animation arrives; the first
       // scroll event after that hands control back.
       if (clickedRef.current) {
         const target = sectionRefs.current[clickedRef.current];
-        if (target && Math.abs(offsetInScroller(target, scroller)) < 100) {
+        if (target && Math.abs(distanceFromTop(target) - HEADING_LINE) < 100) {
           clickedRef.current = null;
         }
         return;
@@ -204,6 +227,7 @@ export default function Products({
       // At the very bottom the last section wins outright: it is often shorter
       // than the viewport, so its heading never reaches the top line and the
       // chip could otherwise never light up however far the vendor scrolls.
+      const scroller = activeScroller();
       const atBottom = scroller
         ? scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4
         : window.scrollY + window.innerHeight >=
@@ -222,7 +246,7 @@ export default function Products({
         const id = group.category?._id || "uncategorized";
         const el = sectionRefs.current[id];
         if (!el) continue;
-        if (offsetInScroller(el, scroller) <= 120) current = id;
+        if (distanceFromTop(el) <= HEADING_LINE) current = id;
       }
       setPickedCategoryId((prev) => (prev === current ? prev : current));
     };
@@ -231,14 +255,11 @@ export default function Products({
     // there is a cascading render, and this one only needs to measure a layout
     // that does not exist until the browser has drawn it.
     const first = requestAnimationFrame(onScroll);
-    const pane = scrollContainerRef.current;
-    pane?.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("scroll", onScroll, { capture: true, passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
     return () => {
       cancelAnimationFrame(first);
-      pane?.removeEventListener("scroll", onScroll);
-      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("scroll", onScroll, { capture: true });
       window.removeEventListener("resize", onScroll);
     };
   }, [groupedProducts]);
@@ -326,35 +347,46 @@ export default function Products({
     setPickedCategoryId(id);
     const target = sectionRefs.current[id];
     if (!target) return;
-    const container = activeScroller();
-
-    // Positioned against the container rather than handed to `scrollIntoView`:
-    // that scrolls every ancestor that can scroll, which here meant the page
-    // moved as well as the list. `clickedRef` holds the pill the vendor chose
-    // until the animation lands, so the observer below cannot overwrite it
-    // with every heading the scroll passes on the way.
+    // `clickedRef` holds the pill the vendor chose until the animation lands,
+    // so the listener above cannot overwrite it with every heading the scroll
+    // passes on the way.
     clickedRef.current = id;
-    if (container) {
-      container.scrollTo({
-        top: target.offsetTop - container.offsetTop,
-        behavior: "smooth",
-      });
-      return;
-    }
-    // Page scroll, with a little room above the heading so it does not land
-    // flush against the sticky top bar.
-    window.scrollTo({
-      top: target.getBoundingClientRect().top + window.scrollY - 96,
-      behavior: "smooth",
-    });
+
+    // `scrollIntoView` moves every scrollable ancestor, which was wrong while
+    // this page had two of them — the page and the list both moved. With one
+    // it is exactly right, and `scroll-mt-24` on the section keeps the heading
+    // clear of the topbar without arithmetic that has to be kept in sync with
+    // a header height. The old `window.scrollTo` fallback was aimed at the
+    // wrong element anyway: below `lg` the scroller is `<main>`, not the
+    // window, so that branch scrolled nothing at all.
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    /* The height lock is `lg:` only. On a phone the banner, the search field,
-       Sort By and the selection bar stack vertically and ate nearly all of
-       `100dvh`, leaving the inner scroller a sliver — one card, half cut off.
-       Below `lg` the page scrolls like a page and the grid flows down it. */
-    <div className="w-full flex flex-col lg:h-[calc(100dvh-1rem)] lg:max-h-[calc(100dvh-1rem)] lg:overflow-hidden">
+    /* 🔴 `6rem`, and the whole bug lived in that number.
+
+       This was `lg:h-[calc(100dvh-1rem)]` — the whole viewport — while the
+       block sits inside `<main>`, which already begins below the 64px topbar
+       and adds `p-4`. It was therefore ~96px taller than its slot, and `main`
+       scrolled to make up the difference. That gave the page two scrollers
+       under one wheel: the browser moved whichever sat under the pointer and
+       only handed over at its end, so the last row stayed half off-screen
+       until the pointer moved elsewhere. Worse, the two kept independent
+       offsets and nothing reset the inner one, so the page could sit at the
+       top, banner and all, while the grid was still scrolled — a category's
+       prices and buttons stacked straight onto the next heading with their
+       images cut off above.
+
+       `100dvh - 6rem` is that slot exactly: 64px of topbar (fixed in
+       `Topbar.tsx`, which also renders a spacer of the same height) plus
+       `main`'s 16px of padding top and bottom. The block now fits, `main` has
+       nothing left to scroll on this page, and the list's own scroller is the
+       only one — which is what makes it safe to have at all.
+
+       `lg:` only. On a phone the banner, search, Sort By and the selection bar
+       stack and ate nearly all of `100dvh`, leaving the scroller a sliver;
+       below `lg` the page scrolls like a page and the grid flows down it. */
+    <div className="w-full flex flex-col lg:h-[calc(100dvh-6rem)] lg:max-h-[calc(100dvh-6rem)] lg:overflow-hidden">
       {/* Header – fixed height */}
       <TitleHeader
         title={t("food_items")}
@@ -530,11 +562,34 @@ export default function Products({
               it found first, which is what made this list feel like it fought
               back. `scroll-smooth` replaces the per-call behaviour so a click
               and a drag agree. */}
+          {/* The list's own scroller, with the portal's pink scrollbar. Safe to
+              be a scroller now only because the block above fits its slot, so
+              `main` is not competing for the same wheel. */}
           <div
             ref={scrollContainerRef}
             className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto scroll-smooth space-y-10 pr-1 deligo-scroll"
           >
-            <div className="space-y-10">
+            {/* 🔴 Columns are counted from *this* box, and they stop at three.
+
+                They used to be `sm:grid-cols-2 xl:grid-cols-3` — viewport
+                widths — while the cards live in a pane whose width also depends
+                on the sidebar, 20% of the screen expanded and 5rem collapsed. A
+                window past `xl` therefore committed to three columns while the
+                pane was only ~1000px. `@container` asks the pane instead, so
+                collapsing the sidebar is a change the grid can see.
+
+                The thresholds come from what a card actually needs, which is
+                less than it looks: the widest row in it is the buttons (tick,
+                View, Edit, Delete) at ~200px, plus `p-4`. Three columns from
+                50rem therefore leaves ~253px per card and two from 36rem leaves
+                ~278px — both comfortable, and the price no longer fights for
+                the line since the VAT moved onto its own.
+
+                Capped at three on purpose. An intrinsic `auto-fill` grid would
+                keep adding columns on a wide monitor; three is the layout this
+                page is designed around, so beyond 50rem the cards get roomier
+                rather than more numerous. */}
+            <div className="@container space-y-10">
               {groupedProducts.map((group) => {
                 const id = group.category?._id || "uncategorized";
 
@@ -545,7 +600,11 @@ export default function Products({
                     ref={(el) => {
                       sectionRefs.current[id] = el;
                     }}
-                    className="rounded-xl"
+                    /* Clearance under the fixed topbar when the *page* is what
+                       scrolls. At `lg` the list has its own pane, whose top is
+                       already below the topbar, so a margin there would land
+                       every jump 96px short of the heading. */
+                    className="scroll-mt-24 lg:scroll-mt-0 rounded-xl"
                   >
                     <div className="p-2">
                       <div className="flex items-center justify-between mb-4">
@@ -575,7 +634,7 @@ export default function Products({
 
                       <motion.div
                         layout
-                        className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                        className="grid auto-rows-fr grid-cols-1 @xl:grid-cols-2 @min-[50rem]:grid-cols-3 gap-5"
                       >
                         <AnimatePresence mode="popLayout">
                           {group.products.map((product) => (
@@ -620,7 +679,7 @@ export default function Products({
 
                     <motion.div
                       layout
-                      className="grid auto-rows-fr grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                      className="grid auto-rows-fr grid-cols-1 @xl:grid-cols-2 @min-[50rem]:grid-cols-3 gap-5"
                     >
                       <AnimatePresence mode="popLayout">
                         {group.products.map((product) => (
