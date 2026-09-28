@@ -131,6 +131,55 @@
   /* Chrome, Safari, Opera */
 }
 
+/* A scrollbar for a pane that scrolls inside the page.
+
+   The product grid carried `.no-scrollbar`, so nothing marked it as scrollable
+   at all — on every OS, not just macOS, where the system bar is an overlay that
+   only appears mid-gesture anyway. A vendor with four categories saw a screen
+   that looked complete.
+
+   Declaring `::-webkit-scrollbar` also opts WebKit out of overlay scrollbars,
+   which is the point here: this one is always visible, and the pane reserves
+   its width instead of the cards shifting under the pointer.
+
+   Both engines, because they share no properties: `scrollbar-*` is Firefox's,
+   the pseudo-elements are Chrome/Safari/Edge's. */
+.deligo-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(220 49 115 / 0.35) transparent;
+}
+
+.deligo-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.deligo-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.deligo-scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(220 49 115 / 0.35);
+  border-radius: 9999px;
+}
+
+.deligo-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(220 49 115 / 0.6);
+}
+
+/* Pink at 35% disappears against `--background` in dark mode. */
+.dark .deligo-scroll {
+  scrollbar-color: rgb(220 49 115 / 0.55) transparent;
+}
+
+.dark .deligo-scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(220 49 115 / 0.55);
+}
+
+.dark .deligo-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(220 49 115 / 0.8);
+}
+
 @media print {
   @page {
     size: landscape;

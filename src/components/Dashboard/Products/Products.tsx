@@ -483,7 +483,7 @@ export default function Products({
             })}
           </div>
 
-          <div className="hidden lg:block w-64 shrink-0 h-full overflow-y-auto">
+          <div className="hidden lg:block w-64 shrink-0 h-full overflow-y-auto deligo-scroll">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sticky top-0">
               <h3 className="text-sm font-semibold text-gray-800 mb-3">
                 {t("product_categories") || "Product categories"}
@@ -532,7 +532,7 @@ export default function Products({
               and a drag agree. */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto scroll-smooth space-y-10 pr-1 no-scrollbar"
+            className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto scroll-smooth space-y-10 pr-1 deligo-scroll"
           >
             <div className="space-y-10">
               {groupedProducts.map((group) => {

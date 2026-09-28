@@ -39,6 +39,7 @@ import { TProduct } from "@/src/types/product.type";
 import { TResponse } from "@/src/types";
 import { useStore } from "@/src/store/store";
 import { DEFAULT_PRODUCT_IMAGE } from "@/src/consts/product.const";
+import { standardVatTaxId } from "@/src/utils/tax";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { useRouter } from "next/navigation";
 
@@ -104,6 +105,13 @@ export function ProductForm({
 
   const lastTabIndex = tabs.length - 1;
 
+  // Standard VAT, chosen for real rather than hinted at. The field used to open
+  // empty with "Standard VAT (23%)" as grey placeholder text, which reads as a
+  // selection and submits as nothing — so a vendor who trusted it shipped a
+  // product with no tax at all. Resolved from the `/taxes` the page fetched, so
+  // it is a live id and not a constant that can drift out of the database.
+  const defaultTaxId = useMemo(() => standardVatTaxId(taxesData), [taxesData]);
+
   const form = useForm<FormData>({
     resolver: zodResolver(productValidation),
     values: {
@@ -121,7 +129,7 @@ export function ProductForm({
       price: 0,
       discountType: "PERCENTAGE",
       discount: 0,
-      taxId: "",
+      taxId: defaultTaxId,
       quantity: 0,
       unit: "",
       availabilityStatus: "",

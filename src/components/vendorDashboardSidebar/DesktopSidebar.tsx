@@ -44,7 +44,7 @@ export default function DesktopSidebar({
       >
         {/* Topbar sticky */}
         <div className="w-full sticky top-0 z-40">
-          <Topbar vendor={vendorData} />
+          <Topbar vendor={vendorData} sidebarOpen={open} />
         </div>
 
         {/* Page content */}
