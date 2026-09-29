@@ -22,6 +22,7 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { updateItemSortOrder } from "@/src/services/dashboard/menu/menu.service";
 import { IProductItem } from "@/src/types/menu.type";
+import { getProductImage } from "@/src/consts/product.const";
 
 const updateSortOrderSchema = z.object({
     sortOrder: z.number().min(0, "Sort order must be at least 0"),
@@ -50,7 +51,7 @@ export default function UpdateItemSortOrder({
     const itemName = product?.name?.[currentLang] || product?.name?.en || "Product";
     const itemPrice = product?.pricing?.price;
     const currency = product?.pricing?.currency || "€";
-    const itemImage = product?.images?.[0];
+    const itemImage = getProductImage(product);
 
     const form = useForm<UpdateSortOrderSchema>({
         resolver: zodResolver(updateSortOrderSchema),

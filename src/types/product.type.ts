@@ -55,7 +55,16 @@ export type TProduct = {
     hasVariations: boolean;
   };
 
-  images: string[];
+  /**
+   * A product's picture.
+   *
+   * `image` is the field the API writes and returns as of the Sep-2026 change
+   * to a single image; `images` is what every product saved before it still
+   * carries. Both are optional because a given product has exactly one of
+   * them — read them through `getProductImage`, never directly.
+   */
+  image?: string;
+  images?: string[];
 
   vendor: {
     vendorId: string;

@@ -32,7 +32,8 @@ export interface IProductItem {
             pt: string;
         };
         slug: string;
-        images: string[];
+        image?: string;
+        images?: string[];
         pricing: {
             price: number;
             discount: number;

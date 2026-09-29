@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import CopyToBranchDialog from "./CopyToBranchDialog";
+import { getProductImage } from "@/src/consts/product.const";
 
 interface IProps {
   product: TProduct;
@@ -180,10 +181,10 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
             variants={itemVariants as Variants}
           >
             <div className="relative aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100">
-              {product.images && product.images.length > 0 ? (
+              {getProductImage(product) ? (
                 <motion.img
                   key={currentImageIndex}
-                  src={product.images[currentImageIndex]}
+                  src={getProductImage(product) as string}
                   alt={product.name?.[lang]}
                   className="w-full h-full object-fill"
                   variants={imageVariants}

@@ -24,6 +24,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Switch } from "@/components/ui/switch";
 import { addItemToSection } from "@/src/services/dashboard/menu/menu.service";
 import { itemAddSchema } from "@/src/validations/menu/section.validation";
+import { getProductImage } from "@/src/consts/product.const";
 
 export type AddItemToSectionSchema = z.infer<typeof itemAddSchema>;
 
@@ -146,9 +147,9 @@ export default function AddItemToSection({
                                                             >
                                                                 <div className="flex items-center gap-2.5">
                                                                     <div className="relative w-8 h-8 rounded-md overflow-hidden bg-slate-200 shrink-0">
-                                                                        {prod.images?.[0] ? (
+                                                                        {getProductImage(prod) ? (
                                                                             <Image
-                                                                                src={prod.images[0]}
+                                                                                src={getProductImage(prod) as string}
                                                                                 alt={name || "Product"}
                                                                                 fill
                                                                                 className="object-cover"

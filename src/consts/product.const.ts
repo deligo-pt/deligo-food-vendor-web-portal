@@ -17,3 +17,20 @@ export const DEFAULT_PRODUCT_IMAGE =
 
 /** A product carries one image. The default fills the slot when none is given. */
 export const MAX_PRODUCT_IMAGES = 1;
+
+/**
+ * A product's picture, wherever it happens to live.
+ *
+ * The API changed from `images: [url]` to `image: url` in Sep 2026 without
+ * migrating the rows behind it, so the collection holds both shapes at once:
+ * products saved before the change have `images` and no `image`, products saved
+ * after have `image` and no `images` (measured against the test API). Reading
+ * either field on its own therefore loses half the catalogue.
+ *
+ * `image` is checked first because it is the shape the API now writes, so a
+ * product that somehow carries both is showing the newer picture.
+ */
+export const getProductImage = (product?: {
+  image?: string;
+  images?: string[];
+} | null): string | undefined => product?.image || product?.images?.[0];

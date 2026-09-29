@@ -6,6 +6,7 @@ import { TTopRatedItems } from "@/src/types/analytics.type";
 import { motion } from "framer-motion";
 import { StarIcon } from "lucide-react";
 import Image from "next/image";
+import { getProductImage } from "@/src/consts/product.const";
 
 interface IProps {
   topRatedItems: TTopRatedItems[];
@@ -47,7 +48,7 @@ const TopProducts = ({ topRatedItems }: IProps) => {
           >
             <div className="h-32 w-full overflow-hidden">
               <Image
-                src={item.images?.[0] || ""}
+                src={getProductImage(item) || ""}
                 alt={item.name?.[lang]}
                 className="w-full h-full object-cover"
                 width={500}
