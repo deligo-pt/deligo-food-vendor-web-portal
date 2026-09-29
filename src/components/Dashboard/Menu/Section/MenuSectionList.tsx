@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { TProduct } from "@/src/types/product.type";
 import AddItemToSection from "./AddItemToSection";
 import UpdateItemSortOrder from "./UpdateItemSortOrder";
+import { getProductImage } from "@/src/consts/product.const";
 
 interface IProps {
     menuId: string;
@@ -280,9 +281,9 @@ export default function MenuSectionsList({
                                                             >
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0">
-                                                                        {prod.images?.[0] ? (
+                                                                        {getProductImage(prod) ? (
                                                                             <Image
-                                                                                src={prod.images[0]}
+                                                                                src={getProductImage(prod) as string}
                                                                                 alt={prod.name?.[currentLang] || "Product"}
                                                                                 fill
                                                                                 className="object-cover"

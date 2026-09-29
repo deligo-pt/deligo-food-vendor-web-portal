@@ -21,7 +21,7 @@ import { getAddOnsGroupReq } from "@/src/services/dashboard/add-ons/add-ons";
 import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
 import { getAllTaxesReq } from "@/src/services/dashboard/taxes/taxes";
 import { useStore } from "@/src/store/store";
-import { DEFAULT_PRODUCT_IMAGE } from "@/src/consts/product.const";
+import { DEFAULT_PRODUCT_IMAGE, getProductImage } from "@/src/consts/product.const";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TProductCategory } from "@/src/types/category.type";
@@ -122,7 +122,15 @@ export function EditProductForm({
     resolver: zodResolver(productValidation),
     defaultValues: {
       name: prevData?.name || "",
-      images: prevData?.images || [],
+      // Seeded from whichever field the product actually carries, and with the
+      // fallback picture filtered out: a product saved without an image gets
+      // `DEFAULT_PRODUCT_IMAGE` on the server, and showing that back here
+      // presented it as something the vendor had uploaded — deletable, and
+      // occupying the one slot so "Replace image" was the only way past it. An
+      // empty slot is the truth, and saving still re-applies the default.
+      images: [getProductImage(prevData)].filter(
+        (url): url is string => Boolean(url) && url !== DEFAULT_PRODUCT_IMAGE,
+      ),
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
       price: prevData?.pricing?.price || 0,
@@ -157,6 +165,19 @@ export function EditProductForm({
       control: form.control,
       name: ["price", "discount", "discountType", "taxId", "addonGroups", "variations"],
     });
+
+  // The name in the heading, same rule as the create form: the current
+  // language's name, falling back to the other so the heading is never blank
+  // for a product that only has one translation. Watched rather than read from
+  // `prevData`, so renaming the item updates the heading as it is typed.
+  const [nameEn, namePt] = useWatch({
+    control: form.control,
+    name: ["name.en", "name.pt"],
+  });
+  const productName = (lang === "pt" ? namePt || nameEn : nameEn || namePt)?.trim();
+  const headerTitle = productName
+    ? `${t("update_item")} - ${productName}`
+    : t("update_item");
 
   const addAddon = (id: string) => {
     if (!form?.getValues("addonGroups")?.includes(id)) {
@@ -222,21 +243,22 @@ export function EditProductForm({
       productData.addonGroups = data.addonGroups;
     }
 
-    // images update
-    const originalImages: string[] = prevData?.images || [];
-    const currentImages: string[] = data.images || [];
+    // image update
+    //
+    // Sent as a single `image` string, not `images: [url]`: the API's schema is
+    // strict and rejects `images`, which is what made every update fail. Note
+    // the asymmetry — `DELETE /products/:productId/images` still takes the
+    // array, so `deleteProductImage` is correct as it stands.
+    const originalImage = getProductImage(prevData);
+    const currentImage = data.images?.[0];
 
-    const newlyUploaded = currentImages.filter(
-      (url) => !originalImages.includes(url)
-    );
-
-    if (newlyUploaded.length > 0) {
-      productData.images = newlyUploaded;
-    } else if (currentImages.length === 0 && originalImages.length > 0) {
-      // The vendor removed their only picture. Sending an empty array would
-      // leave the product with none at all, so the default takes the slot back
-      // — the same rule the create form applies.
-      productData.images = [DEFAULT_PRODUCT_IMAGE];
+    if (currentImage && currentImage !== originalImage) {
+      productData.image = currentImage;
+    } else if (!currentImage && originalImage) {
+      // The vendor removed their only picture. Sending nothing would leave the
+      // product with none at all, so the default takes the slot back — the same
+      // rule the create form applies.
+      productData.image = DEFAULT_PRODUCT_IMAGE;
     }
 
     // pricing update
@@ -295,10 +317,12 @@ export function EditProductForm({
     const hasAnyChange = Object.keys(productData).length > 0 || priceChanged;
 
     if (!hasAnyChange) {
-      const onlyImagesWereDeleted =
-        originalImages.length > currentImages.length && newlyUploaded.length === 0;
+      // The picture was deleted through the uploader, which already called the
+      // image-delete endpoint itself — so there is nothing left for the save to
+      // send, and "no changes" would be the wrong thing to say about it.
+      const onlyTheImageWasDeleted = Boolean(originalImage) && !currentImage;
 
-      if (onlyImagesWereDeleted) {
+      if (onlyTheImageWasDeleted) {
         toast.success("Image removed successfully", { id: toastId });
       } else {
         toast.info("No changes detected", { id: toastId });
@@ -451,7 +475,7 @@ export function EditProductForm({
         className="bg-white overflow-hidden"
       >
         <TitleHeader
-          title={t("update_item")}
+          title={headerTitle}
           subtitle={t("update_product_details")}
           extraComponent={
             <motion.button

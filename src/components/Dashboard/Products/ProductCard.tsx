@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Check, Clock, ShoppingBag, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { getProductImage } from "@/src/consts/product.const";
 
 interface IProps {
   product: TProduct;
@@ -88,9 +89,9 @@ export default function ProductCard({
             aria-hidden="true"
           />
         )}
-        {product.images && product.images.length > 0 ? (
+        {getProductImage(product) ? (
           <Image
-            src={product.images[0]}
+            src={getProductImage(product) as string}
             alt={product?.name?.[lang] as string}
             // `cover`, not `fill`: `fill` stretches a photo to the box, which
             // is why a wide banner and a square dish looked differently

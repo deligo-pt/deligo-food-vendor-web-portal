@@ -195,10 +195,17 @@ export function ProductForm({
         description: translated.description,
         category: data.category,
         ...(data.additionalCategories && { additionalCategories: data.additionalCategories }),
+        // A single `image` string, not the `images: [url]` array this used to
+        // send: the API's product schema is strict and rejects `images`
+        // outright ("Unrecognized key(s) in object: 'images'"), which is what
+        // made every save fail. The form still tracks an array internally
+        // because the uploader and the image-delete endpoint both use one — the
+        // narrowing to one URL happens here, at the boundary.
+        //
         // The vendor may skip the step entirely; every product still ships with
         // a picture. Applied here rather than in the uploader, so the default
         // is never shown, never selectable and never deletable.
-        images: data.images?.length ? data.images : [DEFAULT_PRODUCT_IMAGE],
+        image: data.images?.[0] || DEFAULT_PRODUCT_IMAGE,
         pricing: {
           price: data.price,
           discountType: data.discountType,

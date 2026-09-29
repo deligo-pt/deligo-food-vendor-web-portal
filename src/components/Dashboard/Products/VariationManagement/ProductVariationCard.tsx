@@ -26,6 +26,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { DEFAULT_PRODUCT_IMAGE, getProductImage } from "@/src/consts/product.const";
 
 interface IProps {
   product: TProduct;
@@ -144,7 +145,7 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
       >
         <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-100">
           <Image
-            src={product.images[0]}
+            src={getProductImage(product) || DEFAULT_PRODUCT_IMAGE}
             alt={product.name?.[lang] as string}
             className="w-full h-full object-fill"
             width={300}
