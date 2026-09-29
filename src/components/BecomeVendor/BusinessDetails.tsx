@@ -129,6 +129,18 @@ export default function BusinessDetailsForm({
           openingHours: data.openingHours,
           closingHours: data.closingHours,
           closingDays: data.closingDays || [],
+          // A branch serves what it serves. The cuisine is cloned from the
+          // parent when the branch is created, but a branch can differ from it,
+          // so this is editable here and has to be sent — it used to be
+          // computed above and then dropped, which left the multi-select
+          // accepting changes that were silently discarded on save.
+          //
+          // Only for a restaurant: a store has no cuisine, and sending an empty
+          // array for one would be a write that means nothing. `PATCH
+          // /vendors/:subVendorId` accepts the field either way.
+          ...(data.businessType === "restaurant"
+            ? { restaurantCuisineType: uniqueCuisineSlugs }
+            : {}),
         },
       };
     } else {
@@ -382,7 +394,6 @@ export default function BusinessDetailsForm({
                             invalid={fieldState.invalid}
                             placeholder={t("select_multiple_cuisine")}
                             t={t}
-                            disabled={!!isSubVendor}
                           />
                         </FormControl>
 
