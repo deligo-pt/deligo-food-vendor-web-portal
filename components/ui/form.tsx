@@ -14,6 +14,7 @@ import {
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/src/hooks/use-translation"
 import { Label } from "@/components/ui/label"
 
 const Form = FormProvider
@@ -137,7 +138,11 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? "") : props.children
+  // A schema message may be a translation key (the offer forms' are). `t`
+  // returns its input when no key matches, so plain-English messages elsewhere
+  // render exactly as before.
+  const { t } = useTranslation()
+  const body = error ? t(String(error?.message ?? "")) : props.children
 
   if (!body) {
     return null

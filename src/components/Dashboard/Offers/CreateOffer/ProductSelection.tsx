@@ -7,6 +7,7 @@ import { TProduct } from "@/src/types/product.type";
 import { useMemo } from "react";
 import { isActiveProduct } from "@/src/utils/offerProducts";
 import { useTranslation } from "@/src/hooks/use-translation";
+import { countLabel } from "@/src/utils/countLabel";
 
 interface ProductSelectorProps {
     products: TProduct[];
@@ -64,7 +65,7 @@ export function ProductSelector({
         >
             {productsByCategory.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-10">
-                    No products found
+                    {t("no_products_found")}
                 </p>
             )}
 
@@ -80,8 +81,7 @@ export function ProductSelector({
                                 {categoryName}
                             </span>
                             <span className="text-xs text-gray-400 ml-auto tabular-nums">
-                                {catProducts.length} item
-                                {catProducts.length !== 1 ? "s" : ""}
+                                {countLabel(t, catProducts.length, "offer_one_item", "offer_n_items")}
                             </span>
                         </div>
 
