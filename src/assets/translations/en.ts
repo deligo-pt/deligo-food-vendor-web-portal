@@ -2197,5 +2197,7 @@ export const en = {
   only_one_image_allowed: "You can upload only one image",
   upload_image_files_only: "Please upload only image files",
   replace_image: "Replace image",
+  // A product still in an offer after being switched off — offer pickers.
+  inactive_product: "Inactive",
 };
 

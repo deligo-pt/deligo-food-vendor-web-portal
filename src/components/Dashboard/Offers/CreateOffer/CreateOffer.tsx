@@ -44,6 +44,7 @@ import { useMemo, useState } from "react";
 import { Resolver, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { ProductSelector } from "./ProductSelection";
+import { offerPickerProducts } from "@/src/utils/offerProducts";
 
 const PRIMARY = "#DC3173";
 
@@ -56,7 +57,12 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
   const { lang } = useStore();
   const router = useRouter();
 
-  const products = useMemo(() => itemsResult.data || [], [itemsResult.data]);
+  // The page already asks for active products only; filtering again here keeps
+  // the rule true if that request ever loses its query — see `offerProducts.ts`.
+  const products = useMemo(
+    () => offerPickerProducts(itemsResult.data),
+    [itemsResult.data],
+  );
   const [initialDates] = useState(() => {
     const validFrom = new Date();
     return {

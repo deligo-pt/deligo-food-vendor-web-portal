@@ -47,6 +47,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Resolver, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { ProductSelector } from "../CreateOffer/ProductSelection";
+import { offerPickerProducts, offerProductIds } from "@/src/utils/offerProducts";
 import { useRouter } from "next/navigation";
 
 const PRIMARY = "#DC3173";
@@ -344,14 +345,27 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
   }, [watchRewardOptions]);
 
   /* -------------------- Load products -------------------- */
+  // The products this offer already holds. They stay in the pickers even if
+  // they have since been made inactive, so the vendor can see and untick them
+  // — see `offerProducts.ts`. Joined into a string so the effect below does
+  // not refetch on every render.
+  const offerProductKey = useMemo(() => offerProductIds(offer).join(","), [offer]);
+
   useEffect(() => {
     if (!open) return;
     const load = async () => {
       try {
         setIsLoadingProducts(true);
+        // Unfiltered on purpose: an inactive product the offer holds has to be
+        // found to be kept. The inactive rest are dropped just below.
         const result = await getAllProductsReq(100);
         if (result.success) {
-          setProducts(result.data || []);
+          setProducts(
+            offerPickerProducts(
+              result.data,
+              offerProductKey ? offerProductKey.split(",") : [],
+            ),
+          );
         }
       } catch (err) {
         console.error(err);
@@ -360,7 +374,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
       }
     };
     load();
-  }, [open]);
+  }, [open, offerProductKey]);
 
   /* -------------------- SUBMIT -------------------- */
   const onSubmit = async (data: TOfferForm) => {

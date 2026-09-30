@@ -2256,4 +2256,6 @@ export const pt = {
   only_one_image_allowed: "Só pode carregar uma imagem",
   upload_image_files_only: "Carregue apenas ficheiros de imagem",
   replace_image: "Substituir imagem",
+  // A product still in an offer after being switched off — offer pickers.
+  inactive_product: "Inativo",
 };
