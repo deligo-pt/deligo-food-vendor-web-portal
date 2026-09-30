@@ -30,7 +30,9 @@ import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
-import { translateObject } from "@/src/utils/translation/translationObject";
+import { translateLocalizedFields } from "@/src/utils/translation/translateLocalized";
+import { useFormLanguage } from "@/src/hooks/use-form-language";
+import { countLabel } from "@/src/utils/countLabel";
 import {
   getProductSkuOptions,
   offerValidation,
@@ -41,7 +43,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Resolver, useForm, useWatch } from "react-hook-form";
+import { FieldErrors, Resolver, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { ProductSelector } from "./ProductSelection";
 import { offerPickerProducts } from "@/src/utils/offerProducts";
@@ -117,6 +119,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     setError,
     clearErrors,
   } = form;
+
+  // `currentLang` follows the page's language, and typed text follows the
+  // vendor across a switch — see `use-form-language.ts`.
+  useFormLanguage(form, lang, ["title", "description"]);
 
   const [
     watchOfferType,
@@ -250,7 +256,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         if (!reward.variationSku || !reward.variationSku.trim()) {
           setError("buyAndReward.reward.variationSku", {
             type: "manual",
-            message: "Variation SKU is required for this product",
+            message: t("offer_sku_required_for_product"),
           });
           return false;
         }
@@ -265,7 +271,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
           if (!opt.variationSku || !opt.variationSku.trim()) {
             setError("buyAndReward.reward.options", {
               type: "manual",
-              message: `Variation SKU is required for ${prod.name?.[lang as "en" | "pt"] || "selected product"}`,
+              message: `${t("offer_sku_required_for_product")}: ${prod.name?.[lang as "en" | "pt"] || "selected product"}`,
             });
             return false;
           }
@@ -276,22 +282,34 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     return true;
   };
 
+  // A blocked submit must say why. The title/description field for the other
+  // language is not on screen, so its error message would never be seen.
+  const onInvalid = (errors: FieldErrors<TOfferForm>) => {
+    toast.error(
+      errors.title || errors.description
+        ? t("offer_title_description_required")
+        : t("offer_check_fields"),
+    );
+  };
+
   const onSubmit = async (data: TOfferForm) => {
     if (!validateVariationSkus(data)) {
-      toast.error("Please select variation SKU for products that have variations");
+      toast.error(t("offer_select_sku_required"));
       return;
     }
 
-    const toastId = toast.loading("Creating offer...");
+    const toastId = toast.loading(t("offer_creating"));
 
     try {
-      const translated = await translateObject(
+      // From whichever language actually holds the text, and never writing an
+      // empty translation over typed text — see `formLanguage.ts`.
+      const translated = await translateLocalizedFields(
         { title: data.title, description: data.description },
         lang,
       );
 
       if (!translated) {
-        toast.error("Translation failed!", { id: toastId });
+        toast.error(t("offer_translation_failed"), { id: toastId });
         return;
       }
 
@@ -410,7 +428,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         <CardContent className="p-0">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onSubmit, onInvalid)}
               className="p-6 space-y-8"
             >
               <div className="space-y-4">
@@ -539,7 +557,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             {t("flat_amount_off")}
                           </SelectItem>
                           <SelectItem value="BUY_AND_REWARD">
-                            Buy & Reward
+                            {t("offer_type_buy_and_reward")}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -627,7 +645,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
                       <div className="space-y-3">
                         <Label className="font-medium text-sm text-gray-700">
-                          Applicable Products
+                          {t("applicable_products")}
                         </Label>
                         <div className="flex flex-wrap gap-6">
                           <Label className="flex items-center gap-2 cursor-pointer">
@@ -640,7 +658,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                 setValue("scopeProducts", []);
                               }}
                             />
-                            <span className="text-sm">All Products</span>
+                            <span className="text-sm">{t("all_products")}</span>
                           </Label>
                           <Label className="flex items-center gap-2 cursor-pointer">
                             <Input
@@ -654,7 +672,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               }}
                             />
                             <span className="text-sm">
-                              Specific Products
+                              {t("offer_specific_products")}
                             </span>
                           </Label>
                         </div>
@@ -684,11 +702,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                 />
                                 {(watchScopeProducts?.length ?? 0) > 0 && (
                                   <p className="text-xs text-muted-foreground">
-                                    {watchScopeProducts!.length} product
-                                    {watchScopeProducts!.length === 1
-                                      ? ""
-                                      : "s"}{" "}
-                                    selected
+                                    {countLabel(t, watchScopeProducts!.length, "offer_one_product_selected", "offer_n_products_selected")}
                                   </p>
                                 )}
                                 <FormMessage />
@@ -704,7 +718,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   <div className="space-y-6 border border-gray-200 rounded-xl p-5 bg-gray-50/50 grid grid-cols-1 lg:grid-cols-2 lg:gap-8">
                     <div className="space-y-4">
                       <h3 className="font-semibold text-base">
-                        Buy Condition
+                        {t("offer_buy_condition")}
                       </h3>
 
                       <FormField
@@ -713,7 +727,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         render={({ field }) => (
                           <FormItem className="max-w-xs">
                             <FormLabel>
-                              Buy Quantity{" "}
+                              {t("offer_buy_quantity")}{" "}
                               <span className="text-red-600">*</span>
                             </FormLabel>
                             <FormControl>
@@ -740,7 +754,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                         render={() => (
                           <FormItem className="space-y-2">
                             <FormLabel className="text-sm font-medium">
-                              Products to buy{" "}
+                              {t("offer_products_to_buy")}{" "}
                               <span className="text-red-600">*</span>
                             </FormLabel>
                             <ProductSelector
@@ -765,11 +779,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             />
                             {(watchBuyProductIds?.length ?? 0) > 0 && (
                               <p className="text-xs text-muted-foreground">
-                                {watchBuyProductIds!.length} product
-                                {watchBuyProductIds!.length === 1
-                                  ? ""
-                                  : "s"}{" "}
-                                selected
+                                {countLabel(t, watchBuyProductIds!.length, "offer_one_product_selected", "offer_n_products_selected")}
                               </p>
                             )}
                             <FormMessage />
@@ -779,7 +789,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     </div>
 
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-base">Reward</h3>
+                      <h3 className="font-semibold text-base">{t("offer_reward")}</h3>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
@@ -787,7 +797,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           name="buyAndReward.reward.type"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Reward Type</FormLabel>
+                              <FormLabel>{t("offer_reward_type")}</FormLabel>
                               <Select
                                 onValueChange={(val) => {
                                   field.onChange(val);
@@ -811,13 +821,13 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="SAME_PRODUCT">
-                                    Same Product
+                                    {t("offer_reward_same_product")}
                                   </SelectItem>
                                   <SelectItem value="FIXED_PRODUCT">
-                                    Fixed Product
+                                    {t("offer_reward_fixed_product")}
                                   </SelectItem>
                                   <SelectItem value="CUSTOMER_CHOICE">
-                                    Customer Choice
+                                    {t("offer_reward_customer_choice")}
                                   </SelectItem>
                                 </SelectContent>
                               </Select>
@@ -831,7 +841,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>
-                                Reward Quantity{" "}
+                                {t("offer_reward_quantity")}{" "}
                                 <span className="text-red-600">*</span>
                               </FormLabel>
                               <FormControl>
@@ -861,7 +871,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             render={() => (
                               <FormItem className="space-y-2">
                                 <FormLabel className="text-sm font-medium">
-                                  Reward Product{" "}
+                                  {t("offer_reward_product")}{" "}
                                   <span className="text-red-600">*</span>
                                 </FormLabel>
                                 <ProductSelector
@@ -891,7 +901,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>
-                                    Variation SKU{" "}
+                                    {t("offer_variation_sku")}{" "}
                                     <span className="text-red-600">*</span>
                                   </FormLabel>
                                   <Select
@@ -899,7 +909,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                     value={field.value || ""}
                                   >
                                     <SelectTrigger className="h-12">
-                                      <SelectValue placeholder="Select variation SKU" />
+                                      <SelectValue placeholder={t("offer_select_variation_sku")} />
                                     </SelectTrigger>
                                     <SelectContent>
                                       {fixedSkuOptions.map((opt) => (
@@ -927,7 +937,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           render={() => (
                             <FormItem className="space-y-3">
                               <FormLabel className="text-sm font-medium">
-                                Reward Options{" "}
+                                {t("offer_reward_options")}{" "}
                                 <span className="text-red-600">*</span>
                               </FormLabel>
                               <ProductSelector
@@ -1006,10 +1016,10 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                           className="space-y-1"
                                         >
                                           <Label className="text-sm">
-                                            SKU for{" "}
+                                            {t("offer_sku_for")}{" "}
                                             {prod.name?.[
                                               lang as "en" | "pt"
-                                            ] || "product"}{" "}
+                                            ] || t("offer_product_fallback")}{" "}
                                             <span className="text-red-600">
                                               *
                                             </span>
@@ -1024,7 +1034,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                                             }
                                           >
                                             <SelectTrigger className="h-11">
-                                              <SelectValue placeholder="Select variation SKU" />
+                                              <SelectValue placeholder={t("offer_select_variation_sku")} />
                                             </SelectTrigger>
                                             <SelectContent>
                                               {skuOpts.map((s) => (
@@ -1046,11 +1056,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
                               {selectedRewardOptionIds.length > 0 && (
                                 <p className="text-xs text-muted-foreground">
-                                  {selectedRewardOptionIds.length} option
-                                  {selectedRewardOptionIds.length === 1
-                                    ? ""
-                                    : "s"}{" "}
-                                  selected
+                                  {countLabel(t, selectedRewardOptionIds.length, "offer_one_option_selected", "offer_n_options_selected")}
                                 </p>
                               )}
                               <FormMessage />

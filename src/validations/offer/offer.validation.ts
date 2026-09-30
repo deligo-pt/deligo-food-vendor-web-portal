@@ -1,13 +1,16 @@
 import { validateLocalizedField } from "@/src/consts/validation.const";
 import { z } from "zod";
 
+// Messages are translation keys: `FormMessage` passes them through `t()`, so a
+// Portuguese vendor reads Portuguese errors. See `offer_err_*` in the translations.
+
 const localizedTextSchema = z.object({
   en: z.string().optional(),
   pt: z.string().optional(),
 });
 
 const rewardOptionSchema = z.object({
-  productId: z.string().min(1, "Product is required"),
+  productId: z.string().min(1, "offer_err_product_required"),
   variationSku: z.string().optional(),
 });
 
@@ -15,12 +18,12 @@ const buyAndRewardBuySchema = z.object({
   scope: z.enum(["SPECIFIC_PRODUCTS"]).default("SPECIFIC_PRODUCTS"),
   productIds: z.array(z.string()).optional(),
   categoryIds: z.array(z.string()).optional(),
-  quantity: z.number().min(1, "Buy quantity must be at least 1"),
+  quantity: z.number().min(1, "offer_err_buy_qty_min"),
 });
 
 const buyAndRewardRewardSchema = z.object({
   type: z.enum(["SAME_PRODUCT", "FIXED_PRODUCT", "CUSTOMER_CHOICE"]),
-  quantity: z.number().min(1, "Reward quantity must be at least 1"),
+  quantity: z.number().min(1, "offer_err_reward_qty_min"),
   productId: z.string().optional(),
   variationSku: z.string().optional(),
   options: z.array(rewardOptionSchema).optional(),
@@ -31,7 +34,7 @@ export const offerValidation = z.object({
   description: localizedTextSchema,
 
   offerType: z.enum(["PERCENT", "FLAT", "BUY_AND_REWARD"], {
-    error: "Offer type is required",
+    error: "offer_err_type_required",
   }),
 
   discountValue: z.number().min(0).max(100).optional(),
@@ -48,8 +51,8 @@ export const offerValidation = z.object({
     })
     .optional(),
 
-  validFrom: z.date({ error: "Start date is required" }),
-  expiresAt: z.date({ error: "End date is required" }),
+  validFrom: z.date({ error: "offer_err_start_date_required" }),
+  expiresAt: z.date({ error: "offer_err_end_date_required" }),
   minOrderAmount: z.number().min(0).optional(),
   code: z.string().optional(),
   isAutoApply: z.boolean().optional(),
@@ -64,18 +67,18 @@ export const offerValidation = z.object({
       data.currentLang,
       ctx,
       ["title"],
-      "Title is required",
+      "offer_err_title_required",
     );
     validateLocalizedField(
       data.description,
       data.currentLang,
       ctx,
       ["description"],
-      "Description is required",
+      "offer_err_description_required",
     );
   })
   .refine((data) => data.validFrom < data.expiresAt, {
-    message: "End date must be after start date",
+    message: "offer_err_end_after_start",
     path: ["expiresAt"],
   })
   .refine(
@@ -85,7 +88,7 @@ export const offerValidation = z.object({
       }
       return true;
     },
-    { message: "Discount value is required", path: ["discountValue"] },
+    { message: "offer_err_discount_required", path: ["discountValue"] },
   )
   .refine(
     (data) => {
@@ -97,7 +100,7 @@ export const offerValidation = z.object({
       }
       return true;
     },
-    { message: "At least one product is required", path: ["scopeProducts"] },
+    { message: "offer_err_one_product", path: ["scopeProducts"] },
   )
   .refine(
     (data) => {
@@ -109,7 +112,7 @@ export const offerValidation = z.object({
       return true;
     },
     {
-      message: "Promo code is required when auto-apply is disabled",
+      message: "offer_err_promo_code",
       path: ["code"],
     },
   )
@@ -121,7 +124,7 @@ export const offerValidation = z.object({
       return true;
     },
     {
-      message: "Buy & Reward configuration is required",
+      message: "offer_err_buy_reward_required",
       path: ["buyAndReward"],
     },
   )
@@ -136,7 +139,7 @@ export const offerValidation = z.object({
       return true;
     },
     {
-      message: "Buy quantity must be at least 1",
+      message: "offer_err_buy_qty_min",
       path: ["buyAndReward", "buy", "quantity"],
     },
   )
@@ -151,7 +154,7 @@ export const offerValidation = z.object({
       return true;
     },
     {
-      message: "At least one product is required for buy condition",
+      message: "offer_err_buy_product",
       path: ["buyAndReward", "buy", "productIds"],
     },
   )
@@ -166,7 +169,7 @@ export const offerValidation = z.object({
       return true;
     },
     {
-      message: "Reward quantity must be at least 1",
+      message: "offer_err_reward_qty_min",
       path: ["buyAndReward", "reward", "quantity"],
     },
   )
@@ -181,7 +184,7 @@ export const offerValidation = z.object({
       return true;
     },
     {
-      message: "Fixed reward product is required",
+      message: "offer_err_fixed_reward",
       path: ["buyAndReward", "reward", "productId"],
     },
   )
@@ -199,7 +202,7 @@ export const offerValidation = z.object({
       return true;
     },
     {
-      message: "At least one reward option is required",
+      message: "offer_err_reward_option",
       path: ["buyAndReward", "reward", "options"],
     },
   )
@@ -212,7 +215,7 @@ export const offerValidation = z.object({
       return true;
     },
     {
-      message: "User usage limit must be a number ≥ 1",
+      message: "offer_err_usage_limit",
       path: ["userUsageLimit"],
     },
   );

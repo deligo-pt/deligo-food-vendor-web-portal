@@ -34,7 +34,9 @@ import { getAllProductsReq } from "@/src/services/dashboard/products/products";
 import { useStore } from "@/src/store/store";
 import { TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
-import { translateObject } from "@/src/utils/translation/translationObject";
+import { translateLocalizedFields } from "@/src/utils/translation/translateLocalized";
+import { useFormLanguage } from "@/src/hooks/use-form-language";
+import { countLabel } from "@/src/utils/countLabel";
 import {
   getProductSkuOptions,
   offerValidation,
@@ -44,7 +46,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { Resolver, useForm, useWatch } from "react-hook-form";
+import { FieldErrors, Resolver, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { ProductSelector } from "../CreateOffer/ProductSelection";
 import { offerPickerProducts, offerProductIds } from "@/src/utils/offerProducts";
@@ -157,6 +159,10 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
     reset,
   } = form;
 
+  // `currentLang` follows the page's language, and typed text follows the
+  // vendor across a switch — see `use-form-language.ts`.
+  useFormLanguage(form, lang, ["title", "description"]);
+
   // Reset form when offer changes / dialog opens
   useEffect(() => {
     if (open && offer) {
@@ -218,10 +224,13 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
           ? String(offer.userUsageLimit)
           : "",
         isActive: (offer as any)?.isActive ?? true,
-        currentLang: lang,
+        // Whatever `useFormLanguage` last set. The reset no longer depends on
+        // `lang`: it used to, and switching language with the dialog open
+        // reset the whole form, throwing away every edit.
+        currentLang: getValues("currentLang"),
       });
     }
-  }, [open, offer, lang, reset]);
+  }, [open, offer, reset, getValues]);
 
   const [
     watchOfferType,
@@ -377,17 +386,29 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
   }, [open, offerProductKey]);
 
   /* -------------------- SUBMIT -------------------- */
+  // A blocked submit must say why. The title/description field for the other
+  // language is not on screen, so its error message would never be seen.
+  const onInvalid = (errors: FieldErrors<TOfferForm>) => {
+    toast.error(
+      errors.title || errors.description
+        ? t("offer_title_description_required")
+        : t("offer_check_fields"),
+    );
+  };
+
   const onSubmit = async (data: TOfferForm) => {
-    const toastId = toast.loading("Updating offer...");
+    const toastId = toast.loading(t("offer_updating"));
 
     try {
-      const translated = await translateObject(
+      // From whichever language actually holds the text, and never writing an
+      // empty translation over typed text — see `formLanguage.ts`.
+      const translated = await translateLocalizedFields(
         { title: data.title, description: data.description },
         lang,
       );
 
       if (!translated) {
-        toast.error("Translation failed!", { id: toastId });
+        toast.error(t("offer_translation_failed"), { id: toastId });
         return;
       }
 
@@ -506,7 +527,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, onInvalid)}
             className="space-y-6"
           >
             {/* ===================== OFFER DETAILS ===================== */}
@@ -590,7 +611,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                           {t("flat_amount_off")}
                         </SelectItem>
                         <SelectItem value="BUY_AND_REWARD">
-                          Buy & Reward
+                          {t("offer_type_buy_and_reward")}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -673,7 +694,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
 
                     <div className="space-y-3">
                       <Label className="font-medium text-sm text-gray-700">
-                        Applicable Products
+                        {t("applicable_products")}
                       </Label>
                       <div className="flex flex-wrap gap-5">
                         <Label className="flex items-center gap-2 cursor-pointer">
@@ -686,7 +707,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                               setValue("scopeProducts", []);
                             }}
                           />
-                          <span className="text-sm">All Products</span>
+                          <span className="text-sm">{t("all_products")}</span>
                         </Label>
                         <Label className="flex items-center gap-2 cursor-pointer">
                           <Input
@@ -700,7 +721,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                             }}
                           />
                           <span className="text-sm">
-                            Specific Products
+                            {t("offer_specific_products")}
                           </span>
                         </Label>
                       </div>
@@ -713,7 +734,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                             <FormItem className="space-y-2">
                               {isLoadingProducts ? (
                                 <p className="text-sm text-muted-foreground py-4 text-center">
-                                  Loading products...
+                                  {t("offer_loading_products")}
                                 </p>
                               ) : (
                                 <ProductSelector
@@ -736,11 +757,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                               )}
                               {(watchScopeProducts?.length ?? 0) > 0 && (
                                 <p className="text-xs text-muted-foreground">
-                                  {watchScopeProducts!.length} product
-                                  {watchScopeProducts!.length === 1
-                                    ? ""
-                                    : "s"}{" "}
-                                  selected
+                                  {countLabel(t, watchScopeProducts!.length, "offer_one_product_selected", "offer_n_products_selected")}
                                 </p>
                               )}
                               <FormMessage />
@@ -757,7 +774,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                 <div className="space-y-5 border border-gray-200 rounded-xl p-4 bg-gray-50/50">
                   <div className="space-y-3">
                     <h3 className="font-semibold text-sm">
-                      Buy Condition
+                      {t("offer_buy_condition")}
                     </h3>
 
                     <FormField
@@ -766,7 +783,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                       render={({ field }) => (
                         <FormItem className="max-w-[140px]">
                           <FormLabel>
-                            Buy Quantity{" "}
+                            {t("offer_buy_quantity")}{" "}
                             <span className="text-red-600">*</span>
                           </FormLabel>
                           <FormControl>
@@ -793,12 +810,12 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                       render={() => (
                         <FormItem className="space-y-2">
                           <FormLabel>
-                            Products to buy{" "}
+                            {t("offer_products_to_buy")}{" "}
                             <span className="text-red-600">*</span>
                           </FormLabel>
                           {isLoadingProducts ? (
                             <p className="text-sm text-muted-foreground py-4 text-center">
-                              Loading products...
+                              {t("offer_loading_products")}
                             </p>
                           ) : (
                             <ProductSelector
@@ -824,11 +841,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                           )}
                           {(watchBuyProductIds?.length ?? 0) > 0 && (
                             <p className="text-xs text-muted-foreground">
-                              {watchBuyProductIds!.length} product
-                              {watchBuyProductIds!.length === 1
-                                ? ""
-                                : "s"}{" "}
-                              selected
+                              {countLabel(t, watchBuyProductIds!.length, "offer_one_product_selected", "offer_n_products_selected")}
                             </p>
                           )}
                           <FormMessage />
@@ -840,7 +853,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                   <Separator />
 
                   <div className="space-y-3">
-                    <h3 className="font-semibold text-sm">Reward</h3>
+                    <h3 className="font-semibold text-sm">{t("offer_reward")}</h3>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <FormField
@@ -848,7 +861,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                         name="buyAndReward.reward.type"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Reward Type</FormLabel>
+                            <FormLabel>{t("offer_reward_type")}</FormLabel>
                             <Select
                               onValueChange={(val) => {
                                 field.onChange(val);
@@ -872,13 +885,13 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="SAME_PRODUCT">
-                                  Same Product
+                                  {t("offer_reward_same_product")}
                                 </SelectItem>
                                 <SelectItem value="FIXED_PRODUCT">
-                                  Fixed Product
+                                  {t("offer_reward_fixed_product")}
                                 </SelectItem>
                                 <SelectItem value="CUSTOMER_CHOICE">
-                                  Customer Choice
+                                  {t("offer_reward_customer_choice")}
                                 </SelectItem>
                               </SelectContent>
                             </Select>
@@ -892,7 +905,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              Reward Quantity{" "}
+                              {t("offer_reward_quantity")}{" "}
                               <span className="text-red-600">*</span>
                             </FormLabel>
                             <FormControl>
@@ -922,7 +935,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                           render={() => (
                             <FormItem className="space-y-2">
                               <FormLabel>
-                                Reward Product{" "}
+                                {t("offer_reward_product")}{" "}
                                 <span className="text-red-600">*</span>
                               </FormLabel>
                               <ProductSelector
@@ -951,7 +964,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>
-                                  Variation SKU{" "}
+                                  {t("offer_variation_sku")}{" "}
                                   <span className="text-red-600">*</span>
                                 </FormLabel>
                                 <Select
@@ -959,7 +972,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                                   value={field.value || ""}
                                 >
                                   <SelectTrigger className="h-11">
-                                    <SelectValue placeholder="Select variation SKU" />
+                                    <SelectValue placeholder={t("offer_select_variation_sku")} />
                                   </SelectTrigger>
                                   <SelectContent>
                                     {fixedSkuOptions.map((opt) => (
@@ -987,7 +1000,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                         render={() => (
                           <FormItem className="space-y-2">
                             <FormLabel>
-                              Reward Options{" "}
+                              {t("offer_reward_options")}{" "}
                               <span className="text-red-600">*</span>
                             </FormLabel>
                             <ProductSelector
@@ -1055,9 +1068,9 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                                   return (
                                     <div key={opt.productId} className="space-y-1">
                                       <Label className="text-sm">
-                                        SKU for{" "}
+                                        {t("offer_sku_for")}{" "}
                                         {prod.name?.[lang as "en" | "pt"] ||
-                                          "product"}{" "}
+                                          t("offer_product_fallback")}{" "}
                                         <span className="text-red-600">*</span>
                                       </Label>
                                       <Select
@@ -1067,7 +1080,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                                         }
                                       >
                                         <SelectTrigger className="h-10">
-                                          <SelectValue placeholder="Select variation SKU" />
+                                          <SelectValue placeholder={t("offer_select_variation_sku")} />
                                         </SelectTrigger>
                                         <SelectContent>
                                           {skuOpts.map((s) => (
@@ -1087,11 +1100,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                             )}
                             {selectedRewardOptionIds.length > 0 && (
                               <p className="text-xs text-muted-foreground">
-                                {selectedRewardOptionIds.length} option
-                                {selectedRewardOptionIds.length === 1
-                                  ? ""
-                                  : "s"}{" "}
-                                selected
+                                {countLabel(t, selectedRewardOptionIds.length, "offer_one_option_selected", "offer_n_options_selected")}
                               </p>
                             )}
                             <FormMessage />
