@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "verify:product-copy": "node --experimental-strip-types --no-warnings scripts/verify-product-copy.mjs",
-    "verify:vendor-name": "node --experimental-strip-types --no-warnings scripts/verify-vendor-name.mjs"
+    "verify:vendor-name": "node --experimental-strip-types --no-warnings scripts/verify-vendor-name.mjs",
+    "verify:offer-products": "node --experimental-strip-types --no-warnings scripts/verify-offer-products.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

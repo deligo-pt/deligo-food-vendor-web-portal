@@ -1,19 +1,36 @@
 /**
  * The picture a product falls back to when the vendor uploads none.
  *
- * A real storage URL, not `/dl1.png` from this app's `public/` folder: the
+ * A real storage URL, not `/dlgg.png` from this app's `public/` folder: the
  * backend stores whatever it is given and the **customer app** renders it, so a
  * path that only resolves on the vendor portal's own domain would show as a
  * broken image to every customer. The file was uploaded once through
  * `POST /uploads`, which is also what converted it to webp.
  *
+ * `public/dlgg.png` since 30 Sep 2026; it was `public/dl1.png` before — see
+ * `PREVIOUS_DEFAULT_PRODUCT_IMAGES`.
+ *
  * Environment-specific by nature — this URL is on the **test** storage. Set
  * `NEXT_PUBLIC_DEFAULT_PRODUCT_IMAGE` in production to the URL that
- * re-uploading `public/dl1.png` there returns.
+ * re-uploading `public/dlgg.png` there returns.
  */
 export const DEFAULT_PRODUCT_IMAGE =
   process.env.NEXT_PUBLIC_DEFAULT_PRODUCT_IMAGE ||
-  "https://storage-test.deligo.pt/deligo-food-server/uploads/8rrfmh4ysm8-1790434109394-files-dl1.webp";
+  "https://storage-test.deligo.pt/deligo-food-server/uploads/ro24m7fbek7-1790776008453-files-dlgg.webp";
+
+/**
+ * Defaults that were current once, and that products saved back then still
+ * carry: changing the default does not rewrite them. They are still defaults,
+ * not pictures a vendor uploaded — see `isDefaultProductImage`.
+ */
+export const PREVIOUS_DEFAULT_PRODUCT_IMAGES: readonly string[] = [
+  // public/dl1.png, the default until 30 Sep 2026.
+  "https://storage-test.deligo.pt/deligo-food-server/uploads/8rrfmh4ysm8-1790434109394-files-dl1.webp",
+];
+
+/** Whether a product's picture is a fallback — current or past — rather than an upload. */
+export const isDefaultProductImage = (url: string | null | undefined): boolean =>
+  !!url && (url === DEFAULT_PRODUCT_IMAGE || PREVIOUS_DEFAULT_PRODUCT_IMAGES.includes(url));
 
 /** A product carries one image. The default fills the slot when none is given. */
 export const MAX_PRODUCT_IMAGES = 1;

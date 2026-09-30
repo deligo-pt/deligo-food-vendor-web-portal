@@ -3,6 +3,7 @@ import VendorCreateOffer from "@/src/components/Dashboard/Offers/CreateOffer/Cre
 import { TMeta, TResponse } from "@/src/types";
 import { TProduct, TProductsQueryParams } from "@/src/types/product.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { ACTIVE_PRODUCTS_QUERY } from "@/src/utils/offerProducts";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -38,6 +39,10 @@ export default async function CreateOfferPage({ searchParams }: IProps) {
     limit: FIRST_PAGE_LIMIT,
     page: 1,
     sortBy,
+    // Only products a customer can buy can go on offer — see `offerProducts.ts`.
+    // Both requests below carry it, so `meta.total` counts active products and
+    // the second request cannot page past any of them.
+    ...ACTIVE_PRODUCTS_QUERY,
     ...(searchTerm ? { searchTerm: searchTerm } : {}),
     ...(availability ? { "stock.availabilityStatus": availability } : {}),
   };

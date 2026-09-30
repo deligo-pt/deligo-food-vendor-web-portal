@@ -21,7 +21,11 @@ import { getAddOnsGroupReq } from "@/src/services/dashboard/add-ons/add-ons";
 import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
 import { getAllTaxesReq } from "@/src/services/dashboard/taxes/taxes";
 import { useStore } from "@/src/store/store";
-import { DEFAULT_PRODUCT_IMAGE, getProductImage } from "@/src/consts/product.const";
+import {
+  DEFAULT_PRODUCT_IMAGE,
+  getProductImage,
+  isDefaultProductImage,
+} from "@/src/consts/product.const";
 import { TMeta, TResponse } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TProductCategory } from "@/src/types/category.type";
@@ -128,8 +132,9 @@ export function EditProductForm({
       // presented it as something the vendor had uploaded — deletable, and
       // occupying the one slot so "Replace image" was the only way past it. An
       // empty slot is the truth, and saving still re-applies the default.
+      // A product saved under an earlier default (dl1) is treated the same way.
       images: [getProductImage(prevData)].filter(
-        (url): url is string => Boolean(url) && url !== DEFAULT_PRODUCT_IMAGE,
+        (url): url is string => Boolean(url) && !isDefaultProductImage(url),
       ),
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
