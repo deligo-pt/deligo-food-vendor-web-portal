@@ -137,6 +137,18 @@ export default function Products({
         }
         groups["uncategorized"].products.push(product);
       }
+
+      // A product also belongs under each of its additional categories. The
+      // API already counts them: `GET /products?category=<DESSERT>` returns
+      // Faluda, whose main category is DINNER MENU. This page grouped by main
+      // only, so the vendor never saw it there. Each category lists a product
+      // once. An additional category the vendor no longer has is skipped,
+      // since the main one already places the product. Selection is by
+      // product code, so a product shown twice is still picked once.
+      product.additionalCategories?.forEach((extra) => {
+        const group = extra?._id ? groups[extra._id] : undefined;
+        if (group && !group.products.includes(product)) group.products.push(product);
+      });
     });
 
     // One comparator for both levels, so a heading and the cards under it are
