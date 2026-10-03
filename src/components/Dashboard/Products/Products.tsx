@@ -765,6 +765,7 @@ export default function Products({
         }
         prevData={selectedProduct?.product as TProduct}
         businessTypeSlug={businessTypeSlug}
+        productCategories={productCategories}
       />
     </div>
   );

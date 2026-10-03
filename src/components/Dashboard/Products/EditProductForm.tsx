@@ -66,6 +66,13 @@ interface IProps {
   prevData: TProduct;
   closeModal: () => void;
   businessTypeSlug: string;
+  /**
+   * The vendor's categories, when the page already has them (All Items does).
+   * With them the category chips show names on the first frame. Without them
+   * the form fetches the list after opening, and the chips have nothing to
+   * name themselves with until it arrives.
+   */
+  productCategories?: TProductCategory[];
 }
 
 interface IData<T> {
@@ -77,6 +84,7 @@ export function EditProductForm({
   prevData,
   closeModal,
   businessTypeSlug,
+  productCategories,
 }: IProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -119,7 +127,9 @@ export function EditProductForm({
   const [addonGroupsData, setAddonsGroupsData] = useState<IData<TAddonGroup>>({
     data: [],
   });
-  const [productCategoriesData, setProductCategoriesData] = useState<TProductCategory[]>([]);
+  const [productCategoriesData, setProductCategoriesData] = useState<TProductCategory[]>(
+    productCategories ?? [],
+  );
   const [taxesData, setTaxesData] = useState<TTax[]>([]);
 
   // The product's additional category ids, without its main one: the picker
@@ -434,7 +444,8 @@ export function EditProductForm({
 
   useEffect(() => {
     (() => getAddonsGroups({ limit: 10 }))();
-    (() => getProductCategories())();
+    // Only when the page didn't hand them in (see `productCategories`).
+    if (!productCategories?.length) (() => getProductCategories())();
     (() => getTaxes({ limit: 10 }))();
   }, []);
 

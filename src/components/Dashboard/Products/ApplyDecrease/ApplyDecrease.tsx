@@ -15,6 +15,7 @@ import { Package, Percent } from 'lucide-react';
 import { useTranslation } from '@/src/hooks/use-translation';
 import { cn } from '@/lib/utils';
 import { applyIncreaseDecrease } from '@/src/services/dashboard/products/products';
+import { isActiveProduct } from '@/src/utils/offerProducts';
 
 type Props = {
     products: TProduct[];
@@ -317,6 +318,12 @@ const ApplyDecrease = ({ products, productCategries }: Props) => {
                                                         <p className="font-medium text-[13px] leading-tight line-clamp-1">
                                                             {getLocalizedName(product.name)}
                                                         </p>
+                                                        {/* This page lists inactive products too, so it says which. */}
+                                                        {!isActiveProduct(product) && (
+                                                            <Badge variant="secondary" className="mt-0.5 h-4 px-1.5 text-[10px] font-normal text-gray-600">
+                                                                {t('inactive_product')}
+                                                            </Badge>
+                                                        )}
 
                                                         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 text-[11px] mt-0.5">
                                                             <span className="text-muted-foreground">

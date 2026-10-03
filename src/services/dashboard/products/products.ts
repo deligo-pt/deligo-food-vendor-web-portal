@@ -106,6 +106,37 @@ export const updateProduct = async (
   return result;
 };
 
+/**
+ * Every product matching `query`, across all pages.
+ *
+ * `/products` answers 10 per page when no `limit` is given. The price pages
+ * asked without one, so a vendor with 13 products saw 10, and the rest weren't
+ * shown or mentioned anywhere (Tasca, 3 Oct 2026: `meta.total: 13`,
+ * `totalPage: 2`). This reads 100 at a time until `meta.totalPage`. A page that
+ * fails ends the read with what was fetched so far, rather than throwing the
+ * whole list away.
+ */
+export const getEveryProduct = async (query: Record<string, string> = {}) => {
+  const PAGE_SIZE = 100;
+  const products: TProduct[] = [];
+
+  for (let page = 1; ; page++) {
+    const params = new URLSearchParams({ ...query, limit: String(PAGE_SIZE), page: String(page) });
+    const result = await catchAsync<TProduct[]>(async () => {
+      const response = await serverFetch.get(`/products?${params.toString()}`, {
+        next: { tags: ["products"] },
+      });
+      return await response.json();
+    });
+
+    if (!result.success) return { success: page > 1, data: products };
+    products.push(...((result.data as TProduct[]) || []));
+
+    const totalPage = Number(result.meta?.totalPage) || 1;
+    if (page >= totalPage) return { success: true, data: products };
+  }
+};
+
 export const getAllProductsReq = async (limit?: number) => {
   return catchAsync<TProduct[]>(async () => {
     return await serverRequest.get("/products", {
