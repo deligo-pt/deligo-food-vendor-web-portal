@@ -1,5 +1,6 @@
 import { EditProductForm } from "@/src/components/Dashboard/Products/EditProductForm";
 import { Dialog, DialogContent, DialogTitle } from "@/src/components/ui/dialog";
+import { TProductCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 
 interface IProps {
@@ -7,6 +8,8 @@ interface IProps {
   onOpenChange: () => void;
   prevData: TProduct;
   businessTypeSlug: string;
+  /** Passed through to the form, so category names show at once. */
+  productCategories?: TProductCategory[];
 }
 
 const EditProductDialog = ({
@@ -14,6 +17,7 @@ const EditProductDialog = ({
   onOpenChange,
   prevData,
   businessTypeSlug,
+  productCategories,
 }: IProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -25,6 +29,7 @@ const EditProductDialog = ({
             prevData={prevData}
             closeModal={onOpenChange}
             businessTypeSlug={businessTypeSlug}
+            productCategories={productCategories}
           />
         </DialogContent>
       </form>

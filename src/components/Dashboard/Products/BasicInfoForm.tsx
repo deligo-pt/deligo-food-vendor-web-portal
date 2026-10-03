@@ -142,8 +142,13 @@ const BasicInfoForm = ({
                     const additional: string[] = form.watch("additionalCategories") || [];
                     const primaryId = field.value || "";
 
+                    // Never the raw id while the list is still loading: an empty
+                    // list shows "…" until the names arrive. The id remains
+                    // only for a category the loaded list doesn't contain.
                     const getCategoryName = (id: string) =>
-                        productCategories?.find((c) => c._id === id)?.name?.[lang] ?? id;
+                        productCategories?.length
+                            ? productCategories.find((c) => c._id === id)?.name?.[lang] ?? id
+                            : "…";
 
                     const setPrimary = (id: string) => {
                         const newAdditional = additional.filter((x) => x !== id);
@@ -169,6 +174,23 @@ const BasicInfoForm = ({
                                 { shouldValidate: true }
                             );
                         }
+                    };
+
+                    // A second click on a ticked radio unticks it. Browsers never
+                    // untick a radio on their own, and `onChange` doesn't fire
+                    // for one that is already checked, so this runs on click.
+                    // Clearing Main promotes nothing; the form's own check then
+                    // asks for a main category.
+                    const untickMain = (id: string) => {
+                        if (id === primaryId) field.onChange("");
+                    };
+                    const untickAdditional = (id: string) => {
+                        if (!additional.includes(id)) return;
+                        form.setValue(
+                            "additionalCategories",
+                            additional.filter((x) => x !== id),
+                            { shouldValidate: true }
+                        );
                     };
 
                     const removeCategory = (id: string, e?: React.MouseEvent) => {
@@ -319,6 +341,7 @@ const BasicInfoForm = ({
                                                                             name={`cat-role-${id}`}
                                                                             checked={primary}
                                                                             onChange={() => setPrimary(id)}
+                                                                            onClick={() => primary && untickMain(id)}
                                                                             className="h-3.5 w-3.5 accent-[#DC3173] cursor-pointer"
                                                                         />
                                                                         <span className="text-xs text-slate-600">
@@ -340,6 +363,7 @@ const BasicInfoForm = ({
                                                                             checked={additionalSelected}
                                                                             disabled={!primaryId && !selected}
                                                                             onChange={() => setAdditional(id)}
+                                                                            onClick={() => additionalSelected && untickAdditional(id)}
                                                                             className="h-3.5 w-3.5 accent-[#DC3173] cursor-pointer disabled:cursor-not-allowed"
                                                                         />
                                                                         <span className="text-xs text-slate-600">

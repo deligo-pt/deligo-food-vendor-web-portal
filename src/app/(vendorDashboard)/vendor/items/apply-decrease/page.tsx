@@ -1,14 +1,16 @@
 import ApplyDecrease from "@/src/components/Dashboard/Products/ApplyDecrease/ApplyDecrease";
 import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/product-categories";
-import { getAllProducts } from "@/src/services/dashboard/products/products";
-import { queryStringFormatter } from "@/src/utils/formatter";
+import { getEveryProduct } from "@/src/services/dashboard/products/products";
 
 
+// Every product, active and inactive, on every page. It used to ask for
+// `meta.status=ACTIVE` with no `limit`, so it showed the API's default 10 and
+// hid both the rest and every inactive product. Inactive ones carry a badge.
 const ApplyProductDiscountPage = async () => {
-    const query = { "meta.status": "ACTIVE" };
-    const queryString = queryStringFormatter(query);
-    const { data } = await getAllProducts(queryString);
-    const productCategries = await getAllProductCategoriesReq();
+    const [{ data }, productCategries] = await Promise.all([
+        getEveryProduct(),
+        getAllProductCategoriesReq(),
+    ]);
 
     return (
         <div>
