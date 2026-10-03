@@ -4,7 +4,8 @@ import { serverFetch, serverRequest } from "@/lib/serverFetch";
 import { TVendor } from "@/src/types/vendor.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 import { TVendorAgreementForm } from "@/src/validations/become-vendor/agreement.validation";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/src/consts/cache.const";
+import { revalidatePath, revalidateTag, updateTag } from "next/cache";
 
 export const registerVendorReq = async (data: Partial<TVendor>) => {
   return catchAsync<TVendor>(async () => {
@@ -14,18 +15,24 @@ export const registerVendorReq = async (data: Partial<TVendor>) => {
   });
 };
 
+// These change the vendor's own record, which the dashboard caches
+// (`getProfileData`), so each expires that cache on success.
 export const updateVendorReq = async (id: string, data: Partial<TVendor>) => {
-  return catchAsync<null>(async () => {
+  const result = await catchAsync<null>(async () => {
     return await serverRequest.patch(`/vendors/${id}`, {
       data,
     });
   });
+  if (result.success) updateTag(CACHE_TAGS.profile);
+  return result;
 };
 
 export const submitForApprovalReq = async (id: string) => {
-  return catchAsync<null>(async () => {
+  const result = await catchAsync<null>(async () => {
     return await serverRequest.patch(`/auth/${id}/submitForApproval`);
   });
+  if (result.success) updateTag(CACHE_TAGS.profile);
+  return result;
 };
 
 
@@ -68,6 +75,7 @@ export const signAgreement = async (id: string, data: Record<string, string>) =>
 
   if (result.success) {
     revalidateTag("agreements", {});
+    updateTag(CACHE_TAGS.profile);
     revalidatePath("/become-vendor/agreement-sign");
   };
 

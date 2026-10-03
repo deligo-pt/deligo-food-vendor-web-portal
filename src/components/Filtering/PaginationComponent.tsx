@@ -18,7 +18,8 @@ import { usePagination } from "@/src/hooks/use-pagination";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useListNavigation } from "@/src/hooks/use-list-navigation";
 import { useTransition } from "react";
 
 type PaginationProps = {
@@ -31,7 +32,8 @@ export default function PaginationComponent({
   itemsNoArray = [10, 20, 50, 100],
 }: PaginationProps) {
   const { t } = useTranslation();
-  const router = useRouter();
+  // Shared with the page, so its list can show a loader (use-list-navigation).
+  const { push } = useListNavigation();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const { currentPage, paginationItemsToDisplay } = {
@@ -48,7 +50,7 @@ export default function PaginationComponent({
     const params = new URLSearchParams(searchParams.toString());
     if (currentPage > 1) {
       params.set("page", `${currentPage - 1}`);
-      router.push(`?${params.toString()}`);
+      push(`?${params.toString()}`);
     }
   };
 
@@ -56,7 +58,7 @@ export default function PaginationComponent({
     const params = new URLSearchParams(searchParams.toString());
     if (currentPage !== totalPages) {
       params.set("page", `${currentPage + 1}`);
-      router.push(`?${params.toString()}`);
+      push(`?${params.toString()}`);
     }
   };
 
@@ -64,14 +66,14 @@ export default function PaginationComponent({
     const params = new URLSearchParams(searchParams.toString());
 
     params.set("page", `${page}`);
-    router.push(`?${params.toString()}`);
+    push(`?${params.toString()}`);
   };
 
   const handleChangeItemsPerPage = (val: string) => {
     const params = new URLSearchParams(searchParams.toString());
     startTransition(() => {
       params.set("limit", val);
-      router.push(`?${params.toString()}`);
+      push(`?${params.toString()}`);
     });
   };
 

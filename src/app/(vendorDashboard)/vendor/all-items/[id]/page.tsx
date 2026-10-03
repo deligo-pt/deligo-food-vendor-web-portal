@@ -17,25 +17,31 @@ export default async function ProductDetailsPage({
   const { id } = await params;
   const { lang } = await searchParams;
 
-  let initialData: TProduct = {} as TProduct;
+  const loadProduct = async (): Promise<TProduct> => {
+    try {
+      const result = (await serverRequest.get(
+        `/products/${id}`, {
+        headers: { "Accept-Language": lang }
+      }
+      )) as TResponse<TProduct>;
 
-  try {
-    const result = (await serverRequest.get(
-      `/products/${id}`, {
-      headers: { "Accept-Language": lang }
+      if (result?.success) return result.data;
+    } catch (err) {
+      console.log("Server fetch error:", err);
+      if (isRedirectError(err)) throw err;
     }
-    )) as TResponse<TProduct>;
+    return {} as TProduct;
+  };
 
-    if (result?.success) {
-      initialData = result.data;
-    }
-  } catch (err) {
-    console.log("Server fetch error:", err);
-    if (isRedirectError(err)) throw err;
-  }
+  // Side by side rather than one after another: the product doesn't depend on
+  // the vendor, and the branches need only its id. The vendor itself comes from
+  // the request cache the layout filled.
+  const loadBranches = async () => {
+    const vendorData: TVendor = await getProfileData();
+    return { vendorData, branchResults: await getAllBranches(vendorData?.userId, undefined, { cached: true }) };
+  };
 
-  const vendorData: TVendor = await getProfileData();
-  const branchResults = await getAllBranches(vendorData?.userId);
+  const [{ vendorData, branchResults }, initialData] = await Promise.all([loadBranches(), loadProduct()]);
 
   return (
     <ProductDetails

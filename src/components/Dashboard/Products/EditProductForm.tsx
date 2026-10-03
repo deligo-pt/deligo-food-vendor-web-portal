@@ -122,6 +122,12 @@ export function EditProductForm({
   const [productCategoriesData, setProductCategoriesData] = useState<TProductCategory[]>([]);
   const [taxesData, setTaxesData] = useState<TTax[]>([]);
 
+  // The product's additional category ids, without its main one: the picker
+  // keeps the two apart, so the main must never also be listed as additional.
+  const originalAdditionalCategories = (prevData?.additionalCategories || [])
+    .map((c) => c?._id)
+    .filter((id): id is string => Boolean(id) && id !== prevData?.category?._id);
+
   const form = useForm<FormData>({
     resolver: zodResolver(productValidation),
     defaultValues: {
@@ -138,6 +144,9 @@ export function EditProductForm({
       ),
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
+      // Seeded so the picker shows them. Without this, Edit opened with the
+      // main category only, and saving never sent them.
+      additionalCategories: originalAdditionalCategories,
       price: prevData?.pricing?.price || 0,
       discountType: prevData?.pricing?.discountType ?? "",
       discount: prevData?.pricing?.discount ?? 0,
@@ -241,6 +250,12 @@ export function EditProductForm({
     // category
     if (hasChanged(data.category, prevData?.category?._id || "")) {
       productData.category = data.category;
+    }
+
+    // additional categories: the whole list when it changed (the API's PATCH
+    // takes an array, and `[]` clears it)
+    if (hasChanged(data.additionalCategories || [], originalAdditionalCategories)) {
+      productData.additionalCategories = (data.additionalCategories || []).filter(Boolean);
     }
 
     // addonGroups

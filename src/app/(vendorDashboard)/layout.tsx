@@ -2,8 +2,6 @@ export const dynamic = "force-dynamic";
 
 import NotificationToast from "@/src/components/NotificationToast/NotificationToast";
 import DesktopSidebar from "@/src/components/vendorDashboardSidebar/DesktopSidebar";
-import Sidebar from "@/src/components/vendorDashboardSidebar/vendorDashboardSidebar";
-import Topbar from "@/src/components/vendorTopbar/Topbar";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TVendor } from "@/src/types/vendor.type";
 import type { Metadata } from "next";
@@ -20,22 +18,14 @@ export default async function VendorLayout({
 }) {
   const vendorData: TVendor = await getProfileData();
 
+  // One shell for every width. There used to be a mobile copy and a desktop
+  // copy side by side, with CSS hiding one of them. Hidden is not unmounted, so
+  // every Topbar, Sidebar and page component mounted twice and ran its requests
+  // twice. `DesktopSidebar` now lays itself out for both widths.
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
-      {/* Mobile view: Sidebar on top, Topbar below */}
-      <div className="flex flex-col md:hidden w-full">
-        <div className="w-full">
-          <Sidebar vendor={vendorData} />
-        </div>
-        <div className="w-full sticky top-0 z-40">
-          <Topbar vendor={vendorData} />
-        </div>
-        <main className="deligo-scroll flex-1 p-4 overflow-y-auto">{children}</main>
-        <NotificationToast />
-      </div>
-
-      {/* Desktop view */}
       <DesktopSidebar vendorData={vendorData}>{children}</DesktopSidebar>
+      <NotificationToast />
     </div>
   );
 }

@@ -7,7 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useListNavigation } from "@/src/hooks/use-list-navigation";
 import { useTransition } from "react";
 
 export default function SelectFilter({
@@ -23,7 +24,8 @@ export default function SelectFilter({
   isAllNeeded?: boolean;
   defaultValue?: string;
 }) {
-  const router = useRouter();
+  // Shared with the page, so its list can show a loader (use-list-navigation).
+  const { push } = useListNavigation();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const currentValue = searchParams.get(paramName) || defaultValue || "";
@@ -40,7 +42,7 @@ export default function SelectFilter({
     }
 
     startTransition(() => {
-      router.push(`?${params.toString()}`);
+      push(`?${params.toString()}`);
     });
   };
 

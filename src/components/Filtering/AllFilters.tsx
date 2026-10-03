@@ -14,7 +14,8 @@ import SelectFilter from "@/src/components/Filtering/SelectFilter";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { AnimatePresence, motion } from "framer-motion";
 import { RefreshCcw, SlidersHorizontal, X } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useListNavigation } from "@/src/hooks/use-list-navigation";
 import { useState } from "react";
 
 interface IProps {
@@ -44,7 +45,8 @@ export default function AllFilters({
 }: IProps) {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
-  const router = useRouter();
+  // Shared with the page, so its list can show a loader (use-list-navigation).
+  const { push } = useListNavigation();
 
   const oldFilters =
     filterOptions?.reduce((acc, option) => {
@@ -73,7 +75,7 @@ export default function AllFilters({
         }
       }
     });
-    router.push(`?${params.toString()}`);
+    push(`?${params.toString()}`);
     setShowFilters(false);
   };
 
@@ -81,7 +83,7 @@ export default function AllFilters({
     const params = new URLSearchParams(searchParams.toString());
     setParamFilters((prev) => ({ ...prev, [key]: "" }));
     params.delete(key);
-    router.push(`?${params.toString()}`);
+    push(`?${params.toString()}`);
   };
 
   const clearAllFilters = () => {
@@ -90,14 +92,14 @@ export default function AllFilters({
       setParamFilters((prev) => ({ ...prev, [option.key]: "" }));
       params.delete(option.key);
     });
-    router.push(`?${params.toString()}`);
+    push(`?${params.toString()}`);
   };
 
   // Clear search handler
   const clearSearch = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("searchTerm");
-    router.push(`?${params.toString()}`);
+    push(`?${params.toString()}`);
   };
 
   return (

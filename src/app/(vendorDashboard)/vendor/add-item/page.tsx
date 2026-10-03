@@ -12,36 +12,42 @@ import { TVendor } from "@/src/types/vendor.type";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export default async function AddItemPage() {
-  const productCategoriesData = await getAllProductCategoriesReq();
-  let addonGroupsData: TAddonGroup[] = [];
-  let taxesData: TTax[] = [];
-  const vendorData: TVendor = await getProfileData();
   // const {data} = await getAllMenus();
 
+  const loadAddons = async (): Promise<TAddonGroup[]> => {
+    try {
+      const result = (await serverRequest.get("/add-ons")) as TResponse<
+        TAddonGroup[]
+      >;
 
-  try {
-    const result = (await serverRequest.get("/add-ons")) as TResponse<
-      TAddonGroup[]
-    >;
-
-    if (result?.success) {
-      addonGroupsData = result?.data || [];
+      if (result?.success) return result?.data || [];
+    } catch (err) {
+      console.log("Server fetch error:", err);
+      if (isRedirectError(err)) throw err;
     }
-  } catch (err) {
-    console.log("Server fetch error:", err);
-    if (isRedirectError(err)) throw err;
-  }
+    return [];
+  };
 
-  try {
-    const result = (await serverRequest.get("/taxes"));
+  const loadTaxes = async (): Promise<TTax[]> => {
+    try {
+      const result = (await serverRequest.get("/taxes"));
 
-    if (result?.success) {
-      taxesData = result?.data || [];
+      if (result?.success) return result?.data || [];
+    } catch (err) {
+      console.log("Server fetch error:", err);
+      if (isRedirectError(err)) throw err;
     }
-  } catch (err) {
-    console.log("Server fetch error:", err);
-    if (isRedirectError(err)) throw err;
-  }
+    return [];
+  };
+
+  // All four are independent, so they load side by side, not one after
+  // another. The vendor comes from the request cache the layout filled.
+  const [productCategoriesData, vendorData, addonGroupsData, taxesData] = await Promise.all([
+    getAllProductCategoriesReq(),
+    getProfileData() as Promise<TVendor>,
+    loadAddons(),
+    loadTaxes(),
+  ]);
 
   return (
     <ProductForm

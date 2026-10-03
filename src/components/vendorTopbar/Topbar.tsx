@@ -74,7 +74,7 @@ export default function Topbar({ vendor, sidebarOpen }: Props) {
 
           {/* RIGHT ICONS */}
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0 relative z-1001">
-            <TopbarIcons vendor={vendor} />
+            <TopbarIcons vendor={vendor} place="desktop" />
           </div>
         </div>
       </header>

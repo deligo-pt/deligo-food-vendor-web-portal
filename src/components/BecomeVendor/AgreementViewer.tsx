@@ -299,7 +299,7 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
                             {/* Payment Option */}
                             {(type === "new" || (type === "re-sign" && !agreement?.hasPosPaymentDecision)) && <div className="space-y-3">
                                 <Label className="text-sm font-bold text-slate-700">
-                                    {t("payment_option")} <span className="text-slate-400 font-normal">(optional)</span>
+                                    {t("payment_option")}
                                 </Label>
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center space-x-2">

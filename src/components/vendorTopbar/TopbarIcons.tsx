@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/select";
 import SOSModal from "@/src/components/Dashboard/SOS/SOSModal";
 import TopbarNotification from "@/src/components/vendorTopbar/TopbarNotification";
+import { DESKTOP_QUERY, useMediaQuery } from "@/src/hooks/use-media-query";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { logoutReq } from "@/src/services/auth/auth";
 import { getCurrentAgreementVersion } from "@/src/services/becomeVendor/become-vendor";
@@ -33,9 +34,18 @@ const PRIMARY = "#DC3173";
 
 type IProps = {
   vendor?: TVendor;
+  /**
+   * Which bar this copy sits in. There are two: the Sidebar's mobile bar
+   * (`md:hidden`) and the Topbar, which is on screen from `md` up. CSS only
+   * hides the other one, so both stay mounted. Only the copy on screen loads
+   * the agreement and notifications; otherwise every load asks twice.
+   */
+  place: "mobile" | "desktop";
 };
 
-export default function TopbarIcons({ vendor }: IProps) {
+export default function TopbarIcons({ vendor, place }: IProps) {
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const onScreen = place === "desktop" ? isDesktop : !isDesktop;
   const { lang, setLang } = useStore();
   const { t } = useTranslation();
   const [profileOpen, setProfileOpen] = useState(false);
@@ -106,15 +116,21 @@ export default function TopbarIcons({ vendor }: IProps) {
 
   };
 
+  // The notice is client state, so no `router.refresh()` here. There used to be
+  // two of them, which re-rendered the whole layout and page twice per Topbar on
+  // every load. Each re-render repeats `/profile` and the page's own API calls,
+  // and that load is what tripped the backend's 429 rate limit.
+  // The notice is `hidden md:block`, so only the desktop copy loads it: on a
+  // wide screen, and again only if the window is narrowed and widened again.
+  const showsAgreement = place === "desktop" && onScreen;
   useEffect(() => {
+    if (!showsAgreement) return;
     (async () => {
       try {
         const res = await getCurrentAgreementVersion();
 
         if (res?.data) {
-          router.refresh();
           setAgreeVersion(res.data);
-          router.refresh();
         } else {
           setAgreeVersion(null);
         }
@@ -122,7 +138,7 @@ export default function TopbarIcons({ vendor }: IProps) {
         console.error("Failed to fetch agreement version:", error);
       }
     })();
-  }, []);
+  }, [showsAgreement]);
 
   return (
     <>
@@ -172,7 +188,7 @@ export default function TopbarIcons({ vendor }: IProps) {
       </motion.button>
 
       {/* Notification */}
-      <TopbarNotification />
+      <TopbarNotification active={onScreen} />
 
 
       {/* Profile */}

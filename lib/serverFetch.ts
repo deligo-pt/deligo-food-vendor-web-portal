@@ -77,6 +77,42 @@ export const serverRequest = {
 
 
 /**
+ * A GET served from Next's fetch cache (see `src/consts/cache.const.ts`).
+ *
+ * Same auth, language and device-logout rule as `serverRequest`, but through
+ * `fetch`, because axios calls can't be cached. It sends only `authorization`
+ * and `Accept-Language`, without the cookie string, so the cache key changes
+ * only when the session or language does. Returns the parsed body (non-2xx
+ * included), or `null` when the body isn't JSON.
+ */
+export const serverCachedGet = async (
+  url: string,
+  { revalidate, tags }: { revalidate: number; tags: string[] },
+) => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value || "";
+  const activeLang = cookieStore.get("lang")?.value === "pt" ? "pt" : "en";
+
+  const res = await fetch(`${backendUrl}${url}`, {
+    headers: {
+      "Accept-Language": activeLang,
+      ...(accessToken && { authorization: `Bearer ${accessToken}` }),
+    },
+    next: { revalidate, tags },
+  });
+
+  const body = await res.json().catch(() => null);
+
+  if (res.status === 401 && body?.message === 'You have been logged out from this device. Please log in again.') {
+    console.log("Unauthorized! Redirecting to login...");
+    redirect('/login?clearSession=true');
+  }
+
+  return body;
+};
+
+
+/**
  *  using fetch
  */
 

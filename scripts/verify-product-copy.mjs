@@ -317,7 +317,7 @@ section("The catalogue's selection");
   );
   check(
     "the catalogue page fetches the branches it needs",
-    /getAllBranches\(vendorData\.userId\)/.test(itemsPage) && /branches=\{branchResults\?\.data \?\? \[\]\}/.test(itemsPage),
+    /getAllBranches\(vendorData\.userId[,)]/.test(itemsPage) && /branches=\{branchResults\?\.data \?\? \[\]\}/.test(itemsPage),
   );
 }
 
