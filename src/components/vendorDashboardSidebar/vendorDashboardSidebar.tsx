@@ -69,7 +69,7 @@ export default function Sidebar({ open, setOpen, vendor }: IProps) {
           <h1 className="font-bold text-xl text-[#DC3173]">DeliGo</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0 relative z-1001">
-          <TopbarIcons vendor={vendor} />
+          <TopbarIcons vendor={vendor} place="mobile" />
           <button onClick={() => setMobileOpen(true)}>
             <Menu size={24} className="text-gray-700" />
           </button>

@@ -32,7 +32,13 @@ export const catchAsync = async <T>(
       throw error;
     }
 
-    console.log(error?.response?.data || error);
+    // One line: status and message. Logging the whole response body, which
+    // includes the backend's stack, filled the terminal during a 429 burst.
+    console.log(
+      "Request failed:",
+      error?.response?.status ?? "no response",
+      error?.response?.data?.message || error?.message || error,
+    );
 
     return {
       success: false,

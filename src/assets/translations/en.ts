@@ -9,6 +9,11 @@ export const en = {
   we_are_working_hard_to_get_things: "We’re working hard to get things working again!",
   retry: "Retry",
   back_to_home: "Back to Home",
+  // a page whose data could not be loaded (PageLoadError)
+  page_load_failed: "We couldn't load this page",
+  page_load_failed_body: "Something went wrong while loading. Please try again.",
+  page_load_busy: "The server is busy right now. Wait a few seconds and try again.",
+  updating_list: "Updating results…",
 
   // not found
   page_not_found: "Page Not Found",

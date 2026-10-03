@@ -4,6 +4,7 @@ import DeleteProductDialog from "@/src/components/Dashboard/Products/DeleteProdu
 import EditProductDialog from "@/src/components/Dashboard/Products/EditProductDialog";
 import ProductCard from "@/src/components/Dashboard/Products/ProductCard";
 import AllFilters from "@/src/components/Filtering/AllFilters";
+import { useListNavigation } from "@/src/hooks/use-list-navigation";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { useStore } from "@/src/store/store";
 import { deleteProductReq } from "@/src/services/dashboard/products/products";
@@ -14,7 +15,7 @@ import { TVendor } from "@/src/types/vendor.type";
 import CopyToBranchDialog from "@/src/components/Dashboard/Products/CopyToBranchDialog";
 import { approvedBranches, productCode } from "@/src/utils/productCopy";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckSquare, Search, SquaresSubtract, X } from "lucide-react";
+import { CheckSquare, LoaderCircle, Search, SquaresSubtract, X } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { toast } from "sonner";
 import TitleHeader from "../../TitleHeader/TitleHeader";
@@ -55,6 +56,9 @@ export default function Products({
   // Collation and the name half both follow the language the vendor is reading.
   const { lang } = useStore();
   const [products, setProducts] = useState(productsData.data);
+  // True while a search, filter or sort change is loading its new results.
+  // The current list stays on screen, dimmed, until they arrive.
+  const { isPending: updatingList } = useListNavigation();
   const [pickedCategoryId, setPickedCategoryId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
@@ -427,6 +431,13 @@ export default function Products({
         )}
       </div>
 
+      {updatingList && (
+        <div role="status" aria-live="polite" className="shrink-0 -mt-2 mb-3 flex items-center gap-2 text-sm text-gray-500">
+          <LoaderCircle className="h-4 w-4 animate-spin text-[#DC3173]" />
+          {t("updating_list")}
+        </div>
+      )}
+
       {/* The selection bar. Sticky above the grid rather than floating over it,
           so it never covers the last row of cards. */}
       {selectMode && (
@@ -489,7 +500,10 @@ export default function Products({
 
       {/* Main content area – takes remaining height */}
       {groupedProducts.length > 0 ? (
-        <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-6 lg:overflow-hidden">
+        <div
+          aria-busy={updatingList}
+          className={`flex flex-col lg:flex-row flex-1 min-h-0 gap-6 lg:overflow-hidden transition-opacity ${updatingList ? "opacity-50 pointer-events-none" : ""}`}
+        >
           {/* LEFT SIDEBAR – fixed, scrolls independently if needed */}
           {/* Below `lg` the sidebar is hidden and nothing replaced it, so a
               phone had no way to jump between categories at all. Same groups,
@@ -700,7 +714,10 @@ export default function Products({
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center py-16 text-center">
+        <div
+          aria-busy={updatingList}
+          className={`flex-1 flex flex-col items-center justify-center py-16 text-center transition-opacity ${updatingList ? "opacity-50" : ""}`}
+        >
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <Search className="h-8 w-8 text-gray-400" />
           </div>

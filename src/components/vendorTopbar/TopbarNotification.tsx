@@ -19,7 +19,12 @@ import { motion } from "framer-motion";
 import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function TopbarNotification() {
+type Props = {
+  /** Whether this copy's bar is on screen (see `TopbarIcons`'s `place`). */
+  active: boolean;
+};
+
+export default function TopbarNotification({ active }: Props) {
   const [notificationsData, setNotificationsData] = useState<{
     data: TNotification[];
     meta?: TMeta;
@@ -53,9 +58,11 @@ export default function TopbarNotification() {
     }
   };
 
+  // Two bars carry a bell and only one is on screen; the hidden one stays idle.
   useEffect(() => {
+    if (!active) return;
     (() => getNotifications({ limit: 10 }))();
-  }, []);
+  }, [active]);
 
   return (
     <div className="relative shrink-0">

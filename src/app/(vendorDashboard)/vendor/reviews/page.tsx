@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { serverRequest } from "@/lib/serverFetch";
+import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import CustomerReviews from "@/src/components/Dashboard/Reviews/CustomerReviews";
 import { TMeta, TResponse } from "@/src/types";
 import { TReview } from "@/src/types/review.type";
@@ -41,17 +42,12 @@ export default async function CustomerReviewsPage({ searchParams }: IProps) {
     if (isRedirectError(err)) throw err;
   }
 
-  try {
-    const result = (await serverRequest.get("/profile")) as TResponse<TVendor>;
-
-    if (result?.success) {
-      vendorRating.average = result.data?.rating?.average || 0;
-      vendorRating.totalReviews = result.data?.rating?.totalReviews || 0;
-    }
-  } catch (err) {
-    console.log("Server fetch error:", err);
-    if (isRedirectError(err)) throw err;
-  }
+  // The layout has already loaded the vendor; `getProfileData` is cached per
+  // request, so this costs no extra call. It also covers branches, which
+  // `/profile` answers with a 403.
+  const vendor = (await getProfileData()) as TVendor;
+  vendorRating.average = vendor?.rating?.average || 0;
+  vendorRating.totalReviews = vendor?.rating?.totalReviews || 0;
 
   return (
     <CustomerReviews reviewsResult={initialData} vendorRating={vendorRating} />

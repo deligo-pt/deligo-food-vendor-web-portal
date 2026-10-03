@@ -9,6 +9,11 @@ export const pt = {
   we_are_working_hard_to_get_things: "Estamos trabalhando duro para colocar tudo para funcionar novamente!",
   retry: "Tentar Novamente",
   back_to_home: "Voltar para o Início",
+  // a page whose data could not be loaded (PageLoadError)
+  page_load_failed: "Não foi possível carregar esta página",
+  page_load_failed_body: "Ocorreu um erro ao carregar. Tente novamente.",
+  page_load_busy: "O servidor está ocupado neste momento. Aguarde alguns segundos e tente novamente.",
+  updating_list: "A atualizar resultados…",
 
   // not found
   page_not_found: "Página Não Encontrada",

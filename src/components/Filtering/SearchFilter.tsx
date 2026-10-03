@@ -1,7 +1,8 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useListNavigation } from "@/src/hooks/use-list-navigation";
 import { useEffect, useState, useRef } from "react";
 import { Search, X } from "lucide-react";
 import { useTranslation } from "@/src/hooks/use-translation";
@@ -18,7 +19,8 @@ export default function SearchFilter({
   className = "",
 }: SearchFilterProps) {
   const { t } = useTranslation();
-  const router = useRouter();
+  // Shared with the page, so its list can show a loader (use-list-navigation).
+  const { push } = useListNavigation();
   const searchParams = useSearchParams();
   const currentValue = searchParams.get(paramName) || "";
 
@@ -44,7 +46,7 @@ export default function SearchFilter({
     } else {
       params.delete(paramName);
     }
-    router.push(`?${params.toString()}`);
+    push(`?${params.toString()}`);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +67,7 @@ export default function SearchFilter({
 
     const params = new URLSearchParams(searchParams.toString());
     params.delete(paramName);
-    router.push(`?${params.toString()}`);
+    push(`?${params.toString()}`);
   };
 
   return (
