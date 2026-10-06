@@ -1169,7 +1169,7 @@ export const en = {
   stock_quantity: "Stock Quantity",
   add_stock_quantity: "Add stock quantity",
   select_discount_type: "Select Discount Type",
-  select_tax: "Standard VAT (23%)",
+  select_tax: "Select VAT rate",
   select_category_placeholder: "Select a category",
   additional_categories: "Additional Categories",
   optional: "Optional",
@@ -1190,7 +1190,6 @@ export const en = {
   // -> image uploader
   drag_drop_product_images: "Drag & drop product images here",
   or_click: "or click to browse files",
-  png_jpg_svg: "PNG, JPG, SVG up to 5MB",
   select_files: "Select Files",
   uploaded_images: "Uploaded Images",
   main_image: "Main Image",
@@ -2254,5 +2253,30 @@ export const en = {
   offer_err_fixed_reward: "Fixed reward product is required",
   offer_err_reward_option: "At least one reward option is required",
   offer_err_usage_limit: "User usage limit must be a number ≥ 1",
+  // the ⓘ on each VAT rate in Add Item's tax dropdown (VatRatesInfo)
+  vat_info_0_title: "0% VAT — Exempt / Zero-rated cases",
+  vat_info_0_body: "Only applicable where the specific product or transaction is legally exempt or subject to a 0% VAT treatment. Vendors should select this rate only when applicable under Portuguese VAT rules.",
+  vat_info_6_title: "6% VAT — Reduced Rate",
+  vat_info_6_body: "Basic essential goods and certain services, including many basic food products such as bread, rice, flour, fresh meat, fish, milk and certain other qualifying food items.",
+  vat_info_13_title: "13% VAT — Intermediate Rate",
+  vat_info_13_body: "Certain food and restaurant-related products/services. For DeliGo, ready-to-eat meals for takeaway or home delivery are generally subject to 13% VAT.",
+  vat_info_23_title: "23% VAT — Standard Rate",
+  vat_info_23_body: "The standard VAT rate for goods and services that do not qualify for the reduced or intermediate rates.",
+  // product form validation messages (validations/product)
+  product_err_category_required: "Category is a required field",
+  product_err_tax_required: "Tax is a required field",
+  // product photo rules (utils/productImageRules)
+  img_spec_size: "Size",
+  img_spec_size_value: "1200 × 1200 px or larger (square)",
+  img_spec_max: "Maximum",
+  img_spec_format: "Format",
+  img_err_type: "This file type isn't supported. Use JPG, PNG or WEBP.",
+  img_err_too_large: "This image is {size} MB. The maximum is 5 MB.",
+  img_err_not_square: "This image is {w} × {h} px. It must be square, at least 1200 × 1200 px.",
+  img_err_too_small: "This image is {w} × {h} px. It must be at least 1200 × 1200 px.",
+  img_err_unreadable: "This image couldn't be read. Try another file.",
+  // All Items, loaded a category at a time (Products.tsx)
+  loading_more_items: "Loading more items…",
+  count_not_loaded: "Not loaded yet",
 };
 

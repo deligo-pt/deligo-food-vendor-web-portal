@@ -61,13 +61,13 @@ export default function ProductCard({
           ? "border-[#DC3173] ring-2 ring-[#DC3173]/30"
           : "border-gray-100"
         }`}
+      // A fade only. It used to rise 20px as well, and with a page of new
+      // cards arriving under the vendor's eye that read as the list moving.
       initial={{
         opacity: 0,
-        y: 20,
       }}
       animate={{
         opacity: 1,
-        y: 0,
       }}
       transition={{
         duration: 0.3,
@@ -118,10 +118,15 @@ export default function ProductCard({
         >
           {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
-        {product?.pricing?.discount && <div
+        {/* `> 0`, not truthiness: a discount of 0 rendered a stray "0" here. */}
+        {Number(product?.pricing?.discount) > 0 && <div
           className={`absolute top-2 right-2 z-[2] text-xs font-medium px-2 py-1 rounded-md bg-[#DC3173] text-white`}
         >
-          {product.pricing?.discount} % OFF
+          {/* A FLAT discount is an amount in euros, not a percentage:
+              Chocolate Salami's €0.60 off read as "0.6 % OFF". */}
+          {product.pricing?.discountType === "FLAT"
+            ? `€ ${new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(product.pricing.discount))} OFF`
+            : `${product.pricing?.discount} % OFF`}
         </div>}
       </div>
 

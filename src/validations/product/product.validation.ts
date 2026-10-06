@@ -11,11 +11,11 @@ export const productValidation = z.object({
 
   description: localizedTextSchema,
 
-  category: z
-    .string()
-    .min(2, "Category must be at least 2 characters")
-    .max(50, "Category must be at most 50 characters")
-    .nonempty("Category is required"),
+  // The category's id, picked from the list, so only "was one picked" is
+  // checked. The old min-length check ran first and told a vendor who had
+  // picked nothing that the category must be at least 2 characters. Messages
+  // are translation keys; `FormMessage` translates them.
+  category: z.string().trim().min(1, "product_err_category_required"),
 
   additionalCategories: z.array(z.string().optional()).optional(),
 
@@ -34,7 +34,7 @@ export const productValidation = z.object({
 
   discountType: z.enum(["PERCENTAGE", "FLAT"]),
 
-  taxId: z.string().nonempty("Tax is required"),
+  taxId: z.string().nonempty("product_err_tax_required"),
 
   discount: z.number().min(0).max(100),
 

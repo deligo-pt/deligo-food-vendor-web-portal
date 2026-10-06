@@ -103,8 +103,15 @@ function SelectLabel({
 function SelectItem({
   className,
   children,
+  after,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Item>) {
+}: React.ComponentProps<typeof SelectPrimitive.Item> & {
+  /**
+   * Shown in the list row after the label, but not copied into the closed
+   * field the way the label is (e.g. the VAT rows' ⓘ on Add Item).
+   */
+  after?: React.ReactNode
+}) {
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
@@ -120,6 +127,7 @@ function SelectItem({
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      {after}
     </SelectPrimitive.Item>
   )
 }

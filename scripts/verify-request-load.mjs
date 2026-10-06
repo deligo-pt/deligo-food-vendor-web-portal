@@ -121,7 +121,9 @@ section("🔴 4. Pages load side by side");
 section("🔴 5. A failure says so");
 {
   check("🔴 dashboard shows PageLoadError on failure", /if \(failure\) return <PageLoadError busy=\{failure\.busy\} \/>;/.test(code(DASHBOARD)));
-  check("🔴 all-items shows PageLoadError on failure", /if \(failure\) return <PageLoadError busy=\{failure\.busy\} \/>;/.test(code(ALL_ITEMS)));
+  // Since 6 Oct 2026 All Items loads a category at a time; the page fails when
+// the catalogue's own count can't be read (see verify:all-items).
+check("🔴 all-items shows PageLoadError on failure", /if \(total === undefined\) return <PageLoadError busy \/>;/.test(code(ALL_ITEMS)));
   check("PageLoadError retries only on click", !/useEffect/.test(code("src/components/PageLoadError/PageLoadError.tsx")));
 
   const { logServerError } = await import(join(root, "src/utils/serverError.ts"));

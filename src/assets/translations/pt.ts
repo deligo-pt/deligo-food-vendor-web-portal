@@ -1199,7 +1199,7 @@ export const pt = {
   stock_quantity: "Quantidade em Estoque",
   add_stock_quantity: "Adicionar quantidade em estoque",
   select_discount_type: "Selecionar Tipo de Desconto",
-  select_tax: "IVA Padrão (23%)",
+  select_tax: "Selecione a taxa de IVA",
   select_category_placeholder: "Selecione uma categoria",
   additional_categories: "Additional Categories",
   optional: "Optional",
@@ -1220,7 +1220,6 @@ export const pt = {
   // -> image uploader
   drag_drop_product_images: "Arraste e largue as imagens do produto aqui",
   or_click: "ou clique para procurar ficheiros",
-  png_jpg_svg: "PNG, JPG, SVG até 5MB",
   select_files: "Selecionar Ficheiros",
   uploaded_images: "Imagens Carregadas",
   main_image: "Imagem Principal",
@@ -2314,4 +2313,29 @@ export const pt = {
   offer_err_fixed_reward: "O produto de recompensa fixo é obrigatório",
   offer_err_reward_option: "Selecione pelo menos uma opção de recompensa",
   offer_err_usage_limit: "O limite de uso por utilizador deve ser um número ≥ 1",
+  // the ⓘ on each VAT rate in Add Item's tax dropdown (VatRatesInfo)
+  vat_info_0_title: "IVA a 0% — Isenção / Taxa zero",
+  vat_info_0_body: "Aplicável apenas quando o produto ou a transação em causa está legalmente isento ou sujeito a IVA à taxa de 0%. Os vendedores só devem selecionar esta taxa quando for aplicável nos termos das regras portuguesas do IVA.",
+  vat_info_6_title: "IVA a 6% — Taxa reduzida",
+  vat_info_6_body: "Bens essenciais e determinados serviços, incluindo muitos produtos alimentares básicos, como pão, arroz, farinha, carne fresca, peixe, leite e outros produtos alimentares elegíveis.",
+  vat_info_13_title: "IVA a 13% — Taxa intermédia",
+  vat_info_13_body: "Determinados produtos e serviços alimentares e de restauração. Na DeliGo, as refeições prontas a consumir para take-away ou entrega ao domicílio estão, em regra, sujeitas a IVA de 13%.",
+  vat_info_23_title: "IVA a 23% — Taxa normal",
+  vat_info_23_body: "A taxa normal de IVA para bens e serviços que não beneficiam das taxas reduzida ou intermédia.",
+  // product form validation messages (validations/product)
+  product_err_category_required: "A categoria é um campo obrigatório",
+  product_err_tax_required: "O imposto é um campo obrigatório",
+  // product photo rules (utils/productImageRules)
+  img_spec_size: "Tamanho",
+  img_spec_size_value: "1200 × 1200 px ou maior (quadrada)",
+  img_spec_max: "Máximo",
+  img_spec_format: "Formato",
+  img_err_type: "Este tipo de ficheiro não é suportado. Use JPG, PNG ou WEBP.",
+  img_err_too_large: "Esta imagem tem {size} MB. O máximo é 5 MB.",
+  img_err_not_square: "Esta imagem tem {w} × {h} px. Tem de ser quadrada, com pelo menos 1200 × 1200 px.",
+  img_err_too_small: "Esta imagem tem {w} × {h} px. Tem de ter pelo menos 1200 × 1200 px.",
+  img_err_unreadable: "Não foi possível ler esta imagem. Experimente outro ficheiro.",
+  // All Items, loaded a category at a time (Products.tsx)
+  loading_more_items: "A carregar mais itens…",
+  count_not_loaded: "Ainda não carregado",
 };
