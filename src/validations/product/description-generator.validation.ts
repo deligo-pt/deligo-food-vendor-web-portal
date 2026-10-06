@@ -7,11 +7,8 @@ export const descriptionGeneratorValidation = z.object({
     .max(50, "Name must be at most 50 characters")
     .nonempty("Name is required"),
 
-  productCategory: z
-    .string()
-    .min(2, "Category must be at least 2 characters")
-    .max(50, "Category must be at most 50 characters")
-    .nonempty("Category is required"),
+  // An id from the list; see `product.validation.ts`.
+  productCategory: z.string().trim().min(1, "product_err_category_required"),
 
   language: z.enum(
     ["English", "Portuguese"],

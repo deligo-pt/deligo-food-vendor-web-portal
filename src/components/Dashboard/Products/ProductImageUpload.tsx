@@ -10,6 +10,43 @@ import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 import { MAX_PRODUCT_IMAGES } from "@/src/consts/product.const";
+import {
+  checkImageDimensions,
+  checkImageFile,
+  PRODUCT_IMAGE_ACCEPT,
+  type ImageProblem,
+} from "@/src/utils/productImageRules";
+
+/**
+ * The image's width and height, read in the browser without uploading it.
+ * `null` when the file can't be decoded (corrupt, or not really an image).
+ */
+async function readImageSize(file: File): Promise<{ width: number; height: number } | null> {
+  if (typeof createImageBitmap === "function") {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const size = { width: bitmap.width, height: bitmap.height };
+      bitmap.close();
+      return size;
+    } catch {
+      // Fall through to <img>, which decodes a few formats some browsers'
+      // `createImageBitmap` won't.
+    }
+  }
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new window.Image();
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => {
+      resolve(null);
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  });
+}
 
 interface IProps {
   images: string[];
@@ -19,6 +56,24 @@ interface IProps {
 
 export function ImageUpload({ images, onChange, productId }: IProps) {
   const { t } = useTranslation();
+
+  /** A problem as the vendor reads it: the key translated, its values filled in. */
+  const describe = ({ key, vars }: ImageProblem) =>
+    Object.entries(vars ?? {}).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), t(key));
+
+  /**
+   * Every rule in `productImageRules`, before anything is uploaded. Returns the
+   * message to show, or `null` when the file may go. Format and size first,
+   * since they need no decoding; then the pixels.
+   */
+  const checkBeforeUpload = async (file: File): Promise<string | null> => {
+    const fileProblem = checkImageFile(file);
+    if (fileProblem) return describe(fileProblem);
+    const size = await readImageSize(file);
+    if (!size) return describe({ key: "img_err_unreadable" });
+    const sizeProblem = checkImageDimensions(size.width, size.height);
+    return sizeProblem ? describe(sizeProblem) : null;
+  };
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
@@ -46,8 +101,10 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
       return;
     }
     for (const file of Array.from(files)) {
-      if (!file.type.match("image.*")) {
-        setError(t("upload_image_files_only"));
+      const problem = await checkBeforeUpload(file);
+      if (problem) {
+        setError(problem);
+        if (inputRef.current) inputRef.current.value = "";
         return;
       }
     }
@@ -86,8 +143,10 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
     setError(null);
     const file = files[0];
     if (!file) return;
-    if (!file.type.match("image.*")) {
-      setError(t("upload_image_files_only"));
+    const problem = await checkBeforeUpload(file);
+    if (problem) {
+      setError(problem);
+      if (replaceRef.current) replaceRef.current.value = "";
       return;
     }
 
@@ -191,7 +250,16 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
             {t("drag_drop_product_image")}
           </p>
           <p className="text-sm text-gray-500 mt-1">{t("or_click")}</p>
-          <p className="text-xs text-gray-400 mt-2">{t("png_jpg_svg")}</p>
+          {/* The rules `checkBeforeUpload` enforces, stated before the vendor
+              picks a file. */}
+          <dl className="mt-3 grid grid-cols-[auto_auto] gap-x-3 gap-y-1 rounded-lg border border-[#DC3173]/15 bg-[#DC3173]/5 px-4 py-2.5 text-left text-xs">
+            <dt className="font-medium text-gray-500">{t("img_spec_size")}</dt>
+            <dd className="font-semibold text-gray-800">{t("img_spec_size_value")}</dd>
+            <dt className="font-medium text-gray-500">{t("img_spec_max")}</dt>
+            <dd className="font-semibold text-gray-800">5 MB</dd>
+            <dt className="font-medium text-gray-500">{t("img_spec_format")}</dt>
+            <dd className="font-semibold text-gray-800">JPG / PNG / WEBP</dd>
+          </dl>
           <label className="mt-4">
             <motion.span
               whileHover={{
@@ -210,7 +278,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
               type="file"
               className="hidden"
               onChange={handleChange}
-              accept="image/*"
+              accept={PRODUCT_IMAGE_ACCEPT}
             />
           </label>
         </motion.div>
@@ -245,7 +313,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
                 ref={replaceRef}
                 type="file"
                 className="hidden"
-                accept="image/*"
+                accept={PRODUCT_IMAGE_ACCEPT}
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) replaceFile(e.target.files);
                 }}

@@ -48,11 +48,19 @@ const edit = code("src/components/Dashboard/Products/EditProductForm.tsx");
 const create = code("src/components/Dashboard/Products/ProductForm.tsx");
 
 console.log("\n🔴 1. All Items lists a product under each of its categories");
+// Since 6 Oct 2026 each category's products come from
+// `GET /products?category=<id>`, which already includes products whose
+// additional category it is (Faluda under DESSERT). Each section shows that list.
 check(
-  "🔴 additional categories are grouped too",
-  /product\.additionalCategories\?\.forEach\(\(extra\) => \{\s*const group = extra\?\._id \? groups\[extra\._id\] : undefined;\s*if \(group && !group\.products\.includes\(product\)\) group\.products\.push\(product\);/.test(list),
+  "🔴 additional categories are listed too: each section asks the API by category",
+  /params: catalogueQuery\(filters, \{ category: categoryId, page, limit: CATALOGUE_PAGE_SIZE \}\)/.test(code("src/services/dashboard/products/products.ts")) &&
+    /products: s\.items/.test(list),
 );
-check("an unknown additional category is skipped, not made Uncategorized", !/additionalCategories[\s\S]{0,200}uncategorized/.test(list));
+check(
+  "only products in none of the vendor's categories go to Uncategorized",
+  /if \(product\.category\?\._id && ownedIds\.has\(product\.category\._id\)\) return false;/.test(code("src/utils/catalogueSections.ts")) &&
+    /extra\?\._id && ownedIds\.has\(extra\._id\)/.test(code("src/utils/catalogueSections.ts")),
+);
 
 console.log("\n🔴 2. Edit loads and saves them");
 check(

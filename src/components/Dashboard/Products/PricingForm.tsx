@@ -18,6 +18,7 @@ import {
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TTax } from "@/src/types/tax.type";
 import { motion } from "framer-motion";
+import { VatRateInfoIcon } from "./VatRatesInfo";
 
 interface IProps {
     form: any;
@@ -27,6 +28,8 @@ interface IProps {
     watchTaxId: any;
     watchDiscountType: any;
     taxesData: TTax[];
+    /** An ⓘ on each VAT rate in the dropdown, explaining it. Add Item only, for now. */
+    showVatInfo?: boolean;
 }
 
 const PricingForm = ({
@@ -37,6 +40,7 @@ const PricingForm = ({
     watchDiscount,
     watchTaxId,
     taxesData,
+    showVatInfo = false,
 }: IProps) => {
     const { t } = useTranslation();
 
@@ -173,7 +177,21 @@ const PricingForm = ({
                                     </SelectTrigger>
                                     <SelectContent>
                                         {taxesData?.map((tax) => (
-                                            <SelectItem key={tax._id} value={tax._id}>
+                                            <SelectItem
+                                                key={tax._id}
+                                                value={tax._id}
+                                                {...(showVatInfo
+                                                    ? {
+                                                        "aria-describedby": `vat-info-${tax._id}`,
+                                                        after: (
+                                                            <VatRateInfoIcon
+                                                                rate={tax.taxRate}
+                                                                describedById={`vat-info-${tax._id}`}
+                                                            />
+                                                        ),
+                                                    }
+                                                    : {})}
+                                            >
                                                 {tax.taxName} ({tax.taxRate}%)
                                             </SelectItem>
                                         ))}

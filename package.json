@@ -12,7 +12,10 @@
     "verify:offer-products": "node --experimental-strip-types --no-warnings scripts/verify-offer-products.mjs",
     "verify:offer-language": "node --experimental-strip-types --no-warnings scripts/verify-offer-language.mjs",
     "verify:request-load": "node --experimental-strip-types --no-warnings scripts/verify-request-load.mjs",
-    "verify:additional-categories": "node --experimental-strip-types --no-warnings scripts/verify-additional-categories.mjs"
+    "verify:additional-categories": "node --experimental-strip-types --no-warnings scripts/verify-additional-categories.mjs",
+    "verify:vat-info": "node --no-warnings scripts/verify-vat-info.mjs",
+    "verify:product-image": "node --experimental-strip-types --no-warnings scripts/verify-product-image.mjs",
+    "verify:all-items": "node --experimental-strip-types --no-warnings scripts/verify-all-items.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

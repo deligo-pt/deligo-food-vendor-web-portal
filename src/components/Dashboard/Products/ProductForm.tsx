@@ -39,7 +39,6 @@ import { TProduct } from "@/src/types/product.type";
 import { TResponse } from "@/src/types";
 import { useStore } from "@/src/store/store";
 import { DEFAULT_PRODUCT_IMAGE } from "@/src/consts/product.const";
-import { standardVatTaxId } from "@/src/utils/tax";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { useRouter } from "next/navigation";
 
@@ -63,6 +62,13 @@ export function ProductForm({
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
   // const [selectedSectionId, setSelectedSectionId] = useState("");
+
+  // Highest rate first in the Tax dropdown: 23%, 13%, 6%, 0% (6 Oct 2026).
+  // Add Item only; `/taxes` lists them lowest first.
+  const taxesByRate = useMemo(
+    () => [...(taxesData ?? [])].sort((a, b) => Number(b.taxRate) - Number(a.taxRate)),
+    [taxesData],
+  );
 
   const tabs = useMemo(() => {
     const baseTabs = [
@@ -105,13 +111,6 @@ export function ProductForm({
 
   const lastTabIndex = tabs.length - 1;
 
-  // Standard VAT, chosen for real rather than hinted at. The field used to open
-  // empty with "Standard VAT (23%)" as grey placeholder text, which reads as a
-  // selection and submits as nothing — so a vendor who trusted it shipped a
-  // product with no tax at all. Resolved from the `/taxes` the page fetched, so
-  // it is a live id and not a constant that can drift out of the database.
-  const defaultTaxId = useMemo(() => standardVatTaxId(taxesData), [taxesData]);
-
   const form = useForm<FormData>({
     resolver: zodResolver(productValidation),
     values: {
@@ -129,7 +128,10 @@ export function ProductForm({
       price: 0,
       discountType: "PERCENTAGE",
       discount: 0,
-      taxId: defaultTaxId,
+      // No rate pre-selected (6 Oct 2026): the vendor picks one, helped by the
+      // ⓘ beside the field. Saving without one is refused by the schema
+      // ("Tax is a required field"), and the placeholder no longer names a rate.
+      taxId: "",
       quantity: 0,
       unit: "",
       availabilityStatus: "",
@@ -434,12 +436,13 @@ export function ProductForm({
                 {activeTab === 3 && (
                   <PricingForm
                     form={form}
-                    taxesData={taxesData}
+                    taxesData={taxesByRate}
                     watchDiscount={watchDiscount}
                     watchPrice={watchPrice}
                     watchVariations={watchVariations}
                     watchTaxId={watchTaxId}
                     watchDiscountType={watchDiscountType}
+                    showVatInfo
                   />
                 )}
                 {businessTypeSlug !== "restaurant" && activeTab === 4 && (
