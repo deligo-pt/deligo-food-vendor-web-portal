@@ -790,16 +790,18 @@ export default function Products({
                         setPickedCategoryId(id);
                         scrollToCategory(id)
                       }}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
+                      className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
                         ? "bg-[#DC3173]/10 text-[#DC3173]"
                         : "text-gray-600 hover:bg-gray-50"
                         }`}
                     >
-                      <span className="truncate uppercase tracking-wide">
+                      {/* `min-w-0`, or `truncate` never kicks in and a long
+                          name scrolls the box sideways. */}
+                      <span className="min-w-0 truncate uppercase tracking-wide" title={getCategoryName(group.category)}>
                         {getCategoryName(group.category)}
                       </span>
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${isActive
+                        className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${isActive
                           ? "bg-[#DC3173]/15 text-[#DC3173]"
                           : "bg-gray-100 text-gray-500"
                           }`}

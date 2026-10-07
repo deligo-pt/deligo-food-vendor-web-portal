@@ -13,6 +13,12 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/src/components/ui/avatar";
+import {
+  MobileRowCard,
+  MobileRowCards,
+  MobileRowEmpty,
+  TABLE_FROM,
+} from "@/src/components/MobileRowCard/MobileRowCard";
 import { TCustomer } from "@/src/types/customer.type";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -36,6 +42,51 @@ export default function CustomerReportTable({ customers, t }: IProps) {
       animate={{ opacity: 1, y: 0 }}
       className="bg-white mb-2 overflow-x-auto"
     >
+      {/* Phones and tablets: a card per customer (the table's cells never wrap). */}
+      <MobileRowCards until="lg">
+        {customers?.length === 0 && (
+          <MobileRowEmpty>{t("no_customer_found")}</MobileRowEmpty>
+        )}
+        {customers?.map((c) => (
+          <MobileRowCard
+            key={c._id}
+            leading={
+              <Avatar>
+                <AvatarImage
+                  src={c.profilePhoto}
+                  alt={`${c.name?.firstName} ${c.name?.lastName}`}
+                />
+                <AvatarFallback>
+                  {c.name?.firstName?.charAt(0)}
+                  {c.name?.lastName?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            }
+            title={
+              c.name?.firstName || c.name?.lastName
+                ? `${c.name?.firstName || ""} ${c.name?.lastName || ""}`
+                : "N/A"
+            }
+            subtitle={c.email}
+            fields={[
+              { label: t("orders"), value: c.orders?.totalOrders || 0 },
+              { label: t("total_spent"), value: `€${c.orders?.totalSpent || 0}` },
+              {
+                label: t("last_ordered"),
+                value: c.orders?.lastOrderDate
+                  ? format(c.orders?.lastOrderDate, "do MMM yyyy")
+                  : "N/A",
+              },
+              {
+                label: t("status"),
+                value: `${c.status?.charAt(0) ?? ""}${c.status?.slice(1)?.toLowerCase() ?? ""}`,
+              },
+            ]}
+          />
+        ))}
+      </MobileRowCards>
+
+      <div className={TABLE_FROM.lg}>
       <Table className="max-w-full">
         <TableHeader>
           <TableRow>
@@ -84,8 +135,8 @@ export default function CustomerReportTable({ customers, t }: IProps) {
           )}
           {customers?.map((c) => (
             <TableRow key={c._id}>
-              <TableCell className="flex items-center gap-3">
-                <div>
+              <TableCell className="flex items-center gap-3 whitespace-normal min-w-[12rem]">
+                <div className="shrink-0">
                   <Avatar>
                     <AvatarImage
                       src={c.profilePhoto}
@@ -97,7 +148,7 @@ export default function CustomerReportTable({ customers, t }: IProps) {
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <div>
+                <div className="min-w-0 wrap-anywhere">
                   <h3 className="font-medium">
                     {c.name?.firstName} {c.name?.lastName}
                     {!c.name?.firstName && !c.name?.lastName && "N/A"}
@@ -120,6 +171,7 @@ export default function CustomerReportTable({ customers, t }: IProps) {
           ))}
         </TableBody>
       </Table>
+      </div>
     </motion.div>
   );
 }

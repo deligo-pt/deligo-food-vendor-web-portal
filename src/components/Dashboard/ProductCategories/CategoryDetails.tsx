@@ -60,9 +60,11 @@ const CategoryDetails = ({ category }: IProps) => {
                 subtitle={`ID: ${category._id}`}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Two columns only from `lg`: beside the sidebar a 768px tablet
+                leaves ~460px, and the status badge passed the edge. */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* PRIMARY METRICS & OVERVIEW */}
-                <Card className="md:col-span-2 rounded-3xl border bg-white shadow-sm overflow-hidden">
+                <Card className="min-w-0 lg:col-span-2 rounded-3xl border bg-white shadow-sm overflow-hidden">
                     <CardHeader className="border-b bg-slate-50/50 px-6 py-4">
                         <CardTitle className="text-lg font-semibold flex items-center gap-2 text-slate-800">
                             <Tag className="w-5 h-5 text-[#DC3173]" />
@@ -81,7 +83,7 @@ const CategoryDetails = ({ category }: IProps) => {
                                     <span className="text-xs font-semibold text-slate-400 block mb-1">
                                         {t("english_en")}
                                     </span>
-                                    <span className="text-base font-semibold text-slate-800">
+                                    <span className="text-base font-semibold text-slate-800 wrap-anywhere">
                                         {category.name?.en || "N/A"}
                                     </span>
                                 </div>
@@ -89,7 +91,7 @@ const CategoryDetails = ({ category }: IProps) => {
                                     <span className="text-xs font-semibold text-slate-400 block mb-1">
                                         {t("portugues_pt")}
                                     </span>
-                                    <span className="text-base font-semibold text-slate-800">
+                                    <span className="text-base font-semibold text-slate-800 wrap-anywhere">
                                         {category.name?.pt || "N/A"}
                                     </span>
                                 </div>
@@ -102,7 +104,7 @@ const CategoryDetails = ({ category }: IProps) => {
                                 <span className="text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1">
                                     <Hash className="w-3.5 h-3.5" /> {t("slug")}
                                 </span>
-                                <code className="text-sm font-semibold text-[#DC3173] bg-[#DC3173]/5 px-2 py-0.5 rounded-md">
+                                <code className="text-sm font-semibold text-[#DC3173] bg-[#DC3173]/5 px-2 py-0.5 rounded-md break-all">
                                     {category.slug}
                                 </code>
                             </div>
@@ -128,7 +130,7 @@ const CategoryDetails = ({ category }: IProps) => {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6 space-y-4">
-                            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                            <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
                                 <span className="text-sm font-medium text-slate-600">
                                     {t("active_status") || "Active Status"}
                                 </span>
@@ -145,7 +147,7 @@ const CategoryDetails = ({ category }: IProps) => {
                                 )}
                             </div>
 
-                            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                            <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
                                 <span className="text-sm font-medium text-slate-600">
                                     {t("delete_status") || "Delete Status"}
                                 </span>

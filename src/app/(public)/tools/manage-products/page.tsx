@@ -39,7 +39,9 @@ export default function ManageProductsInfoPage() {
   ];
 
   return (
-    <section className="bg-linear-to-br from-gray-900 via-[#1a1a1a] to-black min-h-screen text-white py-20 px-6 sm:px-10 lg:px-20">
+    // `overflow-x-clip`: the sparkle slides in from the right, and until it's
+    // in view that offset stuck out past the edge (page swiped sideways).
+    <section className="bg-linear-to-br from-gray-900 via-[#1a1a1a] to-black min-h-screen text-white py-20 px-6 sm:px-10 lg:px-20 overflow-x-clip">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
         <motion.div

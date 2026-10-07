@@ -14,6 +14,12 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/src/components/ui/avatar";
+import {
+    MobileRowCard,
+    MobileRowCards,
+    MobileRowEmpty,
+    TABLE_FROM,
+} from "@/src/components/MobileRowCard/MobileRowCard";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TVendor } from "@/src/types/vendor.type";
 import { format } from "date-fns";
@@ -56,12 +62,76 @@ export default function BranchTable({ branches }: IProps) {
         return parts.length > 0 ? parts.join(", ") : null;
     };
 
+    const statusBadge = (status?: string) => (
+        <span
+            className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${status === "APPROVED"
+                ? "bg-green-100 text-green-700"
+                : status === "PENDING"
+                    ? "bg-amber-100 text-amber-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+        >
+            {status || "UNKNOWN"}
+        </span>
+    );
+
+    const openBranch = (branch: TVendor) =>
+        router.push(`/vendor/branches/${branch.userId}`);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white shadow-md rounded-2xl p-4 md:p-6 mb-2 overflow-x-auto"
         >
+            {/* Phones and tablets: a card per branch (the table's cells never wrap). */}
+            <MobileRowCards until="xl">
+                {!branches || branches.length === 0 ? (
+                    <MobileRowEmpty>{t("no_branches_found") || "No branches found"}</MobileRowEmpty>
+                ) : (
+                    branches.map((branch) => (
+                        <MobileRowCard
+                            key={branch?.userId}
+                            leading={
+                                <Avatar>
+                                    <AvatarImage src={branch.profilePhoto || ""} />
+                                    <AvatarFallback className="bg-[#DC3173]/10 text-[#DC3173] font-semibold">
+                                        {branch?.name?.firstName?.charAt(0) ||
+                                            branch?.businessDetails?.businessName?.charAt(0) ||
+                                            "B"}
+                                    </AvatarFallback>
+                                </Avatar>
+                            }
+                            title={branch?.businessDetails?.branchName || "N/A"}
+                            subtitle={formatAddress(branch?.businessLocation)}
+                            aside={statusBadge(branch.status)}
+                            fields={[
+                                { label: t("user_id") || "User ID", value: branch.userId || "—" },
+                                { label: t("manager"), value: getFullName(branch?.name) },
+                                { label: t("email") || "Email", value: branch.email || "—" },
+                                {
+                                    label: t("created_at") || "Created At",
+                                    value: branch.createdAt
+                                        ? format(new Date(branch.createdAt), "dd-MM-yyyy")
+                                        : "—",
+                                },
+                            ]}
+                            actions={
+                                <Button
+                                    onClick={() => openBranch(branch)}
+                                    size="sm"
+                                    className="bg-[#DC3173] flex items-center gap-2 hover:bg-[#DC3173]/90"
+                                >
+                                    <EyeIcon className="w-4 h-4" />
+                                    {t("view") || "View"}
+                                </Button>
+                            }
+                        />
+                    ))
+                )}
+            </MobileRowCards>
+
+            <div className={TABLE_FROM.xl}>
             <Table className="max-w-full">
                 <TableHeader>
                     <TableRow>
@@ -101,9 +171,11 @@ export default function BranchTable({ branches }: IProps) {
                                 {t("status") || "Status"}
                             </div>
                         </TableHead>
-                        <TableHead className="text-right text-[#DC3173] flex gap-2 items-center justify-end">
-                            <Cog className="w-4" />
-                            {t("actions") || "Actions"}
+                        <TableHead className="text-right">
+                            <div className="text-[#DC3173] flex gap-2 items-center justify-end">
+                                <Cog className="w-4" />
+                                {t("actions") || "Actions"}
+                            </div>
                         </TableHead>
                     </TableRow>
                 </TableHeader>
@@ -132,12 +204,12 @@ export default function BranchTable({ branches }: IProps) {
                                     </TableCell>
 
                                     {/* Branch Name & Address */}
-                                    <TableCell>
+                                    <TableCell className="whitespace-normal wrap-anywhere min-w-[10rem]">
                                         <div>
                                             <div className="font-semibold">{branchTitle}</div>
                                             {formattedAddress && (
                                                 <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                                                    <MapPinIcon className="w-3 h-3 text-slate-400" />
+                                                    <MapPinIcon className="w-3 h-3 shrink-0 text-slate-400" />
                                                     {formattedAddress}
                                                 </div>
                                             )}
@@ -145,7 +217,7 @@ export default function BranchTable({ branches }: IProps) {
                                     </TableCell>
 
                                     {/* Manager Avatar & Name */}
-                                    <TableCell>
+                                    <TableCell className="whitespace-normal wrap-anywhere min-w-[10rem]">
                                         <div className="flex items-center gap-3">
                                             <Avatar>
                                                 <AvatarImage src={branch.profilePhoto || ""} />
@@ -160,7 +232,7 @@ export default function BranchTable({ branches }: IProps) {
                                     </TableCell>
 
                                     {/* Email */}
-                                    <TableCell>{branch.email || "—"}</TableCell>
+                                    <TableCell className="whitespace-normal wrap-anywhere min-w-[10rem]">{branch.email || "—"}</TableCell>
 
                                     {/* Creation Date */}
                                     <TableCell>
@@ -171,24 +243,13 @@ export default function BranchTable({ branches }: IProps) {
 
                                     {/* Status Badge */}
                                     <TableCell>
-                                        <span
-                                            className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${branch.status === "APPROVED"
-                                                ? "bg-green-100 text-green-700"
-                                                : branch.status === "PENDING"
-                                                    ? "bg-amber-100 text-amber-700"
-                                                    : "bg-red-100 text-red-700"
-                                                }`}
-                                        >
-                                            {branch.status || "UNKNOWN"}
-                                        </span>
+                                        {statusBadge(branch.status)}
                                     </TableCell>
 
                                     {/* Action Button */}
                                     <TableCell className="text-right">
                                         <Button
-                                            onClick={() =>
-                                                router.push(`/vendor/branches/${branch.userId}`)
-                                            }
+                                            onClick={() => openBranch(branch)}
                                             size="sm"
                                             className="bg-[#DC3173] flex items-center gap-2 hover:bg-[#DC3173]/90 ml-auto"
                                         >
@@ -202,6 +263,7 @@ export default function BranchTable({ branches }: IProps) {
                     )}
                 </TableBody>
             </Table>
+            </div>
         </motion.div>
     );
 }

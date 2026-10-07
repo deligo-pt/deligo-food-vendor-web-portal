@@ -75,10 +75,12 @@ export const BranchDetails = ({ branch }: IProps) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-[#DC3173] text-white p-6 rounded-t-lg"
             >
-                <div className="flex items-center space-x-4">
+                {/* Wraps: a long branch name or email used to push the status
+                    past the screen edge on phones. */}
+                <div className="flex flex-wrap items-center gap-4">
                     <motion.div
                         whileHover={{ scale: 1.05 }}
-                        className="w-20 h-20 rounded-full bg-white/20 overflow-hidden flex items-center justify-center"
+                        className="w-20 h-20 shrink-0 rounded-full bg-white/20 overflow-hidden flex items-center justify-center"
                     >
                         {branch.profilePhoto ? (
                             <Image
@@ -93,12 +95,12 @@ export const BranchDetails = ({ branch }: IProps) => {
                         )}
                     </motion.div>
 
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0 basis-40">
                         <motion.h2
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-2xl font-bold"
+                            className="text-2xl font-bold wrap-anywhere"
                         >
                             {businessName}
                         </motion.h2>
@@ -108,7 +110,7 @@ export const BranchDetails = ({ branch }: IProps) => {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.15 }}
-                                className="text-white/80 text-sm"
+                                className="text-white/80 text-sm wrap-anywhere"
                             >
                                 {fullName}
                             </motion.p>
@@ -120,8 +122,8 @@ export const BranchDetails = ({ branch }: IProps) => {
                             transition={{ delay: 0.2 }}
                             className="flex items-center space-x-1 text-white/80 mt-1"
                         >
-                            <Mail className="w-4 h-4" />
-                            <span className="text-sm">{branch.email || "N/A"}</span>
+                            <Mail className="w-4 h-4 shrink-0" />
+                            <span className="text-sm min-w-0 break-all">{branch.email || "N/A"}</span>
                         </motion.div>
 
                         {branch?.contactNumber && (
@@ -131,16 +133,16 @@ export const BranchDetails = ({ branch }: IProps) => {
                                 transition={{ delay: 0.3 }}
                                 className="flex items-center space-x-1 text-white/80"
                             >
-                                <Phone className="w-4 h-4" />
-                                <span className="text-sm">{branch.contactNumber}</span>
+                                <Phone className="w-4 h-4 shrink-0" />
+                                <span className="text-sm min-w-0 break-all">{branch.contactNumber}</span>
                             </motion.div>
                         )}
                     </div>
 
-                    <div className="flex flex-col justify-end items-end gap-1">
+                    <div className="ml-auto flex min-w-0 flex-col justify-end items-end gap-1">
                         <BranchStatusBadge status={branch.status} />
                         {branch?.remarks && (
-                            <p className="hidden md:block text-sm">{branch.remarks}</p>
+                            <p className="hidden md:block text-sm max-w-xs wrap-anywhere">{branch.remarks}</p>
                         )}
                     </div>
                 </div>

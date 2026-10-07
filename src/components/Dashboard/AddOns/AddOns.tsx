@@ -131,9 +131,11 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                 >
                   <CardContent className="p-0">
                     {/* GROUP HEADER */}
-                    <div className="flex items-center justify-between p-5 border-b">
-                      <div>
-                        <h2 className="text-xl font-bold">{group.title?.[lang]}</h2>
+                    {/* Wraps on phones: the two buttons used to push past the
+                        edge at 360px. */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 p-5 border-b">
+                      <div className="min-w-0">
+                        <h2 className="text-xl font-bold wrap-anywhere">{group.title?.[lang]}</h2>
 
                         <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
                           <span>{t("min")}:</span>
@@ -156,7 +158,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         {/* ADD ADDON BUTTON */}
                         <Button
                           variant="outline"
@@ -194,20 +196,22 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                       {group.options.map((option, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between p-4 rounded-2xl border bg-white"
+                          className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl border bg-white"
                           style={{
                             boxShadow:
                               "inset 0px 0px 8px rgba(0,0,0,0.03), 0px 4px 12px rgba(0,0,0,0.04)",
                           }}
                         >
-                          <div className="flex items-center gap-2 text-gray-800">
-                            <Dot size={24} className="text-gray-400" />
-                            <span className="text-base font-medium">
+                          {/* The name keeps at least 8rem; below that the
+                              price and delete move under it. */}
+                          <div className="flex min-w-0 flex-1 basis-32 items-center gap-2 text-gray-800">
+                            <Dot size={24} className="shrink-0 text-gray-400" />
+                            <span className="text-base font-medium wrap-anywhere">
                               {option?.name?.[lang]}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-8">
+                          <div className="ml-auto flex shrink-0 items-center gap-4 sm:gap-8">
                             <div className="flex items-center gap-2">
                               <span className="font-semibold text-gray-900">
                                 €{option.price.toFixed(2)}

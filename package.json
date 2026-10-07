@@ -15,7 +15,8 @@
     "verify:additional-categories": "node --experimental-strip-types --no-warnings scripts/verify-additional-categories.mjs",
     "verify:vat-info": "node --no-warnings scripts/verify-vat-info.mjs",
     "verify:product-image": "node --experimental-strip-types --no-warnings scripts/verify-product-image.mjs",
-    "verify:all-items": "node --experimental-strip-types --no-warnings scripts/verify-all-items.mjs"
+    "verify:all-items": "node --experimental-strip-types --no-warnings scripts/verify-all-items.mjs",
+    "verify:responsive": "node --no-warnings scripts/verify-responsive.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

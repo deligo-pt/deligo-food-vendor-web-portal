@@ -54,9 +54,14 @@ export default function Sidebar({ open, setOpen, vendor }: IProps) {
   return (
     <>
       {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white shadow-md fixed top-0 left-0 w-full z-50">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#DC3173] overflow-hidden shadow-md">
+      {/* Fits from 320px (7 Oct 2026): it was ~406px wide at 360, and with
+          `<main>` clipping overflow the ☰ was cut off, so a small phone had no
+          way into the menu. The left side may shrink (`min-w-0`) and drops the
+          word "DeliGo" below 400px; the icons are compact on phones (see
+          `place="mobile"` in `TopbarIcons`); the ☰ never shrinks. */}
+      <div className="md:hidden flex items-center justify-between gap-2 px-3 min-[400px]:px-4 py-3 bg-white shadow-md fixed top-0 left-0 w-full z-50">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-[#DC3173] overflow-hidden shadow-md">
             <Image
               src="/deligoLogo.png"
               alt="DeliGo Logo"
@@ -66,11 +71,16 @@ export default function Sidebar({ open, setOpen, vendor }: IProps) {
               unoptimized
             />
           </div>
-          <h1 className="font-bold text-xl text-[#DC3173]">DeliGo</h1>
+          <h1 className="hidden min-[400px]:block truncate font-bold text-xl text-[#DC3173]">DeliGo</h1>
         </div>
-        <div className="flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0 relative z-1001">
+        <div className="flex items-center gap-1.5 min-[400px]:gap-2 sm:gap-3 shrink-0 relative z-1001">
           <TopbarIcons vendor={vendor} place="mobile" />
-          <button onClick={() => setMobileOpen(true)}>
+          <button
+            type="button"
+            aria-label="Menu"
+            onClick={() => setMobileOpen(true)}
+            className="shrink-0 rounded-lg p-1 hover:bg-pink-50"
+          >
             <Menu size={24} className="text-gray-700" />
           </button>
         </div>

@@ -80,29 +80,31 @@ export default function StepperFlow() {
       {/* Desktop & Tablet View */}
       <div className="hidden md:block">
         <div className="relative mx-auto max-w-5xl px-6">
-          {/* Line */}
-          <div className="absolute top-1/2 left-0 right-0 h-[3px] -translate-y-1/2 bg-linear-to-r from-[#DC3173]/70 to-[#a72b5c]/70 rounded-full" />
+          {/* Line, through the circles' centres (h-12 / lg:h-16). */}
+          <div className="absolute top-6 lg:top-8 left-0 right-0 h-[3px] -translate-y-1/2 bg-linear-to-r from-[#DC3173]/70 to-[#a72b5c]/70 rounded-full" />
 
-          <ol className="relative flex justify-between items-center gap-y-8">
+          {/* Steps share the width (`flex-1 min-w-0`). Seven `min-w-[120px]`
+              steps needed ~900px, and at 768px the bar was cut off by ~145px. */}
+          <ol className="relative flex justify-between items-start gap-2">
             {steps.map((s, i) => (
               <motion.li
                 key={s.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="flex flex-col items-center text-center w-[18%] min-w-[120px]"
+                className="flex flex-1 min-w-0 flex-col items-center text-center"
               >
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 3 }}
                   transition={{ type: "spring", stiffness: 200 }}
-                  className="flex items-center justify-center w-16 h-16 bg-linear-to-tr from-[#DC3173] to-[#a72b5c] rounded-full text-white shadow-lg shadow-[#DC3173]/30 border border-white/30"
+                  className="flex shrink-0 items-center justify-center w-12 h-12 lg:w-16 lg:h-16 bg-linear-to-tr from-[#DC3173] to-[#a72b5c] rounded-full text-white shadow-lg shadow-[#DC3173]/30 border border-white/30"
                 >
                   <CheckCircle2 className="w-7 h-7" />
                 </motion.div>
-                <span className="mt-3 text-base font-semibold text-[#DC3173]">
+                <span className="mt-3 text-sm lg:text-base font-semibold text-[#DC3173] wrap-break-word">
                   {s.title}
                 </span>
-                <span className="text-xs text-gray-500">{s.subtitle}</span>
+                <span className="text-xs text-gray-500 wrap-break-word">{s.subtitle}</span>
               </motion.li>
             ))}
           </ol>

@@ -32,12 +32,14 @@ export default function StatsCard({
       }}
       className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"
     >
-      <div className="flex items-start justify-between">
-        <div>
+      {/* The value can be a name (the customer report's top spender), so
+          it wraps; the icon keeps its size. */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1 wrap-anywhere">{value}</p>
         </div>
-        <div className="p-3 bg-[#DC3173]/10 rounded-xl text-[#DC3173]">
+        <div className="shrink-0 p-3 bg-[#DC3173]/10 rounded-xl text-[#DC3173]">
           <Icon size={22} />
         </div>
       </div>

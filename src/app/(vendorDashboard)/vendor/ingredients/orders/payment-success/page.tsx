@@ -12,7 +12,7 @@ export default async function PaymentSuccessPage({
   if (!orderId || !token) {
     return (
       <div className="p-4 text-center h-full flex items-center justify-center">
-        <div className="p-6 bg-white rounded-md shadow-lg md:min-h-[300px] md:min-w-[600px] flex flex-col items-center justify-center">
+        <div className="p-6 bg-white rounded-md shadow-lg w-full max-w-[600px] md:min-h-[300px] flex flex-col items-center justify-center">
           Invalid payment confirmation details.
           <div className="text-center mt-1">
             <Link
@@ -35,7 +35,7 @@ export default async function PaymentSuccessPage({
   if (!result?.success) {
     return (
       <div className="p-4 text-center h-full flex items-center justify-center">
-        <div className="p-6 bg-white rounded-md shadow-lg md:min-h-[300px] md:min-w-[600px] flex flex-col items-center justify-center">
+        <div className="p-6 bg-white rounded-md shadow-lg w-full max-w-[600px] md:min-h-[300px] flex flex-col items-center justify-center">
           {result?.message || "Payment confirmation failed. Please try again."}
           <div className="text-center mt-1">
             <Link

@@ -252,7 +252,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                     />
 
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="text-sm font-semibold tracking-tight">
+                                        <h3 className="text-sm font-semibold tracking-tight wrap-anywhere">
                                             {category
                                                 ? getLocalizedName(category.name)
                                                 : t('uncategorized')}
@@ -351,7 +351,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                                         {product.variations.map((variation, vIdx) => (
                                                             <div key={vIdx} className="space-y-1">
                                                                 {/* Variation group name */}
-                                                                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide pl-5">
+                                                                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide pl-5 wrap-anywhere">
                                                                     {getLocalizedName(variation.name)}
                                                                 </p>
 

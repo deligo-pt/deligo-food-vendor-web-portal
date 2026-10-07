@@ -38,8 +38,9 @@ export default function TaxReport({ taxReportData }: IProps) {
         subtitle={t("detailed_tax_breakdown_for_products_addons")}
       />
 
-      {/* Summary Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Summary Dashboard. Three columns only from `lg`: beside the sidebar a
+          768px tablet leaves ~460px, and the third card's icon passed the edge. */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <StatsCard
           title={t("gross_sales")}
           value={`€${formatPrice(taxReportData.stats.totalSales)}`}
@@ -75,13 +76,13 @@ export default function TaxReport({ taxReportData }: IProps) {
           transition={{
             delay: 0.4,
           }}
-          className="bg-white rounded-2xl border border-gray-100 p-5 shadow-md"
+          className="min-w-0 bg-white rounded-2xl border border-gray-100 p-5 shadow-md"
         >
           <div className="flex items-center gap-2 mb-4">
-            <div className="p-2 bg-green-100 text-green-600 rounded-lg">
+            <div className="p-2 shrink-0 bg-green-100 text-green-600 rounded-lg">
               <TrendingUp size={18} />
             </div>
-            <h3 className="text-sm font-medium text-gray-500">
+            <h3 className="min-w-0 text-sm font-medium text-gray-500 wrap-break-word">
               {t("tax_contribution")}
             </h3>
           </div>
@@ -116,21 +117,21 @@ export default function TaxReport({ taxReportData }: IProps) {
           transition={{
             delay: 0.3,
           }}
-          className="bg-white rounded-2xl border border-gray-100 p-5 shadow-md col-span-2"
+          className="min-w-0 bg-white rounded-2xl border border-gray-100 p-5 shadow-md lg:col-span-2"
         >
           <div className="flex items-center gap-2 mb-4">
-            <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+            <div className="p-2 shrink-0 bg-purple-100 text-purple-600 rounded-lg">
               <PieChart size={18} />
             </div>
-            <h3 className="text-sm font-medium text-gray-500">
+            <h3 className="min-w-0 text-sm font-medium text-gray-500 wrap-break-word">
               {t("tax_by_category")}
             </h3>
           </div>
           <div className="space-y-3">
             {taxReportData.taxByCategory?.map((tax, i) => (
               <div key={i}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="font-medium text-gray-600">
+                <div className="flex justify-between gap-2 text-xs mb-1">
+                  <span className="min-w-0 font-medium text-gray-600 wrap-anywhere">
                     {tax.name} {t("tax")}
                   </span>
                   <span className="font-bold text-gray-900">
@@ -163,7 +164,7 @@ export default function TaxReport({ taxReportData }: IProps) {
           transition={{
             delay: 0.5,
           }}
-          className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-md p-6"
+          className="min-w-0 lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-md p-6"
         >
           <h3 className="text-lg font-bold text-gray-900 mb-6">
             {t("revenue_vs_tax_over_time")}
@@ -231,7 +232,7 @@ export default function TaxReport({ taxReportData }: IProps) {
           transition={{
             delay: 0.6,
           }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-md p-6"
+          className="min-w-0 bg-white rounded-2xl border border-gray-100 shadow-md p-6"
         >
           <h3 className="text-lg font-bold text-gray-900 mb-6">
             {t("top_tax_generating_addons")}
