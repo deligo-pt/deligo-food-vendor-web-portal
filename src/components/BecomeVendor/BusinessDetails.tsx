@@ -43,10 +43,19 @@ import {
   MapPin,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { ClosingDaysInfo } from "./ClosingDaysInfo";
 import { CuisineMultiSelect } from "./CuisineMultiSelect";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface IProps {
   onNext?: () => void;
@@ -56,6 +65,13 @@ interface IProps {
 }
 
 type BusinessForm = z.infer<ReturnType<typeof businessDetailsValidation>>;
+
+/**
+ * At most two closing days (7 Oct 2026): vendors were picking many without
+ * knowing what a closing day is. A third pick opens a pop-up instead; the form
+ * check holds the same limit for anything already saved.
+ */
+const MAX_CLOSING_DAYS = 2;
 
 const daysOfWeek = [
   "Sunday",
@@ -74,6 +90,7 @@ export default function BusinessDetailsForm({
   vendor,
 }: IProps) {
   const { t } = useTranslation();
+  const [showDaysLimit, setShowDaysLimit] = useState(false);
   const router = useRouter();
   const isSubVendor = vendor?.role === "SUB_VENDOR";
   const form = useForm<BusinessForm>({
@@ -502,24 +519,30 @@ export default function BusinessDetailsForm({
                 <FormField
                   control={form.control}
                   name="closingDays"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="mt-5">
-                        <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                        <div className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                           <CalendarX2 className="w-4 h-4 text-[#DC3173]" />
                           {t("closingDays")}
-                        </label>
+                          <ClosingDaysInfo />
+                        </div>
                         <div className="flex flex-wrap gap-2">
                           {daysOfWeek.map((day) => (
                             <motion.button
                               key={day}
                               type="button"
                               onClick={() => {
-                                field.onChange(
-                                  field.value?.includes(day)
-                                    ? field.value.filter((d) => d !== day)
-                                    : [...(field.value || []), day]
-                                );
+                                const selected = field.value || [];
+                                if (selected.includes(day)) {
+                                  field.onChange(selected.filter((d) => d !== day));
+                                  return;
+                                }
+                                if (selected.length >= MAX_CLOSING_DAYS) {
+                                  setShowDaysLimit(true);
+                                  return;
+                                }
+                                field.onChange([...selected, day]);
                               }}
                               whileTap={{ scale: 0.95 }}
                               className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${field.value?.includes(day)
@@ -532,7 +555,12 @@ export default function BusinessDetailsForm({
                           ))}
                         </div>
                       </div>
-                      <FormMessage />
+                      {/* The message is a translation key (see the validation). */}
+                      {fieldState.error?.message && (
+                        <p className="text-sm font-medium text-destructive">
+                          {t(fieldState.error.message)}
+                        </p>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -553,6 +581,36 @@ export default function BusinessDetailsForm({
           </Form>
         </CardContent>
       </Card>
+
+      {/* A third closing day: say why it can't be added. */}
+      <Dialog open={showDaysLimit} onOpenChange={setShowDaysLimit}>
+        <DialogContent
+          showCloseButton={false}
+          className="sm:max-w-md gap-0 overflow-hidden rounded-2xl border-0 p-0 shadow-2xl"
+        >
+          <div className="h-1.5 bg-linear-to-r from-[#DC3173] to-[#FF6CAB]" />
+          <div className="flex flex-col items-center px-6 pt-7 pb-6 text-center sm:px-8">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#DC3173]/10 ring-8 ring-[#DC3173]/5">
+              <CalendarX2 className="h-7 w-7 text-[#DC3173]" />
+            </div>
+            <DialogTitle className="mt-5 text-lg font-bold text-slate-900">
+              {t("closing_days_limit_title")}
+            </DialogTitle>
+            <DialogDescription className="mt-2 text-sm leading-relaxed text-slate-600">
+              {t("closing_days_limit_body")}
+            </DialogDescription>
+          </div>
+          <DialogFooter className="border-t border-slate-100 bg-slate-50/70 px-6 py-4 sm:justify-center sm:px-8">
+            <Button
+              type="button"
+              onClick={() => setShowDaysLimit(false)}
+              className="h-11 w-full bg-[#DC3173] font-semibold text-white shadow-md shadow-[#DC3173]/25 hover:bg-[#c22b65] sm:w-auto sm:min-w-40"
+            >
+              {t("closing_days_limit_ok")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

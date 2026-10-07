@@ -661,6 +661,11 @@ export const en = {
   openingTime: "Opening Time",
   closingTime: "Closing Time",
   closingDays: "Closing Days",
+  closing_days_info_label: "What are closing days?",
+  closing_days_info: "Closing days are the days of the week your restaurant is closed every week, for example Sunday. Customers can't order from you on these days. Choose up to 2 days, or none if you're open every day.",
+  closing_days_limit_title: "Closing days limit",
+  closing_days_limit_body: "You can choose a maximum of 2 closing days. To choose a different day, first remove one of the days you've already selected.",
+  closing_days_limit_ok: "Got it",
   // days of week
   sunday: "Sunday",
   monday: "Monday",

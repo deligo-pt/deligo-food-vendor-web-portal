@@ -51,9 +51,11 @@ export const businessDetailsValidation = (isSubVendor = false) =>
 
       closingHours: z.string().nonempty("Closing hours is required"),
 
+      // At most two (7 Oct 2026). The message is a translation key: the form
+      // shows it through `t()`.
       closingDays: z
         .array(z.string())
-        .max(7, "Closing days must be at most 7")
+        .max(2, "closing_days_limit_body")
         .optional(),
     })
     .refine(
