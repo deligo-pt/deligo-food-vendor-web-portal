@@ -84,8 +84,8 @@ export default function CustomerReviews({
         </CardContent>
       </Card>
 
-      {/* FILTER */}
-      <div className="flex gap-3">
+      {/* FILTER. Wraps: in PT the four buttons are ~400px. */}
+      <div className="flex flex-wrap gap-2 sm:gap-3">
         <Button
           variant={sentimentParam === "ALL" ? "default" : "outline"}
           onClick={() => filterReviews("ALL")}
@@ -128,17 +128,17 @@ export default function CustomerReviews({
               transition={{ type: "spring", stiffness: 160, damping: 18 }}
             >
               <Card className="rounded-3xl bg-white border shadow-sm hover:shadow-lg transition-all">
-                <CardContent className="p-6 flex gap-5">
+                <CardContent className="p-4 sm:p-6 flex gap-3 sm:gap-5">
                   {/* Avatar */}
-                  <div className="w-14 h-14 rounded-2xl bg-pink-100 flex items-center justify-center text-xl font-bold text-pink-600">
+                  <div className="w-14 h-14 shrink-0 rounded-2xl bg-pink-100 flex items-center justify-center text-xl font-bold text-pink-600">
                     {rev.reviewerId?.name?.firstName?.charAt(0)}
                     {rev.reviewerId?.name?.lastName?.charAt(0)}
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-gray-800">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center justify-between gap-x-3">
+                      <h3 className="text-lg font-bold text-gray-800 min-w-0 wrap-anywhere">
                         {rev.reviewerId?.name?.firstName}{" "}
                         {rev.reviewerId?.name?.lastName}
                       </h3>
@@ -166,7 +166,7 @@ export default function CustomerReviews({
                     </div>
 
                     {/* Review text */}
-                    <p className="mt-2 text-gray-700 text-sm leading-relaxed">
+                    <p className="mt-2 text-gray-700 text-sm leading-relaxed wrap-anywhere">
                       {rev.review}
                     </p>
 

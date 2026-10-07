@@ -121,22 +121,32 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
             >
               <CardContent className="px-6 py-3">
                 <div className="flex flex-col md:flex-row justify-between gap-6">
-                  {/* LEFT */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600">
+                  {/* LEFT. `min-w-0` all the way down so a long title or code
+                      wraps or truncates instead of pushing the card (and the
+                      usage column) past the screen edge. */}
+                  <div className="flex items-start gap-4 min-w-0 md:flex-1">
+                    <div className="w-16 h-16 shrink-0 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600">
                       {offer.offerType === "PERCENT" && <Percent size={28} />}
                       {offer.offerType === "BOGO" && <Tag size={28} />}
                       {offer.offerType === "FLAT" && <Flame size={28} />}
                     </div>
 
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-800">
+                    <div className="min-w-0">
+                      <h2 className="text-2xl font-bold text-gray-800 wrap-anywhere">
                         {offer.title?.[lang]}
                       </h2>
 
-                      <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
-                        <Badge variant="outline">
-                          {t("code")}: {offer.code || "N/A"}
+                      <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-600 min-w-0">
+                        {/* `badge.tsx` never shrinks, so this one is capped
+                            here and truncates; the tooltip has the full code. */}
+                        <Badge
+                          variant="outline"
+                          className="max-w-full min-w-0"
+                          title={`${t("code")}: ${offer.code || "N/A"}`}
+                        >
+                          <span className="min-w-0 truncate">
+                            {t("code")}: {offer.code || "N/A"}
+                          </span>
                         </Badge>
                       </div>
 
@@ -155,7 +165,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                   </div>
 
                   {/* RIGHT */}
-                  <div className="text-right md:min-w-[200px]">
+                  <div className="text-right md:min-w-[200px] md:shrink-0">
                     <p className="text-sm text-gray-500">{t("total_used")}</p>
                     <p className="text-3xl font-bold text-gray-900">
                       {offer.usageCount}

@@ -14,6 +14,12 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/src/components/ui/avatar";
+import {
+  MobileRowCard,
+  MobileRowCards,
+  MobileRowEmpty,
+  TABLE_FROM,
+} from "@/src/components/MobileRowCard/MobileRowCard";
 import { getOrderStatusLabel } from "@/src/consts/order.const";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TOrder } from "@/src/types/order.type";
@@ -64,12 +70,80 @@ export default function OrderTable({ orders }: IProps) {
     return `${start} - ${end}`;
   };
 
+  const customerName = (order: TOrder) =>
+    `${order.customerId?.name?.firstName || "N/A"} ${order.customerId?.name?.lastName || ""}`.trim();
+
+  const orderAmount = (order: TOrder) =>
+    formatPrice(
+      (order?.payoutSummary?.vendor?.vendorNetPayout || 0) +
+      (order?.payoutSummary?.deliGoCommission?.totalDeduction || 0),
+    );
+
+  const openOrder = (order: TOrder) =>
+    router.push(`/vendor/all-orders/${order.orderId}`);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white shadow-md rounded-2xl p-4 md:p-6 mb-2 overflow-x-auto"
     >
+      {/* Phones and tablets: a card per order (the table's cells never wrap). */}
+      <MobileRowCards until="xl">
+        {orders?.length === 0 && (
+          <MobileRowEmpty>{t("no_orders_found")}</MobileRowEmpty>
+        )}
+        {orders?.map((order) => (
+          <MobileRowCard
+            key={order._id}
+            leading={
+              <Avatar>
+                <AvatarImage src={order.customerId?.profilePhoto} />
+                <AvatarFallback>
+                  {order.customerId?.name?.firstName?.charAt(0) || "N"}
+                  {order.customerId?.name?.lastName?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            }
+            title={customerName(order)}
+            subtitle={
+              order.deliveryAddress &&
+              `${order.deliveryAddress.street}, ${order.deliveryAddress.city}`
+            }
+            fields={[
+              { label: t("order_id"), value: order.orderId },
+              {
+                label: t("items"),
+                value: order.items
+                  ?.map((i) => `${i.name} x ${i.itemSummary?.quantity}`)
+                  .join(", "),
+              },
+              { label: t("amount"), value: `€${orderAmount(order)}` },
+              {
+                label: t("date"),
+                value: format(new Date(order.createdAt), "dd-MM-yyyy"),
+              },
+              { label: t("hour"), value: formatPickupHour(order) },
+              {
+                label: t("status"),
+                value: getOrderStatusLabel(order?.orderStatus),
+              },
+            ]}
+            actions={
+              <Button
+                onClick={() => openOrder(order)}
+                size="sm"
+                className="bg-[#DC3173] flex items-center gap-2 hover:bg-[#DC3173]/90"
+              >
+                <EyeIcon />
+                {t("view")}
+              </Button>
+            }
+          />
+        ))}
+      </MobileRowCards>
+
+      <div className={TABLE_FROM.xl}>
       <Table className="max-w-full">
         <TableHeader>
           <TableRow>
@@ -118,9 +192,11 @@ export default function OrderTable({ orders }: IProps) {
                 {t("status")}
               </div>
             </TableHead>
-            <TableHead className="text-right text-[#DC3173] flex gap-2 items-center justify-end">
-              <Cog className="w-4" />
-              {t("actions")}
+            <TableHead className="text-right">
+              <div className="text-[#DC3173] flex gap-2 items-center justify-end">
+                <Cog className="w-4" />
+                {t("actions")}
+              </div>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -141,7 +217,7 @@ export default function OrderTable({ orders }: IProps) {
             <TableRow key={order._id}>
               <TableCell>{order.orderId}</TableCell>
 
-              <TableCell>
+              <TableCell className="whitespace-normal min-w-[9rem]">
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarImage src={order.customerId?.profilePhoto} />
@@ -150,7 +226,7 @@ export default function OrderTable({ orders }: IProps) {
                       {order.customerId?.name?.lastName?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="min-w-0 wrap-anywhere">
                     <div className="font-medium">
                       {order.customerId?.name?.firstName || "N/A"}{" "}
                       {order.customerId?.name?.lastName}
@@ -165,7 +241,7 @@ export default function OrderTable({ orders }: IProps) {
                 </div>
               </TableCell>
 
-              <TableCell>
+              <TableCell className="whitespace-normal wrap-anywhere min-w-[8rem]">
                 {order.items?.map((i, index) => (
                   <span key={index}>
                     {i.name} x {i.itemSummary?.quantity}
@@ -174,11 +250,7 @@ export default function OrderTable({ orders }: IProps) {
               </TableCell>
 
               <TableCell>
-                €
-                {formatPrice(
-                  (order?.payoutSummary?.vendor?.vendorNetPayout || 0) +
-                  (order?.payoutSummary?.deliGoCommission?.totalDeduction || 0),
-                )}
+                €{orderAmount(order)}
               </TableCell>
 
               <TableCell>
@@ -186,17 +258,17 @@ export default function OrderTable({ orders }: IProps) {
               </TableCell>
 
               {/* NEW Hour cell – only meaningful for PICKUP */}
-              <TableCell>
+              <TableCell className="whitespace-normal min-w-[5.5rem]">
                 {formatPickupHour(order)}
               </TableCell>
 
-              <TableCell>{getOrderStatusLabel(order?.orderStatus)}</TableCell>
+              <TableCell className="whitespace-normal min-w-[6rem]">
+                {getOrderStatusLabel(order?.orderStatus)}
+              </TableCell>
 
               <TableCell className="text-right">
                 <Button
-                  onClick={() =>
-                    router.push(`/vendor/all-orders/${order.orderId}`)
-                  }
+                  onClick={() => openOrder(order)}
                   size="sm"
                   className="bg-[#DC3173] flex items-center gap-2 hover:bg-[#DC3173]/90 ml-auto"
                 >
@@ -208,6 +280,7 @@ export default function OrderTable({ orders }: IProps) {
           ))}
         </TableBody>
       </Table>
+      </div>
     </motion.div>
   );
 }

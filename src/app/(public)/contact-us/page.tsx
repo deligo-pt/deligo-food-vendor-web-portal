@@ -54,7 +54,9 @@ export default function ContactUsPremium() {
     }
   };
   return (
-    <section className="py-24 px-6 sm:px-10 lg:px-20 bg-gray-900">
+    // `overflow-x-clip`: the map slides in from the right, and until it's in
+    // view that offset stuck out past the edge (page swiped sideways).
+    <section className="py-24 px-6 sm:px-10 lg:px-20 bg-gray-900 overflow-x-clip">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Left: Form */}
         <motion.div
@@ -169,7 +171,7 @@ export default function ContactUsPremium() {
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="rounded-3xl overflow-hidden shadow-2xl"
+          className="w-full max-w-full min-w-0 rounded-3xl overflow-hidden shadow-2xl"
         >
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3036.123456789!2d-9.139337184593682!3d38.73694697958517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd19331cd8eab1a7%3A0x123456789abcdef!2sLisbon%2C%20Portugal!5e0!3m2!1sen!2s!4v1690000000000!5m2!1sen!2s"

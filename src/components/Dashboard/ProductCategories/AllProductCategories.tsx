@@ -120,10 +120,12 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                             boxShadow: "0px 4px 20px rgba(0,0,0,0.06)",
                         }}
                     >
-                        <CardContent className="p-0 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
+                        {/* The name takes what's left (at least 12rem); below that
+                            the actions wrap under it instead of past the edge. */}
+                        <CardContent className="p-0 flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex min-w-0 flex-1 basis-48 items-center gap-4">
                                 <div
-                                    className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                                    className="w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center"
                                     style={{
                                         background: icons[(i % 6) as keyof typeof icons]?.color,
                                         boxShadow: "inset 0px 0px 6px rgba(0,0,0,0.05)",
@@ -132,8 +134,8 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                                     {icons[(i % 6) as keyof typeof icons]?.icon}
                                 </div>
 
-                                <div>
-                                    <div className="text-xl font-semibold">{cat?.name?.[lang]}</div>
+                                <div className="min-w-0">
+                                    <div className="text-xl font-semibold wrap-anywhere">{cat?.name?.[lang]}</div>
                                     <div
                                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${cat?.isActive
                                             ? "bg-green-100 text-green-800"
@@ -146,7 +148,7 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                             </div>
 
                             {/* RIGHT ACTION CONTROLS */}
-                            <div className="flex items-center gap-3">
+                            <div className="ml-auto flex shrink-0 items-center gap-3">
                                 {/* View Action */}
                                 <button
                                     onClick={() => router.push(`/vendor/product-categories/${cat._id}`)}

@@ -71,7 +71,7 @@ export default function LiveChatPage() {
               className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[70%] p-4 rounded-2xl ${
+                className={`max-w-[70%] p-4 rounded-2xl wrap-anywhere ${
                   msg.type === "user"
                     ? "bg-pink-500 text-white rounded-br-none"
                     : "bg-gray-700 text-white rounded-bl-none"

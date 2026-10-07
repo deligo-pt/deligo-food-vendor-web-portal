@@ -132,7 +132,9 @@ export default function SecurityPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-6 max-w-6xl mx-auto">
+      {/* `overflow-x-clip`: the cards slide in from the sides, and until they're
+          in view that offset stuck out past the edge (page swiped sideways). */}
+      <section className="py-20 px-6 max-w-6xl mx-auto overflow-x-clip">
         <h2 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-12">
           {t("securityFeatures")}
         </h2>
@@ -150,10 +152,10 @@ export default function SecurityPage() {
                   initial={{ x: -50, opacity: 0 }}
                   whileInView={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.6, delay: idx * 0.2 }}
-                  className="bg-gray-800 p-6 rounded-3xl flex items-start gap-4 hover:shadow-xl transition cursor-pointer"
+                  className="bg-gray-800 p-4 sm:p-6 rounded-3xl flex items-start gap-4 hover:shadow-xl transition cursor-pointer"
                 >
-                  {feature.icon}
-                  <div>
+                  <div className="shrink-0">{feature.icon}</div>
+                  <div className="min-w-0 wrap-break-word">
                     <h4 className="text-lg font-bold">{feature.title}</h4>
                     <p className="text-gray-300">{feature.description}</p>
                   </div>
@@ -174,10 +176,10 @@ export default function SecurityPage() {
                   initial={{ x: 50, opacity: 0 }}
                   whileInView={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.6, delay: idx * 0.2 }}
-                  className="bg-gray-800 p-6 rounded-3xl flex items-start gap-4 hover:shadow-xl transition cursor-pointer"
+                  className="bg-gray-800 p-4 sm:p-6 rounded-3xl flex items-start gap-4 hover:shadow-xl transition cursor-pointer"
                 >
-                  {feature.icon}
-                  <div>
+                  <div className="shrink-0">{feature.icon}</div>
+                  <div className="min-w-0 wrap-break-word">
                     <h4 className="text-lg font-bold">{feature.title}</h4>
                     <p className="text-gray-300">{feature.description}</p>
                   </div>

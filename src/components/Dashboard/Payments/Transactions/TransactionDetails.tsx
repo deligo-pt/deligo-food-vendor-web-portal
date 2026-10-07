@@ -157,9 +157,9 @@ export default function TransactionDetails() {
         className="bg-white rounded-3xl border border-gray-200 shadow-sm p-8"
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
+          <div className="flex min-w-0 items-center gap-5">
             <div
-              className={`w-16 h-16 rounded-2xl flex items-center justify-center ${transaction.positive ? "bg-green-50" : "bg-red-50"}`}
+              className={`w-16 h-16 shrink-0 rounded-2xl flex items-center justify-center ${transaction.positive ? "bg-green-50" : "bg-red-50"}`}
             >
               {transaction.positive ? (
                 <ArrowUpRightIcon className="w-8 h-8 text-green-500" />
@@ -167,18 +167,18 @@ export default function TransactionDetails() {
                 <ArrowDownLeftIcon className="w-8 h-8 text-red-500" />
               )}
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span
                   className={`text-xs font-semibold px-2.5 py-1 rounded-full ${config.bg} ${config.text}`}
                 >
                   {config.label}
                 </span>
-                <span className="text-gray-400 text-xs font-mono">
+                <span className="text-gray-400 text-xs font-mono break-all">
                   ID: {transaction.transactionId}
                 </span>
               </div>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-xl font-bold text-gray-900 wrap-anywhere">
                 {transaction.description}
               </p>
               <p className="text-gray-400 text-sm mt-0.5">
@@ -235,13 +235,13 @@ export default function TransactionDetails() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="flex justify-between items-start py-2 border-b border-gray-50 last:border-0 gap-4"
+                className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-start sm:gap-4 py-2 border-b border-gray-50 last:border-0"
               >
-                <span className="text-xs text-gray-400 uppercase tracking-wide font-semibold flex-shrink-0">
+                <span className="text-xs text-gray-400 uppercase tracking-wide font-semibold sm:max-w-[45%]">
                   {item.label}
                 </span>
                 <span
-                  className={`text-sm text-gray-900 font-medium text-right ${item.mono ? "font-mono" : ""}`}
+                  className={`min-w-0 text-sm text-gray-900 font-medium sm:text-right ${item.mono ? "font-mono break-all" : "wrap-anywhere"}`}
                 >
                   {item.value}
                 </span>
@@ -260,11 +260,11 @@ export default function TransactionDetails() {
             Customer
           </h3>
           <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl mb-4">
-            <div className="w-12 h-12 bg-[#DC3173]/10 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 shrink-0 bg-[#DC3173]/10 rounded-full flex items-center justify-center">
               <UserIcon className="w-6 h-6 text-[#DC3173]" />
             </div>
-            <div>
-              <p className="font-bold text-gray-900">{transaction.customer}</p>
+            <div className="min-w-0">
+              <p className="font-bold text-gray-900 wrap-anywhere">{transaction.customer}</p>
               <p className="text-sm text-gray-400">
                 {transaction.customerOrders} previous orders
               </p>
@@ -283,12 +283,12 @@ export default function TransactionDetails() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0"
+                className="flex justify-between items-center gap-4 py-2 border-b border-gray-50 last:border-0"
               >
                 <span className="text-xs text-gray-400 uppercase tracking-wide font-semibold">
                   {item.label}
                 </span>
-                <span className="text-sm text-gray-900 font-medium">
+                <span className="min-w-0 text-right text-sm text-gray-900 font-medium wrap-anywhere">
                   {item.value}
                 </span>
               </div>
@@ -310,17 +310,17 @@ export default function TransactionDetails() {
           {transaction.items?.map((item, i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
+              className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-xl"
             >
-              <div className="flex items-center gap-3">
-                <span className="w-6 h-6 bg-[#DC3173]/10 text-[#DC3173] rounded-lg flex items-center justify-center text-xs font-bold">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="w-6 h-6 shrink-0 bg-[#DC3173]/10 text-[#DC3173] rounded-lg flex items-center justify-center text-xs font-bold">
                   {item.qty}
                 </span>
-                <span className="text-sm font-medium text-gray-900">
+                <span className="min-w-0 text-sm font-medium text-gray-900 wrap-anywhere">
                   {item.name}
                 </span>
               </div>
-              <span className="text-sm font-bold text-gray-900">
+              <span className="shrink-0 text-sm font-bold text-gray-900">
                 €{item.price}
               </span>
             </div>

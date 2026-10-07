@@ -5,6 +5,13 @@ import React, { useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
     Select,
@@ -17,7 +24,7 @@ import SignatureCanvas from "react-signature-canvas";
 // import { signAgreementReq } from "@/services/agreement.service";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ArrowLeftCircle, CheckCircle2 } from "lucide-react";
+import { ArrowLeftCircle, CheckCircle2, CreditCard } from "lucide-react";
 
 import { useTranslation } from "@/src/hooks/use-translation";
 import { uploadImagesReq } from "@/src/services/upload/upload.service";
@@ -58,6 +65,10 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
 
     const [posPaymentOption, setPosPaymentOption] =
         useState<PosPaymentOption | null>(null);
+    // The payment option stays optional, but at registration a vendor who
+    // signs without one is asked once more (7 Oct 2026): "Yes, continue" signs
+    // without it, "No" goes back to the page to pick one.
+    const [askPaymentOption, setAskPaymentOption] = useState(false);
 
     const [signedPdfUrl, setSignedPdfUrl] = useState<string | null>(
         agreement?.signedPdfPath || null
@@ -253,6 +264,19 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
         setIsSubmitting(false);
     };
 
+    const handleSignClick = () => {
+        if (type === "new" && !posPaymentOption) {
+            setAskPaymentOption(true);
+            return;
+        }
+        handleSubmit();
+    };
+
+    const continueWithoutPaymentOption = () => {
+        setAskPaymentOption(false);
+        handleSubmit();
+    };
+
     const isSubmitDisabled =
         isPartyEmpty ||
         // !posPaymentOption ||
@@ -420,7 +444,7 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
                             {/* Submit */}
                             <div className="w-full border-t border-slate-100 pt-4 flex flex-col items-center">
                                 <Button
-                                    onClick={handleSubmit}
+                                    onClick={handleSignClick}
                                     disabled={isSubmitDisabled}
                                     className="bg-[#DC3173] hover:bg-[#c22b65] text-white px-8 py-5 font-bold"
                                 >
@@ -436,6 +460,42 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
                     )}
                 </Card>
             </div>
+
+            {/* Signing without a payment option: encourage, don't require. */}
+            <Dialog open={askPaymentOption} onOpenChange={setAskPaymentOption}>
+                <DialogContent
+                    showCloseButton={false}
+                    className="sm:max-w-md gap-0 overflow-hidden rounded-2xl border-0 p-0 shadow-2xl"
+                >
+                    <div className="h-1.5 bg-linear-to-r from-[#DC3173] to-[#FF6CAB]" />
+                    <div className="flex flex-col items-center px-6 pt-7 pb-6 text-center sm:px-8">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#DC3173]/10 ring-8 ring-[#DC3173]/5">
+                            <CreditCard className="h-7 w-7 text-[#DC3173]" />
+                        </div>
+                        <DialogTitle className="mt-5 text-lg font-bold text-slate-900">
+                            {t("payment_option")}
+                        </DialogTitle>
+                        <DialogDescription className="mt-2 text-sm leading-relaxed text-slate-600">
+                            {t("payment_option_prompt")}
+                        </DialogDescription>
+                    </div>
+                    <DialogFooter className="flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50/70 px-6 py-4 sm:flex-row sm:justify-center sm:gap-3 sm:px-8">
+                        <Button
+                            variant="outline"
+                            onClick={() => setAskPaymentOption(false)}
+                            className="h-11 w-full border-slate-200 font-semibold text-slate-700 hover:bg-white sm:w-auto sm:min-w-32"
+                        >
+                            {t("payment_option_prompt_no")}
+                        </Button>
+                        <Button
+                            onClick={continueWithoutPaymentOption}
+                            className="h-11 w-full bg-[#DC3173] font-semibold text-white shadow-md shadow-[#DC3173]/25 hover:bg-[#c22b65] sm:w-auto sm:min-w-40"
+                        >
+                            {t("payment_option_prompt_yes")}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Full-screen success modal + confetti */}
             <AnimatePresence>

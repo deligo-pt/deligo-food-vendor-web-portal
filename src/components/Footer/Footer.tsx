@@ -121,7 +121,7 @@ export default function FooterDeligoPremium() {
           <h3 className="text-lg font-bold mb-3 text-[#DC3173]">
             {t("footerConnect")}
           </h3>
-          <div className="flex gap-5 items-center">
+          <div className="flex flex-wrap gap-5 items-center">
             {socials.map((s, i) => (
               <motion.a
                 key={i}

@@ -14,6 +14,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
+import {
+  MobileRowCard,
+  MobileRowCards,
+  MobileRowEmpty,
+  TABLE_FROM,
+} from "@/src/components/MobileRowCard/MobileRowCard";
 import { TTransaction } from "@/src/types/transaction.type";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -36,12 +42,50 @@ interface IProps {
 export default function TransactionTable({ transactions, t }: IProps) {
   const router = useRouter();
 
+  const rowMenu = (p: TTransaction) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger aria-label={t("actions")}>
+        <MoreVertical className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem
+          onClick={() =>
+            router.push(`/vendor/transactions/${p.transactionId}`)
+          }
+        >
+          {t("view")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white shadow-md rounded-2xl p-4 md:p-6 mb-2 overflow-x-auto print:border border-[#DC3173]/30"
     >
+      {/* Phones and tablets: a card per transaction (the table's cells never wrap). */}
+      <MobileRowCards until="xl">
+        {transactions?.length === 0 && (
+          <MobileRowEmpty>{t("no_transactions_found")}</MobileRowEmpty>
+        )}
+        {transactions?.map((p) => (
+          <MobileRowCard
+            key={p._id}
+            title={p.description}
+            subtitle={p.transactionId}
+            aside={rowMenu(p)}
+            fields={[
+              { label: t("type"), value: <span className="capitalize">{p.type}</span> },
+              { label: t("amount"), value: `€${p.amount}` },
+              { label: t("date"), value: format(p.createdAt, "do MMM yyyy") },
+            ]}
+          />
+        ))}
+      </MobileRowCards>
+
+      <div className={TABLE_FROM.xl}>
       <Table className="max-w-full">
         <TableHeader>
           <TableRow>
@@ -75,9 +119,11 @@ export default function TransactionTable({ transactions, t }: IProps) {
                 {t("date")}
               </div>
             </TableHead>
-            <TableHead className="text-right text-[#DC3173] flex gap-2 items-center justify-end print:hidden">
-              <Cog className="w-4" />
-              {t("actions")}
+            <TableHead className="text-right print:hidden">
+              <div className="text-[#DC3173] flex gap-2 items-center justify-end">
+                <Cog className="w-4" />
+                {t("actions")}
+              </div>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -95,30 +141,18 @@ export default function TransactionTable({ transactions, t }: IProps) {
           {transactions?.map((p) => (
             <TableRow key={p._id}>
               <TableCell>{p.transactionId}</TableCell>
-              <TableCell>{p.description}</TableCell>
+              <TableCell className="whitespace-normal wrap-anywhere min-w-[12rem]">{p.description}</TableCell>
               <TableCell className="capitalize">{p.type}</TableCell>
               <TableCell>€{p.amount}</TableCell>
               <TableCell>{format(p.createdAt, "do MMM yyyy")}</TableCell>
               <TableCell className="text-right print:hidden">
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <MoreVertical className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        router.push(`/vendor/transactions/${p.transactionId}`)
-                      }
-                    >
-                      {t("view")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {rowMenu(p)}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      </div>
     </motion.div>
   );
 }

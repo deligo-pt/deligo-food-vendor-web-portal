@@ -77,7 +77,8 @@ export default function AboutUsPage() {
       </section>
 
       {/* OUR STORY */}
-      <section className="py-20 px-6">
+      {/* `overflow-x-clip`: the image slides in from the right (see OUR VISION). */}
+      <section className="py-20 px-6 overflow-x-clip">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
@@ -143,8 +144,11 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-      {/* OUR VISION */}
-      <section className="py-24 px-6 bg-linear-to-b from-gray-950 via-gray-900 to-black">
+      {/* OUR VISION. `overflow-x-clip`: the image and text slide in from the
+          side, and until they're in view that offset stuck out past the edge,
+          so the page could be swiped sideways. `clip` makes no scroll box, so
+          the animation still plays. */}
+      <section className="py-24 px-6 overflow-x-clip bg-linear-to-b from-gray-950 via-gray-900 to-black">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <motion.img
             initial={{ opacity: 0, x: -40 }}
@@ -152,13 +156,13 @@ export default function AboutUsPage() {
             transition={{ duration: 0.8 }}
             src="/deligoabout.jpeg"
             alt="Future of Delivery"
-            className="rounded-3xl shadow-2xl order-2 md:order-1"
+            className="w-full rounded-3xl shadow-2xl order-2 md:order-1"
           />
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="order-1 md:order-2"
+            className="min-w-0 order-1 md:order-2"
           >
             <h2 className="text-4xl font-bold mb-4 text-green-400">
               {t("ourVisionHeading")}

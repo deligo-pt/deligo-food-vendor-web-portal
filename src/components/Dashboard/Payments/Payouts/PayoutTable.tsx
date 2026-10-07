@@ -14,6 +14,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
+import {
+  MobileRowCard,
+  MobileRowCards,
+  MobileRowEmpty,
+  TABLE_FROM,
+} from "@/src/components/MobileRowCard/MobileRowCard";
 import { TPayout } from "@/src/types/payout.type";
 import { formatPrice } from "@/src/utils/formatPrice";
 import { generatePaymentPDF } from "@/src/utils/pdf/generatePaymentPDF";
@@ -55,12 +61,58 @@ export default function PayoutTable({ payouts, t }: IProps) {
     }
   }
 
+  const rowMenu = (p: TPayout) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger aria-label={t("actions")}>
+        <MoreVertical className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem
+          onClick={() =>
+            router.push(`/vendor/payouts/${p.payoutId}`)
+          }
+        >
+          {t("view")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handlePayoutProof(p)}
+        >
+          {t("payout_proof")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleDownloadInvoice(p)}>
+          {t("download")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white shadow-md rounded-2xl p-4 md:p-6 mb-2 overflow-x-auto"
     >
+      {/* Phones and tablets: a card per payout (the table's cells never wrap). */}
+      <MobileRowCards until="lg">
+        {payouts?.length === 0 && (
+          <MobileRowEmpty>{t("no_payouts_found")}</MobileRowEmpty>
+        )}
+        {payouts?.map((p) => (
+          <MobileRowCard
+            key={p._id}
+            title={`€${formatPrice(p.amount)}`}
+            subtitle={p.payoutId}
+            aside={rowMenu(p)}
+            fields={[
+              { label: t("method"), value: p.paymentMethod },
+              { label: t("status"), value: p.status },
+              { label: t("date"), value: format(p.createdAt, "do MMM yyyy") },
+            ]}
+          />
+        ))}
+      </MobileRowCards>
+
+      <div className={TABLE_FROM.lg}>
       <Table className="max-w-full">
         <TableHeader>
           <TableRow>
@@ -94,9 +146,11 @@ export default function PayoutTable({ payouts, t }: IProps) {
                 {t("date")}
               </div>
             </TableHead>
-            <TableHead className="text-right text-[#DC3173] flex gap-2 items-center justify-end">
-              <Cog className="w-4" />
-              {t("actions")}
+            <TableHead className="text-right">
+              <div className="text-[#DC3173] flex gap-2 items-center justify-end">
+                <Cog className="w-4" />
+                {t("actions")}
+              </div>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -114,38 +168,18 @@ export default function PayoutTable({ payouts, t }: IProps) {
           {payouts?.map((p) => (
             <TableRow key={p._id}>
               <TableCell>{p.payoutId}</TableCell>
-              <TableCell>{p.paymentMethod}</TableCell>
+              <TableCell className="whitespace-normal wrap-anywhere min-w-[8rem]">{p.paymentMethod}</TableCell>
               <TableCell>€{formatPrice(p.amount)}</TableCell>
               <TableCell>{p.status}</TableCell>
               <TableCell>{format(p.createdAt, "do MMM yyyy")}</TableCell>
               <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <MoreVertical className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        router.push(`/vendor/payouts/${p.payoutId}`)
-                      }
-                    >
-                      {t("view")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handlePayoutProof(p)}
-                    >
-                      {t("payout_proof")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleDownloadInvoice(p)}>
-                      {t("download")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {rowMenu(p)}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      </div>
     </motion.div>
   );
 }

@@ -9,6 +9,7 @@ import { ISos, TSosResponse } from '@/src/types/sos.type';
 import { useTranslation } from '@/src/hooks/use-translation';
 import TitleHeader from '../../TitleHeader/TitleHeader';
 import AllFilters from '../../Filtering/AllFilters';
+import { MobileRowCard, MobileRowCards, MobileRowEmpty, TABLE_FROM } from '@/src/components/MobileRowCard/MobileRowCard';
 import { formatDateTime } from '@/src/utils/formatter';
 import PaginationComponent from '../../Filtering/PaginationComponent';
 
@@ -26,6 +27,11 @@ const AllSosAlerts = ({ sosAlerts }: IProps) => {
     ];;
     const [selectedSos, setSelectedSos] = useState<ISos | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openDetails = (alert: ISos) => {
+        setSelectedSos(alert);
+        setIsModalOpen(true);
+    };
 
     return (
         <>
@@ -55,6 +61,52 @@ const AllSosAlerts = ({ sosAlerts }: IProps) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white shadow-md rounded-2xl p-4 md:p-6 mb-2 overflow-x-auto"
             >
+                {/* Phones and tablets: a card per alert (the table's cells never wrap). */}
+                <MobileRowCards until="lg">
+                    {sosAlerts?.data?.length === 0 && (
+                        <MobileRowEmpty>{t("no_alerts_found")}</MobileRowEmpty>
+                    )}
+                    {sosAlerts?.data?.map((alert: ISos) => (
+                        <MobileRowCard
+                            key={alert?._id}
+                            title={`${alert?.userId?.id?.name?.firstName ?? ""} ${alert?.userId?.id?.name?.lastName ?? ""}`}
+                            subtitle={`ID: ${alert?.userId?.id?.userId ?? ""}`}
+                            aside={
+                                <Badge
+                                    label={alert?.status}
+                                    className={statusStyles[alert?.status]}
+                                />
+                            }
+                            fields={[
+                                {
+                                    label: t("emergency_type"),
+                                    value: (
+                                        <span className="inline-flex flex-wrap justify-end gap-1">
+                                            {alert?.issueTags?.map(issue => (
+                                                <Badge
+                                                    key={issue}
+                                                    label={issue}
+                                                    className={issueStyles[issue]}
+                                                />
+                                            ))}
+                                        </span>
+                                    ),
+                                },
+                                { label: t("time_triggered"), value: formatDateTime(alert?.createdAt) },
+                            ]}
+                            actions={
+                                <button
+                                    onClick={() => openDetails(alert)}
+                                    className="text-pink-600 font-semibold hover:underline"
+                                >
+                                    View Details
+                                </button>
+                            }
+                        />
+                    ))}
+                </MobileRowCards>
+
+                <div className={TABLE_FROM.lg}>
                 <Table className="max-w-full">
                     <TableHeader>
                         <TableRow>
@@ -82,9 +134,11 @@ const AllSosAlerts = ({ sosAlerts }: IProps) => {
                                     {t("status")}
                                 </div>
                             </TableHead>
-                            <TableHead className="text-right text-[#DC3173] flex gap-2 items-center justify-end">
-                                <Cog className="w-4" />
-                                {t("actions")}
+                            <TableHead className="text-right">
+                                <div className="text-[#DC3173] flex gap-2 items-center justify-end">
+                                    <Cog className="w-4" />
+                                    {t("actions")}
+                                </div>
                             </TableHead>
                         </TableRow>
                     </TableHeader>
@@ -102,7 +156,7 @@ const AllSosAlerts = ({ sosAlerts }: IProps) => {
                         {sosAlerts?.data?.map((alert: ISos) => (
                             <TableRow key={alert?._id} className="hover:bg-gray-50">
                                 {/* Partner */}
-                                <TableCell>
+                                <TableCell className="whitespace-normal wrap-anywhere min-w-[10rem]">
                                     <div className="font-semibold">
                                         {alert?.userId?.id?.name?.firstName} {" "} {alert?.userId?.id?.name?.lastName}
                                     </div>
@@ -112,7 +166,7 @@ const AllSosAlerts = ({ sosAlerts }: IProps) => {
                                 </TableCell>
 
                                 {/* Issue */}
-                                <TableCell>
+                                <TableCell className="whitespace-normal min-w-[9rem]">
                                     {alert?.issueTags?.map(issue => (
                                         <Badge
                                             key={issue}
@@ -139,10 +193,7 @@ const AllSosAlerts = ({ sosAlerts }: IProps) => {
                                 {/* Action */}
                                 <TableCell className="text-right">
                                     <button
-                                        onClick={() => {
-                                            setSelectedSos(alert);
-                                            setIsModalOpen(true);
-                                        }}
+                                        onClick={() => openDetails(alert)}
                                         className="text-pink-600 font-semibold hover:underline"
                                     >
                                         View Details
@@ -152,6 +203,7 @@ const AllSosAlerts = ({ sosAlerts }: IProps) => {
                         ))}
                     </TableBody>
                 </Table>
+                </div>
             </motion.div>
 
             {/* pagination */}

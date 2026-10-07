@@ -109,7 +109,7 @@ export default function RatingSummary({
         variants={itemVariants}
         className="bg-white rounded-3xl border border-rose-100 shadow-sm p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
       >
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div className="inline-flex gap-2 bg-[#DC3173]/8 text-[#DC3173] text-xs font-semibold px-3 py-1.5 rounded-full">
             <AwardIcon className="w-3.5 h-3.5" />
             {t("customer_satisfaction")}
@@ -148,7 +148,7 @@ export default function RatingSummary({
         </div>
 
         {/* Radial Score */}
-        <div className="flex flex-col items-center justify-center">
+        <div className="min-w-0 flex flex-col items-center justify-center">
           <div className="relative w-48 h-48">
             <ResponsiveContainer width="100%" height="100%">
               <RadialBarChart
@@ -250,8 +250,9 @@ export default function RatingSummary({
         variants={itemVariants}
         className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        {/* Horizontal Bar Chart */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        {/* Horizontal Bar Chart. `min-w-0`: a grid item otherwise grows to
+            its chart's width, and the chart sized itself past the screen. */}
+        <div className="min-w-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-5">
             <div className="w-8 h-8 bg-[#DC3173]/10 rounded-lg flex items-center justify-center">
               <TrendingUpIcon className="w-4 h-4 text-[#DC3173]" />
@@ -315,7 +316,7 @@ export default function RatingSummary({
         </div>
 
         {/* Area Trend */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 relative">
+        <div className="min-w-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 relative">
           <div className="flex items-center gap-2 mb-5">
             <div className="w-8 h-8 bg-[#DC3173]/10 rounded-lg flex items-center justify-center">
               <MessageCircleIcon className="w-4 h-4 text-[#DC3173]" />

@@ -46,6 +46,8 @@ type IProps = {
 export default function TopbarIcons({ vendor, place }: IProps) {
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const onScreen = place === "desktop" ? isDesktop : !isDesktop;
+  // The phone bar has ~360px for the logo, these icons and the ☰.
+  const compact = place === "mobile";
   const { lang, setLang } = useStore();
   const { t } = useTranslation();
   const [profileOpen, setProfileOpen] = useState(false);
@@ -146,8 +148,12 @@ export default function TopbarIcons({ vendor, place }: IProps) {
           cut off mid-word, and widening the header is what pushed the rest of
           the page out of line. The same prompt is on the profile page itself,
           which is where the vendor has to go anyway. */}
+      {/* From `xl` only. At 768-1279px it sat in the header's `shrink-0`
+          group beside the store name, language, SOS, bell and avatar, and
+          pushed the bar ~244px past the edge (audit, 7 Oct 2026). Below `xl`
+          the same prompt is in the profile menu. */}
       {agreeVersion?.status && (
-        <p className="hidden md:block max-w-[28rem] truncate text-[#DC3173] italic font-semibold">
+        <p className="hidden xl:block max-w-[28rem] truncate text-[#DC3173] italic font-semibold">
           {t("please_visit_profile_page")}
         </p>
       )}
@@ -157,7 +163,9 @@ export default function TopbarIcons({ vendor, place }: IProps) {
           value={lang}
           onValueChange={(value: "en" | "pt") => handleLangChange(value)}
         >
-          <SelectTrigger className="w-[70px] hover:border hover:border-[#DC3173]">
+          <SelectTrigger
+            className={`${compact ? "w-[58px] px-2" : "w-[70px]"} hover:border hover:border-[#DC3173]`}
+          >
             <SelectValue placeholder="Language" />
           </SelectTrigger>
           <SelectContent>
@@ -197,7 +205,7 @@ export default function TopbarIcons({ vendor, place }: IProps) {
           onClick={() => {
             setProfileOpen((s) => !s);
           }}
-          className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-pink-50 transition"
+          className={`flex items-center gap-2 rounded-lg ${compact ? "px-1" : "px-2"} py-1 hover:bg-pink-50 transition`}
         >
           {vendor?.profilePhoto ? (
             <Image
@@ -205,7 +213,7 @@ export default function TopbarIcons({ vendor, place }: IProps) {
               alt="avatar"
               width={36}
               height={36}
-              className="rounded-full border-2 border-pink-200 object-cover w-9 h-9"
+              className={`rounded-full border-2 border-pink-200 object-cover ${compact ? "w-8 h-8" : "w-9 h-9"}`}
             />
           ) : (
             <div className="flex items-center justify-center rounded-full border-2 border-pink-200 object-cover w-8 h-8">
@@ -226,7 +234,7 @@ export default function TopbarIcons({ vendor, place }: IProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={{ duration: 0.14 }}
-              className="absolute right-0 mt-2 w-44 bg-white border border-pink-100 rounded-xl shadow-xl overflow-hidden z-4000"
+              className={`absolute right-0 mt-2 ${agreeVersion?.status ? "w-60 xl:w-44" : "w-44"} bg-white border border-pink-100 rounded-xl shadow-xl overflow-hidden z-4000`}
             >
               <button
                 className="w-full px-4 py-3 flex items-center gap-2 text-gray-700 hover:bg-pink-50"
@@ -239,6 +247,19 @@ export default function TopbarIcons({ vendor, place }: IProps) {
               </button>
 
               <div className="border-t border-pink-50" />
+
+              {/* The agreement prompt where the header can't fit it (below `xl`). */}
+              {agreeVersion?.status && (
+                <button
+                  className="xl:hidden w-full px-4 py-3 text-left text-sm font-semibold italic text-[#DC3173] hover:bg-pink-50 border-t border-pink-50"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    router.push("/vendor/profile");
+                  }}
+                >
+                  {t("please_visit_profile_page")}
+                </button>
+              )}
 
               <button
                 className="w-full px-4 py-3 flex items-center gap-2 text-red-600 hover:bg-red-50"
