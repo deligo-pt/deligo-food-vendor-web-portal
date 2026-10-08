@@ -2,20 +2,24 @@
 
 import ProductVariationCard from "@/src/components/Dashboard/Products/VariationManagement/ProductVariationCard";
 import AllFilters from "@/src/components/Filtering/AllFilters";
+import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TMeta } from "@/src/types";
 import { TProduct } from "@/src/types/product.type";
 import { TVendor } from "@/src/types/vendor.type";
+import { TVariationSummary } from "@/src/utils/variationSummary";
 import { AnimatePresence, motion } from "framer-motion";
-import { Layers, Package, Tag } from "lucide-react";
+import { Layers, ListChecks, Package, Tag } from "lucide-react";
 
 interface IProps {
   productsData: { data: TProduct[]; meta?: TMeta };
+  /** Counts over the whole catalogue; `null` if they couldn't be loaded. */
+  summary: TVariationSummary | null;
   vendor: TVendor;
 }
 
-export default function VariationManagement({ productsData, vendor }: IProps) {
+export default function VariationManagement({ productsData, summary, vendor }: IProps) {
   const { t } = useTranslation();
 
   const sortOptions = [
@@ -50,26 +54,21 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
         },
       ],
     },
+    {
+      label: t("variations"),
+      key: "variations",
+      placeholder: t("variations"),
+      type: "select",
+      items: [
+        { label: t("with_variations"), value: "with" },
+        { label: t("without_variations"), value: "without" },
+      ],
+    },
   ];
 
-  const totalVariations = productsData.data?.reduce(
-    (sum, p) => sum + (p?.variations?.length || 0),
-    0
-  ) || 0;
-
-  const totalOptions = productsData.data?.reduce(
-    (sum, p) => {
-      const variationsList = p?.variations || [];
-
-      const productOptionsCount = variationsList.reduce(
-        (s, v) => s + (v?.options?.length || 0),
-        0
-      );
-
-      return sum + productOptionsCount;
-    },
-    0
-  ) || 0;
+  // Whole catalogue, not this page (see `utils/variationSummary.ts`). "–" if
+  // the counts couldn't be loaded, rather than a wrong 0.
+  const count = (value: number | undefined) => (summary ? value : "–");
 
   return (
     <div className="min-h-screen bg-pink-50/50 pb-20">
@@ -102,7 +101,15 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
             <Package size={16} className="text-[#DC3173]" />
             <span className="text-sm text-gray-500">{t("products")}:</span>
             <span className="text-sm font-bold text-gray-900">
-              {productsData.meta?.total || 0}
+              {count(summary?.products)}
+            </span>
+          </div>
+          <div className="w-px h-4 bg-gray-200" />
+          <div className="flex items-center gap-2">
+            <ListChecks size={16} className="text-[#DC3173]" />
+            <span className="text-sm text-gray-500">{t("with_variations")}:</span>
+            <span className="text-sm font-bold text-gray-900">
+              {count(summary?.withVariations)}
             </span>
           </div>
           <div className="w-px h-4 bg-gray-200" />
@@ -110,7 +117,7 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
             <Layers size={16} className="text-blue-400" />
             <span className="text-sm text-gray-500">{t("variations")}:</span>
             <span className="text-sm font-bold text-gray-900">
-              {totalVariations}
+              {count(summary?.variations)}
             </span>
           </div>
           <div className="w-px h-4 bg-gray-200" />
@@ -118,7 +125,7 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
             <Tag size={16} className="text-green-400" />
             <span className="text-sm text-gray-500">{t("options")}:</span>
             <span className="text-sm font-bold text-gray-900">
-              {totalOptions}
+              {count(summary?.options)}
             </span>
           </div>
         </motion.div>
@@ -148,6 +155,12 @@ export default function VariationManagement({ productsData, vendor }: IProps) {
               </motion.div>
             ))}
           </AnimatePresence>
+
+          {!!productsData.meta?.totalPage && productsData.meta.totalPage > 1 && (
+            <div className="pt-4">
+              <PaginationComponent totalPages={productsData.meta.totalPage} />
+            </div>
+          )}
 
           {productsData.meta?.total === 0 && (
             <div className="text-center py-16">

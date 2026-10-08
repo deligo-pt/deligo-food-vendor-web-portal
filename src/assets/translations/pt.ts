@@ -669,6 +669,8 @@ export const pt = {
   openingTime: "Hora de Abertura",
   closingTime: "Hora de Encerramento",
   closingDays: "Dias de Encerramento",
+  with_variations: "Com variações",
+  without_variations: "Sem variações",
   closing_days_info_label: "O que são dias de encerramento?",
   closing_days_info: "Os dias de encerramento são os dias da semana em que o seu restaurante está sempre fechado, por exemplo ao domingo. Nesses dias os clientes não podem fazer encomendas. Escolha até 2 dias, ou nenhum se estiver aberto todos os dias.",
   closing_days_limit_title: "Limite de dias de encerramento",
