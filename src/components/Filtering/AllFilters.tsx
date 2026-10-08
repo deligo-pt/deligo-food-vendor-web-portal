@@ -183,7 +183,9 @@ export default function AllFilters({
               variant="outline"
               className="text-[#DC3173] border-[#DC3173]"
             >
-              {paramFilters[option.key]}
+              {/* The item's label, not the raw URL value ("with" → "With variations"). */}
+              {option.items?.find((item) => item.value === paramFilters[option.key])?.label ??
+                paramFilters[option.key]}
               <span>
                 <X
                   className="ml-2 h-4 w-4 cursor-pointer"
