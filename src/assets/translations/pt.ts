@@ -654,7 +654,6 @@ export const pt = {
   businessDetailsDesc:
     "Preencha as informações da sua empresa para concluir o registo",
   basicInformation: "🏢 Informação Básica",
-  branchInformation: "📍 Informação da Sucursal",
   businessName: "Nome da Empresa",
   company_legal_name: "Nome Legal da Empresa",
   company_legal_name_description: "O Nome Legal da Empresa e o Nome Comercial/Marca podem ser iguais",
@@ -664,7 +663,6 @@ export const pt = {
   select_multiple_cuisine: "Escolha os Tipos de Comida",
   add_selected: "Adicionar Selecionado",
   socialNumber: "Número do Registro Social",
-  no_of_branches: "Nº de Filiais",
   workingHours: "⏰ Horário de Funcionamento",
   openingTime: "Hora de Abertura",
   closingTime: "Hora de Encerramento",
@@ -2253,6 +2251,7 @@ export const pt = {
   select_items_to_copy: "Selecione itens para copiar para uma filial",
   select_all_products: "Todos os produtos",
   all_products_in_catalogue: "todo o seu catálogo",
+  deselect_from_all_failed: "Não foi possível carregar a lista completa de produtos, por isso a seleção ficou como estava. Tente novamente.",
   all_products_will_be_copied: "Todos os produtos do seu catálogo",
   products_selected: "produtos selecionados",
   copying_products: "A copiar produtos...",

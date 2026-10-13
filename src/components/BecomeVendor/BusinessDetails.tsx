@@ -40,7 +40,6 @@ import {
   Building2,
   CalendarX2,
   Clock,
-  MapPin,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -102,7 +101,6 @@ export default function BusinessDetailsForm({
       restaurantCuisineType: vendor?.businessDetails?.restaurantCuisineType || [],
       NIF: vendor?.businessDetails?.NIF || "",
       branchName: vendor?.businessDetails?.branchName || "",
-      totalBranches: vendor?.businessDetails?.totalBranches?.toString() || "",
       openingHours: vendor?.businessDetails?.openingHours || "",
       closingHours: vendor?.businessDetails?.closingHours || "",
       closingDays: vendor?.businessDetails?.closingDays || [],
@@ -173,7 +171,6 @@ export default function BusinessDetailsForm({
           ...processedData,
           businessType: data.businessType,
           NIF: data.NIF.toUpperCase(),
-          totalBranches: Number(data.totalBranches),
         },
       };
     }
@@ -421,43 +418,7 @@ export default function BusinessDetailsForm({
                 )}
               </div>
 
-              {/* ========== Section 2: Branch Info ========== */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
-                  {t("branchInformation")}
-                </h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="totalBranches"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="mb-2 block text-sm font-medium text-gray-700">
-                          {t("no_of_branches")}{" "}
-                          <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="relative">
-                          <MapPin className="absolute left-3 top-3.5 text-[#DC3173]/80" />
-                          <FormControl>
-                            <Input
-                              placeholder="No. of Branches"
-                              type="number"
-                              min="1"
-                              className="pl-11 pr-4 h-12 rounded-xl border-gray-300 bg-white/90 shadow-sm focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 hover:shadow-md"
-                              {...field}
-                              disabled={!!isSubVendor}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* ========== Section 3: Working Hours ========== */}
+              {/* ========== Section 2: Working Hours ========== */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
                   {t("workingHours")}

@@ -115,6 +115,12 @@ export default function Products({
   // "All products" is the API's own `copyAllProducts`, not this page's list —
   // the catalogue is paginated, so a list would silently mean "this page only".
   const [copyAll, setCopyAll] = useState(false);
+  // Cards unticked while "All products" is on and the full list of codes is
+  // still loading (see `toggleProduct`); `null` when nothing is in progress.
+  const [leavingAll, setLeavingAll] = useState<string[] | null>(null);
+  const leavingAllRef = useRef<string[]>([]);
+  /** A newer selection (Clear, the "All products" button) cancels the load. */
+  const leavingRun = useRef(0);
   const [isCopyOpen, setIsCopyOpen] = useState(false);
 
   const copyTargets = useMemo(() => approvedBranches(branches), [branches]);
@@ -519,6 +525,8 @@ export default function Products({
           prev.map((s) => (s.items.some(gone) ? { ...s, items: s.items.filter((p) => !gone(p)), total: Math.max(0, (s.total ?? 1) - 1) } : s)),
         );
         setOther((prev) => ({ ...prev, items: prev.items.filter((p) => !gone(p)) }));
+        // A code read before the delete would still list this product.
+        everyCode.current = null;
         toast.success("Product deleted successfully", { id: toastId });
         setSelectedProduct({ id: null, action: null });
         return;
@@ -530,18 +538,83 @@ export default function Products({
   const toggleProduct = (product: TProduct) => {
     const code = productCode(product);
     if (!code) return;
-    // The ticks are a display of "all products", not a list — the mode covers
-    // the whole catalogue, and this page holds only what has been scrolled to.
-    // So a tap here leaves the mode rather than turning it into "these 19",
-    // which would silently drop everything not loaded yet.
+    // "All products" is a flag, not a list, and this page holds only what has
+    // been scrolled to. So unticking a card first reads every product code,
+    // then selects them all except the unticked ones (13 Oct 2026; it used to
+    // clear the whole selection). The card unticks at once; if the codes can't
+    // be read the mode stays on, rather than become a list that drops products.
     if (copyAll) {
-      setCopyAll(false);
-      setSelectedIds([]);
+      void untickFromAll(code);
       return;
     }
     setSelectedIds((prev) =>
       prev.includes(code) ? prev.filter((id) => id !== code) : [...prev, code]
     );
+  };
+
+  /**
+   * Every product code, read once per selection: started when select mode
+   * opens (and again on "All products" if that read failed), so it is here by
+   * the time a card is unticked and the untick is instant. A failed read is forgotten, so the next ask reads again.
+   */
+  type TEveryCode = { promise: Promise<{ success: boolean; codes: string[] }>; codes: string[] | null };
+  const everyCode = useRef<TEveryCode | null>(null);
+  const loadEveryCode = () => {
+    if (everyCode.current) return everyCode.current.promise;
+    // A plain request, not a server action: actions queue behind this page's
+    // background category loads (see `api/vendor/product-codes`).
+    const promise = fetch("/api/vendor/product-codes", { cache: "no-store" })
+      .then((response) => response.json() as Promise<{ success: boolean; codes: string[] }>)
+      .then((body) => ({ success: !!body?.success && Array.isArray(body.codes), codes: body?.codes ?? [] }))
+      .catch(() => ({ success: false, codes: [] as string[] }));
+    const entry: TEveryCode = { promise, codes: null };
+    everyCode.current = entry;
+    void promise.then((result) => {
+      if (everyCode.current !== entry) return;
+      if (result.success) entry.codes = result.codes;
+      else everyCode.current = null;
+    });
+    return promise;
+  };
+
+  const untickFromAll = async (code: string) => {
+    // Already read: no wait, no spinner.
+    const ready = everyCode.current?.codes;
+    if (ready && leavingAll === null) {
+      setCopyAll(false);
+      setSelectedIds(ready.filter((id) => id !== code));
+      return;
+    }
+    // Already loading: this tap just joins (or leaves) the unticked cards.
+    if (leavingAll !== null) {
+      const next = leavingAllRef.current.includes(code)
+        ? leavingAllRef.current.filter((id) => id !== code)
+        : [...leavingAllRef.current, code];
+      leavingAllRef.current = next;
+      setLeavingAll(next);
+      return;
+    }
+    leavingRun.current += 1;
+    const run = leavingRun.current;
+    leavingAllRef.current = [code];
+    setLeavingAll([code]);
+    const result = await loadEveryCode();
+    if (run !== leavingRun.current) return;
+    setLeavingAll(null);
+    if (!result.success) {
+      toast.error(t("deselect_from_all_failed"));
+      return;
+    }
+    const unticked = leavingAllRef.current;
+    setCopyAll(false);
+    setSelectedIds(result.codes.filter((id) => !unticked.includes(id)));
+  };
+
+  /** Drops an unfinished "all except…" load, so its answer changes nothing. */
+  const cancelLeavingAll = () => {
+    leavingRun.current += 1;
+    leavingAllRef.current = [];
+    setLeavingAll(null);
   };
 
   const [selectingId, setSelectingId] = useState<string | null>(null);
@@ -560,6 +633,7 @@ export default function Products({
     }
     const codes = categoryProducts.map(productCode).filter(Boolean);
     const allSelected = codes.every((code) => selectedIds.includes(code));
+    cancelLeavingAll();
     setCopyAll(false);
     setSelectedIds((prev) =>
       allSelected
@@ -574,16 +648,19 @@ export default function Products({
   };
 
   const clearSelection = () => {
+    cancelLeavingAll();
     setSelectedIds([]);
     setCopyAll(false);
   };
 
   const exitSelectMode = () => {
+    // The next selection reads the codes afresh.
+    everyCode.current = null;
     clearSelection();
     setSelectMode(false);
   };
 
-  const selectionCount = copyAll ? catalogue.total : selectedIds.length;
+  const selectionCount = copyAll ? Math.max(0, catalogue.total - (leavingAll?.length ?? 0)) : selectedIds.length;
 
   const scrollToCategory = (id: string) => {
     setPickedCategoryId(id);
@@ -652,7 +729,12 @@ export default function Products({
         {copyTargets.length > 0 && catalogue.total > 0 && (
           <button
             type="button"
-            onClick={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
+            onClick={() => {
+              if (selectMode) return exitSelectMode();
+              // Read ahead, so unticking a card under "All products" is instant.
+              void loadEveryCode();
+              setSelectMode(true);
+            }}
             className={`shrink-0 inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${selectMode
               ? "border-[#DC3173] bg-[#DC3173]/5 text-[#DC3173]"
               : "border-gray-200 text-gray-600 hover:bg-gray-50"
@@ -688,7 +770,10 @@ export default function Products({
             {selectionCount > 0 ? (
               <span className="font-medium">
                 {selectionCount} {t("selected")}
-                {copyAll && (
+                {leavingAll !== null && (
+                  <LoaderCircle className="ml-2 inline h-4 w-4 animate-spin text-[#DC3173]" aria-hidden />
+                )}
+                {copyAll && leavingAll === null && (
                   <span className="font-normal text-muted-foreground">
                     {" "}
                     — {t("all_products_in_catalogue")}
@@ -706,8 +791,13 @@ export default function Products({
             <button
               type="button"
               onClick={() => {
+                // Only ever selects everything; "Clear" is the one button
+                // that deselects (13 Oct 2026: a second press used to clear).
+                cancelLeavingAll();
                 setSelectedIds([]);
-                setCopyAll((prev) => !prev);
+                // Read ahead, for an instant untick (see `loadEveryCode`).
+                void loadEveryCode();
+                setCopyAll(true);
               }}
               className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${copyAll
                 ? "border-[#DC3173] bg-[#DC3173]/10 text-[#DC3173]"
@@ -729,7 +819,9 @@ export default function Products({
 
             <button
               type="button"
-              disabled={selectionCount === 0}
+              // Not while "all except…" is loading: the copy would still go
+              // out as "all products", unticked cards included.
+              disabled={selectionCount === 0 || leavingAll !== null}
               onClick={() => setIsCopyOpen(true)}
               className="inline-flex items-center gap-2 rounded-lg bg-[#DC3173] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#c71d62] disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -917,7 +1009,11 @@ export default function Products({
                               // "All products" ticks every card: the bar says the
                               // whole catalogue is going, and cards showing no tick
                               // underneath it read as nothing being selected.
-                              selected={copyAll || selectedIds.includes(productCode(product))}
+                              selected={
+                                copyAll
+                                  ? !leavingAll?.includes(productCode(product))
+                                  : selectedIds.includes(productCode(product))
+                              }
                               onToggleSelect={toggleProduct}
                             />
                           ))}
