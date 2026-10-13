@@ -70,6 +70,7 @@ const {
 
 const service = stripComments(read("src/services/dashboard/products/products.ts"));
 const dialog = stripComments(read("src/components/Dashboard/Products/CopyToBranchDialog.tsx"));
+const codesRoute = stripComments(read("src/app/api/vendor/product-codes/route.ts"));
 const catalogue = stripComments(read("src/components/Dashboard/Products/Products.tsx"));
 const card = stripComments(read("src/components/Dashboard/Products/ProductCard.tsx"));
 const details = stripComments(read("src/components/Dashboard/Products/ProductDetails.tsx"));
@@ -298,14 +299,63 @@ section("The catalogue's selection");
   );
   check(
     "🔴 'all products' ticks every card",
-    /selected=\{copyAll \|\| selectedIds\.includes\(productCode\(product\)\)\}/.test(catalogue) &&
+    /selected=\{\s*copyAll\s*\? !leavingAll\?\.includes\(productCode\(product\)\)\s*: selectedIds\.includes\(productCode\(product\)\)\s*\}/.test(catalogue) &&
       /selectable=\{selectMode\}/.test(catalogue),
     "cards showing no tick under 'the whole catalogue is going' read as nothing selected",
   );
+  // 13 Oct 2026: unticking one card in "all products" deselects that card
+  // only. It used to clear the whole selection.
+  const untick = catalogue.slice(catalogue.indexOf("const untickFromAll"), catalogue.indexOf("const cancelLeavingAll"));
   check(
-    "🔴 …and a tap leaves the mode rather than narrowing it to this page",
-    /if \(copyAll\) \{\s*setCopyAll\(false\);\s*setSelectedIds\(\[\]\);\s*return;/.test(catalogue),
+    "🔴 unticking a card in 'all products' deselects that card only",
+    /if \(copyAll\) \{\s*void untickFromAll\(code\);\s*return;/.test(catalogue) &&
+      /setSelectedIds\(result\.codes\.filter\(\(id\) => !unticked\.includes\(id\)\)\)/.test(untick),
+    "it used to clear every product",
+  );
+  check(
+    "🔴 …from every product code, not only the cards loaded on this page",
+    /await loadEveryCode\(\)/.test(untick) &&
+      /fetch\("\/api\/vendor\/product-codes"/.test(catalogue) &&
+      /await getEveryProductCode\(\)/.test(codesRoute) &&
+      !/sections|selectedIds\.filter/.test(untick),
     "the list is paginated: 'these 19' would silently drop every later page",
+  );
+  check(
+    "🔴 …and a failed read keeps 'all products' on",
+    /if \(!result\.success\) \{\s*toast\.error\(t\("deselect_from_all_failed"\)\);\s*return;\s*\}\s*const unticked[\s\S]*setCopyAll\(false\)/.test(untick),
+    "a partial list would copy fewer products than the bar says",
+  );
+  check(
+    "the codes are read ahead, outside the server-action queue, so an untick doesn't wait",
+    /void loadEveryCode\(\);\s*setCopyAll\(true\);/.test(catalogue) &&
+      /void loadEveryCode\(\);\s*setSelectMode\(true\);/.test(catalogue) &&
+      // A server action would queue behind the page's background loads.
+      !/getEveryProductCode/.test(catalogue) &&
+      /const ready = everyCode\.current\?\.codes;\s*if \(ready && leavingAll === null\) \{\s*setCopyAll\(false\);\s*setSelectedIds\(ready\.filter\(\(id\) => id !== code\)\);\s*return;/.test(untick),
+    "the first untick sat on a spinner while the whole catalogue was read",
+  );
+  check(
+    "🔴 …and a failed or outdated read is not kept",
+    /else everyCode\.current = null;/.test(catalogue) &&
+      (catalogue.match(/everyCode\.current = null;/g) || []).length >= 3,
+    "a deleted product's code, or an empty list, would go into the copy",
+  );
+  check(
+    "'All products' only selects; only 'Clear' deselects",
+    !/setCopyAll\(\(prev\) => !prev\)/.test(catalogue) && /onClick=\{clearSelection\}/.test(catalogue),
+    "a second press of 'All products' cleared the whole selection",
+  );
+  const everyCodeService = service.slice(service.indexOf("export const getEveryProductCode"), service.indexOf("export const getAllProductsReq"));
+  check(
+    "🔴 the code read fails rather than return part of the catalogue",
+    /if \(!result\.success\) return \{ success: false, codes: \[\] \}/.test(everyCodeService) &&
+      /unique\.length >= total/.test(everyCodeService),
+    "one failed page would drop its products from the copy",
+  );
+  check(
+    "the copy can't be sent while the codes are loading",
+    /disabled=\{selectionCount === 0 \|\| leavingAll !== null\}/.test(catalogue),
+    "it would still go out as 'all products', unticked cards included",
   );
   check(
     "the card is unchanged unless selection is on",

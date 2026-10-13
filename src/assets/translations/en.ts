@@ -646,7 +646,6 @@ export const en = {
   businessDetailsDesc:
     "Fill in your business information to complete registration",
   basicInformation: "🏢 Basic Information",
-  branchInformation: "📍 Branch Information",
   businessName: "Business Name",
   company_legal_name: "Company Legal Name",
   company_legal_name_description: "Company Legal Name and Business/Brand Name can be same",
@@ -656,7 +655,6 @@ export const en = {
   select_multiple_cuisine: "Select Multiple Cuisine",
   add_selected: "Add Selected",
   socialNumber: "Social Number",
-  no_of_branches: "No. of Branches",
   workingHours: "⏰ Working Hours",
   openingTime: "Opening Time",
   closingTime: "Closing Time",
@@ -2194,6 +2192,7 @@ export const en = {
   select_items_to_copy: "Select items to copy to a branch",
   select_all_products: "All products",
   all_products_in_catalogue: "your whole catalogue",
+  deselect_from_all_failed: "Couldn't load your full product list, so the selection was left as it was. Please try again.",
   all_products_will_be_copied: "Every product in your catalogue",
   products_selected: "products selected",
   copying_products: "Copying products...",

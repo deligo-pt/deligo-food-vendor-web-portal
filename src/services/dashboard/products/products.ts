@@ -144,6 +144,49 @@ export const getEveryProduct = async (query: Record<string, string> = {}) => {
   }
 };
 
+/**
+ * The `PROD-…` code of every product in the catalogue, or a failure — never a
+ * part of the list (13 Oct 2026).
+ *
+ * For leaving "All products" on the All Items page: unticking one card turns
+ * "everything" into "everything except this", which needs every code, loaded
+ * or not. A short list here would silently drop products from a copy, so one
+ * failed page, or a count that disagrees with `meta.total`, fails the whole
+ * read (`getEveryProduct` keeps what it got instead; that suits a list on
+ * screen, not this).
+ */
+export const getEveryProductCode = async (): Promise<{ success: boolean; codes: string[] }> => {
+  // Only the code of each product, 500 at a time: one request for most
+  // vendors, and a quarter of the bytes of the full products (measured, 184
+  // products: 1.4 s, against two requests of 1.2–1.8 s each).
+  const PAGE_SIZE = 500;
+  const readPage = (page: number) =>
+    catchAsync<TProduct[]>(async () => {
+      const params = new URLSearchParams({ limit: String(PAGE_SIZE), page: String(page), fields: "productId" });
+      const response = await serverFetch.get(`/products?${params.toString()}`, {
+        next: { tags: ["products"] },
+      });
+      return await response.json();
+    });
+
+  const first = await readPage(1);
+  const totalPage = Number(first.meta?.totalPage) || 1;
+  // The rest together: they don't depend on each other.
+  const rest = await Promise.all(Array.from({ length: Math.max(0, totalPage - 1) }, (_, i) => readPage(i + 2)));
+
+  const codes: string[] = [];
+  for (const result of [first, ...rest]) {
+    if (!result.success) return { success: false, codes: [] };
+    for (const product of (result.data as TProduct[]) || []) {
+      if (product?.productId) codes.push(product.productId);
+    }
+  }
+
+  const total = Number(first.meta?.total) || 0;
+  const unique = Array.from(new Set(codes));
+  return unique.length > 0 && unique.length >= total ? { success: true, codes: unique } : { success: false, codes: [] };
+};
+
 export const getAllProductsReq = async (limit?: number) => {
   return catchAsync<TProduct[]>(async () => {
     return await serverRequest.get("/products", {

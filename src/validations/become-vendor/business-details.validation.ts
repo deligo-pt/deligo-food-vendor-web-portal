@@ -39,14 +39,6 @@ export const businessDetailsValidation = (isSubVendor = false) =>
           .nonempty("Branch name is required")
         : z.string().optional(),
 
-      totalBranches: z
-        .string()
-        .nonempty("Number of branches is required")
-        .refine(
-          (val) => !isNaN(parseInt(val)),
-          "Number of branches must be a number",
-        ),
-
       openingHours: z.string().nonempty("Opening hours is required"),
 
       closingHours: z.string().nonempty("Closing hours is required"),

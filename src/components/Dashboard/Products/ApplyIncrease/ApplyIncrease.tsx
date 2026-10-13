@@ -235,14 +235,14 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                         'flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-all cursor-pointer',
                                         categorySelected
                                             ? 'border-[#DC3173]/50 bg-[#DC3173]/5'
-                                            : 'border-border/90 bg-muted/20 hover:bg-muted/30'
+                                            : 'border-[#DC3173]/50 bg-muted/20 hover:bg-muted/30'
                                     )}
                                     onClick={() => toggleCategory(catProducts)}
                                 >
                                     <Checkbox
                                         checked={categorySelected}
                                         className={cn(
-                                            'data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]',
+                                            'border-[#DC3173] data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]',
                                             categorySelected &&
                                             !fullySelected &&
                                             'opacity-70'
@@ -311,7 +311,7 @@ const ApplyIncrease = ({ products, productCategries }: Props) => {
                                                         checked={isSelected}
                                                         onCheckedChange={() => toggleProduct(product)}
                                                         onClick={(e) => e.stopPropagation()}
-                                                        className="h-3.5 w-3.5 data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
+                                                        className="h-3.5 w-3.5 border-[#DC3173] data-[state=checked]:bg-[#DC3173] data-[state=checked]:border-[#DC3173]"
                                                     />
 
                                                     <div className="flex-1 min-w-0">
