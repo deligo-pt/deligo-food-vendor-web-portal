@@ -37,6 +37,7 @@ import { createAddonGroupValidationSchema } from "@/src/validations/addons/addOn
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import PriceInput from "@/src/components/PriceInput/PriceInput";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -90,7 +91,8 @@ export default function CreateOrEditAddOnsGroup({
   const { formState: { isSubmitting } } = form;
 
   const [optionName, setOptionName] = useState("");
-  const [optionPrice, setOptionPrice] = useState(0);
+  // `undefined` until something is typed; 0 is a real price (a free option).
+  const [optionPrice, setOptionPrice] = useState<number | undefined>(undefined);
   const [optionTax, setOptionTax] = useState("");
 
   const router = useRouter();
@@ -103,6 +105,7 @@ export default function CreateOrEditAddOnsGroup({
   const addOption = () => {
     if (
       optionName.trim() !== "" &&
+      optionPrice !== undefined &&
       optionPrice >= 0 &&
       optionTax !== ""
     ) {
@@ -116,7 +119,7 @@ export default function CreateOrEditAddOnsGroup({
       });
 
       setOptionName("");
-      setOptionPrice(0);
+      setOptionPrice(undefined);
       setOptionTax("");
     }
   };
@@ -359,13 +362,9 @@ export default function CreateOrEditAddOnsGroup({
                     <FormItem className="gap-1">
                       <FormLabel>{t("option_price")}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          min="0"
+                        <PriceInput
                           value={optionPrice}
-                          onChange={(e) =>
-                            setOptionPrice(Number(e.target.value))
-                          }
+                          onValueChange={setOptionPrice}
                           placeholder={t("option_price")}
                         />
                       </FormControl>

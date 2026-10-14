@@ -132,7 +132,8 @@ export default function ProductCard({
 
       <div className="flex flex-1 flex-col p-4">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-lg font-bold text-gray-900 truncate">
+          {/* Cut with "…" when long; `title` shows the whole name on hover. */}
+          <h3 className="text-lg font-bold text-gray-900 truncate" title={product.name?.[lang]}>
             {product.name?.[lang]}
           </h3>
           <div className="flex items-center">
@@ -149,7 +150,10 @@ export default function ProductCard({
         {/* Rendered even when empty. Dropping the element moved the price and
             the buttons up by two lines, so a product without a description
             never lined up with the one beside it. */}
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]">
+        <p
+          className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem]"
+          title={product.description?.[lang] || undefined}
+        >
           {product.description?.[lang]}
         </p>
 
@@ -266,7 +270,7 @@ export default function ProductCard({
                 <Check className="h-4 w-4" strokeWidth={3} />
               </span>
             )}
-            <span className="truncate text-xs text-gray-500">
+            <span className="truncate text-xs text-gray-500" title={product.vendor?.vendorName}>
               {product.vendor?.vendorName}
             </span>
           </div>

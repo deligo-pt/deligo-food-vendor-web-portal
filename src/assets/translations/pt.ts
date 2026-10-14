@@ -1206,7 +1206,7 @@ export const pt = {
   add_an_option_price: "Adicionar preço da opção",
   stock_quantity: "Quantidade em Estoque",
   add_stock_quantity: "Adicionar quantidade em estoque",
-  select_discount_type: "Selecionar Tipo de Desconto",
+  select_discount_type: "Tipo de Desconto",
   select_tax: "Selecione a taxa de IVA",
   select_category_placeholder: "Selecione uma categoria",
   additional_categories: "Additional Categories",
@@ -2355,4 +2355,7 @@ export const pt = {
   soft_delete_category_description: "Passo 1 de 2: a categoria é desativada e fica oculta para os clientes. Isto não pode ser desfeito no painel. Depois, só a pode eliminar permanentemente.",
   delete_category_permanently_title: "Eliminar permanentemente esta categoria?",
   delete_category_permanently_description: "Passo 2 de 2: a categoria é removida definitivamente. Esta ação não pode ser desfeita.",
+  // Discount type options on the product pricing form (values stay PERCENTAGE / FLAT)
+  discount_type_percentage: "Percentagem",
+  discount_type_flat: "Valor fixo",
 };

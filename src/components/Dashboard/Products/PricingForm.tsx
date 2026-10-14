@@ -45,7 +45,8 @@ const PricingForm = ({
     const { t } = useTranslation();
 
     const inputPrice = watchPrice || 0;
-    const taxRate = taxesData?.find((tax) => tax._id === watchTaxId)?.taxRate || 0;
+    const selectedTax = taxesData?.find((tax) => tax._id === watchTaxId);
+    const taxRate = selectedTax?.taxRate || 0;
 
     const discountAmount = watchDiscountType === "PERCENTAGE"
         ? inputPrice * (watchDiscount / 100)
@@ -68,14 +69,19 @@ const PricingForm = ({
                 {t("pricing_information")}
             </h2>
 
-            {/* Form Fields */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+            {/* Form Fields — 2×2 until the row is wide enough for four. At four
+                columns on a laptop the Portuguese tax name ("IVA - Taxa
+                Intermédia (13%)") pushed its column past the card and was
+                clipped. `min-w-0` on each field and on the tax select lets them
+                shrink below their content instead of overflowing (FormItem is a
+                grid of its own, so the field alone was not enough). */}
+            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-6 items-start">
                 {watchVariations.length === 0 && (
                     <FormField
                         control={form.control}
                         name="price"
                         render={({ field }) => (
-                            <FormItem className="gap-1">
+                            <FormItem className="gap-1 min-w-0">
                                 <FormLabel
                                     htmlFor="price"
                                     className="block text-sm font-medium text-gray-700"
@@ -102,18 +108,19 @@ const PricingForm = ({
                     control={form.control}
                     name="discountType"
                     render={({ field }) => (
-                        <FormItem className="gap-1">
+                        <FormItem className="gap-1 min-w-0">
                             <FormLabel className="block text-sm font-medium text-gray-700">
                                 {t("select_discount_type")}
                             </FormLabel>
                             <FormControl>
                                 <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10">
+                                    <SelectTrigger className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10">
                                         <SelectValue placeholder="Select type" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="PERCENTAGE">PERCENTAGE</SelectItem>
-                                        <SelectItem value="FLAT">FLAT</SelectItem>
+                                        {/* Labels translated; the values sent stay PERCENTAGE / FLAT. */}
+                                        <SelectItem value="PERCENTAGE">{t("discount_type_percentage")}</SelectItem>
+                                        <SelectItem value="FLAT">{t("discount_type_flat")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </FormControl>
@@ -126,7 +133,7 @@ const PricingForm = ({
                     control={form.control}
                     name="discount"
                     render={({ field }) => (
-                        <FormItem className="gap-1">
+                        <FormItem className="gap-1 min-w-0">
                             <FormLabel
                                 htmlFor="discount"
                                 className="block text-sm font-medium text-gray-700"
@@ -163,7 +170,7 @@ const PricingForm = ({
                     control={form.control}
                     name="taxId"
                     render={({ field }) => (
-                        <FormItem className="gap-1">
+                        <FormItem className="gap-1 min-w-0">
                             <FormLabel
                                 htmlFor="tax"
                                 className="block text-sm font-medium text-gray-700"
@@ -172,8 +179,18 @@ const PricingForm = ({
                             </FormLabel>
                             <FormControl>
                                 <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10">
-                                        <SelectValue placeholder={t("select_tax")} />
+                                    <SelectTrigger className="w-full min-w-0 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10">
+                                        {/* The rate on the right, outside the name: a long
+                                            name is cut with "…", the rate never is. The
+                                            full name is in the list. */}
+                                        <SelectValue placeholder={t("select_tax")} className="min-w-0 flex-1 justify-between">
+                                            {selectedTax && (
+                                                <>
+                                                    <span className="truncate">{selectedTax.taxName}</span>
+                                                    <span className="shrink-0 font-medium text-gray-700">{selectedTax.taxRate}%</span>
+                                                </>
+                                            )}
+                                        </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
                                         {taxesData?.map((tax) => (
