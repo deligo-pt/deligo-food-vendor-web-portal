@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PriceInput from "@/src/components/PriceInput/PriceInput";
 
 import {
   Form,
@@ -65,7 +66,9 @@ export default function AddOptionsForm({
         en: "",
         pt: ""
       },
-      price: 0,
+      // Empty, not 0: the vendor types the price from scratch, and an empty
+      // box is "required", not a silent €0.
+      price: undefined as unknown as number,
       tax: "",
       currentLang: lang
     },
@@ -139,14 +142,13 @@ export default function AddOptionsForm({
                 <FormItem>
                   <FormLabel>{t("price")} (€)</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      min={0}
+                    <PriceInput
+                      ref={field.ref}
+                      name={field.name}
                       placeholder="0.00"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      onBlur={field.onBlur}
                     />
                   </FormControl>
                   <FormMessage />

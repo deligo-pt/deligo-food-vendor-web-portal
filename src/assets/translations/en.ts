@@ -1176,7 +1176,7 @@ export const en = {
   add_an_option_price: "Add an option price",
   stock_quantity: "Stock Quantity",
   add_stock_quantity: "Add stock quantity",
-  select_discount_type: "Select Discount Type",
+  select_discount_type: "Discount Type",
   select_tax: "Select VAT rate",
   select_category_placeholder: "Select a category",
   additional_categories: "Additional Categories",
@@ -2295,5 +2295,8 @@ export const en = {
   soft_delete_category_description: "Step 1 of 2: the category is switched off and hidden from customers. This can't be undone from the panel. Afterwards you can only delete it permanently.",
   delete_category_permanently_title: "Permanently delete this category?",
   delete_category_permanently_description: "Step 2 of 2: the category is removed for good. This cannot be undone.",
+  // Discount type options on the product pricing form (values stay PERCENTAGE / FLAT)
+  discount_type_percentage: "Percentage",
+  discount_type_flat: "Fixed amount",
 };
 
