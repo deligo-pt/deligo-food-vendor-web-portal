@@ -2347,4 +2347,12 @@ export const pt = {
   // All Items, loaded a category at a time (Products.tsx)
   loading_more_items: "A carregar mais itens…",
   count_not_loaded: "Ainda não carregado",
+  // Product categories: soft delete, then permanent delete, as the API names them (no restore)
+  category_soft_deleted: "Eliminada temporariamente",
+  soft_delete_category: "Eliminação temporária",
+  delete_permanently: "Eliminação permanente",
+  soft_delete_category_title: "Eliminar temporariamente esta categoria?",
+  soft_delete_category_description: "Passo 1 de 2: a categoria é desativada e fica oculta para os clientes. Isto não pode ser desfeito no painel. Depois, só a pode eliminar permanentemente.",
+  delete_category_permanently_title: "Eliminar permanentemente esta categoria?",
+  delete_category_permanently_description: "Passo 2 de 2: a categoria é removida definitivamente. Esta ação não pode ser desfeita.",
 };

@@ -15,18 +15,33 @@ interface IProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   isDeleting: boolean;
+  /** Custom wording; each falls back to the generic "are you sure" copy. */
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  /** `default` for a reversible step such as archiving. */
+  confirmVariant?: "destructive" | "default";
 }
 
-const DeleteModal = ({ open, onOpenChange, onConfirm, isDeleting }: IProps) => {
+const DeleteModal = ({
+  open,
+  onOpenChange,
+  onConfirm,
+  isDeleting,
+  title,
+  description,
+  confirmLabel,
+  confirmVariant = "destructive",
+}: IProps) => {
   const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("are_you_absolutely_sure")}</DialogTitle>
+            <DialogTitle>{title ?? t("are_you_absolutely_sure")}</DialogTitle>
             <DialogDescription>
-              {t("this_action_cannot_be_undone")}
+              {description ?? t("this_action_cannot_be_undone")}
             </DialogDescription>
           </DialogHeader>{" "}
           <DialogFooter>
@@ -35,8 +50,8 @@ const DeleteModal = ({ open, onOpenChange, onConfirm, isDeleting }: IProps) => {
                 {t("cancel")}
               </Button>
             </DialogClose>
-            <Button variant="destructive" onClick={onConfirm} type="submit" disabled={isDeleting}>
-              {t("delete")}
+            <Button variant={confirmVariant} onClick={onConfirm} type="submit" disabled={isDeleting}>
+              {confirmLabel ?? t("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

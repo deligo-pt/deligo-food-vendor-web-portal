@@ -2287,5 +2287,13 @@ export const en = {
   // All Items, loaded a category at a time (Products.tsx)
   loading_more_items: "Loading more items…",
   count_not_loaded: "Not loaded yet",
+  // Product categories: soft delete, then permanent delete, as the API names them (no restore)
+  category_soft_deleted: "Soft deleted",
+  soft_delete_category: "Soft delete",
+  delete_permanently: "Permanent delete",
+  soft_delete_category_title: "Soft delete this category?",
+  soft_delete_category_description: "Step 1 of 2: the category is switched off and hidden from customers. This can't be undone from the panel. Afterwards you can only delete it permanently.",
+  delete_category_permanently_title: "Permanently delete this category?",
+  delete_category_permanently_description: "Step 2 of 2: the category is removed for good. This cannot be undone.",
 };
 
