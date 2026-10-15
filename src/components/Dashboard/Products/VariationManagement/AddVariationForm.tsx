@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import PriceInput from "@/src/components/PriceInput/PriceInput";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/src/hooks/use-translation";
@@ -35,7 +36,8 @@ interface IProps {
 
 interface IOption {
   label: LocalizedType;
-  price: number;
+  /** `undefined` until typed — the price box starts empty. */
+  price: number | undefined;
   stockQuantity: number;
 }
 
@@ -51,7 +53,7 @@ export default function AddVariationForm({ productId, onCancel, businessTypeSlug
       en: "",
       pt: ""
     },
-    price: 0,
+    price: undefined,
     stockQuantity: 0,
   });
 
@@ -75,9 +77,13 @@ export default function AddVariationForm({ productId, onCancel, businessTypeSlug
 
   const addOption = () => {
     if ((option?.label?.[lang] as string)?.length > 1) {
+      if (option.price === undefined || option.price <= 0) {
+        toast.error("Price must be greater than 0");
+        return;
+      }
       if (!watchOptions.find((opt) => opt.label?.[lang] === option.label?.[lang])) {
-        form.setValue("options", [...watchOptions, option]);
-        setOption({ label: { en: "", pt: "" }, price: 0, stockQuantity: 0 });
+        form.setValue("options", [...watchOptions, { ...option, price: option.price }]);
+        setOption({ label: { en: "", pt: "" }, price: undefined, stockQuantity: 0 });
       }
     } else {
       toast.error("Option label is required and must be at least 3 characters");
@@ -109,7 +115,7 @@ export default function AddVariationForm({ productId, onCancel, businessTypeSlug
       });
       form.reset();
       router.refresh();
-      setOption({ label: { en: "", pt: "" }, price: 0, stockQuantity: 0 });
+      setOption({ label: { en: "", pt: "" }, price: undefined, stockQuantity: 0 });
       return;
     }
 
@@ -213,13 +219,9 @@ export default function AddVariationForm({ productId, onCancel, businessTypeSlug
           </div>
           <div>
             <Label className="text-gray-700 mb-1">{t("price")}</Label>
-            <Input
-              type="number"
-              min={0}
+            <PriceInput
               value={option.price}
-              onChange={(e) =>
-                setOption({ ...option, price: Number(e.target.value) })
-              }
+              onValueChange={(price) => setOption({ ...option, price })}
               placeholder={t("add_an_option_price")}
             />
           </div>

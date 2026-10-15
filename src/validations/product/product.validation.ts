@@ -36,7 +36,11 @@ export const productValidation = z.object({
 
   taxId: z.string().nonempty("product_err_tax_required"),
 
-  discount: z.number().min(0).max(100),
+  // Optional: an emptied box means no discount (saved as 0). The upper limit
+  // depends on the type and is checked below — `.max(100)` capped a FLAT
+  // discount at €100 and let it exceed the price, which priced Test Burgers 20
+  // at −€1 and made it impossible to check out.
+  discount: z.number().min(0, "Discount cannot be negative").optional(),
 
   quantity: z.number().optional(),
 
@@ -52,7 +56,7 @@ export const productValidation = z.object({
       options: z.array(
         z.object({
           label: localizedTextSchema,
-          price: z.number().min(0),
+          price: z.number("Price is required").gt(0, "Price must be greater than 0"),
           stockQuantity: z.number().optional(),
         }),
       ),
@@ -85,28 +89,28 @@ export const productValidation = z.object({
     //   "Description is required"
     // );
 
-    // discount type and value validation
-    // if (
-    //   data.discountType === "PERCENTAGE" &&
-    //   data.discount > 100
-    // ) {
-    //   ctx.addIssue({
-    //     code: "custom",
-    //     path: ["discount"],
-    //     message: "Percentage discount cannot exceed 100%.",
-    //   });
-    // }
-
-    // if (data?.price &&
-    //   data.discountType === "FLAT" &&
-    //   data?.discount > data.price
-    // ) {
-    //   ctx.addIssue({
-    //     code: "custom",
-    //     path: ["discount"],
-    //     message: "Flat discount cannot exceed the product price.",
-    //   });
-    // }
+    // Discount limits, per type. A FLAT discount is in euros and must not
+    // exceed the price it comes off — with variations, the cheapest option,
+    // since the discount applies to every option.
+    const discount = data.discount ?? 0;
+    if (data.discountType === "PERCENTAGE" && discount > 100) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["discount"],
+        message: "Percentage discount cannot exceed 100%.",
+      });
+    }
+    if (data.discountType === "FLAT" && discount > 0) {
+      const optionPrices = data.variations.flatMap((v) => v.options.map((o) => o.price));
+      const ceiling = optionPrices.length > 0 ? Math.min(...optionPrices) : data.price;
+      if (ceiling !== undefined && discount > ceiling) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["discount"],
+          message: "Flat discount cannot exceed the product price.",
+        });
+      }
+    }
   })
   .refine(
     (data) => {
@@ -168,7 +172,7 @@ export const productValidation = z.object({
 
 export const variationOptionValidation = z.object({
   label: localizedTextSchema,
-  price: z.number().min(0, "Price must be at least 0"),
+  price: z.number("Price is required").gt(0, "Price must be greater than 0"),
   stockQuantity: z.number().min(0, "Stock quantity must be at least 0"),
 });
 

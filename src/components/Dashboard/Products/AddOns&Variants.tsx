@@ -21,6 +21,7 @@ import { TAddonGroup } from '@/src/types/add-ons.type';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import PriceInput from "@/src/components/PriceInput/PriceInput";
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useStore } from '@/src/store/store';
@@ -59,7 +60,8 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
             en: "",
             pt: "",
         },
-        price: "",
+        // `undefined` until typed — the price box starts empty.
+        price: undefined as number | undefined,
         ...(businessTypeSlug !== "restaurant"
             ? { stockQuantity: 0 }
             : {}),
@@ -82,10 +84,12 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
     const addOption = () => {
         const currentLabel =
             option.label[selectedLanguage as "en" | "pt"];
+        const price = option.price;
 
         if (
             currentLabel &&
-            option.price
+            price !== undefined &&
+            price > 0
         ) {
             if (!options.find(
                 (opt) =>
@@ -99,7 +103,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                             en: option.label.en,
                             pt: option.label.pt,
                         },
-                        price: Number(option.price),
+                        price,
                         ...(businessTypeSlug !== "restaurant"
                             ? {
                                 stockQuantity:
@@ -113,7 +117,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                         en: "",
                         pt: "",
                     },
-                    price: "",
+                    price: undefined,
                     ...(businessTypeSlug !== "restaurant"
                         ? { stockQuantity: 0 }
                         : {}),
@@ -351,12 +355,10 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                             <Label className="text-gray-700 mb-1">
                                 {t("price")}
                             </Label>
-                            <Input
-                                type="number"
-                                min={0}
+                            <PriceInput
                                 value={option.price}
-                                onChange={(e) =>
-                                    setOption({ ...option, price: e.target.value })
+                                onValueChange={(price) =>
+                                    setOption({ ...option, price })
                                 }
                                 placeholder={t("add_an_option_price")}
                                 onKeyUp={(e) => {

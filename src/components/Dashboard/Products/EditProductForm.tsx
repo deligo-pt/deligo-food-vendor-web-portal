@@ -294,14 +294,14 @@ export function EditProductForm({
     // pricing update
     const originalPricing = prevData?.pricing || {};
     const pricingChanged =
-      hasChanged(data.discount, originalPricing.discount ?? 0) ||
+      hasChanged(data.discount ?? 0, originalPricing.discount ?? 0) ||
       hasChanged(data.discountType, originalPricing.discountType ?? "") ||
       hasChanged(data.taxId, String(originalPricing.taxId || ""));
 
     if (pricingChanged) {
       productData.pricing = {};
-      if (hasChanged(data.discount, originalPricing.discount ?? 0)) {
-        productData.pricing.discount = data.discount;
+      if (hasChanged(data.discount ?? 0, originalPricing.discount ?? 0)) {
+        productData.pricing.discount = data.discount ?? 0;
       }
       if (hasChanged(data.discountType, originalPricing.discountType ?? "")) {
         productData.pricing.discountType = data.discountType;

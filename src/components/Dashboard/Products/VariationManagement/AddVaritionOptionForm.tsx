@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import PriceInput from "@/src/components/PriceInput/PriceInput";
 import { addVariationReq } from "@/src/services/dashboard/products/variation";
 import { useStore } from "@/src/store/store";
 import { LocalizedType } from "@/src/types";
@@ -48,7 +49,8 @@ export default function AddVaritionOptionForm({
         en: "",
         pt: ""
       },
-      price: 0,
+      // Empty, not 0: the vendor types the price from scratch.
+      price: undefined as unknown as number,
       stockQuantity: 0,
     },
   });
@@ -146,12 +148,13 @@ export default function AddVaritionOptionForm({
                     {t("price")} (€)
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      type="number"
+                    <PriceInput
+                      ref={field.ref}
+                      name={field.name}
                       placeholder="0.00"
-                      min={0}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      onBlur={field.onBlur}
                     />
                   </FormControl>
                   <FormMessage />
