@@ -10,6 +10,13 @@ interface IProps {
 
 export default function OrderPricingSummary({ order, t }: IProps) {
   const { payoutSummary, paymentMethod, paymentStatus } = order;
+  // What the items came to for the vendor (unchanged formula), and the SDR
+  // container deposit on top — owed to the vendor and paid out with them.
+  // Orders without a deposit show exactly what they showed before.
+  const itemsTotal =
+    (payoutSummary?.vendor?.vendorNetPayout || 0) +
+    (payoutSummary?.deliGoCommission?.totalDeduction || 0);
+  const sdrAmount = payoutSummary?.sdr?.amount || 0;
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
@@ -66,15 +73,24 @@ export default function OrderPricingSummary({ order, t }: IProps) {
           </span>
         </div>
 
+        {sdrAmount > 0 && (
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between text-gray-600">
+              <span>{t("sdr_items_total")}</span>
+              <span>€{formatPrice(itemsTotal)}</span>
+            </div>
+            <div className="flex justify-between text-sky-700">
+              <span>{t("sdr_container_deposit")}</span>
+              <span>+€{formatPrice(sdrAmount)}</span>
+            </div>
+          </div>
+        )}
+
         <div className="border-t border-gray-100 pt-4 mt-4">
           <div className="flex justify-between items-end">
             <span className="text-gray-900 font-semibold">{t("total_amount")}</span>
             <span className="text-3xl font-bold text-[#DC3173]">
-              €
-              {formatPrice(
-                (payoutSummary?.vendor?.vendorNetPayout || 0) +
-                (payoutSummary?.deliGoCommission?.totalDeduction || 0),
-              )}
+              €{formatPrice(itemsTotal + sdrAmount)}
             </span>
           </div>
           <p className="text-xs text-gray-400 text-right mt-1">

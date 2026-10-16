@@ -89,6 +89,14 @@ export type TProduct = {
     totalReviews: number;
   };
 
+  /**
+   * SDR (container deposit). Vendors only read and set `applicable`; the
+   * amount is the admin's and is not returned for vendor roles.
+   */
+  sdr?: {
+    applicable: boolean;
+  };
+
   meta: {
     isFeatured?: boolean;
     isAvailableForPreOrder?: boolean;
@@ -146,4 +154,12 @@ export type TProductCopySummary = {
   copied: number;
   targets: number;
   requestedProductCount: number;
+};
+
+/** `GET /sdr-deposits/effective` — the deposit in force, per container. */
+export type TSdrEffective = {
+  isActive: boolean;
+  depositAmount: number;
+  currency: string;
+  effectiveFrom?: string;
 };

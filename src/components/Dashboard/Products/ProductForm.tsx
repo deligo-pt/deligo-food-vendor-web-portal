@@ -140,6 +140,7 @@ export function ProductForm({
       addonGroups: [],
       variations: [],
       isFeatured: false,
+      sdrApplicable: false,
       isAvailableForPreOrder: false,
       isActive: true,
       businessTypeSlug,
@@ -220,6 +221,9 @@ export function ProductForm({
         },
         addonGroups: data.addonGroups,
         variations: translated.variations,
+        // SDR: only the flag — the amount is the admin's (`sdr` is strict and
+        // rejects any other key).
+        sdr: { applicable: data.sdrApplicable === true },
         meta: {
           isFeatured: data.isFeatured,
           isAvailableForPreOrder: data.isAvailableForPreOrder,

@@ -248,6 +248,11 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
                     {t("featured")}
                   </div>
                 )}
+                {product.sdr?.applicable && (
+                  <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-800">
+                    SDR
+                  </div>
+                )}
               </div>
             </motion.div>
             {/* Pricing */}
@@ -460,6 +465,12 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
                       {t("origin")}: {product.meta.origin}
                     </p>
                   )}
+                  <p>
+                    {t("sdr_container_deposit")}:{" "}
+                    <span className="font-medium text-gray-700">
+                      {product.sdr?.applicable ? t("yes") : t("no")}
+                    </span>
+                  </p>
                 </div>
                 <div>
                   <p>

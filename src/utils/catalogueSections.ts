@@ -26,6 +26,8 @@ export type TCatalogueFilters = {
   sortBy?: string;
   /** `stock.availabilityStatus`, when the vendor filtered by it. */
   availability?: string;
+  /** Only products carrying the SDR container deposit. */
+  sdrOnly?: boolean;
   lang?: string;
 };
 
@@ -39,6 +41,10 @@ export function catalogueQuery(
     ...(filters.sortBy ? { sortBy: filters.sortBy } : {}),
     ...(filters.searchTerm ? { searchTerm: filters.searchTerm } : {}),
     ...(filters.availability ? { "stock.availabilityStatus": filters.availability } : {}),
+    // Checked live (16 Oct 2026): `sdr.applicable=true` returns exactly the
+    // flagged products. `=false` does not return the rest, so only "true" is
+    // ever sent.
+    ...(filters.sdrOnly ? { "sdr.applicable": "true" } : {}),
   };
 }
 

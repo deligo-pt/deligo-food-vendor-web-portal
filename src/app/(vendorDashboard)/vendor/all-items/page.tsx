@@ -42,6 +42,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
     sortBy: queries.sortBy || "-createdAt",
     ...(queries.searchTerm ? { searchTerm: queries.searchTerm } : {}),
     ...(availability ? { availability } : {}),
+    ...(queries.sdr === "only" ? { sdrOnly: true } : {}),
   };
 
   const [{ data }, branchResults] = await Promise.all([

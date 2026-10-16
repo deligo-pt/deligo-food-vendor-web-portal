@@ -118,7 +118,8 @@ export function EditProductForm({
       ]
       : []),
     {
-      name: "DeliGo Metadata",
+      // Translated, like Add Item's tab (was hard-coded English).
+      name: t("deligo_metadata"),
       icon: <StarIcon className="h-5 w-5" />,
     },
   ];
@@ -167,6 +168,7 @@ export function EditProductForm({
       unit: prevData?.stock?.unit || "",
       availabilityStatus: prevData?.stock?.availabilityStatus || "",
       isFeatured: prevData?.meta?.isFeatured || false,
+      sdrApplicable: prevData?.sdr?.applicable === true,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
       isActive: prevData?.meta?.status === "ACTIVE" ? true : false,
       businessTypeSlug,
@@ -330,6 +332,11 @@ export function EditProductForm({
       if (hasChanged(data.isActive, originalStatus)) {
         productData.meta.status = data.isActive === true ? "ACTIVE" : "INACTIVE";
       }
+    }
+
+    // SDR — sent only when the vendor changed it, like the other switches.
+    if (hasChanged(data.sdrApplicable === true, prevData?.sdr?.applicable === true)) {
+      productData.sdr = { applicable: data.sdrApplicable === true };
     }
 
     // stock

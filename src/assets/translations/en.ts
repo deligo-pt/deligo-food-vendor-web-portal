@@ -2298,5 +2298,16 @@ export const en = {
   // Discount type options on the product pricing form (values stay PERCENTAGE / FLAT)
   discount_type_percentage: "Percentage",
   discount_type_flat: "Fixed amount",
+  // SDR container deposit (product form)
+  sdr_container_deposit: "Container deposit (SDR)",
+  sdr_helper_active: "For bottles and cans. Customers pay this deposit per unit, on top of the price:",
+  sdr_helper_inactive: "For bottles and cans. SDR is not active right now — the deposit is charged once it is switched on.",
+  sdr_products_only: "SDR products only",
+  yes: "Yes",
+  no: "No",
+  sdr_deposit: "deposit",
+  sdr_items_total: "Items",
+  sdr_incl_deposit: "incl. deposit",
+  sdr_payout_earnings: "Order earnings",
 };
 

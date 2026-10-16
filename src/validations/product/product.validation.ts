@@ -65,6 +65,9 @@ export const productValidation = z.object({
 
   isFeatured: z.boolean().optional(),
 
+  /** SDR container deposit — sent as `sdr: { applicable }`. */
+  sdrApplicable: z.boolean().optional(),
+
   isAvailableForPreOrder: z.boolean().optional(),
 
   isActive: z.boolean().optional(),
