@@ -27,6 +27,8 @@ export const CACHE_TAGS = {
   productCategories: "product-categories",
   branches: "branches",
   profile: "profile",
+  /** The SDR deposit in force (`/sdr-deposits/effective`). */
+  sdr: "sdr-deposit",
 } as const;
 
 /** Seconds a cached entry is reused before it's fetched again. */

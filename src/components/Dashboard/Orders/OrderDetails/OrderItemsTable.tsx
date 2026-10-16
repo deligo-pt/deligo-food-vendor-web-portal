@@ -81,6 +81,14 @@ export default function OrderItemsTable({ items, t }: IProps) {
                       <div className="text-xs text-gray-400">
                         {t("id")}: {item.productId}
                       </div>
+                      {/* SDR container deposit on this line, from the order's
+                          snapshot: "+€0.30 deposit (2 × €0.15)". */}
+                      {item.sdr?.applicable && item.sdr.lineTotal > 0 && (
+                        <div className="text-xs text-sky-700 mt-0.5">
+                          +€{formatPrice(item.sdr.lineTotal)} {t("sdr_deposit")}
+                          {item.sdr.containers ? ` (${item.sdr.containers} × €${formatPrice(item.sdr.unitDeposit)})` : ""}
+                        </div>
+                      )}
                       {item.productPricing.productDiscountAmount > 0 && (
                         <div className="text-xs text-green-600 mt-0.5">
                           -€{formatPrice(item.productPricing.productDiscountAmount)}{" "}

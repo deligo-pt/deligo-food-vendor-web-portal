@@ -279,6 +279,8 @@ export type TOrderDetails = {
       payableTax: number;
       vendorNetEarnings: number;
     };
+    /** SDR container deposit on this line; absent when the order has none. */
+    sdr?: TOrderItemSdr;
   }[];
 
   totalItems: number;
@@ -294,6 +296,15 @@ export type TOrderDetails = {
     serviceCharge: number;
     serviceChargeVatRate: number;
     serviceChargeVatAmount: number;
+    /** SDR snapshot copied from the checkout; absent when there is no deposit. */
+    sdr?: {
+      unitDeposit: number;
+      total: number;
+      currency: string;
+      depositId?: string;
+      effectiveFrom?: string;
+      custody?: string;
+    };
   };
 
   delivery: {
@@ -331,6 +342,10 @@ export type TOrderDetails = {
     };
     rider: {
       riderNetEarnings: number;
+    };
+    /** The order's container deposit (owed to the vendor); absent when none. */
+    sdr?: {
+      amount: number;
     };
   };
 
@@ -410,4 +425,13 @@ export type TOrderDetails = {
   createdAt: string | Date;
   updatedAt: string | Date;
   __v?: number;
+};
+
+/** SDR container deposit on one order line (`items[].sdr`). */
+export type TOrderItemSdr = {
+  applicable: boolean;
+  /** Containers charged on this line (quantity × containers per unit). */
+  containers?: number;
+  unitDeposit: number;
+  lineTotal: number;
 };

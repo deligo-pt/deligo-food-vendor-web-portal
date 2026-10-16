@@ -118,6 +118,15 @@ export default function ProductCard({
         >
           {product.isDeleted ? "DELETED" : product.meta.status}
         </div>
+        {/* SDR: this product carries the container deposit. */}
+        {product.sdr?.applicable && (
+          <div
+            className="absolute bottom-2 left-2 z-[2] text-xs font-semibold px-2 py-1 rounded-md bg-sky-100 text-sky-800"
+            title={t("sdr_container_deposit")}
+          >
+            SDR
+          </div>
+        )}
         {/* `> 0`, not truthiness: a discount of 0 rendered a stray "0" here. */}
         {Number(product?.pricing?.discount) > 0 && <div
           className={`absolute top-2 right-2 z-[2] text-xs font-medium px-2 py-1 rounded-md bg-[#DC3173] text-white`}

@@ -11,6 +11,9 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { getEffectiveSdrDeposit } from "@/src/services/dashboard/sdr/sdr";
+import { TSdrEffective } from "@/src/types/product.type";
 
 interface IProps {
     form: any;
@@ -18,6 +21,18 @@ interface IProps {
 
 const DeligoMetadata = ({ form }: IProps) => {
     const { t } = useTranslation();
+    // The SDR deposit in force, shown read-only beside the switch. `null`
+    // while loading; any failure reads as "not active" (see the service).
+    const [sdr, setSdr] = useState<TSdrEffective | null>(null);
+    useEffect(() => {
+        let cancelled = false;
+        getEffectiveSdrDeposit().then((value) => {
+            if (!cancelled) setSdr(value);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     return (
         <motion.div
@@ -74,6 +89,47 @@ const DeligoMetadata = ({ form }: IProps) => {
                             <FormControl>
                                 <Switch
                                     id="isAvailableForPreOrder"
+                                    checked={!!field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="data-[state=checked]:bg-[#DC3173]"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                {/* SDR: the vendor decides which products carry the
+                    container deposit; the amount is the admin's, shown here
+                    read-only. */}
+                <FormField
+                    control={form.control}
+                    name="sdrApplicable"
+                    render={({ field }) => (
+                        <FormItem className="flex items-start justify-between gap-3">
+                            <div className="space-y-1">
+                                <FormLabel
+                                    htmlFor="sdrApplicable"
+                                    className="text-sm text-gray-700"
+                                >
+                                    {t("sdr_container_deposit")}
+                                </FormLabel>
+                                <p className="text-xs text-gray-500">
+                                    {sdr === null
+                                        ? "…"
+                                        : sdr.isActive
+                                            ? <>
+                                                {t("sdr_helper_active")}{" "}
+                                                <span className="font-semibold text-gray-700">
+                                                    +€{sdr.depositAmount.toFixed(2)}
+                                                </span>
+                                            </>
+                                            : t("sdr_helper_inactive")}
+                                </p>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                    id="sdrApplicable"
                                     checked={!!field.value}
                                     onCheckedChange={field.onChange}
                                     className="data-[state=checked]:bg-[#DC3173]"

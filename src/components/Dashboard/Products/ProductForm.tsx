@@ -125,9 +125,11 @@ export function ProductForm({
       },
       category: "",
       additionalCategories: [],
-      price: 0,
+      // Both start empty (not "0.00"): the vendor types the price from
+      // scratch, and an empty discount is no discount (saved as 0).
+      price: undefined,
       discountType: "PERCENTAGE",
-      discount: 0,
+      discount: undefined,
       // No rate pre-selected (6 Oct 2026): the vendor picks one, helped by the
       // ⓘ beside the field. Saving without one is refused by the schema
       // ("Tax is a required field"), and the placeholder no longer names a rate.
@@ -138,6 +140,7 @@ export function ProductForm({
       addonGroups: [],
       variations: [],
       isFeatured: false,
+      sdrApplicable: false,
       isAvailableForPreOrder: false,
       isActive: true,
       businessTypeSlug,
@@ -211,12 +214,16 @@ export function ProductForm({
         pricing: {
           price: data.price,
           discountType: data.discountType,
-          discount: data.discount,
+          // An emptied discount box is no discount.
+          discount: data.discount ?? 0,
           taxId: data.taxId,
           currency: "€",
         },
         addonGroups: data.addonGroups,
         variations: translated.variations,
+        // SDR: only the flag — the amount is the admin's (`sdr` is strict and
+        // rejects any other key).
+        sdr: { applicable: data.sdrApplicable === true },
         meta: {
           isFeatured: data.isFeatured,
           isAvailableForPreOrder: data.isAvailableForPreOrder,

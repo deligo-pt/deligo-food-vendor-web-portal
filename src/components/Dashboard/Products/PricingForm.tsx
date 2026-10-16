@@ -7,7 +7,6 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
     Select,
     SelectContent,
@@ -19,6 +18,7 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { TTax } from "@/src/types/tax.type";
 import { motion } from "framer-motion";
 import { VatRateInfoIcon } from "./VatRatesInfo";
+import PriceInput from "@/src/components/PriceInput/PriceInput";
 
 interface IProps {
     form: any;
@@ -49,7 +49,7 @@ const PricingForm = ({
     const taxRate = selectedTax?.taxRate || 0;
 
     const discountAmount = watchDiscountType === "PERCENTAGE"
-        ? inputPrice * (watchDiscount / 100)
+        ? inputPrice * ((watchDiscount || 0) / 100)
         : Math.min(watchDiscount || 0, inputPrice);
 
     const finalPrice = Math.max(inputPrice - discountAmount, 0);
@@ -89,12 +89,14 @@ const PricingForm = ({
                                     {t("price_E")}
                                 </FormLabel>
                                 <FormControl>
-                                    <Input
-                                        {...field}
-                                        type="number"
-                                        min={0}
-                                        value={String(field.value)}
-                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                    <PriceInput
+                                        id="price"
+                                        ref={field.ref}
+                                        name={field.name}
+                                        placeholder="0.00"
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                        onBlur={field.onBlur}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                                     />
                                 </FormControl>
@@ -142,22 +144,19 @@ const PricingForm = ({
                                 {watchDiscountType === "PERCENTAGE" ? "(%)" : "(€)"}
                             </FormLabel>
                             <FormControl>
-                                <Input
-                                    {...field}
-                                    type="number"
-                                    min={0}
-                                    max={watchDiscountType === "PERCENTAGE"
-                                        ? 100
-                                        : watchPrice || undefined}
-                                    value={String(field.value)}
-                                    onChange={(e) => {
-                                        const value = Number(e.target.value);
-                                        if (watchDiscountType === "PERCENTAGE") {
-                                            field.onChange(Math.min(value, 100));
-                                        } else {
-                                            field.onChange(Math.min(value, watchPrice || 0));
-                                        }
-                                    }}
+                                {/* Free decimal typing for both kinds. The limits
+                                    (100 % / the price) are checked by the schema
+                                    with a message, not by silently rewriting
+                                    the number mid-typing. Empty means no
+                                    discount. */}
+                                <PriceInput
+                                    id="discount"
+                                    ref={field.ref}
+                                    name={field.name}
+                                    placeholder="0"
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    onBlur={field.onBlur}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                                 />
                             </FormControl>
@@ -249,7 +248,7 @@ const PricingForm = ({
                                 <span className="text-red-500">
                                     {t("discount")}{" "}
                                     {watchDiscountType === "PERCENTAGE"
-                                        ? `(${watchDiscount}%)`
+                                        ? `(${watchDiscount || 0}%)`
                                         : ""}
                                 </span>
                                 <span className="font-medium text-red-500">

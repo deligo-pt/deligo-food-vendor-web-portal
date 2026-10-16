@@ -150,7 +150,16 @@ export default function Products({
     { label: t("lowest_rated"), value: "rating.average" },
   ];
 
-  const filterOptions = [
+  // Stock status for stores; the SDR filter for every vendor (drinks are
+  // sold by restaurants too).
+  const sdrFilter = {
+    label: t("sdr_container_deposit"),
+    key: "sdr",
+    placeholder: t("all"),
+    type: "select",
+    items: [{ label: t("sdr_products_only"), value: "only" }],
+  };
+  const stockFilterOptions = [
     {
       label: t("availability_status"),
       key: "status",
@@ -721,7 +730,10 @@ export default function Products({
         <div className="flex-1 min-w-0">
           <AllFilters
             sortOptions={sortOptions}
-            {...(businessTypeSlug !== "restaurant" ? { filterOptions } : {})}
+            filterOptions={[
+              ...(businessTypeSlug !== "restaurant" ? stockFilterOptions : []),
+              sdrFilter,
+            ]}
           />
         </div>
 

@@ -47,11 +47,20 @@ export default function PriceInput({
   ...props
 }: PriceInputProps) {
   const current = typeof value === "number" && Number.isFinite(value) ? value : undefined;
-  // The text as typed, and the number it last reported. When the form sets a
-  // different number (a reset after saving), the text follows it.
-  const [draft, setDraft] = useState({ text: formatPrice(current), value: current });
-  if (draft.value !== current) {
-    setDraft({ text: formatPrice(current), value: current });
+  // `text` as typed, `value` the number it last reported, `parent` the value
+  // the form last handed in. The text follows the form only when the form's
+  // value really moves on its own — a reset after saving — never when it
+  // merely echoes what was typed. React Hook Form shows a field's *default*
+  // while its value is empty, so following every difference re-wrote an
+  // emptied Add Item price to "0.00" and nothing typed after it fit.
+  const [draft, setDraft] = useState({ text: formatPrice(current), value: current, parent: current });
+  let shown = draft;
+  if (current !== draft.parent) {
+    shown =
+      current === draft.value
+        ? { ...draft, parent: current }
+        : { text: formatPrice(current), value: current, parent: current };
+    setDraft(shown);
   }
 
   return (
@@ -60,17 +69,17 @@ export default function PriceInput({
       type="text"
       inputMode="decimal"
       autoComplete="off"
-      value={draft.value !== current ? formatPrice(current) : draft.text}
+      value={shown.text}
       onChange={(event) => {
         const text = event.target.value;
         if (!PRICE_TYPING.test(text)) return;
         const next = parsePrice(text);
-        setDraft({ text, value: next });
+        setDraft({ ...shown, text, value: next });
         onValueChange(next);
       }}
       onBlur={(event) => {
-        if (draft.value !== undefined) {
-          setDraft({ text: formatPrice(draft.value), value: draft.value });
+        if (shown.value !== undefined) {
+          setDraft({ ...shown, text: formatPrice(shown.value) });
         }
         onBlur?.(event);
       }}

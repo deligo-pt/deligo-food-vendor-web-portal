@@ -4,6 +4,7 @@ import AddVariationForm from "@/src/components/Dashboard/Products/VariationManag
 import AddVaritionOptionForm from "@/src/components/Dashboard/Products/VariationManagement/AddVaritionOptionForm";
 import VariationDeleteButton from "@/src/components/Dashboard/Products/VariationManagement/VariationDeleteButton";
 import VariationInlineEdit from "@/src/components/Dashboard/Products/VariationManagement/VariationInlineEdit";
+import VariationPriceInlineEdit from "@/src/components/Dashboard/Products/VariationManagement/VariationPriceInlineEdit";
 import {
   removeVariationReq,
   renameVariationReq,
@@ -74,12 +75,12 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
   };
 
   const updatePrice = async (variation: {
-    newPrice: string;
+    newPrice: number;
     variationSku: string;
   }) => {
-    const cleanPriceStr = variation.newPrice.replace(/[^0-9.]/g, "");
-
-    const numericPrice = parseFloat(cleanPriceStr);
+    // Already a number: `VariationPriceInlineEdit` parses comma or dot. The old
+    // `/[^0-9.]/g` clean-up saved "9,99" as 999.
+    const numericPrice = variation.newPrice;
 
     const toastId = toast.loading("Updating variation price...");
 
@@ -353,9 +354,9 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
                             />
 
                             <span className="text-xs text-gray-500 shrink-0">
-                              <VariationInlineEdit
+                              <VariationPriceInlineEdit
                                 title={t("option_price")}
-                                value={`€${option.price.toFixed(2)}`}
+                                value={option.price}
                                 onSave={(newPrice) =>
                                   updatePrice({
                                     newPrice,

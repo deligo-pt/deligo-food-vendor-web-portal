@@ -18,6 +18,7 @@ import {
   XCircleIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/src/hooks/use-translation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -49,6 +50,8 @@ interface IProps {
 }
 
 export default function PayoutDetails({ payout }: IProps) {
+  const { t } = useTranslation();
+  const sdrAmount = payout?.sdrAmount ?? 0;
   const router = useRouter();
   const [ibanCopied, setIbanCopied] = useState(false);
 
@@ -164,6 +167,18 @@ export default function PayoutDetails({ payout }: IProps) {
               <p className="text-2xl md:text-4xl text-[#DC3173] font-bold mt-2">
                 €{formatPrice(payout.amount)}
               </p>
+              {/* Only when the payout carries an SDR container deposit:
+                  what was earned on orders, and the deposit paid out with it. */}
+              {sdrAmount > 0 && (
+                <div className="mt-2 space-y-0.5 text-sm">
+                  <p className="text-gray-600">
+                    {t("sdr_payout_earnings")}: €{formatPrice(payout.earnings ?? payout.amount - sdrAmount)}
+                  </p>
+                  <p className="text-sky-700">
+                    {t("sdr_container_deposit")}: €{formatPrice(sdrAmount)}
+                  </p>
+                </div>
+              )}
               <p className="text-[#DC3173]/70 text-sm mt-2">
                 {payout.paymentMethod}
               </p>
