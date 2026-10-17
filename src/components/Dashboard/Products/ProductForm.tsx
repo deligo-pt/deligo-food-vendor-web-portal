@@ -125,14 +125,15 @@ export function ProductForm({
       },
       category: "",
       additionalCategories: [],
-      // Both start empty (not "0.00"): the vendor types the price from
-      // scratch, and an empty discount is no discount (saved as 0).
-      price: undefined,
+      // The price starts at a real 0 (17 Oct 2026, the owner's call): a free
+      // item is allowed, so 0 is a valid price and the natural default. An
+      // empty discount is no discount (saved as 0).
+      price: 0,
       discountType: "PERCENTAGE",
       discount: undefined,
       // No rate pre-selected (6 Oct 2026): the vendor picks one, helped by the
       // ⓘ beside the field. Saving without one is refused by the schema
-      // ("Tax is a required field"), and the placeholder no longer names a rate.
+      // ("VAT is a required field"), and the placeholder no longer names a rate.
       taxId: "",
       quantity: 0,
       unit: "",
@@ -212,7 +213,7 @@ export function ProductForm({
         // is never shown, never selectable and never deletable.
         image: data.images?.[0] || DEFAULT_PRODUCT_IMAGE,
         pricing: {
-          price: data.price,
+          price: data.price ?? undefined,
           discountType: data.discountType,
           // An emptied discount box is no discount.
           discount: data.discount ?? 0,

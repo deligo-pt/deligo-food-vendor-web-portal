@@ -1220,7 +1220,7 @@ export const en = {
   pricing_information: "Pricing Information",
   price_E: "Price (€)",
   discount_2: "Discount",
-  tax_2: "Tax (%)",
+  tax_2: "VAT (%)",
   original_price: "Original Price",
   discount: "Discount",
   tax: "Tax",
@@ -1230,6 +1230,7 @@ export const en = {
   incl_vat: "Incl. VAT",
   net_item_price: "Net Item Price",
   govt_vat: "Govt. VAT",
+  select_vat_to_see_split: "Select a VAT rate to see the VAT split.",
   final_price: "Final Price",
   base_price: "Base Price",
   add_ons_and_variants: "Add-Ons & Variants",
@@ -2273,7 +2274,7 @@ export const en = {
   vat_info_23_body: "The standard VAT rate for goods and services that do not qualify for the reduced or intermediate rates.",
   // product form validation messages (validations/product)
   product_err_category_required: "Category is a required field",
-  product_err_tax_required: "Tax is a required field",
+  product_err_tax_required: "VAT is a required field",
   // product photo rules (utils/productImageRules)
   img_spec_size: "Size",
   img_spec_size_value: "1200 × 1200 px or larger (square)",
