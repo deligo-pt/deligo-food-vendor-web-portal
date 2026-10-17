@@ -30,7 +30,9 @@ export const productValidation = z.object({
     // vendor at validation before that could ever happen.
     .max(1, "Only one image is allowed"),
 
-  price: z.number().optional(),
+  // `null` is an emptied price box (see PricingForm); the refine below turns
+  // it into "Price is required".
+  price: z.number().nullable().optional(),
 
   discountType: z.enum(["PERCENTAGE", "FLAT"]),
 
@@ -56,7 +58,8 @@ export const productValidation = z.object({
       options: z.array(
         z.object({
           label: localizedTextSchema,
-          price: z.number("Price is required").gt(0, "Price must be greater than 0"),
+          // 0 is a valid option price (a free size); the API takes it.
+          price: z.number("Price is required").min(0, "Price cannot be negative"),
           stockQuantity: z.number().optional(),
         }),
       ),
@@ -106,7 +109,7 @@ export const productValidation = z.object({
     if (data.discountType === "FLAT" && discount > 0) {
       const optionPrices = data.variations.flatMap((v) => v.options.map((o) => o.price));
       const ceiling = optionPrices.length > 0 ? Math.min(...optionPrices) : data.price;
-      if (ceiling !== undefined && discount > ceiling) {
+      if (ceiling != null && discount > ceiling) {
         ctx.addIssue({
           code: "custom",
           path: ["discount"],
@@ -117,7 +120,10 @@ export const productValidation = z.object({
   })
   .refine(
     (data) => {
-      if (data.variations.length === 0 && !data.price) {
+      // Only an empty price is missing: 0 is a real one (17 Oct 2026). A bare
+      // `!data.price` refused it as "required". Negative cannot be typed —
+      // `PriceInput` takes digits and one separator only.
+      if (data.variations.length === 0 && data.price == null) {
         return false;
       }
       return true;
