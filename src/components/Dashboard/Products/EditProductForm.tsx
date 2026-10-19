@@ -102,7 +102,7 @@ export function EditProductForm({
       icon: <ImageIcon className="h-5 w-5" />,
     },
     {
-      name: t("add_ons_and_variants"),
+      name: t("add_ons"), // was t("add_ons_and_variants") — variations hidden (19 Oct 2026)
       icon: <LayersIcon className="h-5 w-5" />,
     },
     {
@@ -600,7 +600,8 @@ export function EditProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      {t("add_ons_and_variants")}
+                      {/* {t("add_ons_and_variants")} — variations hidden (19 Oct 2026) */}
+                      {t("add_ons")}
                     </h2>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -675,6 +676,8 @@ export function EditProductForm({
                       />
                     </div>
 
+                    {/* Variations hidden for now (19 Oct 2026) — commented out, not removed.
+                        Saving still sends the product's existing variations, so they are kept.
                     <div className="space-y-2 ">
                       <label className="block mb-1">{t("variations")}</label>
                       <div>
@@ -721,6 +724,7 @@ export function EditProductForm({
                         </p>
                       </div>}
                     </div>
+                    */}
                   </motion.div>
                 )}
                 {/* Pricing Tab */}
