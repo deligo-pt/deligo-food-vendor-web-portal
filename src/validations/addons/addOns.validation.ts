@@ -8,9 +8,11 @@ const localizedTextSchema = z.object({
 
 export const createAddonOptionValidationSchema = z.object({
   name: localizedTextSchema,
-  // Above zero, not "at least 1": `.min(1)` refused a €0.50 sauce while its
-  // message said "cannot be zero".
-  price: z.number("Price is required").gt(0, "Price must be greater than 0"),
+  // €0 is allowed — a free add-on (extra napkins, no onion), same as the
+  // create-group form. Checked against the backend 19 Oct 2026: `add-option`,
+  // the cart and checkout all accept `price: 0`. An empty box is still
+  // "required" (`undefined` fails `z.number`), never a silent €0.
+  price: z.number("Price is required").min(0, "Price cannot be negative"),
   tax: z.string().nonempty("Tax is required"),
 
   currentLang: z.enum(["en", "pt"]),
