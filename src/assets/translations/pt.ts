@@ -2336,14 +2336,15 @@ export const pt = {
   product_err_category_required: "A categoria é um campo obrigatório",
   product_err_tax_required: "O IVA é um campo obrigatório",
   // product photo rules (utils/productImageRules)
-  img_spec_size: "Tamanho",
+  img_spec_size: "Recomendado",
   img_spec_size_value: "1200 × 1200 px ou maior (quadrada)",
   img_spec_max: "Máximo",
   img_spec_format: "Formato",
   img_err_type: "Este tipo de ficheiro não é suportado. Use JPG, PNG ou WEBP.",
   img_err_too_large: "Esta imagem tem {size} MB. O máximo é 5 MB.",
-  img_err_not_square: "Esta imagem tem {w} × {h} px. Tem de ser quadrada, com pelo menos 1200 × 1200 px.",
-  img_err_too_small: "Esta imagem tem {w} × {h} px. Tem de ter pelo menos 1200 × 1200 px.",
+  // O tamanho é uma recomendação (19 out 2026): a imagem é carregada na mesma.
+  img_warn_not_square: "Esta imagem tem {w} × {h} px. Foi carregada, mas uma imagem quadrada com pelo menos 1200 × 1200 px fica melhor — os clientes veem as fotos em molduras quadradas, por isso pode ficar cortada.",
+  img_warn_too_small: "Esta imagem tem {w} × {h} px. Foi carregada, mas recomendamos pelo menos 1200 × 1200 px para que fique nítida.",
   img_err_unreadable: "Não foi possível ler esta imagem. Experimente outro ficheiro.",
   // All Items, loaded a category at a time (Products.tsx)
   loading_more_items: "A carregar mais itens…",

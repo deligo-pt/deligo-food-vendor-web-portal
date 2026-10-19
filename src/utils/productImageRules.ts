@@ -1,15 +1,15 @@
 /**
- * What a product photo must be before it is uploaded (6 Oct 2026).
+ * What a product photo should be (6 Oct 2026; pixels relaxed 19 Oct 2026).
  *
- * - **Format:** JPG, PNG or WEBP.
- * - **File size:** at most 5 MB.
- * - **Pixels:** square, at least 1200 × 1200 (1500 × 1500 passes; 1600 × 1200
- *   and 800 × 800 don't).
+ * - **Format:** JPG, PNG or WEBP — blocks the upload.
+ * - **File size:** at most 5 MB — blocks the upload.
+ * - **Pixels:** square, at least 1200 × 1200 — a **recommendation**: any size
+ *   uploads, and a smaller or non-square photo gets a warning (the customer
+ *   app shows photos in square frames, so it may be cropped or look soft).
  *
- * All three block the upload. Nothing is resized or compressed here; the vendor
- * prepares the file. Checked in the browser before anything is sent. The
- * backend's `/uploads` should enforce the same, since a browser check can be
- * bypassed.
+ * Nothing is resized or compressed here; the vendor prepares the file. Checked
+ * in the browser before anything is sent. The backend's `/uploads` should
+ * enforce format and size too, since a browser check can be bypassed.
  *
  * Pure, with no imports, so `pnpm verify:product-image` runs it directly. Each
  * problem is a translation key plus the values it names; the uploader
@@ -43,11 +43,18 @@ export function checkImageFile(file: { type?: string; size: number; name?: strin
   return null;
 }
 
-/** Square, and at least `PRODUCT_IMAGE_MIN_PX` on a side. */
+/** A file that can't be decoded is refused — there is no picture to upload. */
+export function checkImageReadable(width: number, height: number): ImageProblem | null {
+  return width > 0 && height > 0 ? null : { key: "img_err_unreadable" };
+}
+
+/**
+ * The recommended size: square, at least `PRODUCT_IMAGE_MIN_PX` on a side.
+ * Returns a **warning** (the upload still goes ahead), or `null`.
+ */
 export function checkImageDimensions(width: number, height: number): ImageProblem | null {
   const vars = { w: String(width), h: String(height) };
-  if (!(width > 0 && height > 0)) return { key: "img_err_unreadable" };
-  if (width !== height) return { key: "img_err_not_square", vars };
-  if (width < PRODUCT_IMAGE_MIN_PX) return { key: "img_err_too_small", vars };
+  if (width !== height) return { key: "img_warn_not_square", vars };
+  if (width < PRODUCT_IMAGE_MIN_PX) return { key: "img_warn_too_small", vars };
   return null;
 }

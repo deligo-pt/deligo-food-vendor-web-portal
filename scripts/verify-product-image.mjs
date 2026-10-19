@@ -1,6 +1,7 @@
 /**
- * Product photos are checked before upload: JPG/PNG/WEBP, at most 5 MB,
- * square and at least 1200 × 1200 px. All three block (6 Oct 2026).
+ * Product photos are checked before upload: JPG/PNG/WEBP and at most 5 MB
+ * block (6 Oct 2026); square and at least 1200 × 1200 px is a recommendation —
+ * the upload goes ahead with a warning (19 Oct 2026).
  *
  *   pnpm verify:product-image
  *
@@ -42,31 +43,33 @@ check(
   J(R.checkImageFile({ type: "image/jpeg", size: 7.4 * MB })) === J({ key: "img_err_too_large", vars: { size: "7.4" } }),
 );
 
-console.log("\n🔴 Pixels: square, at least 1200");
-check("🔴 1200 × 1200 passes", R.checkImageDimensions(1200, 1200) === null);
-check("🔴 1500 × 1500 passes (larger is fine)", R.checkImageDimensions(1500, 1500) === null);
-check("🔴 1600 × 1200 is refused: not square", J(R.checkImageDimensions(1600, 1200)) === J({ key: "img_err_not_square", vars: { w: "1600", h: "1200" } }));
-check("🔴 800 × 800 is refused: too small", J(R.checkImageDimensions(800, 800)) === J({ key: "img_err_too_small", vars: { w: "800", h: "800" } }));
-check("1199 × 1199 is refused", key(R.checkImageDimensions(1199, 1199)) === "img_err_too_small");
-check("an unreadable size is refused", key(R.checkImageDimensions(0, 0)) === "img_err_unreadable");
+console.log("\n🟡 Pixels: square, at least 1200 — recommended, not required");
+check("1200 × 1200: no warning", R.checkImageDimensions(1200, 1200) === null);
+check("1500 × 1500: no warning (larger is fine)", R.checkImageDimensions(1500, 1500) === null);
+check("🟡 1600 × 1200: warning, not square", J(R.checkImageDimensions(1600, 1200)) === J({ key: "img_warn_not_square", vars: { w: "1600", h: "1200" } }));
+check("🟡 800 × 800: warning, too small", J(R.checkImageDimensions(800, 800)) === J({ key: "img_warn_too_small", vars: { w: "800", h: "800" } }));
+check("1199 × 1199: warning", key(R.checkImageDimensions(1199, 1199)) === "img_warn_too_small");
+check("🔴 an unreadable image is still refused", key(R.checkImageReadable(0, 0)) === "img_err_unreadable" && R.checkImageReadable(800, 600) === null);
 
-console.log("\n🔴 The uploader enforces it, on both paths");
+console.log("\n🔴 The uploader: errors block, the size only warns — on both paths");
 const up = code("src/components/Dashboard/Products/ProductImageUpload.tsx");
 check(
-  "🔴 first upload and Replace both check before uploading",
-  (up.match(/const problem = await checkBeforeUpload\(file\);\s*if \(problem\) \{\s*setError\(problem\);/g) ?? []).length === 2,
+  "🔴 first upload and Replace both block on an error before uploading",
+  (up.match(/\{ error: problem, warning: \w+ \} = await checkBeforeUpload\(file\);\s*if \(problem\) \{\s*setError\(problem\);/g) ?? []).length === 2,
 );
-check("format and size, then the pixels", /checkImageFile\(file\)[\s\S]*readImageSize\(file\)[\s\S]*checkImageDimensions\(size\.width, size\.height\)/.test(up));
+check("format and size, then readable, then the size", /checkImageFile\(file\)[\s\S]*readImageSize\(file\)[\s\S]*checkImageReadable[\s\S]*checkImageDimensions\(size\.width, size\.height\)/.test(up));
+check("🟡 the size warning is shown after a successful upload, on both paths", (up.match(/setWarning\(sizeWarning( \?\? null)?\);/g) ?? []).length === 2);
 check("both pickers offer only JPG/PNG/WEBP", (up.match(/accept=\{PRODUCT_IMAGE_ACCEPT\}/g) ?? []).length === 2 && !/accept="image\/\*"/.test(up));
 check("the box states the rules", /t\("img_spec_size_value"\)/.test(up) && /5 MB/.test(up) && /JPG \/ PNG \/ WEBP/.test(up));
 check("nothing is resized or compressed", !/canvas|toBlob|compress/i.test(up));
 
 console.log("\n🔴 Both languages");
-const keys = ["img_spec_size", "img_spec_size_value", "img_spec_max", "img_spec_format", "img_err_type", "img_err_too_large", "img_err_not_square", "img_err_too_small", "img_err_unreadable"];
+const keys = ["img_spec_size", "img_spec_size_value", "img_spec_max", "img_spec_format", "img_err_type", "img_err_too_large", "img_warn_not_square", "img_warn_too_small", "img_err_unreadable"];
 for (const lang of ["en", "pt"]) {
   const dict = raw(`src/assets/translations/${lang}.ts`);
   check(`${lang}: every message`, keys.every((k) => new RegExp(`\\n  ${k}: "`).test(dict)));
   check(`${lang}: the old "PNG, JPG, SVG" hint is gone`, !/png_jpg_svg/.test(dict));
+  check(`${lang}: no blocking size messages left`, !/img_err_not_square|img_err_too_small/.test(dict));
 }
 
 console.log(`\n${passed} passed, ${failed} failed\n`);

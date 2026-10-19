@@ -13,6 +13,7 @@ import { MAX_PRODUCT_IMAGES } from "@/src/consts/product.const";
 import {
   checkImageDimensions,
   checkImageFile,
+  checkImageReadable,
   PRODUCT_IMAGE_ACCEPT,
   type ImageProblem,
 } from "@/src/utils/productImageRules";
@@ -62,20 +63,23 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
     Object.entries(vars ?? {}).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), t(key));
 
   /**
-   * Every rule in `productImageRules`, before anything is uploaded. Returns the
-   * message to show, or `null` when the file may go. Format and size first,
-   * since they need no decoding; then the pixels.
+   * The rules in `productImageRules`, before anything is uploaded. `error`
+   * blocks the upload (format, file size, unreadable); `warning` doesn't — the
+   * pixel size is only a recommendation and is shown after the upload.
    */
-  const checkBeforeUpload = async (file: File): Promise<string | null> => {
+  const checkBeforeUpload = async (file: File): Promise<{ error?: string; warning?: string }> => {
     const fileProblem = checkImageFile(file);
-    if (fileProblem) return describe(fileProblem);
+    if (fileProblem) return { error: describe(fileProblem) };
     const size = await readImageSize(file);
-    if (!size) return describe({ key: "img_err_unreadable" });
-    const sizeProblem = checkImageDimensions(size.width, size.height);
-    return sizeProblem ? describe(sizeProblem) : null;
+    const unreadable = size ? checkImageReadable(size.width, size.height) : { key: "img_err_unreadable" };
+    if (!size || unreadable) return { error: describe(unreadable ?? { key: "img_err_unreadable" }) };
+    const sizeWarning = checkImageDimensions(size.width, size.height);
+    return sizeWarning ? { warning: describe(sizeWarning) } : {};
   };
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Uploaded, but smaller than / not the recommended square size. */
+  const [warning, setWarning] = useState<string | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   /** The hidden picker behind "Replace image". */
@@ -93,6 +97,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
 
   const handleFiles = async (files: FileList) => {
     setError(null);
+    setWarning(null);
     // One image per product. A second file is not silently ignored — the
     // vendor is told, because the picture they just chose is the one they
     // expect to see.
@@ -100,13 +105,15 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
       setError(t("only_one_image_allowed"));
       return;
     }
+    let sizeWarning: string | null = null;
     for (const file of Array.from(files)) {
-      const problem = await checkBeforeUpload(file);
+      const { error: problem, warning: note } = await checkBeforeUpload(file);
       if (problem) {
         setError(problem);
         if (inputRef.current) inputRef.current.value = "";
         return;
       }
+      sizeWarning ??= note ?? null;
     }
 
     const toastId = toast.loading(t("Uploading images..."));
@@ -118,6 +125,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
         id: toastId,
       });
       onChange([...images, ...(result.data || [])]);
+      setWarning(sizeWarning);
       if (inputRef.current) inputRef.current.value = "";
       return;
     }
@@ -141,9 +149,10 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
    */
   const replaceFile = async (files: FileList) => {
     setError(null);
+    setWarning(null);
     const file = files[0];
     if (!file) return;
-    const problem = await checkBeforeUpload(file);
+    const { error: problem, warning: sizeWarning } = await checkBeforeUpload(file);
     if (problem) {
       setError(problem);
       if (replaceRef.current) replaceRef.current.value = "";
@@ -156,6 +165,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
     if (result.success && result.data?.[0]) {
       toast.success(result.message || "Images uploaded successfully!", { id: toastId });
       onChange([result.data[0]]);
+      setWarning(sizeWarning ?? null);
       if (replaceRef.current) replaceRef.current.value = "";
       return;
     }
@@ -184,6 +194,7 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
 
     // optimistic UI
     onChange(images.filter((_, i) => i !== index));
+    setWarning(null);
     if (inputRef.current) inputRef.current.value = "";
 
     if (!productId) return;
@@ -295,6 +306,16 @@ export function ImageUpload({ images, onChange, productId }: IProps) {
           className="text-red-500 text-sm"
         >
           {error}
+        </motion.p>
+      )}
+      {warning && !error && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          role="status"
+          className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+        >
+          {warning}
         </motion.p>
       )}
       {images.length > 0 && (

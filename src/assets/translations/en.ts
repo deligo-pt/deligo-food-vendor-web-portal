@@ -2276,14 +2276,15 @@ export const en = {
   product_err_category_required: "Category is a required field",
   product_err_tax_required: "VAT is a required field",
   // product photo rules (utils/productImageRules)
-  img_spec_size: "Size",
+  img_spec_size: "Recommended",
   img_spec_size_value: "1200 × 1200 px or larger (square)",
   img_spec_max: "Maximum",
   img_spec_format: "Format",
   img_err_type: "This file type isn't supported. Use JPG, PNG or WEBP.",
   img_err_too_large: "This image is {size} MB. The maximum is 5 MB.",
-  img_err_not_square: "This image is {w} × {h} px. It must be square, at least 1200 × 1200 px.",
-  img_err_too_small: "This image is {w} × {h} px. It must be at least 1200 × 1200 px.",
+  // Size is a recommendation (19 Oct 2026): the image is uploaded anyway.
+  img_warn_not_square: "This image is {w} × {h} px. It was uploaded, but a square image of at least 1200 × 1200 px looks best — customers see photos in square frames, so it may be cropped.",
+  img_warn_too_small: "This image is {w} × {h} px. It was uploaded, but at least 1200 × 1200 px is recommended so it stays sharp.",
   img_err_unreadable: "This image couldn't be read. Try another file.",
   // All Items, loaded a category at a time (Products.tsx)
   loading_more_items: "Loading more items…",

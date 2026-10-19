@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- the Variations UI is commented out (19 Oct 2026); its state, handlers and imports stay so it can be restored. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useTranslation } from '@/src/hooks/use-translation';
@@ -182,7 +183,8 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
             className="space-y-6"
         >
             <h2 className="text-xl font-semibold text-gray-800">
-                {t("add_ons_and_variants")}
+                {/* {t("add_ons_and_variants")} — variations hidden (19 Oct 2026) */}
+                {t("add_ons")}
             </h2>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -257,6 +259,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                 />
             </div>
 
+            {/* Variations hidden for now (19 Oct 2026) — commented out, not removed.
             <div className="space-y-2 ">
                 <label className="block mb-1">{t("variations")}</label>
                 <div>
@@ -415,6 +418,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                     </div>
                 </div>
             </div>
+            */}
         </motion.div>
     );
 };
