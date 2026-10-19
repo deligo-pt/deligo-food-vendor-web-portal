@@ -43,8 +43,8 @@ const PricingForm = ({
     showVatInfo = false,
 }: IProps) => {
     const { t } = useTranslation();
-
     const inputPrice = watchPrice || 0;
+
     const selectedTax = taxesData?.find((tax) => tax._id === watchTaxId);
     const taxRate = selectedTax?.taxRate || 0;
 
@@ -57,6 +57,12 @@ const PricingForm = ({
     // Tax is included in finalPrice
     const taxAmount = finalPrice * (taxRate / (100 + taxRate));
     const netItemPrice = finalPrice - taxAmount;
+
+    // Shown as Original − Customer Order Price, both to the cent, so the
+    // three rows always add up. Rounding the discount on its own showed e.g.
+    // €0.30 − €0.01 = €0.28 at 5% off. The customer price itself is unchanged
+    // (it matches what the API stores).
+    const shownDiscount = Number(inputPrice.toFixed(2)) - Number(finalPrice.toFixed(2));
 
     return (
         <motion.div
@@ -95,7 +101,13 @@ const PricingForm = ({
                                         name={field.name}
                                         placeholder="0.00"
                                         value={field.value}
-                                        onValueChange={field.onChange}
+                                        // An emptied box is `null`, never
+                                        // `undefined`: the form library reads
+                                        // `undefined` as "use the default", and
+                                        // with the default now 0 a cleared box
+                                        // snapped back to "0.00" and then
+                                        // refused every key ("0.001").
+                                        onValueChange={(value) => field.onChange(value ?? null)}
                                         onBlur={field.onBlur}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-0 focus:border-[#DC3173] outline-none h-10"
                                     />
@@ -221,7 +233,9 @@ const PricingForm = ({
             </div>
 
             {/* Live Preview Breakdown - Matching the design */}
-            {!!watchPrice && watchPrice > 0 && (
+            {/* Shown for €0 too: a free item is a real price now (17 Oct
+                2026). Hidden only while the box is empty. */}
+            {typeof watchPrice === "number" && watchPrice >= 0 && (
                 <div className="mt-6">
                     <div className="rounded-2xl border border-gray-100 shadow-sm overflow-hidden bg-white font-semibold">
                         {/* Header */}
@@ -252,7 +266,7 @@ const PricingForm = ({
                                         : ""}
                                 </span>
                                 <span className="font-medium text-red-500">
-                                    -€{discountAmount.toFixed(2)}
+                                    -€{shownDiscount.toFixed(2)}
                                 </span>
                             </div>
 
@@ -270,7 +284,14 @@ const PricingForm = ({
                                     </span>
                                 </div>
 
-                                {/* Nested breakdown */}
+                                {/* Nested breakdown. Only once a VAT rate is chosen:
+                                    before that the split is unknown, and showing
+                                    "VAT (0%)" read as a VAT-exempt choice. */}
+                                {!selectedTax ? (
+                                    <p className="text-xs text-gray-500 pl-1">
+                                        {t("select_vat_to_see_split")}
+                                    </p>
+                                ) : (
                                 <div className="space-y-2 pl-1">
                                     <div className="flex justify-between items-center text-sm">
                                         <div className="flex items-center gap-2">
@@ -296,6 +317,7 @@ const PricingForm = ({
                                         </span>
                                     </div>
                                 </div>
+                                )}
                             </div>
                         </div>
                     </div>

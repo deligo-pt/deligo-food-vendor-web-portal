@@ -97,7 +97,7 @@ export default function CreateOrEditAddOnsGroup({
 
   const router = useRouter();
 
-  const { fields: optionsFields, append } = useFieldArray({
+  const { fields: optionsFields, append, remove } = useFieldArray({
     control: form.control,
     name: "options",
   })
@@ -124,12 +124,6 @@ export default function CreateOrEditAddOnsGroup({
     }
   };
 
-  const removeOption = (optionToRemove: string) => {
-    const newOptions = form
-      ?.getValues("options")
-      ?.filter((o) => o.name !== optionToRemove);
-    form.setValue("options", newOptions);
-  };
 
   const handleAddOrEditGroup = async (data: TAddonGroupForm) => {
     if (isSubmitting) return;
@@ -303,9 +297,11 @@ export default function CreateOrEditAddOnsGroup({
               <label className="block mb-1">{t("options")}</label>
               {optionsFields?.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-1">
-                  {optionsFields?.map((option) => (
+                  {optionsFields?.map((option, index) => (
                     <div
-                      key={option.name?.[lang]}
+                      // The field array's own id: names repeat across
+                      // languages and can be empty in one of them.
+                      key={option.id}
                       className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
                     >
                       <span>{option.name?.[lang]}</span>
@@ -318,10 +314,14 @@ export default function CreateOrEditAddOnsGroup({
                       </span>
                       <button
                         type="button"
-                        onClick={() => {
-                          const name = option.name?.[lang];
-                          if (name) removeOption(name);
-                        }}
+                        // By position, through the field array. This used to
+                        // filter the options by name, comparing each `{ en, pt }`
+                        // object with a plain string — never equal, so ✕ removed
+                        // nothing. Saving sends the remaining list, and
+                        // `PATCH /add-ons/:id` replaces the group's options
+                        // with it, so the removal reaches the server.
+                        onClick={() => remove(index)}
+                        aria-label={`${t("remove")} ${option.name?.[lang] ?? ""}`.trim()}
                         className="ml-2 text-white hover:text-[#CCC]"
                       >
                         <XIcon className="h-4 w-4" />
