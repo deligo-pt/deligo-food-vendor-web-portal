@@ -17,7 +17,8 @@
     "verify:product-image": "node --experimental-strip-types --no-warnings scripts/verify-product-image.mjs",
     "verify:all-items": "node --experimental-strip-types --no-warnings scripts/verify-all-items.mjs",
     "verify:responsive": "node --no-warnings scripts/verify-responsive.mjs",
-    "verify:sdr": "node --experimental-strip-types --no-warnings scripts/verify-sdr.mjs"
+    "verify:sdr": "node --experimental-strip-types --no-warnings scripts/verify-sdr.mjs",
+    "verify:translation": "node --experimental-strip-types --no-warnings scripts/verify-translation.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

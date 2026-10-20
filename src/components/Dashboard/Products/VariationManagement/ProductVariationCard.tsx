@@ -58,6 +58,12 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
     const toastId = toast.loading("Renaming variation...");
     const translated = await translateObject(data, lang);
 
+    if (!translated) {
+      // Cancelled in the translation dialog: back to the form, nothing saved.
+      toast.dismiss(toastId);
+      return;
+    }
+
     const result = await renameVariationReq(product.productId, translated);
 
     if (result.success) {

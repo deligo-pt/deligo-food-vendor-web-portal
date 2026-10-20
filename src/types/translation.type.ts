@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Language = "en" | "pt";
 
 export interface TranslationResult {
@@ -6,10 +5,17 @@ export interface TranslationResult {
     paths: string[];
 }
 
-export interface ApplyTranslationOptions {
-    object: any;
-    paths: string[];
-    translations: string[];
-    sourceLanguage: Language;
-    targetLanguage: Language;
+/** What `/api/translate` answers in `code` when it cannot translate. */
+export type TranslationErrorCode =
+    | "QUOTA_EXCEEDED"
+    | "RATE_LIMITED"
+    | "UNAUTHORIZED"
+    | "INVALID_REQUEST"
+    | "UNAVAILABLE";
+
+/** One text to write into one `{ en, pt }` field, found at `path`. */
+export interface TranslationUpdate {
+    path: string;
+    language: Language;
+    text: string;
 }

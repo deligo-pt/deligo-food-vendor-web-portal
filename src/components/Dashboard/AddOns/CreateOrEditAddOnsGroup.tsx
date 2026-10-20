@@ -139,6 +139,12 @@ export default function CreateOrEditAddOnsGroup({
         const toastId = toast.loading("Creating add-on group...");
         const translated = await translateObject(payload, lang);
 
+        if (!translated) {
+          // Cancelled in the translation dialog: back to the form, nothing saved.
+          toast.dismiss(toastId);
+          return;
+        }
+
         const addonsPayload = {
           ...payload,
           title: translated.title,
@@ -170,6 +176,12 @@ export default function CreateOrEditAddOnsGroup({
       } else {
         const toastId = toast.loading("Updating add-on group...");
         const translated = await translateObject(payload, lang);
+
+        if (!translated) {
+          // Cancelled in the translation dialog: back to the form, nothing saved.
+          toast.dismiss(toastId);
+          return;
+        }
 
         const addonsPayload = {
           ...payload,

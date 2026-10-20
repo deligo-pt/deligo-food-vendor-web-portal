@@ -408,7 +408,8 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
       );
 
       if (!translated) {
-        toast.error(t("offer_translation_failed"), { id: toastId });
+        // Cancelled in the translation dialog: back to the form, nothing saved.
+        toast.dismiss(toastId);
         return;
       }
 

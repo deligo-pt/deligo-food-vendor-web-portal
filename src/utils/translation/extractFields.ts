@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Language, TranslationResult } from "@/src/types/translation.type";
+import type { Language, TranslationResult } from "@/src/types/translation.type";
 
 
 function isTranslatableField(value: any): boolean {

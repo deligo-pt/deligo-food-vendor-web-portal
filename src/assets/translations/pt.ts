@@ -2371,4 +2371,15 @@ export const pt = {
   sdr_items_total: "Artigos",
   sdr_incl_deposit: "incl. depósito",
   sdr_payout_earnings: "Ganhos de pedidos",
+
+  // translation dialog (shown when automatic translation is unavailable)
+  translation_review_title: "Tradução automática indisponível",
+  translation_review_intro: "Os clientes veem cada texto no seu idioma. Escreva a versão em falta abaixo ou mantenha o mesmo texto nos dois idiomas.",
+  translation_review_you_typed: "Escreveu em {language}",
+  translation_review_version: "Versão em {language}",
+  translation_review_current_hint: "Tradução atual — atualize-a se já não corresponder.",
+  translation_review_required: "Escreva este texto ou escolha \"Manter o mesmo texto\".",
+  translation_review_keep_same: "Manter o mesmo texto",
+  translation_field_title: "Título",
+  translation_field_text: "Texto",
 };
