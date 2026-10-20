@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import NotificationToast from "@/src/components/NotificationToast/NotificationToast";
+import TranslationReviewDialog from "@/src/components/TranslationReviewDialog/TranslationReviewDialog";
 import DesktopSidebar from "@/src/components/vendorDashboardSidebar/DesktopSidebar";
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TVendor } from "@/src/types/vendor.type";
@@ -26,6 +27,7 @@ export default async function VendorLayout({
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       <DesktopSidebar vendorData={vendorData}>{children}</DesktopSidebar>
       <NotificationToast />
+      <TranslationReviewDialog />
     </div>
   );
 }

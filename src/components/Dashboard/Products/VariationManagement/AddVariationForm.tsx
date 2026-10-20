@@ -101,6 +101,12 @@ export default function AddVariationForm({ productId, onCancel, businessTypeSlug
     const toastId = toast.loading("Adding variation...");
     const translated = await translateObject(data, lang);
 
+    if (!translated) {
+      // Cancelled in the translation dialog: back to the form, nothing saved.
+      toast.dismiss(toastId);
+      return;
+    }
+
     const payload = {
       name: translated.name,
       options: translated.options

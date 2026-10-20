@@ -61,7 +61,8 @@ const AddMenuSection = ({ menuId, open, onOpenChange }: IProps) => {
         const translated = await translateObject(translatedFields, lang);
 
         if (!translated) {
-            toast.error("Translation failed!", { id: toastId });
+            // Cancelled in the translation dialog: back to the form, nothing saved.
+            toast.dismiss(toastId);
             setIsSubmitting(false);
             return;
         }

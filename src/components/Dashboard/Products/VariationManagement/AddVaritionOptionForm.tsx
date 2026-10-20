@@ -65,6 +65,12 @@ export default function AddVaritionOptionForm({
 
     const translated = await translateObject(data, lang);
 
+    if (!translated) {
+      // Cancelled in the translation dialog: back to the form, nothing saved.
+      toast.dismiss(toastId);
+      return;
+    }
+
     const result = await addVariationReq(productId, {
       name: variationName,
       options: [translated],

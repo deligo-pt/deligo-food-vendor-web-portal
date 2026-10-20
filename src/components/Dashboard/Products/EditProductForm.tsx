@@ -236,25 +236,35 @@ export function EditProductForm({
     };
 
     // name & description (with translation)
-    const originalName = prevData?.name || "";
-    const originalDescription = prevData?.description || "";
+    // Compared by text: `hasChanged` compares `{ en, pt }` objects by
+    // reference, which is always "changed", so every save re-translated both
+    // and spent DeepL characters on text nobody touched.
+    const textChanged = (current: any, original: any) =>
+      (current?.en ?? "") !== (original?.en ?? "") ||
+      (current?.pt ?? "") !== (original?.pt ?? "");
+    const nameChanged = textChanged(data.name, prevData?.name);
+    const descriptionChanged = textChanged(data.description, prevData?.description);
 
-    if (hasChanged(data.name, originalName) || hasChanged(data.description, originalDescription)) {
+    if (nameChanged || descriptionChanged) {
       const translated = await translateObject(
-        { name: data.name, description: data.description },
+        {
+          ...(nameChanged && { name: data.name }),
+          ...(descriptionChanged && { description: data.description }),
+        },
         lang
       );
 
       if (!translated) {
-        toast.error("Translation failed!", { id: toastId });
+        // Cancelled in the translation dialog: back to the form, nothing saved.
+        toast.dismiss(toastId);
         setIsSubmitting(false);
         return;
       }
 
-      if (hasChanged(data.name, originalName)) {
+      if (nameChanged) {
         productData.name = translated.name;
       }
-      if (hasChanged(data.description, originalDescription)) {
+      if (descriptionChanged) {
         productData.description = translated.description;
       }
     }

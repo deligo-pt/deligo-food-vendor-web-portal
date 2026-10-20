@@ -82,7 +82,8 @@ export const EditCategoryModal = ({ isOpen, onOpenChange, category }: EditCatego
             const translated = await translateObject(textToTranslate, lang);
 
             if (!translated) {
-                toast.error("Translation failed!", { id: toastId });
+                // Cancelled in the translation dialog: back to the form, nothing saved.
+                toast.dismiss(toastId);
                 setIsSubmitting(false);
                 return;
             }

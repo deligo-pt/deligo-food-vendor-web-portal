@@ -2311,5 +2311,15 @@ export const en = {
   sdr_items_total: "Items",
   sdr_incl_deposit: "incl. deposit",
   sdr_payout_earnings: "Order earnings",
-};
 
+  // translation dialog (shown when automatic translation is unavailable)
+  translation_review_title: "Automatic translation unavailable",
+  translation_review_intro: "Customers see each text in their own language. Write the missing version below, or keep the same text in both languages.",
+  translation_review_you_typed: "You typed in {language}",
+  translation_review_version: "{language} version",
+  translation_review_current_hint: "Current translation — update it if it no longer matches.",
+  translation_review_required: "Write this text, or choose \"Keep the same text\".",
+  translation_review_keep_same: "Keep the same text",
+  translation_field_title: "Title",
+  translation_field_text: "Text",
+};

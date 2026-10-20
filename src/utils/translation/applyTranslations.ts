@@ -1,38 +1,32 @@
-import { ApplyTranslationOptions } from "@/src/types/translation.type";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { TranslationUpdate } from "@/src/types/translation.type";
 
+/**
+ * Write each update into the `{ en, pt }` field at its path, on a copy.
+ *
+ * An empty text never replaces anything: a blank translation used to wipe the
+ * language the vendor had typed. With `fillEmptyOnly` (the fallback when
+ * translation is unavailable) a field that already holds text keeps it.
+ */
+export function applyTranslations<T>(
+    object: T,
+    updates: TranslationUpdate[],
+    { fillEmptyOnly = false }: { fillEmptyOnly?: boolean } = {},
+): T {
+    const cloned: any = structuredClone(object);
 
-export function applyTranslations({
-    object,
-    paths,
-    translations,
-    sourceLanguage,
-    targetLanguage,
-}: ApplyTranslationOptions) {
-    const cloned = structuredClone(object);
+    updates.forEach(({ path, language, text }) => {
+        if (!text?.trim()) return;
 
-    paths.forEach((path, index) => {
-        const keys = path.split(".");
-
-        let current = cloned;
-
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-
-            const isLast = i === keys.length - 1;
-
-            if (!isLast) {
-                current = current[key];
-                continue;
-            }
-
-            current[key] = {
-                ...current[key],
-
-                [sourceLanguage]: current[key][sourceLanguage],
-
-                [targetLanguage]: translations[index],
-            };
+        let field = cloned;
+        for (const key of path ? path.split(".") : []) {
+            field = field?.[key];
         }
+
+        if (!field || typeof field !== "object") return;
+        if (fillEmptyOnly && field[language]?.trim()) return;
+
+        field[language] = text;
     });
 
     return cloned;

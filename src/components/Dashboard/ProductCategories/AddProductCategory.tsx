@@ -50,7 +50,8 @@ export default function AddProductCategory() {
         const translated = await translateObject(data, lang);
 
         if (!translated) {
-            toast.error("Translation failed", { id: toastId });
+            // Cancelled in the translation dialog: back to the form, nothing saved.
+            toast.dismiss(toastId);
             setIsSubmitting(false);
             return;
         }
