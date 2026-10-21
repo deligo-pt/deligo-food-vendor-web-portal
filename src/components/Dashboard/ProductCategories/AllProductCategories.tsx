@@ -9,11 +9,11 @@ import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TProductCategory, TProductCategoryResponse } from "@/src/types/category.type";
 import { motion } from "framer-motion";
-import { Apple, CupSoda, Flame, Sandwich, Slice, Utensils, EyeIcon, Edit3Icon, Trash2Icon, EyeOffIcon } from "lucide-react";
+import { Apple, CupSoda, Flame, Sandwich, Slice, Utensils, EyeIcon, Edit3Icon, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { EditCategoryModal } from "./EditCategoryModal";
-import { permanentDeleteProductCategory, softDeleteProductCategory, updateProductCategory } from "@/src/services/dashboard/categories/product-categories";
+import { softDeleteProductCategory, updateProductCategory } from "@/src/services/dashboard/categories/product-categories";
 import DeleteModal from "../../Modals/DeleteModal";
 
 interface IProps {
@@ -38,7 +38,6 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
 
     // Delete modal states
     const [targetCategoryId, setTargetCategoryId] = useState<string | null>(null);
-    const [deleteType, setDeleteType] = useState<"soft" | "permanent" | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const sortOptions = [
@@ -54,32 +53,21 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
     };
 
     // Open modal triggers
-    const triggerSoftDelete = (id: string) => {
-        setTargetCategoryId(id);
-        setDeleteType("soft");
-    };
-
-    const triggerPermanentDelete = (id: string) => {
-        setTargetCategoryId(id);
-        setDeleteType("permanent");
-    };
+    const triggerDelete = (id: string) => setTargetCategoryId(id);
 
     // Unified confirm action executed by DeleteModal
     const handleConfirmDelete = async () => {
-        if (!targetCategoryId || !deleteType) return;
+        if (!targetCategoryId) return;
 
         setIsDeleting(true);
-        const isPermanent = deleteType === "permanent";
-        const toastId = toast.loading(
-            isPermanent ? "Deleting permanently..." : "Soft deleting category..."
-        );
+        const toastId = toast.loading("Deleting category...");
 
         try {
             // The API refuses to soft delete an active category ("Please deactivate
             // it first", 409), so Soft delete switches it off first. Without this
             // the first click on an active category failed outright.
             const target = categoriesResult?.data?.find((cat) => cat._id === targetCategoryId);
-            if (!isPermanent && target?.isActive) {
+            if (target?.isActive) {
                 const off = await updateProductCategory({ isActive: false }, targetCategoryId);
                 if (!off?.success) {
                     toast.error(off?.message || "Failed to delete", { id: toastId });
@@ -87,17 +75,11 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                 }
             }
 
-            const res = isPermanent
-                ? await permanentDeleteProductCategory(targetCategoryId)
-                : await softDeleteProductCategory(targetCategoryId);
+            const res = await softDeleteProductCategory(targetCategoryId);
 
             if (res?.success) {
-                toast.success(
-                    res?.message || (isPermanent ? "Category deleted permanently" : "Category soft deleted"),
-                    { id: toastId }
-                );
+                toast.success(res?.message || "Category deleted", { id: toastId });
                 setTargetCategoryId(null);
-                setDeleteType(null);
                 router.refresh();
             } else {
                 toast.error(res?.message || "Failed to delete", { id: toastId });
@@ -148,21 +130,13 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
 
                                 <div className="min-w-0">
                                     <div className="text-xl font-semibold wrap-anywhere">{cat?.name?.[lang]}</div>
-                                    {/* Soft deleted is step one of two: hidden from
-                                        customers and, with no restore in the
-                                        API, waiting only for a permanent delete.
-                                        Its own badge, so it doesn't read as a
-                                        category that was only switched off. */}
                                     <div
-                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${cat?.isDeleted
-                                            ? "bg-slate-200 text-slate-700"
-                                            : cat?.isActive
-                                                ? "bg-green-100 text-green-800"
-                                                : "bg-red-100 text-red-800"
+                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${cat?.isActive
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-red-100 text-red-800"
                                             }`}
                                     >
-                                        {cat?.isDeleted && <EyeOffIcon className="w-3 h-3" />}
-                                        {cat?.isDeleted ? t("category_soft_deleted") : cat?.isActive ? t("active") : t("inactive")}
+                                        {cat?.isActive ? t("active") : t("inactive")}
                                     </div>
                                 </div>
                             </div>
@@ -178,44 +152,26 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                                     <EyeIcon className="w-4 h-4" />
                                 </button>
 
-                                {/* Edit Action — not on a soft-deleted category: the
-                                    API keeps it deleted whatever is saved, and
-                                    switching it back on only made it "active"
-                                    while still deleted. */}
-                                {!cat?.isDeleted && (
-                                    <button
-                                        onClick={() => handleOpenEdit(cat)}
-                                        className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-[#DC3173] hover:border-[#DC3173]/30 hover:bg-[#DC3173]/5 transition-all"
-                                        title={t("edit_category")}
-                                    >
-                                        <Edit3Icon className="w-4 h-4" />
-                                    </button>
-                                )}
+                                {/* Edit Action */}
+                                <button
+                                    onClick={() => handleOpenEdit(cat)}
+                                    className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-[#DC3173] hover:border-[#DC3173]/30 hover:bg-[#DC3173]/5 transition-all"
+                                    title={t("edit_category")}
+                                >
+                                    <Edit3Icon className="w-4 h-4" />
+                                </button>
 
-                                {/* Delete Action — two steps, two different
-                                    buttons: Soft delete, then Permanent delete,
-                                    named as the API names them. There is no
-                                    restore, and the step 1 dialog says so. Both were the same bin icon, so
-                                    the first click looked like it did nothing. */}
-                                {cat?.isDeleted ? (
-                                    <button
-                                        onClick={() => triggerPermanentDelete(cat._id)}
-                                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-sm font-medium text-rose-600 hover:bg-rose-600 hover:text-white transition-all"
-                                        title={t("permanent_delete")}
-                                    >
-                                        <Trash2Icon className="w-4 h-4" />
-                                        <span className="hidden sm:inline">{t("delete_permanently")}</span>
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => triggerSoftDelete(cat._id)}
-                                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-200 bg-amber-50 text-sm font-medium text-amber-700 hover:bg-amber-600 hover:text-white transition-all"
-                                        title={t("soft_delete_category")}
-                                    >
-                                        <EyeOffIcon className="w-4 h-4" />
-                                        <span className="hidden sm:inline">{t("soft_delete_category")}</span>
-                                    </button>
-                                )}
+                                {/* To the vendor this is just "delete"; the call is a
+                                    soft delete, so only an admin can restore or
+                                    permanently delete it. */}
+                                <button
+                                    onClick={() => triggerDelete(cat._id)}
+                                    className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all"
+                                    title={t("delete")}
+                                    aria-label={t("delete")}
+                                >
+                                    <Trash2Icon className="w-4 h-4" />
+                                </button>
                             </div>
                         </CardContent>
                     </Card>
@@ -249,29 +205,17 @@ const AllProductCategories = ({ categoriesResult }: IProps) => {
                 category={selectedCategory as TProductCategory}
             />
 
-            {/* UNIFIED DELETE MODAL */}
+            {/* DELETE CONFIRMATION */}
             <DeleteModal
                 open={!!targetCategoryId}
                 onOpenChange={(open) => {
-                    if (!open) {
-                        setTargetCategoryId(null);
-                        setDeleteType(null);
-                    }
+                    if (!open) setTargetCategoryId(null);
                 }}
                 onConfirm={handleConfirmDelete}
                 isDeleting={isDeleting}
-                {...(deleteType === "permanent"
-                    ? {
-                        title: t("delete_category_permanently_title"),
-                        description: t("delete_category_permanently_description"),
-                        confirmLabel: t("delete_permanently"),
-                    }
-                    : {
-                        title: t("soft_delete_category_title"),
-                        description: t("soft_delete_category_description"),
-                        confirmLabel: t("soft_delete_category"),
-                        confirmVariant: "default" as const,
-                    })}
+                title={t("delete_category_title")}
+                description={t("delete_category_description")}
+                confirmLabel={t("delete")}
             />
         </div>
     );

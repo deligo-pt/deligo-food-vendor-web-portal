@@ -3,7 +3,7 @@
 import { useStore } from "@/src/store/store";
 import { TProduct } from "@/src/types/product.type";
 import { motion } from "framer-motion";
-import { Check, Clock, ShoppingBag, Star } from "lucide-react";
+import { Check, Clock, ShoppingBag, Star, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getProductImage } from "@/src/consts/product.const";
@@ -309,9 +309,11 @@ export default function ProductCard({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onDelete(product.productId)}
-              className="text-xs px-3 py-1 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+              className="px-2 py-1 rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+              title={t("delete")}
+              aria-label={t("delete")}
             >
-              {t("delete")}
+              <Trash2 className="w-4 h-4" />
             </motion.button>
           </div>
         </div>

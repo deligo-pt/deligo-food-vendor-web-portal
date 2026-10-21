@@ -10,7 +10,7 @@ type IProps = {
 const AllProductCategoriesPage = async ({ searchParams }: IProps) => {
     const params = await searchParams;
     const queryString = queryStringFormatter(params);
-    const result = await getAllProductCategoriesReq(queryString);
+    const result = await getAllProductCategoriesReq(queryString, { includeInactive: true });
 
     return (
         <div>

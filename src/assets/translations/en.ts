@@ -1090,8 +1090,6 @@ export const en = {
   search_products: "Search Products...",
   is_available: "Is Available",
   add_section: "Add Section",
-  soft_delete: "Soft Delete",
-  permanent_delete: "Permanent Delete",
   update_section: "Update Section",
   update_you_section_details_below: "Update your section details using below form.",
   add_required_sections_under_each_menu: "Add required sections under each menu",
@@ -1152,7 +1150,7 @@ export const en = {
   edit_category: "Edit Category",
   soft_delete_archive: "Soft Delete (Archive)",
   these_are_platform_managed_categories:
-    "These are platform-managed categories. Vendors cannot create or edit categories.",
+    "Manage your product categories.",
   platform: "Platform",
   no_categories_found: "No categories found",
 
@@ -2289,14 +2287,11 @@ export const en = {
   // All Items, loaded a category at a time (Products.tsx)
   loading_more_items: "Loading more items…",
   count_not_loaded: "Not loaded yet",
-  // Product categories: soft delete, then permanent delete, as the API names them (no restore)
-  category_soft_deleted: "Soft deleted",
-  soft_delete_category: "Soft delete",
-  delete_permanently: "Permanent delete",
-  soft_delete_category_title: "Soft delete this category?",
-  soft_delete_category_description: "Step 1 of 2: the category is switched off and hidden from customers. This can't be undone from the panel. Afterwards you can only delete it permanently.",
-  delete_category_permanently_title: "Permanently delete this category?",
-  delete_category_permanently_description: "Step 2 of 2: the category is removed for good. This cannot be undone.",
+  // Delete confirmations (the API call behind them is a soft delete; the vendor just sees "delete")
+  delete_category_title: "Delete this category?",
+  delete_category_description: "This category will be removed from your dashboard and from customers. This can't be undone.",
+  delete_item_title: "Delete this item?",
+  delete_item_description: "This will be removed from your dashboard and from customers. This can't be undone.",
   // Discount type options on the product pricing form (values stay PERCENTAGE / FLAT)
   discount_type_percentage: "Percentage",
   discount_type_flat: "Fixed amount",

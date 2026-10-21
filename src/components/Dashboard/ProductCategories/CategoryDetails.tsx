@@ -7,7 +7,7 @@ import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TProductCategory } from "@/src/types/category.type";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowLeftCircle, Calendar, CheckCircle2, Globe, Hash, ShieldAlert, Tag, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowLeftCircle, Calendar, CheckCircle2, Globe, Hash, Tag, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
@@ -143,22 +143,6 @@ const CategoryDetails = ({ category }: IProps) => {
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
                                         <XCircle className="w-3.5 h-3.5" />
                                         {t("inactive") || "Inactive"}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                                <span className="text-sm font-medium text-slate-600">
-                                    {t("delete_status") || "Delete Status"}
-                                </span>
-                                {category.isDeleted ? (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
-                                        <ShieldAlert className="w-3.5 h-3.5" />
-                                        {t("soft_deleted") || "Soft Deleted"}
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-700">
-                                        {t("false") || "Published"}
                                     </span>
                                 )}
                             </div>

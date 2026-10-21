@@ -57,13 +57,13 @@ export default function MenuTable({ menus }: IProps) {
 
     // soft delete menu
     const handleSoftDeleteMenu = async () => {
-        const toastId = toast.loading("Soft Deleting menu...");
+        const toastId = toast.loading("Deleting menu...");
         setIsDeleting(true);
 
         const result = await softDeleteMenu(selectedMenuId);
 
         if (result.success) {
-            toast.success(result?.message || "Menu soft deleted successfully", {
+            toast.success(result?.message || "Menu deleted successfully", {
                 id: toastId,
             });
             setSelectedMenuId("");
@@ -208,7 +208,7 @@ export default function MenuTable({ menus }: IProps) {
                                         <DropdownMenuItem
                                             onClick={() => setSelectedMenuId(menu._id)}
                                         >
-                                            {t("soft_delete")}
+                                            {t("delete")}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -226,6 +226,9 @@ export default function MenuTable({ menus }: IProps) {
                 }}
                 onConfirm={handleSoftDeleteMenu}
                 isDeleting={isDeleting}
+                title={t("delete_item_title")}
+                description={t("delete_item_description")}
+                confirmLabel={t("delete")}
             />
         </motion.div >
     );

@@ -133,6 +133,19 @@ export function EditProductForm({
   );
   const [taxesData, setTaxesData] = useState<TTax[]>([]);
 
+  // The list only holds active categories. This product's own (main and
+  // additional) stay in the picker even when one is switched off, or its chips
+  // would show a raw id and the vendor could not keep or change it.
+  const pickerCategories = (() => {
+    const own = [prevData?.category, ...(prevData?.additionalCategories ?? [])].filter(
+      (c): c is NonNullable<typeof c> => Boolean(c?._id),
+    );
+    const missing = own
+      .filter((c) => !productCategoriesData.some((p) => p._id === c._id))
+      .map((c) => ({ _id: c._id, name: c.name, slug: "", isActive: false, isDeleted: false }) as TProductCategory);
+    return missing.length ? [...productCategoriesData, ...missing] : productCategoriesData;
+  })();
+
   // The product's additional category ids, without its main one: the picker
   // keeps the two apart, so the main must never also be listed as additional.
   const originalAdditionalCategories = (prevData?.additionalCategories || [])
@@ -583,7 +596,7 @@ export function EditProductForm({
                 {activeTab === 0 && (
                   <BasicInfoForm
                     form={form as any}
-                    productCategories={productCategoriesData}
+                    productCategories={pickerCategories}
                     selectedLanguage={lang}
                   />
                 )}
