@@ -240,6 +240,9 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
         onOpenChange={(open) => !open && setDeleteId("")}
         onConfirm={() => deleteOffer()}
         isDeleting={isDeleting}
+        title={t("delete_item_title")}
+        description={t("delete_item_description")}
+        confirmLabel={t("delete")}
       />
 
       {/* Edit Offer Modal */}

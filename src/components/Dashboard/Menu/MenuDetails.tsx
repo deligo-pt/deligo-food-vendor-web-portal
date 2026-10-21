@@ -21,10 +21,7 @@ import TitleHeader from "../../TitleHeader/TitleHeader";
 import DeleteModal from "../../Modals/DeleteModal";
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-    permanentDeleteMenu,
-    softDeleteMenu,
-} from "@/src/services/dashboard/menu/menu.service";
+import { softDeleteMenu } from "@/src/services/dashboard/menu/menu.service";
 import AddMenuSection from "./Section/AddSection";
 import MenuSectionsList from "./Section/MenuSectionList";
 import { TProduct } from "@/src/types/product.type";
@@ -41,7 +38,6 @@ export default function MenuDetails({ menu, sections = [], products = [] }: IMen
 
     const [addSectionOpen, setAddSectionOpen] = useState(false);
     const [isSoftDeleteOpen, setIsSoftDeleteOpen] = useState(false);
-    const [isPermanentDeleteOpen, setIsPermanentDeleteOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     if (!menu) {
@@ -54,38 +50,16 @@ export default function MenuDetails({ menu, sections = [], products = [] }: IMen
 
     // soft delete menu
     const handleSoftDeleteMenu = async () => {
-        const toastId = toast.loading("Soft Deleting menu...");
+        const toastId = toast.loading("Deleting menu...");
         setIsDeleting(true);
 
         const result = await softDeleteMenu(menu?._id);
 
         if (result.success) {
-            toast.success(result?.message || "Menu soft deleted successfully", {
+            toast.success(result?.message || "Menu deleted successfully", {
                 id: toastId,
             });
             setIsSoftDeleteOpen(false);
-            router.push("/vendor/menu/all");
-            setIsDeleting(false);
-            return;
-        }
-
-        toast.error(result.message || "Menu deletion failed", { id: toastId });
-        setIsDeleting(false);
-    };
-
-    // permanent delete menu
-    const handlePermanentDeleteMenu = async () => {
-        const toastId = toast.loading("Permanent Deleting menu...");
-        setIsDeleting(true);
-
-        const result = await permanentDeleteMenu(menu?._id);
-
-        if (result.success) {
-            toast.success(
-                result?.message || "Menu Permanent deleted successfully",
-                { id: toastId }
-            );
-            setIsPermanentDeleteOpen(false);
             router.push("/vendor/menu/all");
             setIsDeleting(false);
             return;
@@ -244,17 +218,8 @@ export default function MenuDetails({ menu, sections = [], products = [] }: IMen
                     className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
                 >
                     <Trash2Icon className="w-5 h-5" />
-                    <span>{t("soft_delete")}</span>
+                    <span>{t("delete")}</span>
                 </button>
-
-                {/* Permanent Delete (Fixed handler target) */}
-                {/* <button
-                    onClick={() => setIsPermanentDeleteOpen(true)}
-                    className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
-                >
-                    <Trash2Icon className="w-5 h-5" />
-                    <span>{t("permanent_delete")}</span>
-                </button> */}
             </div>
 
             {/* Dialogs and Modals */}
@@ -268,12 +233,9 @@ export default function MenuDetails({ menu, sections = [], products = [] }: IMen
                 onOpenChange={() => setIsSoftDeleteOpen(false)}
                 onConfirm={handleSoftDeleteMenu}
                 isDeleting={isDeleting}
-            />
-            <DeleteModal
-                open={isPermanentDeleteOpen}
-                onOpenChange={() => setIsPermanentDeleteOpen(false)}
-                onConfirm={handlePermanentDeleteMenu}
-                isDeleting={isDeleting}
+                title={t("delete_item_title")}
+                description={t("delete_item_description")}
+                confirmLabel={t("delete")}
             />
         </div>
     );

@@ -22,9 +22,9 @@ const DeleteProductDialog = ({ open, onOpenChange, onConfirm, t }: IProps) => {
       <form>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("are_you_absolutely_sure")}</DialogTitle>
+            <DialogTitle>{t("delete_item_title")}</DialogTitle>
             <DialogDescription>
-              {t("this_action_cannot_be_undone")}
+              {t("delete_item_description")}
             </DialogDescription>
           </DialogHeader>{" "}
           <DialogFooter>

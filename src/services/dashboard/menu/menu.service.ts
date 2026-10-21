@@ -111,24 +111,13 @@ export const softDeleteMenu = async (id: string) => {
         return await response.json();
     });
 
-    return result;
-};
-
-// soft delete menu
-export const permanentDeleteMenu = async (id: string) => {
-    const result = await catchAsync(async () => {
-        const response = await serverFetch.delete(`/menus/permanent-delete/${id}`, {
-            next: {
-                tags: ["menus"]
-            }
-        });
-
-        return await response.json();
-    });
+    if (result.success) {
+        revalidateTag("menus", {});
+        revalidatePath("/vendor/menu/all");
+    }
 
     return result;
 };
-
 
 // ---> section apis
 // create section in menu

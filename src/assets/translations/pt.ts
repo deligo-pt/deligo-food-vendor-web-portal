@@ -1119,8 +1119,6 @@ export const pt = {
   search_products: "Pesquisar produtos...",
   is_available: "Está disponível",
   add_section: "Adicionar Secção",
-  soft_delete: "Eliminação Temporária",
-  permanent_delete: "Eliminação Permanente",
   update_section: "Atualizar Secção",
   update_you_section_details_below: "Atualize os detalhes da sua secção utilizando o formulário abaixo.",
   add_required_sections_under_each_menu: "Adicione as secções necessárias sob cada menu",
@@ -1182,7 +1180,7 @@ export const pt = {
   edit_category: "Editar Categoria",
   soft_delete_archive: "Eliminar Temporariamente (Arquivar)",
   these_are_platform_managed_categories:
-    "Estas são categorias geridas pela plataforma. Os vendedores não podem criar ou editar categorias.",
+    "Gerir as suas categorias de produtos.",
   platform: "Plataforma",
   no_categories_found: "Nenhuma categoria encontrada",
 
@@ -2350,13 +2348,10 @@ export const pt = {
   loading_more_items: "A carregar mais itens…",
   count_not_loaded: "Ainda não carregado",
   // Product categories: soft delete, then permanent delete, as the API names them (no restore)
-  category_soft_deleted: "Eliminada temporariamente",
-  soft_delete_category: "Eliminação temporária",
-  delete_permanently: "Eliminação permanente",
-  soft_delete_category_title: "Eliminar temporariamente esta categoria?",
-  soft_delete_category_description: "Passo 1 de 2: a categoria é desativada e fica oculta para os clientes. Isto não pode ser desfeito no painel. Depois, só a pode eliminar permanentemente.",
-  delete_category_permanently_title: "Eliminar permanentemente esta categoria?",
-  delete_category_permanently_description: "Passo 2 de 2: a categoria é removida definitivamente. Esta ação não pode ser desfeita.",
+  delete_category_title: "Excluir esta categoria?",
+  delete_category_description: "Esta categoria será removida do seu painel e dos clientes. Esta ação não pode ser desfeita.",
+  delete_item_title: "Excluir este item?",
+  delete_item_description: "Será removido do seu painel e dos clientes. Esta ação não pode ser desfeita.",
   // Discount type options on the product pricing form (values stay PERCENTAGE / FLAT)
   discount_type_percentage: "Percentagem",
   discount_type_flat: "Valor fixo",

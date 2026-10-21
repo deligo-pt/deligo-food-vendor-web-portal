@@ -33,7 +33,14 @@ export const addProductCategoryReq = async (payload: Partial<TProductCategory>) 
 // With no query, every category: the API's default page is 10, and a vendor
 // with 11 lost the 11th from All Items and from the product forms' picker. The
 // category management page passes its own paging.
-export const getAllProductCategoriesReq = async (query?: string) => {
+// Inactive categories are left out unless `includeInactive` is set: All Items,
+// the product forms and the bulk price pages must not offer a category the
+// vendor has switched off. Only the management page needs them, to switch one
+// back on.
+export const getAllProductCategoriesReq = async (
+  query?: string,
+  options?: { includeInactive?: boolean },
+) => {
   const result = await catchAsync(async () => {
     const response = await serverFetch.get(`/product-categories?${query || "limit=500"}`, {
       next: {
@@ -44,6 +51,15 @@ export const getAllProductCategoriesReq = async (query?: string) => {
 
     return await response.json();
   });
+
+  // The API still lists soft-deleted categories to their vendor; a soft delete
+  // takes one out of the dashboard, so it is dropped here for every consumer
+  // (the list page and the product forms' picker).
+  if (result.success && Array.isArray(result.data)) {
+    result.data = result.data.filter(
+      (c: TProductCategory) => !c.isDeleted && (options?.includeInactive || c.isActive),
+    );
+  }
 
   return result;
 };
@@ -88,25 +104,6 @@ export const updateProductCategory = async (payload: Partial<TProductCategory>, 
 export const softDeleteProductCategory = async (id: string) => {
   const result = await catchAsync(async () => {
     const response = await serverFetch.delete(`/product-categories/soft-delete/${id}`, {
-      next: {
-        tags: ["product-categories"]
-      }
-    });
-
-    return await response.json();
-  });
-
-  if (result.success) {
-    updateTag(CACHE_TAGS.productCategories);
-  }
-
-  return result;
-};
-
-// permanent delete category
-export const permanentDeleteProductCategory = async (id: string) => {
-  const result = await catchAsync(async () => {
-    const response = await serverFetch.delete(`/product-categories/permanent-delete/${id}`, {
       next: {
         tags: ["product-categories"]
       }
