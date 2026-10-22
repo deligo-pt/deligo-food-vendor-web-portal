@@ -65,6 +65,8 @@ export type TProduct = {
    */
   image?: string;
   images?: string[];
+  /** The picture is the admin's default, applied because the vendor gave none. */
+  isDefaultImage?: boolean;
 
   vendor: {
     vendorId: string;

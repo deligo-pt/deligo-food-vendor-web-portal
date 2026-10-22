@@ -22,8 +22,18 @@ export type TProductCategory = {
   slug: string;
   isActive: boolean;
   isDeleted: boolean;
+  /** 1-based place in the vendor's order. The API lists categories by it. */
+  displayOrder?: number;
   createdAt?: Date;
   updatedAt?: Date;
+};
+
+/** What `PATCH /product-categories/reorder` answers. */
+export type TProductCategoryReorder = {
+  categoryId: string;
+  displayOrder: number;
+  moved: boolean;
+  normalized: boolean;
 };
 
 export type TProductCategoryResponse = {

@@ -1,5 +1,5 @@
-import ListCardSkeleton from "@/src/components/Skeletons/common/ListCardSkeleton";
+import CategoryListSkeleton from "@/src/components/Skeletons/common/CategoryListSkeleton";
 
 export default function Loading() {
-  return <ListCardSkeleton />;
+  return <CategoryListSkeleton />;
 }

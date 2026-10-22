@@ -2358,6 +2358,7 @@ export const pt = {
   // SDR container deposit (product form)
   sdr_container_deposit: "Depósito de embalagem (SDR)",
   sdr_helper_active: "Para garrafas e latas. Os clientes pagam este depósito por unidade, além do preço:",
+  sdr_loading: "A carregar o valor do depósito…",
   sdr_helper_inactive: "Para garrafas e latas. O SDR não está ativo neste momento — o depósito é cobrado quando for ativado.",
   sdr_products_only: "Só produtos com SDR",
   yes: "Sim",
@@ -2377,4 +2378,21 @@ export const pt = {
   translation_review_keep_same: "Manter o mesmo texto",
   translation_field_title: "Título",
   translation_field_text: "Texto",
+
+  // Categorias de produtos: arrastar para ordenar
+  arrange_order_help: "Arraste as categorias para a ordem que os clientes devem ver. Cada alteração é guardada automaticamente.",
+  arrange_order_search_note: "Limpe a pesquisa para alterar a ordem.",
+  arrange_order_saving: "A guardar…",
+  arrange_order_saved: "Guardado",
+  arrange_order_failed: "Não foi possível guardar a nova ordem. Tente novamente.",
+  arrange_order_capped: "Colocada na posição {position}, a última posição que o servidor permite por agora.",
+  arrange_order_drag: "Arraste para reordenar",
+  arrange_order_move_up: "Mover para cima",
+  arrange_order_move_down: "Mover para baixo",
+  arrange_order_position: "Posição {position} de {total}",
+  arrange_order_instructions: "Para pegar numa categoria, prima Espaço ou Enter. Use as setas para a mover e depois Espaço ou Enter para a largar, ou Escape para cancelar.",
+  arrange_order_picked_up: "{name} selecionada. Posição {position} de {total}.",
+  arrange_order_moved_over: "{name} está agora na posição {position} de {total}.",
+  arrange_order_dropped: "{name} largada na posição {position} de {total}.",
+  arrange_order_cancelled: "Movimento cancelado. {name} voltou à posição {position}.",
 };

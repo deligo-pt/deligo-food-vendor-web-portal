@@ -164,13 +164,16 @@ export default function AllFilters({
               )?.length || ""}
             </Button>
           )}
-          <div className="w-full lg:w-48">
-            <SelectFilter
-              paramName="sortBy"
-              options={sortOptions}
-              placeholder={t("sort_by")}
-            />
-          </div>
+          {/* No options, no sort (a list the API keeps in a fixed order). */}
+          {sortOptions.length > 0 && (
+            <div className="w-full lg:w-48">
+              <SelectFilter
+                paramName="sortBy"
+                options={sortOptions}
+                placeholder={t("sort_by")}
+              />
+            </div>
+          )}
         </div>
       </div>
 

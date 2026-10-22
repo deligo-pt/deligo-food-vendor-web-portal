@@ -1,5 +1,10 @@
 /**
- * The picture a product falls back to when the vendor uploads none.
+ * The panel's own default product picture, from before the API set one.
+ *
+ * Since 22 Oct 2026 it is never sent: a product saved without an image gets
+ * the admin's default from the API, flagged `isDefaultImage`. This stays to
+ * recognise products saved with it back then (`isDefaultProductImage`) and as
+ * a picture for cards showing a product that has none.
  *
  * A real storage URL, not `/dlgg.png` from this app's `public/` folder: the
  * backend stores whatever it is given and the **customer app** renders it, so a

@@ -63,17 +63,14 @@ export function localizedText(value: unknown, lang: string): string {
 }
 
 /**
- * Every category, A–Z by the name the vendor reads. Counts aren't known yet:
- * each category's count arrives with its first page, as the vendor scrolls to
- * it (the box shows "–", then a spinner, then the number).
+ * Every category, in the vendor's own order: the order the API lists them in
+ * (`displayOrder`, set on the Product Categories page with "Arrange order"),
+ * which is also the order customers see. Was A–Z until 22 Oct 2026. Counts
+ * aren't known yet: each category's count arrives with its first page, as the
+ * vendor scrolls to it (the box shows "–", then a spinner, then the number).
  */
-export function orderCategories<C extends Named>(categories: readonly C[], lang: string): C[] {
-  return [...categories].sort((a, b) =>
-    localizedText(a.name, lang).localeCompare(localizedText(b.name, lang), lang, {
-      sensitivity: "base",
-      numeric: true,
-    }),
-  );
+export function orderCategories<C extends Named>(categories: readonly C[]): C[] {
+  return [...categories];
 }
 
 type Placed = {
