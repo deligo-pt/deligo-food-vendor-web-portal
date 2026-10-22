@@ -54,7 +54,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
   // Only the catalogue's total up front, for "Select all products". Each
   // category's own count arrives with its first page, as the vendor scrolls to
   // it; the 11-odd count requests this used to make were most of the wait.
-  const sections = orderCategories(categories, lang);
+  const sections = orderCategories(categories);
   const firstId = sections[0]?._id;
   const [{ total }, firstPage] = await Promise.all([
     getCatalogueCounts([], filters),

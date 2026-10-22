@@ -74,7 +74,9 @@ export const signAgreement = async (id: string, data: Record<string, string>) =>
   });
 
   if (result.success) {
-    revalidateTag("agreements", {});
+    // `updateTag`, not `revalidateTag`: the latter may still serve the old
+    // agreement once, and the topbar asks again right after a signature.
+    updateTag("agreements");
     updateTag(CACHE_TAGS.profile);
     revalidatePath("/become-vendor/agreement-sign");
   };

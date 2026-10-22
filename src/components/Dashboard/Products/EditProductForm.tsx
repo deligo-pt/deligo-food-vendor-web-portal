@@ -22,7 +22,6 @@ import { getAllProductCategoriesReq } from "@/src/services/dashboard/categories/
 import { getAllTaxesReq } from "@/src/services/dashboard/taxes/taxes";
 import { useStore } from "@/src/store/store";
 import {
-  DEFAULT_PRODUCT_IMAGE,
   getProductImage,
   isDefaultProductImage,
 } from "@/src/consts/product.const";
@@ -158,14 +157,17 @@ export function EditProductForm({
       name: prevData?.name || "",
       // Seeded from whichever field the product actually carries, and with the
       // fallback picture filtered out: a product saved without an image gets
-      // `DEFAULT_PRODUCT_IMAGE` on the server, and showing that back here
-      // presented it as something the vendor had uploaded — deletable, and
-      // occupying the one slot so "Replace image" was the only way past it. An
-      // empty slot is the truth, and saving still re-applies the default.
-      // A product saved under an earlier default (dl1) is treated the same way.
-      images: [getProductImage(prevData)].filter(
-        (url): url is string => Boolean(url) && !isDefaultProductImage(url),
-      ),
+      // the admin's default from the API (`isDefaultImage`), and showing that
+      // back here presented it as something the vendor had uploaded —
+      // deletable, and occupying the one slot so "Replace image" was the only
+      // way past it. An empty slot is the truth, and saving leaves the default
+      // in place. Products saved under the panel's own earlier defaults (dlgg,
+      // dl1) carry no flag, so those URLs are recognised too.
+      images: prevData?.isDefaultImage
+        ? []
+        : [getProductImage(prevData)].filter(
+            (url): url is string => Boolean(url) && !isDefaultProductImage(url),
+          ),
       description: prevData?.description || "",
       category: prevData?.category?._id || "",
       // Seeded so the picker shows them. Without this, Edit opened with the
@@ -307,13 +309,12 @@ export function EditProductForm({
     const originalImage = getProductImage(prevData);
     const currentImage = data.images?.[0];
 
+    // Only a new upload is sent. With no `image` the API keeps the stored
+    // picture, and removing one goes through `DELETE /products/:id/images`
+    // (the uploader), after which the API puts the admin's default back.
+    // Never sent empty: the API rejects `""` and `null`.
     if (currentImage && currentImage !== originalImage) {
       productData.image = currentImage;
-    } else if (!currentImage && originalImage) {
-      // The vendor removed their only picture. Sending nothing would leave the
-      // product with none at all, so the default takes the slot back — the same
-      // rule the create form applies.
-      productData.image = DEFAULT_PRODUCT_IMAGE;
     }
 
     // pricing update

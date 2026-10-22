@@ -29,6 +29,7 @@ import { ArrowLeftCircle, CheckCircle2, CreditCard } from "lucide-react";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { uploadImagesReq } from "@/src/services/upload/upload.service";
 import { signAgreement, submitForApprovalReq } from "@/src/services/becomeVendor/become-vendor";
+import { AGREEMENT_SIGNED_EVENT } from "@/src/consts/agreement.const";
 import { AnimatePresence, motion } from "framer-motion";
 import { FileUploadZone } from "./FileUploadZone";
 
@@ -210,6 +211,8 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
                     id: toastId,
                 });
                 setSignedPdfUrl(res?.data?.signedPdfPath);
+                // The topbar's re-sign notice checks again (it isn't reloaded).
+                window.dispatchEvent(new Event(AGREEMENT_SIGNED_EVENT));
                 startTransition(() => {
                     router.refresh();
                 });

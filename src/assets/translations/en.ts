@@ -2298,6 +2298,7 @@ export const en = {
   // SDR container deposit (product form)
   sdr_container_deposit: "Container deposit (SDR)",
   sdr_helper_active: "For bottles and cans. Customers pay this deposit per unit, on top of the price:",
+  sdr_loading: "Loading the deposit amount…",
   sdr_helper_inactive: "For bottles and cans. SDR is not active right now — the deposit is charged once it is switched on.",
   sdr_products_only: "SDR products only",
   yes: "Yes",
@@ -2317,4 +2318,21 @@ export const en = {
   translation_review_keep_same: "Keep the same text",
   translation_field_title: "Title",
   translation_field_text: "Text",
+
+  // Product categories: drag into order
+  arrange_order_help: "Drag the categories into the order customers should see. Each change saves on its own.",
+  arrange_order_search_note: "Clear the search to change the order.",
+  arrange_order_saving: "Saving…",
+  arrange_order_saved: "Saved",
+  arrange_order_failed: "Couldn't save the new order. Please try again.",
+  arrange_order_capped: "Placed at position {position}, the lowest position the server allows for now.",
+  arrange_order_drag: "Drag to reorder",
+  arrange_order_move_up: "Move up",
+  arrange_order_move_down: "Move down",
+  arrange_order_position: "Position {position} of {total}",
+  arrange_order_instructions: "To pick up a category, press Space or Enter. Use the arrow keys to move it, then Space or Enter to drop it, or Escape to cancel.",
+  arrange_order_picked_up: "Picked up {name}. Position {position} of {total}.",
+  arrange_order_moved_over: "{name} is now at position {position} of {total}.",
+  arrange_order_dropped: "{name} dropped at position {position} of {total}.",
+  arrange_order_cancelled: "Moving cancelled. {name} is back at position {position}.",
 };

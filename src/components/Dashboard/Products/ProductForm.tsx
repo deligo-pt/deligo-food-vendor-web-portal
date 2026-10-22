@@ -38,7 +38,6 @@ import { postData } from "@/src/utils/requests";
 import { TProduct } from "@/src/types/product.type";
 import { TResponse } from "@/src/types";
 import { useStore } from "@/src/store/store";
-import { DEFAULT_PRODUCT_IMAGE } from "@/src/consts/product.const";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { useRouter } from "next/navigation";
 
@@ -209,10 +208,10 @@ export function ProductForm({
         // because the uploader and the image-delete endpoint both use one — the
         // narrowing to one URL happens here, at the boundary.
         //
-        // The vendor may skip the step entirely; every product still ships with
-        // a picture. Applied here rather than in the uploader, so the default
-        // is never shown, never selectable and never deletable.
-        image: data.images?.[0] || DEFAULT_PRODUCT_IMAGE,
+        // The vendor may skip the step entirely. Then `image` is left out and
+        // the API applies the admin's default picture (`isDefaultImage: true`).
+        // It must be left out, not sent empty: the API rejects `""` and `null`.
+        ...(data.images?.[0] && { image: data.images[0] }),
         pricing: {
           price: data.price ?? undefined,
           discountType: data.discountType,

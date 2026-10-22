@@ -1,7 +1,7 @@
 "use server";
 
 import { serverFetch } from "@/lib/serverFetch";
-import { TProductCategory } from "@/src/types/category.type";
+import { TProductCategory, TProductCategoryReorder } from "@/src/types/category.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 import { CACHE_SECONDS, CACHE_TAGS } from "@/src/consts/cache.const";
 import { revalidatePath, updateTag } from "next/cache";
@@ -37,17 +37,25 @@ export const addProductCategoryReq = async (payload: Partial<TProductCategory>) 
 // the product forms and the bulk price pages must not offer a category the
 // vendor has switched off. Only the management page needs them, to switch one
 // back on.
+// `fresh` skips the cache. "Arrange order" sends a move as a place in this
+// list, so it must be the order the API has now: an admin, or the vendor in
+// another tab, may have changed it since the cache was filled.
 export const getAllProductCategoriesReq = async (
   query?: string,
-  options?: { includeInactive?: boolean },
+  options?: { includeInactive?: boolean; fresh?: boolean },
 ) => {
   const result = await catchAsync(async () => {
-    const response = await serverFetch.get(`/product-categories?${query || "limit=500"}`, {
-      next: {
-        revalidate: CACHE_SECONDS.lists,
-        tags: [CACHE_TAGS.productCategories]
-      }
-    });
+    const response = await serverFetch.get(
+      `/product-categories?${query || "limit=500"}`,
+      options?.fresh
+        ? { cache: "no-store" }
+        : {
+          next: {
+            revalidate: CACHE_SECONDS.lists,
+            tags: [CACHE_TAGS.productCategories]
+          }
+        },
+    );
 
     return await response.json();
   });
@@ -87,6 +95,32 @@ export const updateProductCategory = async (payload: Partial<TProductCategory>, 
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
+    });
+
+    return await response.json();
+  });
+
+  if (result.success) {
+    updateTag(CACHE_TAGS.productCategories);
+    revalidatePath("/vendor/product-categories/all");
+  }
+
+  return result;
+};
+
+// move one category to a new place in the vendor's order
+// `newOrder` is 1-based and counts the categories that aren't deleted, inactive
+// ones included: the list the management page shows. The API shifts the rest
+// itself, so only the moved category is sent. It caps `newOrder` at the number
+// of *active* categories (backend bug, 22 Oct 2026), so the answer's
+// `displayOrder` can be smaller than what was asked.
+export const reorderProductCategoryReq = async (categoryId: string, newOrder: number) => {
+  const result = await catchAsync<TProductCategoryReorder>(async () => {
+    const response = await serverFetch.patch("/product-categories/reorder", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ categoryId, newOrder }),
     });
 
     return await response.json();

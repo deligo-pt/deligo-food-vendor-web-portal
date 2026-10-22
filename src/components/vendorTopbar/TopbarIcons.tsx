@@ -12,6 +12,7 @@ import { DESKTOP_QUERY, useMediaQuery } from "@/src/hooks/use-media-query";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { logoutReq } from "@/src/services/auth/auth";
 import { getCurrentAgreementVersion } from "@/src/services/becomeVendor/become-vendor";
+import { AGREEMENT_SIGNED_EVENT } from "@/src/consts/agreement.const";
 import { useStore } from "@/src/store/store";
 import { IAgreement } from "@/src/types/agreement.type";
 import { TVendor } from "@/src/types/vendor.type";
@@ -124,22 +125,27 @@ export default function TopbarIcons({ vendor, place }: IProps) {
   // and that load is what tripped the backend's 429 rate limit.
   // The notice is `hidden md:block`, so only the desktop copy loads it: on a
   // wide screen, and again only if the window is narrowed and widened again.
+  // It is checked again once the vendor signs (`AGREEMENT_SIGNED_EVENT`): the
+  // topbar is part of the layout and survives the page change after signing,
+  // so without this the notice stayed until a full reload.
   const showsAgreement = place === "desktop" && onScreen;
   useEffect(() => {
     if (!showsAgreement) return;
-    (async () => {
+    let alive = true;
+    const check = async () => {
       try {
         const res = await getCurrentAgreementVersion();
-
-        if (res?.data) {
-          setAgreeVersion(res.data);
-        } else {
-          setAgreeVersion(null);
-        }
+        if (alive) setAgreeVersion(res?.data ?? null);
       } catch (error) {
         console.error("Failed to fetch agreement version:", error);
       }
-    })();
+    };
+    check();
+    window.addEventListener(AGREEMENT_SIGNED_EVENT, check);
+    return () => {
+      alive = false;
+      window.removeEventListener(AGREEMENT_SIGNED_EVENT, check);
+    };
   }, [showsAgreement]);
 
   return (

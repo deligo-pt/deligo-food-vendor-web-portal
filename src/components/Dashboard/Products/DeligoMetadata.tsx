@@ -11,6 +11,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { motion } from 'framer-motion';
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getEffectiveSdrDeposit } from "@/src/services/dashboard/sdr/sdr";
 import { TSdrEffective } from "@/src/types/product.type";
@@ -116,7 +117,14 @@ const DeligoMetadata = ({ form }: IProps) => {
                                 </FormLabel>
                                 <p className="text-xs text-gray-500">
                                     {sdr === null
-                                        ? "…"
+                                        ? (
+                                            // Loading: a spinner in the line the amount will take,
+                                            // so nothing moves when it arrives.
+                                            <span role="status" aria-live="polite" className="inline-flex items-center gap-1.5">
+                                                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#DC3173]" aria-hidden />
+                                                {t("sdr_loading")}
+                                            </span>
+                                        )
                                         : sdr.isActive
                                             ? <>
                                                 {t("sdr_helper_active")}{" "}

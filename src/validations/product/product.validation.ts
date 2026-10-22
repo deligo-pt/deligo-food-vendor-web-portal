@@ -25,9 +25,9 @@ export const productValidation = z.object({
         .url("Each image must be a valid URL")
         .nonempty("Image URL is required"),
     )
-    // No minimum: leaving this empty is allowed, and the form fills the slot
-    // with `DEFAULT_PRODUCT_IMAGE` on save. A minimum here would block the
-    // vendor at validation before that could ever happen.
+    // No minimum: leaving this empty is allowed, and the API then applies the
+    // admin's default picture. A minimum here would block the vendor at
+    // validation before that could ever happen.
     .max(1, "Only one image is allowed"),
 
   // `null` is an emptied price box (see PricingForm); the refine below turns
