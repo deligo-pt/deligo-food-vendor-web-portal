@@ -1269,6 +1269,13 @@ export const pt = {
   price: "Preço",
   add_option: "Adicionar Opção",
   add_variation: "Adicionar Variação",
+  // Um grupo de variações por produto (23 out 2026); o grupo pode ter quantas opções forem precisas.
+  variation_one_group_note: "Um produto pode ter um grupo de variações. Para oferecer mais escolhas, adicione opções a esse grupo.",
+  variation_add_option_to: "Adicionar uma opção a {name}",
+  variation_remove_option: "Remover {name}",
+  variation_option_exists: "{name} já é uma opção.",
+  variation_confirm_delete: "Confirmar",
+  variation_prices_note: "Para alterar os preços das variações, vá a Gestão de Variações.",
 
   stock_information: "Informações de Stock",
   quantity: "Quantidade",

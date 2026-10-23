@@ -84,7 +84,7 @@ export function ProductForm({
         icon: <ImageIcon className="h-5 w-5" />,
       },
       {
-        name: t("add_ons"), // was t("add_ons_and_variants") — variations hidden (19 Oct 2026)
+        name: t("add_ons_and_variants"),
         icon: <LayersIcon className="h-5 w-5" />,
       },
       {

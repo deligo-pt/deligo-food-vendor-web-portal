@@ -1239,6 +1239,13 @@ export const en = {
   price: "Price",
   add_option: "Add Option",
   add_variation: "Add Variation",
+  // One variation group per product (23 Oct 2026); the group can have any number of options.
+  variation_one_group_note: "A product can have one variation group. To offer more choices, add options to it.",
+  variation_add_option_to: "Add an option to {name}",
+  variation_remove_option: "Remove {name}",
+  variation_option_exists: "{name} is already an option.",
+  variation_confirm_delete: "Confirm",
+  variation_prices_note: "To change variation prices, go to Variation Management.",
   stock_information: "Stock Information",
   quantity: "Quantity",
   unit: "Unit",

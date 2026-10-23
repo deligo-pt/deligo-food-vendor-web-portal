@@ -101,7 +101,7 @@ export function EditProductForm({
       icon: <ImageIcon className="h-5 w-5" />,
     },
     {
-      name: t("add_ons"), // was t("add_ons_and_variants") — variations hidden (19 Oct 2026)
+      name: t("add_ons_and_variants"),
       icon: <LayersIcon className="h-5 w-5" />,
     },
     {
@@ -624,8 +624,7 @@ export function EditProductForm({
                     className="space-y-6"
                   >
                     <h2 className="text-xl font-semibold text-gray-800">
-                      {/* {t("add_ons_and_variants")} — variations hidden (19 Oct 2026) */}
-                      {t("add_ons")}
+                      {t("add_ons_and_variants")}
                     </h2>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -700,8 +699,8 @@ export function EditProductForm({
                       />
                     </div>
 
-                    {/* Variations hidden for now (19 Oct 2026) — commented out, not removed.
-                        Saving still sends the product's existing variations, so they are kept.
+                    {/* Read-only here: variations (one group per product, with its
+                        options) are edited on the Variation Management page. */}
                     <div className="space-y-2 ">
                       <label className="block mb-1">{t("variations")}</label>
                       <div>
@@ -732,11 +731,11 @@ export function EditProductForm({
                           ))
                         ) : (
                           <p className="text-sm text-gray-500">
-                            No variations added
+                            {t("no_variations")}
                           </p>
                         )}
                       </div>
-                      {(prevData?.variations || prevData?.variations?.length !== 0) && <div className="flex items-start gap-3 p-4 rounded-xl border border-[#DC3173] bg-[#DC3173]/20">
+                      {(prevData?.variations?.length ?? 0) > 0 && <div className="flex items-start gap-3 p-4 rounded-xl border border-[#DC3173] bg-[#DC3173]/20">
                         <div className="shrink-0 mt-0.5">
                           <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#DC3173] text-white text-xs font-bold select-none">
                             !
@@ -744,11 +743,10 @@ export function EditProductForm({
                         </div>
 
                         <p className="text-[#DC3173] text-sm font-medium italic leading-relaxed">
-                          For updating variation prices,Please visit Variation Management page
+                          {t("variation_prices_note")}
                         </p>
                       </div>}
                     </div>
-                    */}
                   </motion.div>
                 )}
                 {/* Pricing Tab */}
