@@ -185,17 +185,22 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowAddVariation(true);
-              if (!isExpanded) setIsExpanded(true);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#DC3173] bg-[#DC3173]/10 rounded-lg hover:bg-[#DC3173]/30 transition-colors"
-          >
-            <PlusIcon size={14} />
-            {t("add_variation")}
-          </button>
+          {/* One variation group per product (23 Oct 2026): a product that has
+              one adds options to it instead. Products saved earlier with
+              several groups keep them. */}
+          {variationCount === 0 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAddVariation(true);
+                if (!isExpanded) setIsExpanded(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#DC3173] bg-[#DC3173]/10 rounded-lg hover:bg-[#DC3173]/30 transition-colors"
+            >
+              <PlusIcon size={14} />
+              {t("add_variation")}
+            </button>
+          )}
 
           <motion.div
             animate={{
@@ -233,9 +238,15 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
             className="overflow-hidden"
           >
             <div className="border-t border-gray-100 bg-gray-50/40 p-5 space-y-4">
+              {variationCount > 0 && (
+                <p className="text-xs font-medium text-[#DC3173]" data-testid="variation-one-group-note">
+                  {t("variation_one_group_note")}
+                </p>
+              )}
+
               {/* Add Variation Form */}
               <AnimatePresence>
-                {showAddVariation && (
+                {showAddVariation && variationCount === 0 && (
                   <AddVariationForm
                     productId={product.productId}
                     onCancel={() => setShowAddVariation(false)}
@@ -313,7 +324,9 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
                         </button>
                         <VariationDeleteButton
                           onConfirm={() =>
-                            deleteVariation({ name: variation.name?.[lang] as string })
+                            // The API finds the group by its English name, whatever the panel's
+                            // language (in PT, "Tamanho" answered "could not be found").
+                            deleteVariation({ name: (variation.name?.en ?? variation.name?.[lang]) as string })
                           }
                           label={t("delete_variation")}
                         />
@@ -388,8 +401,8 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
                             <VariationDeleteButton
                               onConfirm={() =>
                                 deleteVariation({
-                                  name: variation.name?.[lang] as string,
-                                  labelToRemove: option.label?.[lang],
+                                  name: (variation.name?.en ?? variation.name?.[lang]) as string,
+                                  labelToRemove: option.label?.en ?? option.label?.[lang],
                                 })
                               }
                               label={t("delete_option")}

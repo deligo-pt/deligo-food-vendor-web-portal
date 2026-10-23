@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars -- the Variations UI is commented out (19 Oct 2026); its state, handlers and imports stay so it can be restored. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useTranslation } from '@/src/hooks/use-translation';
@@ -135,7 +134,18 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
         );
     };
 
+    /**
+     * One variation group per product (23 Oct 2026): once the product has a
+     * group, more choices are added as options to it, not as a new group.
+     * Products saved earlier with several groups keep them.
+     */
+    const hasGroup = (watchVariations?.length ?? 0) > 0;
+
     const addVariation = () => {
+        if (hasGroup) {
+            toast.error(t("variation_one_group_note"));
+            return;
+        }
         if (variationName[selectedLanguage] && options.length > 0) {
             if (!form.getValues("variations").find((v: TVariations) => v.name[selectedLanguage] ===
                 variationName[selectedLanguage])) {
@@ -160,12 +170,58 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
         }
     };
 
-    const removeVariation = (nameToRemove: string) => {
+    const removeVariation = (index: number) => {
         form.setValue(
             "variations",
-            form.getValues("variations").filter((v: TVariations) =>
-                v.name[selectedLanguage] !==
-                nameToRemove),
+            form.getValues("variations").filter((_: TVariations, i: number) => i !== index),
+        );
+    };
+
+    /** Adds the option being typed to the product's group (once it has one). */
+    const addOptionToGroup = () => {
+        const groups: TVariations[] = form.getValues("variations") || [];
+        const group = groups[0];
+        const label = option.label[selectedLanguage];
+        if (!group || !label || option.price === undefined || option.price <= 0) {
+            toast.error("Option label and price are required");
+            return;
+        }
+        if (group.options?.some((o) => o.label?.[selectedLanguage] === label)) {
+            toast.error(t("variation_option_exists").replace("{name}", label));
+            return;
+        }
+        form.setValue("variations", [
+            {
+                ...group,
+                options: [
+                    ...(group.options || []),
+                    {
+                        label: { en: option.label.en, pt: option.label.pt },
+                        price: option.price,
+                        ...(businessTypeSlug !== "restaurant"
+                            ? { stockQuantity: option.stockQuantity }
+                            : {}),
+                    },
+                ],
+            },
+            ...groups.slice(1),
+        ]);
+        setOption({
+            label: { en: "", pt: "" },
+            price: undefined,
+            ...(businessTypeSlug !== "restaurant" ? { stockQuantity: 0 } : {}),
+        });
+    };
+
+    /** Removes one option of a group; removing the last one removes the group. */
+    const removeGroupOption = (groupIndex: number, optionIndex: number) => {
+        const groups: TVariations[] = form.getValues("variations") || [];
+        const remaining = (groups[groupIndex]?.options || []).filter((_, i) => i !== optionIndex);
+        form.setValue(
+            "variations",
+            remaining.length
+                ? groups.map((g, i) => (i === groupIndex ? { ...g, options: remaining } : g))
+                : groups.filter((_, i) => i !== groupIndex),
         );
     };
 
@@ -183,8 +239,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
             className="space-y-6"
         >
             <h2 className="text-xl font-semibold text-gray-800">
-                {/* {t("add_ons_and_variants")} — variations hidden (19 Oct 2026) */}
-                {t("add_ons")}
+                {t("add_ons_and_variants")}
             </h2>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -259,7 +314,6 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                 />
             </div>
 
-            {/* Variations hidden for now (19 Oct 2026) — commented out, not removed.
             <div className="space-y-2 ">
                 <label className="block mb-1">{t("variations")}</label>
                 <div>
@@ -283,12 +337,21 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                                             <span className="ml-2">
                                                 (€{option.price})
                                             </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeGroupOption(i, i2)}
+                                                aria-label={t("variation_remove_option").replace("{name}", option.label?.[selectedLanguage] ?? "")}
+                                                className="ml-2 text-white hover:text-[#CCC]"
+                                            >
+                                                <XIcon className="h-4 w-4" />
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
                                 <button
                                     type="button"
-                                    onClick={() => removeVariation(variation?.name?.[lang] as string)}
+                                    onClick={() => removeVariation(i)}
+                                    aria-label={t("variation_remove_option").replace("{name}", variation.name?.[selectedLanguage] ?? "")}
                                     className="ml-2 hover:text-[#333] absolute top-1 right-1"
                                 >
                                     <XIcon className="h-4 w-4" />
@@ -296,42 +359,58 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                             </div>
                         ))}
                 </div>
+                {hasGroup && (
+                    <p className="text-sm font-medium text-[#DC3173]" data-testid="variation-one-group-note">
+                        {t("variation_one_group_note")}
+                    </p>
+                )}
                 <div className="border rounded-md p-4 bg-gray-50 space-y-2">
-                    <Label className="text-gray-700 mb-1">
-                        {t("name")}
-                    </Label>
-                    <Input
-                        value={
-                            variationName[selectedLanguage]
-                        }
-                        onChange={(e) =>
-                            setVariationName((prev) => ({
-                                ...prev,
-                                [selectedLanguage]:
-                                    e.target.value,
-                            }))
-                        }
-                    />
-                    <Label className="text-gray-700">{t("options")}</Label>
-                    {options?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-1">
-                            {options?.map((option) => (
-                                <div
-                                    key={option.label.en}
-                                    className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
-                                >
-                                    <span>{option.label.en}</span>
-                                    <span className="ml-2">(€{option.price})</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeOption(option.label.en)}
-                                        className="ml-2 text-white hover:text-[#CCC]"
-                                    >
-                                        <XIcon className="h-4 w-4" />
-                                    </button>
+                    {hasGroup ? (
+                        <Label className="text-gray-700 mb-1">
+                            {t("variation_add_option_to").replace(
+                                "{name}",
+                                watchVariations?.[0]?.name?.[selectedLanguage] ?? "",
+                            )}
+                        </Label>
+                    ) : (
+                        <>
+                            <Label className="text-gray-700 mb-1">
+                                {t("name")}
+                            </Label>
+                            <Input
+                                value={
+                                    variationName[selectedLanguage]
+                                }
+                                onChange={(e) =>
+                                    setVariationName((prev) => ({
+                                        ...prev,
+                                        [selectedLanguage]:
+                                            e.target.value,
+                                    }))
+                                }
+                            />
+                            <Label className="text-gray-700">{t("options")}</Label>
+                            {options?.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-1">
+                                    {options?.map((option) => (
+                                        <div
+                                            key={option.label.en}
+                                            className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
+                                        >
+                                            <span>{option.label.en}</span>
+                                            <span className="ml-2">(€{option.price})</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeOption(option.label.en)}
+                                                className="ml-2 text-white hover:text-[#CCC]"
+                                            >
+                                                <XIcon className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            )}
+                        </>
                     )}
                     <div className="border border-dashed rounded-md p-4 bg-gray-100 space-y-2">
                         <div>
@@ -397,7 +476,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                         )}
                         <div className="text-right">
                             <Button
-                                onClick={addOption}
+                                onClick={hasGroup ? addOptionToGroup : addOption}
                                 type="button"
                                 size="sm"
                                 className="bg-[#DC3173] hover:bg-[#DC3173]/90"
@@ -406,19 +485,20 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                             </Button>
                         </div>
                     </div>
-                    <div>
-                        <Button
-                            onClick={addVariation}
-                            type="button"
-                            size="sm"
-                            className="bg-[#DC3173] hover:bg-[#DC3173]/90"
-                        >
-                            {t("add_variation")}
-                        </Button>
-                    </div>
+                    {!hasGroup && (
+                        <div>
+                            <Button
+                                onClick={addVariation}
+                                type="button"
+                                size="sm"
+                                className="bg-[#DC3173] hover:bg-[#DC3173]/90"
+                            >
+                                {t("add_variation")}
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
-            */}
         </motion.div>
     );
 };
