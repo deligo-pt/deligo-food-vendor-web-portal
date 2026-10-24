@@ -37,6 +37,7 @@ import { toast } from "sonner";
 import z from "zod";
 import { useStore } from "@/src/store/store";
 import { translateObject } from "@/src/utils/translation/translationObject";
+import AddonSdrControl, { DEFAULT_ADDON_SDR, useSdrDeposit } from "./AddonSdrControl";
 
 const PRIMARY = "#DC3173";
 
@@ -70,10 +71,12 @@ export default function AddOptionsForm({
       // box is "required", not a silent €0.
       price: undefined as unknown as number,
       tax: "",
+      sdr: DEFAULT_ADDON_SDR,
       currentLang: lang
     },
   });
   const { formState: { isSubmitting } } = form;
+  const deposit = useSdrDeposit(open);
 
   const handleAddOption = async (data: TAddonOptionForm) => {
     const toastId = toast.loading("Creating add-on option...");
@@ -88,7 +91,8 @@ export default function AddOptionsForm({
     const payload = {
       name: translated?.name,
       price: data.price,
-      tax: data.tax
+      tax: data.tax,
+      sdr: data.sdr
     };
 
     const result = await addOptionInGroup(selectedGroup?._id as string, payload);
@@ -181,6 +185,23 @@ export default function AddOptionsForm({
                       </SelectContent>
                     </Select>
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sdr"
+              render={({ field }) => (
+                <FormItem className="rounded-md border bg-gray-50 p-4">
+                  <AddonSdrControl
+                    id="add-option-sdr"
+                    value={field.value}
+                    onChange={field.onChange}
+                    deposit={deposit}
+                    t={t}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

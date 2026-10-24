@@ -1,6 +1,7 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
+import { TProduct } from "@/src/types/product.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 
 type LocalizedType = {
@@ -26,7 +27,7 @@ export const addVariationReq = async (
   productId: string,
   data: Partial<IVariation>,
 ) => {
-  return catchAsync<null>(async () => {
+  return catchAsync<TProduct>(async () => {
     return await serverRequest.patch(
       `/products/manage-product-variations/${productId}`,
       { data },

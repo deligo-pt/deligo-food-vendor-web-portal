@@ -42,6 +42,7 @@ import {
   ImageIcon,
   LayersIcon,
   PackageIcon,
+  PlusIcon,
   SaveIcon,
   StarIcon,
   TagIcon,
@@ -56,6 +57,8 @@ import BasicInfoForm from "./BasicInfoForm";
 import ImageAndDescriptionForm from "./Image&DescriptionForm";
 import PricingForm from "./PricingForm";
 import StockInformationForm from "./StockInformationForm";
+import AddVariationForm from "./VariationManagement/AddVariationForm";
+import AddVaritionOptionForm from "./VariationManagement/AddVaritionOptionForm";
 import DeligoMetadata from "./DeligoMetadata";
 import TitleHeader from "../../TitleHeader/TitleHeader";
 
@@ -90,6 +93,8 @@ export function EditProductForm({
   const { t } = useTranslation();
   const { lang } = useStore();
   const [activeTab, setActiveTab] = useState(0);
+  // Which variation form is open on the Add-Ons & Variants tab.
+  const [variationForm, setVariationForm] = useState<"group" | "option" | null>(null);
 
   const tabs = [
     {
@@ -699,8 +704,12 @@ export function EditProductForm({
                       />
                     </div>
 
-                    {/* Read-only here: variations (one group per product, with its
-                        options) are edited on the Variation Management page. */}
+                    {/* Variations are saved through the variation API, straight
+                        away — the product update (`PATCH /products/:id`)
+                        rejects a `variations` key, so Save Product cannot
+                        carry them. Same forms and one-group rule as the
+                        Variation Management page; renaming, prices and
+                        deleting stay there. */}
                     <div className="space-y-2 ">
                       <label className="block mb-1">{t("variations")}</label>
                       <div>
@@ -727,15 +736,67 @@ export function EditProductForm({
                                   </div>
                                 ))}
                               </div>
+                              {i === 0 && variationForm === "option" && (
+                                <AddVaritionOptionForm
+                                  embedded
+                                  productId={prevData?.productId}
+                                  variationName={variation.name}
+                                  businessTypeSlug={businessTypeSlug as "store" | "restaurant"}
+                                  onCancel={() => setVariationForm(null)}
+                                  onAdded={(product) =>
+                                    product?.variations && form.setValue("variations", product.variations)
+                                  }
+                                  t={t}
+                                />
+                              )}
                             </div>
                           ))
                         ) : (
-                          <p className="text-sm text-gray-500">
-                            {t("no_variations")}
-                          </p>
+                          variationForm !== "group" && (
+                            <p className="text-sm text-gray-500">
+                              {t("no_variations")}
+                            </p>
+                          )
                         )}
                       </div>
-                      {(prevData?.variations?.length ?? 0) > 0 && <div className="flex items-start gap-3 p-4 rounded-xl border border-[#DC3173] bg-[#DC3173]/20">
+
+                      {(watchVariations?.length ?? 0) === 0 && variationForm === "group" && (
+                        <AddVariationForm
+                          embedded
+                          productId={prevData?.productId}
+                          businessTypeSlug={businessTypeSlug as "store" | "restaurant"}
+                          onCancel={() => setVariationForm(null)}
+                          onAdded={(product) =>
+                            product?.variations && form.setValue("variations", product.variations)
+                          }
+                        />
+                      )}
+
+                      {variationForm === null && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setVariationForm((watchVariations?.length ?? 0) > 0 ? "option" : "group")
+                          }
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#DC3173] bg-[#DC3173]/10 rounded-lg hover:bg-[#DC3173]/30 transition-colors"
+                        >
+                          <PlusIcon size={14} />
+                          {(watchVariations?.length ?? 0) > 0
+                            ? t("variation_add_option_to").replace(
+                              "{name}",
+                              watchVariations?.[0]?.name?.[lang] ?? "",
+                            )
+                            : t("add_variation")}
+                        </button>
+                      )}
+
+                      {(watchVariations?.length ?? 0) > 0 && (
+                        <p className="text-sm font-medium text-[#DC3173]">
+                          {t("variation_one_group_note")}
+                        </p>
+                      )}
+
+                      {(watchVariations?.length ?? 0) > 0 && <div className="flex items-start gap-3 p-4 rounded-xl border border-[#DC3173] bg-[#DC3173]/20">
                         <div className="shrink-0 mt-0.5">
                           <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#DC3173] text-white text-xs font-bold select-none">
                             !
