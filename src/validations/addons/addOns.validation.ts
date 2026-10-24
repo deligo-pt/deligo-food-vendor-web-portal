@@ -6,6 +6,15 @@ const localizedTextSchema = z.object({
   pt: z.string().max(50, "Cannot exceed 50 characters").optional()
 });
 
+// Whole containers, at least one — the backend rejects 0 and 1.5.
+const addonSdrSchema = z.object({
+  applicable: z.boolean(),
+  containerCount: z
+    .number("Containers must be a number")
+    .int("Containers must be a whole number")
+    .min(1, "At least 1 container"),
+});
+
 export const createAddonOptionValidationSchema = z.object({
   name: localizedTextSchema,
   // €0 is allowed — a free add-on (extra napkins, no onion), same as the
@@ -14,6 +23,7 @@ export const createAddonOptionValidationSchema = z.object({
   // "required" (`undefined` fails `z.number`), never a silent €0.
   price: z.number("Price is required").min(0, "Price cannot be negative"),
   tax: z.string().nonempty("Tax is required"),
+  sdr: addonSdrSchema,
 
   currentLang: z.enum(["en", "pt"]),
 })
@@ -47,6 +57,11 @@ export const createAddonGroupValidationSchema = z.object({
           .number("Price must be a number")
           .min(0, "Price cannot be negative"),
         tax: z.string().min(1, "Tax selection is required"),
+        // The option's id on the server. `PATCH /add-ons/:id` updates the
+        // option with this sku and adds any option without one, so an
+        // edited option must keep it or it is saved a second time.
+        sku: z.string().optional(),
+        sdr: addonSdrSchema,
       })
     )
     .min(1, "At least one option must be provided in the group"),

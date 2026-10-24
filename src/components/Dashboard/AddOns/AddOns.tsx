@@ -209,6 +209,14 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                             <span className="text-base font-medium wrap-anywhere">
                               {option?.name?.[lang]}
                             </span>
+                            {option.sdr?.applicable && (
+                              <span
+                                title={t("sdr_container_deposit")}
+                                className="shrink-0 rounded-full bg-[#DC3173]/10 px-2 py-0.5 text-xs font-semibold text-[#DC3173]"
+                              >
+                                {t("addon_sdr_badge").replace("{count}", String(option.sdr.containerCount || 1))}
+                              </span>
+                            )}
                           </div>
 
                           <div className="ml-auto flex shrink-0 items-center gap-4 sm:gap-8">

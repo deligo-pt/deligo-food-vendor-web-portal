@@ -17,6 +17,7 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { addVariationReq } from "@/src/services/dashboard/products/variation";
 import { useStore } from "@/src/store/store";
 import { LocalizedType } from "@/src/types";
+import { TProduct } from "@/src/types/product.type";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { variationValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +33,14 @@ interface IProps {
   productId: string;
   onCancel: () => void;
   businessTypeSlug: "store" | "restaurant";
+  /**
+   * Inside another form (the Edit product dialog): renders a `div`, not a
+   * nested `<form>`, and Create saves by click — a nested form's submit would
+   * reach the product form around it.
+   */
+  embedded?: boolean;
+  /** After a save, with the product as the API returns it. */
+  onAdded?: (product?: TProduct) => void;
 }
 
 interface IOption {
@@ -43,7 +52,7 @@ interface IOption {
 
 type TVariationForm = z.infer<typeof variationValidation>;
 
-export default function AddVariationForm({ productId, onCancel, businessTypeSlug }: IProps) {
+export default function AddVariationForm({ productId, onCancel, businessTypeSlug, embedded = false, onAdded }: IProps) {
   const { t } = useTranslation();
   const { lang } = useStore();
   const router = useRouter();
@@ -122,6 +131,7 @@ export default function AddVariationForm({ productId, onCancel, businessTypeSlug
       form.reset();
       router.refresh();
       setOption({ label: { en: "", pt: "" }, price: undefined, stockQuantity: 0 });
+      onAdded?.(result.data ?? undefined);
       return;
     }
 
@@ -129,10 +139,20 @@ export default function AddVariationForm({ productId, onCancel, businessTypeSlug
     console.log(result);
   };
 
+  const submit = form.handleSubmit(onSubmit);
+  const Root = embedded ? motion.div : motion.form;
+
   return (
     <Form {...form}>
-      <motion.form
-        onSubmit={form.handleSubmit(onSubmit)}
+      <Root
+        {...(embedded
+          ? {
+            // Enter in a box here must not save the whole product.
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === "Enter" && e.target instanceof HTMLInputElement) e.preventDefault();
+            },
+          }
+          : { onSubmit: submit })}
         initial={{
           opacity: 0,
           y: -10,
@@ -263,17 +283,22 @@ export default function AddVariationForm({ productId, onCancel, businessTypeSlug
           </div>
         </div>
         <div>
-          <Button disabled={isSubmitting} className="bg-[#DC3173] text-sm font-bold hover:bg-[#DC3173]/90 transition-colors mr-2">
+          <Button
+            type={embedded ? "button" : "submit"}
+            onClick={embedded ? () => submit() : undefined}
+            disabled={isSubmitting}
+            className="bg-[#DC3173] text-sm font-bold hover:bg-[#DC3173]/90 transition-colors mr-2">
             {t("create")}
           </Button>
           <Button
+            type="button"
             onClick={onCancel}
             className="bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200 transition-colors"
           >
             {t("cancel")}
           </Button>
         </div>
-      </motion.form>
+      </Root>
     </Form>
   );
 }

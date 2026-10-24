@@ -97,8 +97,7 @@ export const getNavItems = (
         ...(businessType === "store"
           ? [{ name: t("stock_management"), path: "/vendor/stock" }]
           : []),
-        // Variation Management hidden for now (19 Oct 2026); the page returns 404.
-        // { name: t("variation_management"), path: "/vendor/variation-management" },
+        { name: t("variation_management"), path: "/vendor/variation-management" },
         { name: t("add_ons"), path: "/vendor/addons" },
         { name: t("ingredients"), path: "/vendor/ingredients" },
         { name: t("my_ingredient_orders"), path: "/vendor/ingredients/my-orders" },

@@ -1,7 +1,7 @@
 "use server";
 
 import { serverRequest } from "@/lib/serverFetch";
-import { TAddonGroup } from "@/src/types/add-ons.type";
+import { TAddonGroup, TAddonOptionSdr } from "@/src/types/add-ons.type";
 import { catchAsync } from "@/src/utils/catchAsync";
 
 export const getAddOnsGroupReq = async ({ limit = 10 }, lang: "en" | "pt") => {
@@ -36,7 +36,7 @@ export const updateAddOnsGroup = async (
 
 export const addOptionInGroup = async (
   groupId: string,
-  data: { name: { en?: string; pt?: string }; price: number, tax: string },
+  data: { name: { en?: string; pt?: string }; price: number; tax: string; sdr?: TAddonOptionSdr },
 ) => {
   return catchAsync<null>(async () => {
     return await serverRequest.patch(`/add-ons/${groupId}/add-option`, {

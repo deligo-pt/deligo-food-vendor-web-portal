@@ -29,9 +29,10 @@ import {
 } from "@/components/ui/sheet";
 import {
   createAddOnsGroup,
+  deleteOptionFromGroup,
   updateAddOnsGroup,
 } from "@/src/services/dashboard/add-ons/add-ons";
-import { TAddonGroup } from "@/src/types/add-ons.type";
+import { TAddonGroup, TAddonOptionSdr } from "@/src/types/add-ons.type";
 import { TTax } from "@/src/types/tax.type";
 import { createAddonGroupValidationSchema } from "@/src/validations/addons/addOns.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,6 +44,7 @@ import { toast } from "sonner";
 import z from "zod";
 import { useStore } from "@/src/store/store";
 import { translateObject } from "@/src/utils/translation/translationObject";
+import AddonSdrControl, { DEFAULT_ADDON_SDR, useSdrDeposit } from "./AddonSdrControl";
 
 const PRIMARY = "#DC3173";
 
@@ -83,6 +85,12 @@ export default function CreateOrEditAddOnsGroup({
           },
           price: option.price,
           tax: (option.tax as TTax)?._id,
+          // Kept so saving updates this option instead of adding a copy.
+          sku: option.sku,
+          sdr: {
+            applicable: !!option.sdr?.applicable,
+            containerCount: option.sdr?.containerCount || 1,
+          },
         })) || [],
 
       currentLang: lang
@@ -94,6 +102,8 @@ export default function CreateOrEditAddOnsGroup({
   // `undefined` until something is typed; 0 is a real price (a free option).
   const [optionPrice, setOptionPrice] = useState<number | undefined>(undefined);
   const [optionTax, setOptionTax] = useState("");
+  const [optionSdr, setOptionSdr] = useState<TAddonOptionSdr>(DEFAULT_ADDON_SDR);
+  const deposit = useSdrDeposit(open);
 
   const router = useRouter();
 
@@ -116,11 +126,13 @@ export default function CreateOrEditAddOnsGroup({
         },
         price: Number(optionPrice),
         tax: optionTax,
+        sdr: optionSdr,
       });
 
       setOptionName("");
       setOptionPrice(undefined);
       setOptionTax("");
+      setOptionSdr(DEFAULT_ADDON_SDR);
     }
   };
 
@@ -195,6 +207,21 @@ export default function CreateOrEditAddOnsGroup({
         );
 
         if (result.success) {
+          // `PATCH /add-ons/:id` only updates and adds; an option left out
+          // stays on the server. Remove the ones taken off with ✕ here.
+          const kept = new Set(data.options.map((option) => option.sku));
+          const removed = (prevValues?.options ?? [])
+            .map((option) => option.sku)
+            .filter((sku): sku is string => !!sku && !kept.has(sku));
+          const removals = await Promise.all(
+            removed.map((sku) => deleteOptionFromGroup(prevValues?._id as string, sku))
+          );
+          if (removals.some((removal) => !removal?.success)) {
+            toast.error(t("addon_remove_failed"), { id: toastId });
+            router.refresh();
+            return;
+          }
+
           form.reset();
           toast.success(
             result.message || "Add-on group updated successfully!",
@@ -308,38 +335,55 @@ export default function CreateOrEditAddOnsGroup({
             <div className="space-y-2 ">
               <label className="block mb-1">{t("options")}</label>
               {optionsFields?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-1">
-                  {optionsFields?.map((option, index) => (
-                    <div
-                      // The field array's own id: names repeat across
-                      // languages and can be empty in one of them.
-                      key={option.id}
-                      className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
-                    >
-                      <span>{option.name?.[lang]}</span>
-                      <span className="ml-2 text-xs text-slate-200">
-                        {t("price")}: (€{option.price})
-                        {option.tax
-                          ? ` (incl. Tax:
-                        ${taxes.find((t) => t._id === option.tax)?.taxRate}%)`
-                          : ""}
-                      </span>
-                      <button
-                        type="button"
-                        // By position, through the field array. This used to
-                        // filter the options by name, comparing each `{ en, pt }`
-                        // object with a plain string — never equal, so ✕ removed
-                        // nothing. Saving sends the remaining list, and
-                        // `PATCH /add-ons/:id` replaces the group's options
-                        // with it, so the removal reaches the server.
-                        onClick={() => remove(index)}
-                        aria-label={`${t("remove")} ${option.name?.[lang] ?? ""}`.trim()}
-                        className="ml-2 text-white hover:text-[#CCC]"
+                <div className="space-y-2 mb-1">
+                  {optionsFields?.map((option, index) => {
+                    const taxRate = taxes.find((tax) => tax._id === option.tax)?.taxRate;
+                    return (
+                      <div
+                        // The field array's own id: names repeat across
+                        // languages and can be empty in one of them.
+                        key={option.id}
+                        className="space-y-2 rounded-lg border border-[#DC3173]/20 bg-[#DC3173]/5 px-3 py-2"
                       >
-                        <XIcon className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-gray-800 wrap-anywhere">
+                              {option.name?.[lang]}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {t("price")}: €{Number(option.price).toFixed(2)}
+                              {taxRate !== undefined ? ` · incl. Tax: ${taxRate}%` : ""}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            // By position, through the field array. When editing,
+                            // saving deletes the removed options on the server
+                            // (see `handleAddOrEditGroup`).
+                            onClick={() => remove(index)}
+                            aria-label={`${t("remove")} ${option.name?.[lang] ?? ""}`.trim()}
+                            className="shrink-0 rounded p-0.5 text-gray-400 hover:bg-[#DC3173]/10 hover:text-[#DC3173]"
+                          >
+                            <XIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <FormField
+                          control={form.control}
+                          name={`options.${index}.sdr`}
+                          render={({ field }) => (
+                            <AddonSdrControl
+                              compact
+                              id={`option-sdr-${option.id}`}
+                              value={field.value}
+                              onChange={field.onChange}
+                              deposit={deposit}
+                              t={t}
+                            />
+                          )}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               )}
               <div className="border rounded-md p-4 bg-gray-50 space-y-3">
@@ -411,6 +455,15 @@ export default function CreateOrEditAddOnsGroup({
                     </FormItem>
                   )}
                 />
+                <div className="border-t pt-3">
+                  <AddonSdrControl
+                    id="new-option-sdr"
+                    value={optionSdr}
+                    onChange={setOptionSdr}
+                    deposit={deposit}
+                    t={t}
+                  />
+                </div>
                 <div className="text-right">
                   <Button
                     size="sm"

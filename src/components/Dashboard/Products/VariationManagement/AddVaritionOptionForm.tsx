@@ -13,6 +13,7 @@ import PriceInput from "@/src/components/PriceInput/PriceInput";
 import { addVariationReq } from "@/src/services/dashboard/products/variation";
 import { useStore } from "@/src/store/store";
 import { LocalizedType } from "@/src/types";
+import { TProduct } from "@/src/types/product.type";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { variationOptionValidation } from "@/src/validations/product/product.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +29,10 @@ interface IProps {
   onCancel: () => void;
   businessTypeSlug: "store" | "restaurant"
   t: (key: string) => string;
+  /** Inside another form: a `div`, saved by click (see AddVariationForm). */
+  embedded?: boolean;
+  /** After a save, with the product as the API returns it. */
+  onAdded?: (product?: TProduct) => void;
 }
 
 type TOptionForm = z.infer<typeof variationOptionValidation>;
@@ -37,7 +42,9 @@ export default function AddVaritionOptionForm({
   variationName,
   onCancel,
   businessTypeSlug,
-  t
+  t,
+  embedded = false,
+  onAdded,
 }: IProps) {
   const { lang } = useStore();
   const router = useRouter();
@@ -84,12 +91,16 @@ export default function AddVaritionOptionForm({
       });
       form.reset();
       router.refresh();
+      onAdded?.(result.data ?? undefined);
       return;
     }
 
     toast.error(result.message || "Failed to add option.", { id: toastId });
     console.log(result);
   };
+
+  const submit = form.handleSubmit(onSubmit);
+  const Root = embedded ? "div" : "form";
 
   return (
     <motion.div
@@ -108,8 +119,14 @@ export default function AddVaritionOptionForm({
       className="overflow-hidden"
     >
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
+        <Root
+          {...(embedded
+            ? {
+              onKeyDown: (e: React.KeyboardEvent) => {
+                if (e.key === "Enter" && e.target instanceof HTMLInputElement) e.preventDefault();
+              },
+            }
+            : { onSubmit: submit })}
           className="flex flex-wrap items-start gap-3 p-3 rounded-xl border border-[#DC3173]/10 mt-3"
         >
           <div className="flex-1 min-w-[120px]">
@@ -192,7 +209,11 @@ export default function AddVaritionOptionForm({
             />
           </div>}
           <div className="flex items-center gap-2">
-            <button disabled={isSubmitting} className="px-4 py-1.5 bg-[#DC3173] text-white rounded-lg text-sm font-bold hover:bg-[#DC3173]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            <button
+              type={embedded ? "button" : "submit"}
+              onClick={embedded ? () => submit() : undefined}
+              disabled={isSubmitting}
+              className="px-4 py-1.5 bg-[#DC3173] text-white rounded-lg text-sm font-bold hover:bg-[#DC3173]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               {t("add")}
             </button>
             <button
@@ -203,7 +224,7 @@ export default function AddVaritionOptionForm({
               {t("cancel")}
             </button>
           </div>
-        </form>
+        </Root>
       </Form>
     </motion.div>
   );

@@ -64,8 +64,10 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
     const [isUploading, setIsUploading] = useState(false);
     const [isUploadingStamp, setIsUploadingStamp] = useState(false);
 
+    // The 2,50€/week machine rental is ticked by default (24 Oct 2026); the
+    // vendor can still pick the installments or untick it.
     const [posPaymentOption, setPosPaymentOption] =
-        useState<PosPaymentOption | null>(null);
+        useState<PosPaymentOption | null>("MONTHLY_RENTAL");
     // The payment option stays optional, but at registration a vendor who
     // signs without one is asked once more (7 Oct 2026): "Yes, continue" signs
     // without it, "No" goes back to the page to pick one.
@@ -329,6 +331,22 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
                                     {t("payment_option")}
                                 </Label>
                                 <div className="flex flex-col gap-4">
+                                    {/* The default (ticked) option comes first. */}
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="monthly-rental"
+                                            checked={posPaymentOption === "MONTHLY_RENTAL"}
+                                            onCheckedChange={(checked) => {
+                                                setPosPaymentOption(checked ? "MONTHLY_RENTAL" : null);
+                                            }}
+                                        />
+                                        <Label
+                                            htmlFor="monthly-rental"
+                                            className="text-sm font-normal cursor-pointer"
+                                        >
+                                            {t("monthly_machine_rental_cost")}
+                                        </Label>
+                                    </div>
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             id="three-installments"
@@ -347,21 +365,6 @@ export default function AgreementViewer({ agreement, vendorId, type = "new" }: A
                                         </Label>
                                     </div>
 
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id="monthly-rental"
-                                            checked={posPaymentOption === "MONTHLY_RENTAL"}
-                                            onCheckedChange={(checked) => {
-                                                setPosPaymentOption(checked ? "MONTHLY_RENTAL" : null);
-                                            }}
-                                        />
-                                        <Label
-                                            htmlFor="monthly-rental"
-                                            className="text-sm font-normal cursor-pointer"
-                                        >
-                                            {t("monthly_machine_rental_cost")}
-                                        </Label>
-                                    </div>
                                 </div>
                             </div>}
 
