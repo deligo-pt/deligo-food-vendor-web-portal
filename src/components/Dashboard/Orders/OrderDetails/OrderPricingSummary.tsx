@@ -77,11 +77,11 @@ export default function OrderPricingSummary({ order, t }: IProps) {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between text-gray-600">
               <span>{t("sdr_items_total")}</span>
-              <span>€{formatPrice(itemsTotal)}</span>
+              <span>{formatPrice(itemsTotal)}&nbsp;€</span>
             </div>
             <div className="flex justify-between text-sky-700">
               <span>{t("sdr_container_deposit")}</span>
-              <span>+€{formatPrice(sdrAmount)}</span>
+              <span>+{formatPrice(sdrAmount)}&nbsp;€</span>
             </div>
           </div>
         )}
@@ -90,7 +90,7 @@ export default function OrderPricingSummary({ order, t }: IProps) {
           <div className="flex justify-between items-end">
             <span className="text-gray-900 font-semibold">{t("total_amount")}</span>
             <span className="text-3xl font-bold text-[#DC3173]">
-              €{formatPrice(itemsTotal + sdrAmount)}
+              {formatPrice(itemsTotal + sdrAmount)}&nbsp;€
             </span>
           </div>
           <p className="text-xs text-gray-400 text-right mt-1">

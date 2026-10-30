@@ -99,7 +99,7 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
             {t("total_sales")}
           </h3>
           <div className="text-3xl font-bold text-[#DC3173]">
-            <AnimatedCounter value={salesAnalytics.totalSales} prefix="€" />
+            <AnimatedCounter value={salesAnalytics.totalSales} suffix={"\u00A0€"} />
           </div>
         </div>
 
@@ -175,7 +175,7 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
                 tick={{
                   fill: "#6B7280",
                 }}
-                tickFormatter={(value) => `€${value}`}
+                tickFormatter={(value) => `${value}\u00A0€`}
               />
               <Tooltip
                 cursor={{
@@ -188,7 +188,7 @@ export default function SalesAnalytics({ salesAnalytics }: IProps) {
                 }}
                 formatter={
                   ((value: number) => [
-                    `€${value.toFixed(2)}`,
+                    `${value.toFixed(2)}\u00A0€`,
                     "Sales",
                   ]) as Formatter<number, "Sales">
                 }

@@ -731,8 +731,8 @@ export const en = {
   clear_signature: "Clear Signature",
   party_stamp: "Party Stamp",
   payment_option: "Payment Option",
-  three_installment_of_each: "Three installments of €50.00 each, which can be deducted from payments to the Merchant",
-  monthly_machine_rental_cost: "Rental of the machine with a weekly cost of 2,50€ (excluding VAT).",
+  three_installment_of_each: "Three installments of 50.00 € each, which can be deducted from payments to the Merchant",
+  monthly_machine_rental_cost: "Rental of the machine with a weekly cost of 2,50 € (excluding VAT).",
   payment_option_prompt: "Take a moment to select your payment option now and unlock the full power of your account. This small choice keeps everything moving without pause. If you skip it, you can still continue, but choosing now gives you a smoother start.",
   payment_option_prompt_yes: "Yes, continue",
   payment_option_prompt_no: "No",
@@ -1108,6 +1108,18 @@ export const en = {
   apply_filters: "Apply Filters",
   showing: "Showing",
   of: "of",
+  // All Items: All / Active / Inactive tabs (29 Oct 2026)
+  items_status_tabs: "Show items by status",
+  items_tab_all: "All",
+  items_tab_active: "Active",
+  items_tab_inactive: "Inactive",
+  items_tab_sdr: "SDR",
+  no_active_items: "No active items",
+  no_active_items_body: "None of your items are switched on. Turn an item on in Edit to show it to customers.",
+  no_inactive_items: "No inactive items",
+  no_inactive_items_body: "All your items are switched on and visible to customers.",
+  no_sdr_items: "No SDR items",
+  no_sdr_items_body: "None of your items carry the SDR container deposit. Turn it on in an item's Edit form.",
   no_items_found: "No items found",
   no_items_match_current_filters:
     "No items match your current filters. Try adjusting your search or filters to find what you're looking for.",
@@ -1435,7 +1447,7 @@ export const en = {
   iva_handled_per_portuguese_tax:
     "IVA (VAT) handled per Portuguese tax rules and already applied where required.",
   minimum_payout_threshold: "Minimum payout threshold:",
-  euro_20: "€20.",
+  euro_20: "20 €.",
   balances_below_roll_next_cycle:
     "Balances below this will roll to next cycle.",
   typical_bank_transfer_time: "Typical bank transfer time:",
@@ -1491,7 +1503,7 @@ export const en = {
   sepa_payouts_take_24_48_hours: "SEPA payouts take 24–48 hours.",
   iban_must_be_a_valid_portuguese_or_eu_bank_account:
     "IBAN must be a valid Portuguese or EU bank account.",
-  minimum_payout_threshold_euro_20: "Minimum payout threshold: €20.",
+  minimum_payout_threshold_euro_20: "Minimum payout threshold: 20 €.",
   identity_verification_required_for_bank_changes:
     "Identity verification required for bank changes.",
 
@@ -2340,7 +2352,6 @@ export const en = {
   addon_sdr_more: "More containers",
   addon_sdr_badge: "SDR × {count}",
   addon_remove_failed: "The group was saved, but some removed options are still there. Try removing them again.",
-  sdr_products_only: "SDR products only",
   yes: "Yes",
   no: "No",
   sdr_deposit: "deposit",

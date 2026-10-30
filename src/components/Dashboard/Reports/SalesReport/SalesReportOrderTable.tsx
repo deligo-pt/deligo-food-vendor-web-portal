@@ -84,7 +84,7 @@ export default function SalesReportOrderTable({ orders, t }: IProps) {
                   ?.map((i) => `${i?.name} x ${i.itemSummary?.quantity}`)
                   .join(", "),
               },
-              { label: t("amount"), value: `€${order.payoutSummary?.grandTotal}` },
+              { label: t("amount"), value: `${order.payoutSummary?.grandTotal}\u00A0€` },
               { label: t("date"), value: format(order.createdAt, "do MMM yyyy") },
               { label: t("status"), value: order.orderStatus },
             ]}
@@ -193,9 +193,7 @@ export default function SalesReportOrderTable({ orders, t }: IProps) {
                 ))}
               </TableCell>
               <TableCell>
-                {" "}
-                €
-                {order.payoutSummary?.grandTotal}
+                {order.payoutSummary?.grandTotal}&nbsp;€
               </TableCell>
               <TableCell>{format(order.createdAt, "do MMM yyyy")}</TableCell>
               <TableCell>{order.orderStatus}</TableCell>

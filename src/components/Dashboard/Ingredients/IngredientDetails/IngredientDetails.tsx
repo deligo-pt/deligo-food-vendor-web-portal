@@ -164,7 +164,7 @@ export default function IngredientDetail({ ingredient }: IProps) {
                   >
                     <p className="text-xs font-medium">{t("buy")} {tier.minQty}+ {ingredient.unit || "units"}</p>
                     <p className={`text-lg font-extrabold ${quantity >= tier.minQty ? "text-amber-700" : "text-gray-700"}`}>
-                      €{tier.discountPrice.toFixed(2)} <span className="text-xs font-normal">/ {ingredient.unit || "unit"}</span>
+                      {tier.discountPrice.toFixed(2)}&nbsp;€ <span className="text-xs font-normal">/ {ingredient.unit || "unit"}</span>
                     </p>
                     {quantity >= tier.minQty && (
                       <span className="inline-flex items-center gap-1 text-[10px] bg-amber-200/60 text-amber-800 px-2 py-0.5 rounded-full font-bold mt-1">
@@ -206,12 +206,12 @@ export default function IngredientDetail({ ingredient }: IProps) {
             </p>
             <div className="flex items-baseline gap-2 mb-4">
               <span className={`text-3xl font-extrabold ${isDiscounted ? "text-amber-600" : "text-gray-900"}`}>
-                €{currentUnitPrice.toFixed(2)}
+                {currentUnitPrice.toFixed(2)}&nbsp;€
               </span>
               <span className="text-gray-400 text-sm">/{ingredient.unit || "unit"}</span>
               {isDiscounted && (
                 <span className="text-sm line-through text-gray-300 font-medium ml-2">
-                  €{ingredient.price.toFixed(2)}
+                  {ingredient.price.toFixed(2)}&nbsp;€
                 </span>
               )}
             </div>
@@ -238,7 +238,7 @@ export default function IngredientDetail({ ingredient }: IProps) {
             {/* BULK DISCOUNT OFFER STATEMENT */}
             {ingredient.bulkDiscount && ingredient.bulkDiscount.length > 0 ? (
               <p className="text-xs text-amber-700 font-medium bg-amber-50/50 p-2.5 rounded-lg border border-amber-100/40">
-                🎉 <strong>{t("bulk_discount_offer")}:</strong> {t("get_items_as_low_as")} <strong className="text-sm">€{Math.min(...ingredient.bulkDiscount.map(t => t.discountPrice)).toFixed(2)}</strong> {t("per_unit_by_increasing_your_order_quantities")}
+                🎉 <strong>{t("bulk_discount_offer")}:</strong> {t("get_items_as_low_as")} <strong className="text-sm">{Math.min(...ingredient.bulkDiscount.map(t => t.discountPrice)).toFixed(2)}&nbsp;€</strong> {t("per_unit_by_increasing_your_order_quantities")}
               </p>
             ) : (
               <p className="text-xs text-gray-400 italic">{t("no_wholesale_bulk_discount_rates")}</p>
@@ -293,7 +293,7 @@ export default function IngredientDetail({ ingredient }: IProps) {
                 <span className="text-xs text-gray-400 font-medium">({t("excludes")} {ingredient.tax?.taxRate || 0}% {t("tax_profile")})</span>
               </div>
               <span className="text-3xl font-black text-[#DC3173]">
-                €{(isAvailable ? quantity * currentUnitPrice : 0).toFixed(2)}
+                {(isAvailable ? quantity * currentUnitPrice : 0).toFixed(2)}&nbsp;€
               </span>
             </div>
 

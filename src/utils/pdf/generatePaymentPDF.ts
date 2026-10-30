@@ -107,7 +107,7 @@ export const generatePaymentPDF = (payout: TPayout) => {
   y += 5;
   doc.text(`ID de referência do banco: ${payout.bankReferenceId}`, marginX, y);
   y += 5;
-  doc.text(`Montante total: €${formatPrice(payout.amount)}`, marginX, y);
+  doc.text(`Montante total: ${formatPrice(payout.amount)} €`, marginX, y);
 
   // Bank Details
   y += 12;
@@ -150,7 +150,7 @@ export const generatePaymentPDF = (payout: TPayout) => {
         format(payout.createdAt, "dd/MM/yyyy"),
         removeUnderscore(payout.paymentMethod),
         payout.remarks || "-",
-        `€${formatPrice(payout.amount)}`,
+        `${formatPrice(payout.amount)} €`,
         payout.status,
       ],
     ],
@@ -177,7 +177,7 @@ export const generatePaymentPDF = (payout: TPayout) => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.text(
-    `Valor Pago: €${formatPrice(payout.amount)}`,
+    `Valor Pago: ${formatPrice(payout.amount)} €`,
     pageWidth - marginX,
     y,
     { align: "right" },

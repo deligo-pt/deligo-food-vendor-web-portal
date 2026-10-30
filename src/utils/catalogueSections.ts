@@ -26,10 +26,39 @@ export type TCatalogueFilters = {
   sortBy?: string;
   /** `stock.availabilityStatus`, when the vendor filtered by it. */
   availability?: string;
-  /** Only products carrying the SDR container deposit. */
+  /** Only products carrying the SDR container deposit: the SDR tab. */
   sdrOnly?: boolean;
+  /** The All / Active / Inactive tab: `meta.status`, unset for All. */
+  productStatus?: TProductStatus;
   lang?: string;
 };
+
+export type TProductStatus = "ACTIVE" | "INACTIVE";
+
+/** The tabs over the list: All / Active / Inactive / SDR. */
+export type TItemsTab = "all" | "active" | "inactive" | "sdr";
+
+/**
+ * The tab in the address (`?tab=active`) as the filter it applies; anything
+ * else is All. The SDR tab (30 Oct 2026) took over the "SDR products only"
+ * option of the filter popup.
+ */
+export function tabFilters(
+  tab: string | undefined,
+): Pick<TCatalogueFilters, "productStatus" | "sdrOnly"> {
+  if (tab === "active") return { productStatus: "ACTIVE" };
+  if (tab === "inactive") return { productStatus: "INACTIVE" };
+  if (tab === "sdr") return { sdrOnly: true };
+  return {};
+}
+
+/** Which tab a set of filters is showing. */
+export function tabOf(filters: TCatalogueFilters): TItemsTab {
+  if (filters.sdrOnly) return "sdr";
+  if (filters.productStatus === "ACTIVE") return "active";
+  if (filters.productStatus === "INACTIVE") return "inactive";
+  return "all";
+}
 
 /** The query every products request on this page carries, filters included. */
 export function catalogueQuery(
@@ -45,6 +74,10 @@ export function catalogueQuery(
     // flagged products. `=false` does not return the rest, so only "true" is
     // ever sent.
     ...(filters.sdrOnly ? { "sdr.applicable": "true" } : {}),
+    // Checked live (29 Oct 2026): `meta.status=ACTIVE` / `INACTIVE` filter on
+    // the server, per category too (Tasca: 185 / 3 of 188). Upper case only;
+    // `inactive` matches nothing.
+    ...(filters.productStatus ? { "meta.status": filters.productStatus } : {}),
   };
 }
 

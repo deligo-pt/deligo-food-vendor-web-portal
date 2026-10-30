@@ -165,17 +165,17 @@ export default function PayoutDetails({ payout }: IProps) {
                 )}
               </div>
               <p className="text-2xl md:text-4xl text-[#DC3173] font-bold mt-2">
-                €{formatPrice(payout.amount)}
+                {formatPrice(payout.amount)}&nbsp;€
               </p>
               {/* Only when the payout carries an SDR container deposit:
                   what was earned on orders, and the deposit paid out with it. */}
               {sdrAmount > 0 && (
                 <div className="mt-2 space-y-0.5 text-sm">
                   <p className="text-gray-600">
-                    {t("sdr_payout_earnings")}: €{formatPrice(payout.earnings ?? payout.amount - sdrAmount)}
+                    {t("sdr_payout_earnings")}: {formatPrice(payout.earnings ?? payout.amount - sdrAmount)}&nbsp;€
                   </p>
                   <p className="text-sky-700">
-                    {t("sdr_container_deposit")}: €{formatPrice(sdrAmount)}
+                    {t("sdr_container_deposit")}: {formatPrice(sdrAmount)}&nbsp;€
                   </p>
                 </div>
               )}

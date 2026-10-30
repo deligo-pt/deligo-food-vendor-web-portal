@@ -222,7 +222,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                           <div className="ml-auto flex shrink-0 items-center gap-4 sm:gap-8">
                             <div className="flex items-center gap-2">
                               <span className="font-semibold text-gray-900">
-                                €{option.price.toFixed(2)}
+                                {option.price.toFixed(2)}&nbsp;€
                               </span>
                               {option.tax && (
                                 <span className="text-xs text-slate-800">

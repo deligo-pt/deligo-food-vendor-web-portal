@@ -740,8 +740,8 @@ export const pt = {
   clear_signature: "Limpar Assinatura",
   party_stamp: "Carimbo da Parte",
   payment_option: "Opção de Pagamento",
-  three_installment_of_each: "Três prestações de €50,00 cada, que podem ser deduzidas dos pagamentos ao Comerciante",
-  monthly_machine_rental_cost: "Aluguer de máquinas com um custo semanal de 2,50€ (sem IVA incluído).",
+  three_installment_of_each: "Três prestações de 50,00 € cada, que podem ser deduzidas dos pagamentos ao Comerciante",
+  monthly_machine_rental_cost: "Aluguer de máquinas com um custo semanal de 2,50 € (sem IVA incluído).",
   payment_option_prompt: "Reserve um momento para selecionar agora a sua opção de pagamento e tire o máximo partido da sua conta. Esta pequena escolha mantém tudo a avançar sem pausas. Se optar por não escolher, pode continuar na mesma, mas escolher agora garante-lhe um início mais tranquilo.",
   payment_option_prompt_yes: "Sim, continuar",
   payment_option_prompt_no: "Não",
@@ -1137,6 +1137,18 @@ export const pt = {
   apply_filters: "Aplicar Filtros",
   showing: "A mostrar",
   of: "de",
+  // Todos os Itens: separadores Todos / Ativos / Inativos (29 out 2026)
+  items_status_tabs: "Mostrar itens por estado",
+  items_tab_all: "Todos",
+  items_tab_active: "Ativos",
+  items_tab_inactive: "Inativos",
+  items_tab_sdr: "SDR",
+  no_active_items: "Nenhum item ativo",
+  no_active_items_body: "Nenhum dos seus itens está ativado. Ative um item em Editar para o mostrar aos clientes.",
+  no_inactive_items: "Nenhum item inativo",
+  no_inactive_items_body: "Todos os seus itens estão ativados e visíveis para os clientes.",
+  no_sdr_items: "Nenhum item com SDR",
+  no_sdr_items_body: "Nenhum dos seus itens tem o depósito de embalagem SDR. Ative-o no formulário Editar do item.",
   no_items_found: "Nenhum item encontrado",
   no_items_match_current_filters:
     "Nenhum item corresponde aos filtros atuais. Tente ajustar a pesquisa ou os filtros.",
@@ -1473,7 +1485,7 @@ export const pt = {
   iva_handled_per_portuguese_tax:
     "IVA tratado de acordo com as regras fiscais portuguesas e já aplicado quando necessário.",
   minimum_payout_threshold: "Valor mínimo de pagamento:",
-  euro_20: "€20.",
+  euro_20: "20 €.",
   balances_below_roll_next_cycle:
     "Saldos inferiores serão transferidos para o próximo ciclo.",
   typical_bank_transfer_time: "Tempo típico de transferência bancária:",
@@ -1533,7 +1545,7 @@ export const pt = {
   sepa_payouts_take_24_48_hours: "Pagamentos SEPA demoram 24–48 horas.",
   iban_must_be_a_valid_portuguese_or_eu_bank_account:
     "O IBAN deve ser uma conta bancária válida em Portugal ou na UE.",
-  minimum_payout_threshold_euro_20: "Valor mínimo de pagamento: €20.",
+  minimum_payout_threshold_euro_20: "Valor mínimo de pagamento: 20 €.",
   identity_verification_required_for_bank_changes:
     "É necessária verificação de identidade para alterações bancárias.",
 
@@ -2400,7 +2412,6 @@ export const pt = {
   addon_sdr_more: "Mais embalagens",
   addon_sdr_badge: "SDR × {count}",
   addon_remove_failed: "O grupo foi guardado, mas algumas opções removidas continuam lá. Tente removê-las novamente.",
-  sdr_products_only: "Só produtos com SDR",
   yes: "Sim",
   no: "Não",
   sdr_deposit: "depósito",

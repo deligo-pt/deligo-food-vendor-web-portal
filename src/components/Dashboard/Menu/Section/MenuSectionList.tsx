@@ -299,8 +299,8 @@ export default function MenuSectionsList({
                                                                         </h5>
                                                                         <div className="flex items-center gap-2 mt-1">
                                                                             <span className="text-xs font-bold text-[#DC3173]">
-                                                                                {prod.pricing?.currency || "€"}
                                                                                 {prod.pricing?.finalPrice ?? prod.pricing?.price}
+                                                                                &nbsp;{prod.pricing?.currency || "€"}
                                                                             </span>
                                                                         </div>
                                                                     </div>

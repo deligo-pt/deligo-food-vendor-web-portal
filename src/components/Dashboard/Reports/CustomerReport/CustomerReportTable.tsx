@@ -70,7 +70,7 @@ export default function CustomerReportTable({ customers, t }: IProps) {
             subtitle={c.email}
             fields={[
               { label: t("orders"), value: c.orders?.totalOrders || 0 },
-              { label: t("total_spent"), value: `€${c.orders?.totalSpent || 0}` },
+              { label: t("total_spent"), value: `${c.orders?.totalSpent || 0}\u00A0€` },
               {
                 label: t("last_ordered"),
                 value: c.orders?.lastOrderDate
@@ -157,7 +157,7 @@ export default function CustomerReportTable({ customers, t }: IProps) {
                 </div>
               </TableCell>
               <TableCell>{c.orders?.totalOrders || 0}</TableCell>
-              <TableCell>€{c.orders?.totalSpent || 0}</TableCell>
+              <TableCell>{c.orders?.totalSpent || 0}&nbsp;€</TableCell>
               <TableCell>
                 {c.orders?.lastOrderDate
                   ? format(c.orders?.lastOrderDate, "do MMM yyyy")

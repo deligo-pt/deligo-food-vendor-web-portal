@@ -97,7 +97,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
                 <span className="text-xl md:text-3xl font-bold text-[#DC3173] tracking-tight">
                   <AnimatedCounter
                     value={analyticsData.topCard?.totalEarnings}
-                    prefix="€"
+                    suffix={"\u00A0€"}
                   />
                 </span>
               </div>
@@ -165,7 +165,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
           <div className="text-3xl font-bold text-gray-900 group-hover:text-[#DC3173] transition-colors">
             <AnimatedCounter
               value={analyticsData.earningsOverview?.today}
-              prefix="€"
+              suffix={"\u00A0€"}
             />
           </div>
         </motion.div>
@@ -187,7 +187,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
           <div className="text-3xl font-bold text-gray-900 group-hover:text-[#DC3173] transition-colors">
             <AnimatedCounter
               value={analyticsData.earningsOverview?.thisWeek}
-              prefix="€"
+              suffix={"\u00A0€"}
             />
           </div>
         </motion.div>
@@ -209,7 +209,7 @@ export default function EarningsSummary({ analyticsData }: IProps) {
           <div className="text-3xl font-bold text-gray-900 group-hover:text-[#DC3173] transition-colors">
             <AnimatedCounter
               value={analyticsData.earningsOverview?.thisMonth}
-              prefix="€"
+              suffix={"\u00A0€"}
             />
           </div>
         </motion.div>

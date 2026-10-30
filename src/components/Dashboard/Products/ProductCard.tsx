@@ -134,7 +134,7 @@ export default function ProductCard({
           {/* A FLAT discount is an amount in euros, not a percentage:
               Chocolate Salami's €0.60 off read as "0.6 % OFF". */}
           {product.pricing?.discountType === "FLAT"
-            ? `€ ${new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(product.pricing.discount))} OFF`
+            ? `${new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(product.pricing.discount))}\u00A0€ OFF`
             : `${product.pricing?.discount} % OFF`}
         </div>}
       </div>
@@ -183,18 +183,18 @@ export default function ProductCard({
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-baseline gap-2">
               <span className="text-lg font-bold text-[#DC3173]">
-                {product.pricing.currency}{" "}
                 {new Intl.NumberFormat("de-DE", {
                   minimumFractionDigits: 2,
                 }).format(product.pricing.finalPrice)}
+                &nbsp;{product.pricing.currency}
               </span>
 
               {product?.pricing?.discount ? (
                 <span className="text-xs line-through text-gray-400">
-                  {product.pricing.currency}{" "}
                   {new Intl.NumberFormat("de-DE", {
                     minimumFractionDigits: 2,
                   }).format(product.pricing.price)}
+                  &nbsp;{product.pricing.currency}
                 </span>
               ) : null}
 
@@ -227,10 +227,10 @@ export default function ProductCard({
 
                 {taxAmount !== null && taxAmount !== undefined && (
                   <span>
-                    ({product.pricing.currency}{" "}
-                    {new Intl.NumberFormat("de-DE", {
+                    ({new Intl.NumberFormat("de-DE", {
                       minimumFractionDigits: 2,
                     }).format(taxAmount)}
+                    &nbsp;{product.pricing.currency}
                     )
                   </span>
                 )}

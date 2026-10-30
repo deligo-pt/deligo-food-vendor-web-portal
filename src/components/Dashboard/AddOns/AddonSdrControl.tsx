@@ -90,7 +90,7 @@ export default function AddonSdrControl({ id, value, onChange, deposit, t, compa
   // What the customer pays for this option's containers, once SDR is on.
   const total = deposit?.isActive ? (
     <span className="text-xs text-gray-500">
-      = <span className="whitespace-nowrap font-semibold text-gray-700">+€{(deposit.depositAmount * count).toFixed(2)}</span>{" "}
+      = <span className="whitespace-nowrap font-semibold text-gray-700">+{(deposit.depositAmount * count).toFixed(2)}&nbsp;€</span>{" "}
       {t("sdr_deposit")}
     </span>
   ) : null;
@@ -136,7 +136,7 @@ export default function AddonSdrControl({ id, value, onChange, deposit, t, compa
             ) : deposit.isActive ? (
               <>
                 {t("addon_sdr_helper_active")}{" "}
-                <span className="whitespace-nowrap font-semibold text-gray-700">+€{deposit.depositAmount.toFixed(2)}</span>
+                <span className="whitespace-nowrap font-semibold text-gray-700">+{deposit.depositAmount.toFixed(2)}&nbsp;€</span>
               </>
             ) : (
               t("sdr_helper_inactive")

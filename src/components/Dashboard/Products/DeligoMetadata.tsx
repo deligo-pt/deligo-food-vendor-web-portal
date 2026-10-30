@@ -129,7 +129,7 @@ const DeligoMetadata = ({ form }: IProps) => {
                                             ? <>
                                                 {t("sdr_helper_active")}{" "}
                                                 <span className="font-semibold text-gray-700">
-                                                    +€{sdr.depositAmount.toFixed(2)}
+                                                    +{sdr.depositAmount.toFixed(2)}&nbsp;€
                                                 </span>
                                             </>
                                             : t("sdr_helper_inactive")}

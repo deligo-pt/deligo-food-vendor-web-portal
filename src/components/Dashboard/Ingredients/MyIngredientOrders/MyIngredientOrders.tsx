@@ -120,7 +120,7 @@ export default function MyIngredientOrders({ ordersData }: IProps) {
                         {t("total_amount")}
                       </p>
                       <p className="text-2xl font-bold text-gray-900">
-                        €{formatPrice(order.grandTotal || 0)}
+                        {formatPrice(order.grandTotal || 0)}&nbsp;€
                       </p>
                     </div>
                     <button

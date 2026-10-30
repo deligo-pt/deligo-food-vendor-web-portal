@@ -94,9 +94,11 @@ check(
 console.log("\n🔴 Phase 2 — the flag is visible, and the filter only ever asks for `true`");
 check("All Items card shows the SDR badge for flagged products", /product\.sdr\?\.applicable &&[\s\S]{0,300}SDR/.test(card));
 check("product details shows the badge and a Yes / No line", /product\.sdr\?\.applicable \? t\("yes"\) : t\("no"\)/.test(details));
-check("the filter is offered to every vendor (restaurants sell drinks too)", /sdrFilter,\s*\]\}/.test(products) && /key: "sdr"/.test(products));
-check("the URL value is `only`", /queries\.sdr === "only" \? \{ sdrOnly: true \}/.test(itemsPage));
+// The SDR tab (30 Oct 2026) replaced the "SDR products only" filter option.
+check("the SDR tab is offered to every vendor (restaurants sell drinks too)", /value: "sdr", label: t\("items_tab_sdr"\)/.test(products) && !/key: "sdr"/.test(products));
+check("an old `?sdr=only` link opens the SDR tab", /queries\.sdr === "only"[\s\S]{0,300}params\.set\("tab", "sdr"\)/.test(itemsPage));
 const C = await import(join(root, "src/utils/catalogueSections.ts"));
+check("🔴 `?tab=sdr` is the `sdrOnly` filter, and only that", JSON.stringify(C.tabFilters("sdr")) === '{"sdrOnly":true}' && C.tabOf({ sdrOnly: true }) === "sdr");
 const q = (f) => C.catalogueQuery(f, { page: 1 });
 check("🔴 `sdrOnly` sends `sdr.applicable=true`", q({ sdrOnly: true })["sdr.applicable"] === "true");
 check(
@@ -125,7 +127,7 @@ check("payout details splits earnings and deposit only when there is one", /\{sd
 
 console.log("\nEvery label in both languages");
 const keys = [
-  "sdr_container_deposit", "sdr_helper_active", "sdr_helper_inactive", "sdr_products_only",
+  "sdr_container_deposit", "sdr_helper_active", "sdr_helper_inactive", "items_tab_sdr", "no_sdr_items", "no_sdr_items_body",
   "sdr_deposit", "sdr_items_total", "sdr_incl_deposit", "sdr_payout_earnings", "yes", "no",
 ];
 const missing = keys.filter((k) => !new RegExp(`\\n  ${k}:`).test(en) || !new RegExp(`\\n  ${k}:`).test(pt));

@@ -335,7 +335,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                                         >
                                             <span>{option.label?.[selectedLanguage]}</span>
                                             <span className="ml-2">
-                                                (€{option.price})
+                                                ({option.price}&nbsp;€)
                                             </span>
                                             <button
                                                 type="button"
@@ -398,7 +398,7 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                                             className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
                                         >
                                             <span>{option.label.en}</span>
-                                            <span className="ml-2">(€{option.price})</span>
+                                            <span className="ml-2">({option.price}&nbsp;€)</span>
                                             <button
                                                 type="button"
                                                 onClick={() => removeOption(option.label.en)}

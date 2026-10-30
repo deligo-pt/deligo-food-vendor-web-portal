@@ -43,19 +43,19 @@ export default function TaxReport({ taxReportData }: IProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <StatsCard
           title={t("gross_sales")}
-          value={`€${formatPrice(taxReportData.stats.totalSales)}`}
+          value={`${formatPrice(taxReportData.stats.totalSales)}\u00A0€`}
           icon={EuroIcon}
           delay={0}
         />
         <StatsCard
           title={t("total_tax_liability")}
-          value={`€${formatPrice(taxReportData.stats.totalTax)}`}
+          value={`${formatPrice(taxReportData.stats.totalTax)}\u00A0€`}
           icon={FileText}
           delay={0.1}
         />
         <StatsCard
           title={t("net_revenue")}
-          value={`€${formatPrice(taxReportData.stats.netRevenue)}`}
+          value={`${formatPrice(taxReportData.stats.netRevenue)}\u00A0€`}
           icon={TrendingUp}
           delay={0.2}
         />
@@ -135,7 +135,7 @@ export default function TaxReport({ taxReportData }: IProps) {
                     {tax.name} {t("tax")}
                   </span>
                   <span className="font-bold text-gray-900">
-                    €{formatPrice(tax.value)}
+                    {formatPrice(tax.value)}&nbsp;€
                   </span>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -185,7 +185,7 @@ export default function TaxReport({ taxReportData }: IProps) {
                   itemStyle={{
                     color: "#fff",
                   }}
-                  formatter={(value) => `€${formatPrice(value as number)}`}
+                  formatter={(value) => `${formatPrice(value as number)}\u00A0€`}
                 />
                 <Legend />
                 <Line
@@ -263,7 +263,7 @@ export default function TaxReport({ taxReportData }: IProps) {
                     borderRadius: "8px",
                     color: "#fff",
                   }}
-                  formatter={(value) => `€${formatPrice(value as number)}`}
+                  formatter={(value) => `${formatPrice(value as number)}\u00A0€`}
                 />
                 <Bar
                   dataKey="tax"

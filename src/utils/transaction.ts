@@ -38,7 +38,7 @@ export function transactionTypeLabel(type: string, t: Translate): string {
 export function transactionAmountText(tx: Pick<TTransaction, "type" | "amount">): string {
   const value = Number(tx.amount) || 0;
   const tone = toneOf(tx.type);
-  const abs = `€${Math.abs(value).toFixed(2)}`;
+  const abs = `${Math.abs(value).toFixed(2)}\u00A0€`;
   if (value < 0 || tone === "deduction") return `−${abs}`;
   if (tone === "earning" || tone === "deposit") return `+${abs}`;
   return abs;
@@ -94,5 +94,5 @@ export function itemName(name: string | { en?: string; pt?: string }, lang: "en"
 
 export function euro(value: number | string | undefined | null): string {
   const n = Number(value);
-  return `€${(Number.isFinite(n) ? n : 0).toFixed(2)}`;
+  return `${(Number.isFinite(n) ? n : 0).toFixed(2)}\u00A0€`;
 }

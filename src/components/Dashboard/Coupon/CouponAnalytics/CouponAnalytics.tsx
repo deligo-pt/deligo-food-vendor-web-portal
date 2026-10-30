@@ -110,11 +110,11 @@ export default function CouponAnalytics({ couponsAnalyticsResult }: IProps) {
 
                   {c.revenueImpact >= 0 ? (
                     <p className="text-3xl font-bold text-green-600 flex items-center justify-end gap-1">
-                      <ArrowUpRight size={20} /> €{c.revenueImpact}
+                      <ArrowUpRight size={20} /> {c.revenueImpact}&nbsp;€
                     </p>
                   ) : (
                     <p className="text-3xl font-bold text-red-600 flex items-center justify-end gap-1">
-                      <ArrowDownLeft size={20} /> €{c.revenueImpact}
+                      <ArrowDownLeft size={20} /> {c.revenueImpact}&nbsp;€
                     </p>
                   )}
 
