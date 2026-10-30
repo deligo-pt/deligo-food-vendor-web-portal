@@ -54,7 +54,7 @@ export default function VariationPriceInlineEdit({
         }}
         className={`group inline-flex items-center gap-1.5 text-left ${className}`}
       >
-        <span>€{value.toFixed(2)}</span>
+        <span>{value.toFixed(2)}&nbsp;€</span>
         <PencilIcon
           size={12}
           className="text-[#DC3173] opacity-0 group-hover:opacity-100 transition-opacity"
@@ -65,7 +65,6 @@ export default function VariationPriceInlineEdit({
 
   return (
     <div className="inline-flex items-center gap-1">
-      <span className="text-sm text-gray-500">€</span>
       <PriceInput
         autoFocus
         aria-label={title}
@@ -77,6 +76,7 @@ export default function VariationPriceInlineEdit({
         }}
         className="h-7 px-2 py-0.5 rounded-lg border border-[#DC3173]/10 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#DC3173]/50 w-24"
       />
+      <span className="text-sm text-gray-500">€</span>
       <button
         onClick={commit}
         className="p-0.5 text-green-600 hover:bg-green-50 rounded"

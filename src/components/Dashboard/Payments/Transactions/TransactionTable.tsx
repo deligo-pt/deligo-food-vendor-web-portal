@@ -21,10 +21,17 @@ import {
   TABLE_FROM,
 } from "@/src/components/MobileRowCard/MobileRowCard";
 import { TTransaction } from "@/src/types/transaction.type";
+import {
+  TONE_STYLES,
+  transactionAmountText,
+  transactionTone,
+  transactionTypeLabel,
+} from "@/src/utils/transaction";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import {
   CalendarIcon,
+  EyeIcon,
   Cog,
   EuroIcon,
   HashIcon,
@@ -33,6 +40,7 @@ import {
   ShapesIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface IProps {
   transactions: TTransaction[];
@@ -41,6 +49,21 @@ interface IProps {
 
 export default function TransactionTable({ transactions, t }: IProps) {
   const router = useRouter();
+  const open = (p: TTransaction) =>
+    router.push(`/vendor/transactions/${encodeURIComponent(p.transactionId)}`);
+
+  const typeBadge = (p: TTransaction) => (
+    <span
+      className={`inline-block whitespace-nowrap text-xs font-semibold px-2.5 py-1 rounded-full ${TONE_STYLES[transactionTone(p)].badge}`}
+    >
+      {transactionTypeLabel(p.type, t)}
+    </span>
+  );
+  const amount = (p: TTransaction) => (
+    <span className={`whitespace-nowrap font-semibold ${TONE_STYLES[transactionTone(p)].amount}`}>
+      {transactionAmountText(p)}
+    </span>
+  );
 
   const rowMenu = (p: TTransaction) => (
     <DropdownMenu>
@@ -48,11 +71,7 @@ export default function TransactionTable({ transactions, t }: IProps) {
         <MoreVertical className="h-4 w-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem
-          onClick={() =>
-            router.push(`/vendor/transactions/${p.transactionId}`)
-          }
-        >
+        <DropdownMenuItem onClick={() => open(p)}>
           {t("view")}
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -77,10 +96,20 @@ export default function TransactionTable({ transactions, t }: IProps) {
             subtitle={p.transactionId}
             aside={rowMenu(p)}
             fields={[
-              { label: t("type"), value: <span className="capitalize">{p.type}</span> },
-              { label: t("amount"), value: `€${p.amount}` },
+              { label: t("type"), value: typeBadge(p) },
+              { label: t("amount"), value: amount(p) },
               { label: t("date"), value: format(p.createdAt, "do MMM yyyy") },
             ]}
+            actions={
+              <Button
+                onClick={() => open(p)}
+                size="sm"
+                className="bg-[#DC3173] flex items-center gap-2 hover:bg-[#DC3173]/90"
+              >
+                <EyeIcon className="w-4 h-4" />
+                {t("view")}
+              </Button>
+            }
           />
         ))}
       </MobileRowCards>
@@ -139,13 +168,21 @@ export default function TransactionTable({ transactions, t }: IProps) {
             </TableRow>
           )}
           {transactions?.map((p) => (
-            <TableRow key={p._id}>
-              <TableCell>{p.transactionId}</TableCell>
+            <TableRow
+              key={p._id}
+              onClick={() => open(p)}
+              className="cursor-pointer hover:bg-[#DC3173]/5"
+            >
+              <TableCell className="font-mono text-xs">{p.transactionId}</TableCell>
               <TableCell className="whitespace-normal wrap-anywhere min-w-[12rem]">{p.description}</TableCell>
-              <TableCell className="capitalize">{p.type}</TableCell>
-              <TableCell>€{p.amount}</TableCell>
+              <TableCell>{typeBadge(p)}</TableCell>
+              <TableCell>{amount(p)}</TableCell>
               <TableCell>{format(p.createdAt, "do MMM yyyy")}</TableCell>
-              <TableCell className="text-right print:hidden">
+              <TableCell
+                className="text-right print:hidden"
+                // The menu has its own click; the row's would open the page twice.
+                onClick={(e) => e.stopPropagation()}
+              >
                 {rowMenu(p)}
               </TableCell>
             </TableRow>

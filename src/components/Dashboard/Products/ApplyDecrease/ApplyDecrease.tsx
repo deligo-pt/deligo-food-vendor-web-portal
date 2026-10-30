@@ -327,14 +327,14 @@ const ApplyDecrease = ({ products, productCategries }: Props) => {
 
                                                         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 text-[11px] mt-0.5">
                                                             <span className="text-muted-foreground">
-                                                                {currency} {originalPrice}
+                                                                {originalPrice}&nbsp;{currency}
                                                             </span>
 
                                                             {discounted !== null && (
                                                                 <>
                                                                     <span className="text-muted-foreground">→</span>
                                                                     <span className="font-semibold text-[#DC3173]">
-                                                                        {currency} {discounted}
+                                                                        {discounted}&nbsp;{currency}
                                                                     </span>
                                                                     <span className="text-[#DC3173] text-[10px]">
                                                                         (−{percentage}%)
@@ -375,14 +375,14 @@ const ApplyDecrease = ({ products, productCategries }: Props) => {
                                                                                     </span>
 
                                                                                     <span className="text-muted-foreground">
-                                                                                        {currency} {optionPrice}
+                                                                                        {optionPrice}&nbsp;{currency}
                                                                                     </span>
 
                                                                                     {optionDiscounted !== null && (
                                                                                         <>
                                                                                             <span className="text-muted-foreground">→</span>
                                                                                             <span className="font-semibold text-[#DC3173]">
-                                                                                                {currency} {optionDiscounted}
+                                                                                                {optionDiscounted}&nbsp;{currency}
                                                                                             </span>
                                                                                             <span className="text-[#DC3173] text-[10px]">
                                                                                                 (−{percentage}%)

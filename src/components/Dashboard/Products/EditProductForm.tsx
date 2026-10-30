@@ -731,7 +731,7 @@ export function EditProductForm({
                                   >
                                     <span>{option.label?.[lang]}</span>
                                     <span className="ml-2">
-                                      (€{option.price})
+                                      ({option.price}&nbsp;€)
                                     </span>
                                   </div>
                                 ))}

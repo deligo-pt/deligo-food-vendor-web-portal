@@ -5,11 +5,14 @@ import { useEffect, useState } from "react";
 export const AnimatedCounter = ({
   value,
   prefix = "",
+  suffix = "",
   duration = 1.5,
   className = "",
 }: {
   value: string | number;
   prefix?: string;
+  /** Goes after the number: amounts read "1,240.00 €". */
+  suffix?: string;
   duration?: number;
   className?: string;
 }) => {
@@ -39,6 +42,7 @@ export const AnimatedCounter = ({
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}
+      {suffix}
     </span>
   );
 };

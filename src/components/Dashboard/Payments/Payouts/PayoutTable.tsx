@@ -100,10 +100,10 @@ export default function PayoutTable({ payouts, t }: IProps) {
         {payouts?.map((p) => (
           <MobileRowCard
             key={p._id}
-            title={`€${formatPrice(p.amount)}`}
+            title={`${formatPrice(p.amount)}\u00A0€`}
             subtitle={
               (p.sdrAmount ?? 0) > 0
-                ? `${p.payoutId} · ${t("sdr_incl_deposit")} €${formatPrice(p.sdrAmount ?? 0)}`
+                ? `${p.payoutId} · ${t("sdr_incl_deposit")} ${formatPrice(p.sdrAmount ?? 0)}\u00A0€`
                 : p.payoutId
             }
             aside={rowMenu(p)}
@@ -174,11 +174,11 @@ export default function PayoutTable({ payouts, t }: IProps) {
               <TableCell>{p.payoutId}</TableCell>
               <TableCell className="whitespace-normal wrap-anywhere min-w-[8rem]">{p.paymentMethod}</TableCell>
               <TableCell>
-                €{formatPrice(p.amount)}
+                {formatPrice(p.amount)}&nbsp;€
                 {/* The SDR container deposit paid out with this payout. */}
                 {(p.sdrAmount ?? 0) > 0 && (
                   <span className="block text-xs text-sky-700">
-                    {t("sdr_incl_deposit")} €{formatPrice(p.sdrAmount ?? 0)}
+                    {t("sdr_incl_deposit")} {formatPrice(p.sdrAmount ?? 0)}&nbsp;€
                   </span>
                 )}
               </TableCell>

@@ -82,11 +82,11 @@ export const generateSalesReportPDF = (sales: TSalesReport) => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
 
-  doc.text(`Total Sales: €${sales.stats.totalSales}`, marginX, y);
+  doc.text(`Total Sales: ${sales.stats.totalSales} €`, marginX, y);
   y += 5;
   doc.text(`Total Orders: ${sales.stats.totalOrders}`, marginX, y);
   y += 5;
-  doc.text(`Average Order Value: €${sales.stats.avgOrderValue}`, marginX, y);
+  doc.text(`Average Order Value: ${sales.stats.avgOrderValue} €`, marginX, y);
 
   // earnings by day
   y += 10;
@@ -149,10 +149,10 @@ export const generateSalesReportPDF = (sales: TSalesReport) => {
               `${item?.name} (x${item.itemSummary?.quantity})`,
           )
           .join(", "),
-        `€${formatPrice(
+        `${formatPrice(
           (order?.payoutSummary?.vendor?.vendorNetPayout || 0) +
           (order?.payoutSummary?.deliGoCommission?.totalDeduction || 0),
-        )}`,
+        )} €`,
         format(new Date(order.createdAt), "yyyy-MM-dd"),
         order.orderStatus,
       ]) || [],

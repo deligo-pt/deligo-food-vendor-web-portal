@@ -163,8 +163,8 @@ export default function AddItemToSection({
                                                                             {name}
                                                                         </p>
                                                                         <p className="text-[10px] text-[#DC3173] font-bold">
-                                                                            {prod.pricing?.currency || "€"}
                                                                             {prod.pricing?.price}
+                                                                            &nbsp;{prod.pricing?.currency || "€"}
                                                                         </p>
                                                                     </div>
                                                                 </div>

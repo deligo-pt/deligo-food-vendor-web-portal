@@ -49,7 +49,7 @@ export default function SingleIngredientCard({
             />
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#DC3173]/10 text-[#DC3173]">
-            €{item.price?.toFixed(2)}
+            {item.price?.toFixed(2)}&nbsp;€
           </span>
         </div>
 

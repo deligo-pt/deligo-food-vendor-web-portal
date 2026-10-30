@@ -118,7 +118,7 @@ export default function OrderTable({ orders }: IProps) {
                   ?.map((i) => `${i.name} x ${i.itemSummary?.quantity}`)
                   .join(", "),
               },
-              { label: t("amount"), value: `€${orderAmount(order)}` },
+              { label: t("amount"), value: `${orderAmount(order)}\u00A0€` },
               {
                 label: t("date"),
                 value: format(new Date(order.createdAt), "dd-MM-yyyy"),
@@ -250,7 +250,7 @@ export default function OrderTable({ orders }: IProps) {
               </TableCell>
 
               <TableCell>
-                €{orderAmount(order)}
+                {orderAmount(order)}&nbsp;€
               </TableCell>
 
               <TableCell>

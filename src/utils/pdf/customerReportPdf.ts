@@ -88,7 +88,7 @@ export const generateCustomerReportPDF = (
   doc.setFontSize(10);
 
   doc.text(
-    `Total Customers: €${customerReportData.stats.totalCustomers}`,
+    `Total Customers: ${customerReportData.stats.totalCustomers}`,
     marginX,
     y,
   );
@@ -99,7 +99,7 @@ export const generateCustomerReportPDF = (
     y,
   );
   y += 5;
-  doc.text(`Most Orders: €${customerReportData.stats.mostOrders}`, marginX, y);
+  doc.text(`Most Orders: ${customerReportData.stats.mostOrders}`, marginX, y);
 
   // earnings by day
   y += 10;

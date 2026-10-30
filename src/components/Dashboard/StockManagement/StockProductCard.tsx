@@ -196,7 +196,7 @@ export default function StockProductCard({ product }: IProps) {
                         Current Price
                       </label>
                       <div className="text-xl font-bold text-gray-900">
-                        €{product.pricing.price}
+                        {product.pricing.price}&nbsp;€
                       </div>
                     </div>
 

@@ -185,7 +185,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                       {offer.offerType === "PERCENT"
                         ? `${offer.discountValue}% Off`
                         : offer.offerType === "FLAT"
-                          ? `€ ${offer.discountValue} Off`
+                          ? `${offer.discountValue}\u00A0€ Off`
                           : offer.offerType === "BOGO"
                             ? `${t("buy")} ${offer.bogo?.buyQty} ${t("get")} ${offer.bogo?.getQty}`
                             : ""}
@@ -270,7 +270,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                 Juice B1G1 offer has the highest engagement — keep it active on
                 weekends.
               </li>
-              <li>Flat €3 OFF drives good conversion for lunch hours.</li>
+              <li>Flat 3 € OFF drives good conversion for lunch hours.</li>
               <li>
                 Burger 20% OFF boosted sales by 18% — consider extending the
                 offer.

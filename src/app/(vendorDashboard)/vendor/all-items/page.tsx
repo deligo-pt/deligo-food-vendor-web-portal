@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import Products from "@/src/components/Dashboard/Products/Products";
 import PageLoadError from "@/src/components/PageLoadError/PageLoadError";
 import { getAllBranches } from "@/src/services/dashboard/branch/branch.service";
@@ -9,7 +10,12 @@ import {
 import { getProfileData } from "@/src/services/dashboard/profile/profile.service";
 import { TProductCategory } from "@/src/types/category.type";
 import { TVendor } from "@/src/types/vendor.type";
-import { orderCategories, type TCatalogueFilters } from "@/src/utils/catalogueSections";
+import {
+  orderCategories,
+  tabFilters,
+  tabOf,
+  type TCatalogueFilters,
+} from "@/src/utils/catalogueSections";
 
 type IProps = {
   searchParams?: Promise<Record<string, string | undefined>>;
@@ -27,6 +33,16 @@ type IProps = {
  */
 export default async function ProductsPage({ searchParams }: IProps) {
   const queries = (await searchParams) || {};
+  // "SDR products only" was a filter-popup option until the SDR tab replaced
+  // it (30 Oct 2026); an old link opens the tab.
+  if (queries.sdr === "only") {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(queries)) {
+      if (value !== undefined && key !== "sdr" && key !== "tab") params.set(key, value);
+    }
+    params.set("tab", "sdr");
+    redirect(`?${params.toString()}`);
+  }
   const lang = queries.lang === "pt" ? "pt" : "en";
 
   // Categories don't depend on anything, so they start right away. The vendor
@@ -37,13 +53,15 @@ export default async function ProductsPage({ searchParams }: IProps) {
   const availability =
     (vendorData?.businessDetails?.businessType === "RESTAURANT" && queries.status) || "";
 
-  const filters: TCatalogueFilters = {
+  // Everything but the All / Active / Inactive / SDR tab, which the tabs' own
+  // counts are taken across.
+  const baseFilters: TCatalogueFilters = {
     lang,
     sortBy: queries.sortBy || "-createdAt",
     ...(queries.searchTerm ? { searchTerm: queries.searchTerm } : {}),
     ...(availability ? { availability } : {}),
-    ...(queries.sdr === "only" ? { sdrOnly: true } : {}),
   };
+  const filters: TCatalogueFilters = { ...baseFilters, ...tabFilters(queries.tab) };
 
   const [{ data }, branchResults] = await Promise.all([
     categoriesPromise,
@@ -56,10 +74,16 @@ export default async function ProductsPage({ searchParams }: IProps) {
   // it; the 11-odd count requests this used to make were most of the wait.
   const sections = orderCategories(categories);
   const firstId = sections[0]?._id;
-  const [{ total }, firstPage] = await Promise.all([
-    getCatalogueCounts([], filters),
+  // One count per tab, with the vendor's search and filters, so each tab
+  // says how many it will show. The open tab's is also the catalogue total.
+  const [all, active, inactive, sdr, firstPage] = await Promise.all([
+    getCatalogueCounts([], baseFilters),
+    getCatalogueCounts([], { ...baseFilters, ...tabFilters("active") }),
+    getCatalogueCounts([], { ...baseFilters, ...tabFilters("inactive") }),
+    getCatalogueCounts([], { ...baseFilters, ...tabFilters("sdr") }),
     firstId ? getCategoryProductsPage(firstId, 1, filters) : null,
   ]);
+  const { total } = { all, active, inactive, sdr }[tabOf(filters)];
   // The catalogue's own count failing means the backend is not answering (a
   // 429, most likely); a page of empty categories would read as real.
   if (total === undefined) return <PageLoadError busy />;
@@ -72,6 +96,7 @@ export default async function ProductsPage({ searchParams }: IProps) {
       productCategories={categories}
       branches={branchResults?.data ?? []}
       filters={filters}
+      statusCounts={{ all: all.total, active: active.total, inactive: inactive.total, sdr: sdr.total }}
       catalogue={{
         total,
         categoryIds: sections.map((category) => category._id),

@@ -19,6 +19,8 @@ export default function Transactions({ transactionsResult }: IProps) {
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
     { label: t("oldest_first"), value: "createdAt" },
+    { label: t("tx_amount_high"), value: "-amount" },
+    { label: t("tx_amount_low"), value: "amount" },
   ];
 
   return (

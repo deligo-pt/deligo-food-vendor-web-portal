@@ -113,7 +113,7 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                           <h4 className="font-bold text-gray-900">{item.name}</h4>
                           <p className="text-xs text-gray-400 font-mono mt-0.5">{t("sku")}: {item.sku}</p>
                           <p className="text-sm text-gray-500 mt-1">
-                            €{formatPrice(item.pricePerUnit)} x {item.quantity} {item.unit || "units"}
+                            {formatPrice(item.pricePerUnit)}&nbsp;€ x {item.quantity} {item.unit || "units"}
                           </p>
 
                           {/* Dynamic Stock Status Profiles */}
@@ -130,14 +130,14 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                           {/* Dynamic Bulk Pricing Offer Status indicator */}
                           {matchingBulkOffer && (
                             <div className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded mt-2 border border-amber-100">
-                              <Tag size={12} /> {t("bulk_volume_tier_triggered")} (€{matchingBulkOffer.discountPrice}/{item.unit})
+                              <Tag size={12} /> {t("bulk_volume_tier_triggered")} ({matchingBulkOffer.discountPrice}&nbsp;€/{item.unit})
                             </div>
                           )}
                         </div>
                       </div>
                       <div className="text-right sm:self-center">
                         <p className="font-bold text-lg text-gray-900">
-                          €{formatPrice(item.totalAmount)}
+                          {formatPrice(item.totalAmount)}&nbsp;€
                         </p>
                         <p className="text-xs text-gray-400">{t("includes")} {item.taxRate}% {t("vat")}</p>
                       </div>
@@ -203,31 +203,31 @@ export function IngredientOrderDetails({ orderData }: IProps) {
                 <div className="flex justify-between text-gray-500">
                   <span>{t("products_net_base")}</span>
                   <span className="font-medium text-gray-800">
-                    €{formatPrice(orderData.orderCalculation?.totalOriginalPrice || 0)}
+                    {formatPrice(orderData.orderCalculation?.totalOriginalPrice || 0)}&nbsp;€
                   </span>
                 </div>
                 {orderData.orderCalculation?.totalProductDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>{t("bulk_wholesale_adjustment")}</span>
-                    <span>-€{formatPrice(orderData.orderCalculation.totalProductDiscount)}</span>
+                    <span>-{formatPrice(orderData.orderCalculation.totalProductDiscount)}&nbsp;€</span>
                   </div>
                 )}
                 <div className="flex justify-between text-gray-500">
                   <span>{t("total_tax_amount")}</span>
                   <span className="font-medium text-gray-800">
-                    €{formatPrice(orderData.orderCalculation?.totalTaxAmount || 0)}
+                    {formatPrice(orderData.orderCalculation?.totalTaxAmount || 0)}&nbsp;€
                   </span>
                 </div>
                 <div className="flex justify-between text-gray-500 pb-3 border-b border-gray-50">
                   <span>{t("distribution_logistics_fee")}</span>
                   <span className="font-medium text-gray-800">
-                    €{formatPrice(orderData.delivery?.totalDeliveryCharge || 0)}
+                    {formatPrice(orderData.delivery?.totalDeliveryCharge || 0)}&nbsp;€
                   </span>
                 </div>
                 <div className="pt-2 flex justify-between items-center">
                   <span className="font-bold text-gray-900 text-base">{t("grand_total")}</span>
                   <span className="font-black text-[#DC3173] text-2xl">
-                    €{formatPrice(orderData.grandTotal)}
+                    {formatPrice(orderData.grandTotal)}&nbsp;€
                   </span>
                 </div>
               </div>

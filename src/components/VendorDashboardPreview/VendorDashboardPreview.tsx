@@ -23,7 +23,7 @@ const stats: StatCard[] = [
   {
     id: "earnings",
     title: "Earnings",
-    value: "€1,240",
+    value: "1,240 €",
     meta: "This week • Estimated",
     trend: "up",
     accent: "emerald",

@@ -85,13 +85,13 @@ export default function OrderItemsTable({ items, t }: IProps) {
                           snapshot: "+€0.30 deposit (2 × €0.15)". */}
                       {item.sdr?.applicable && item.sdr.lineTotal > 0 && (
                         <div className="text-xs text-sky-700 mt-0.5">
-                          +€{formatPrice(item.sdr.lineTotal)} {t("sdr_deposit")}
-                          {item.sdr.containers ? ` (${item.sdr.containers} × €${formatPrice(item.sdr.unitDeposit)})` : ""}
+                          +{formatPrice(item.sdr.lineTotal)}&nbsp;€ {t("sdr_deposit")}
+                          {item.sdr.containers ? ` (${item.sdr.containers} × ${formatPrice(item.sdr.unitDeposit)}\u00A0€)` : ""}
                         </div>
                       )}
                       {item.productPricing.productDiscountAmount > 0 && (
                         <div className="text-xs text-green-600 mt-0.5">
-                          -€{formatPrice(item.productPricing.productDiscountAmount)}{" "}
+                          -{formatPrice(item.productPricing.productDiscountAmount)}&nbsp;€{" "}
                           ({item.productPricing.discountType})
                         </div>
                       )}
@@ -104,10 +104,10 @@ export default function OrderItemsTable({ items, t }: IProps) {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right text-gray-700">
-                  €{formatPrice(item.productPricing?.unitPrice ?? 0)}
+                  {formatPrice(item.productPricing?.unitPrice ?? 0)}&nbsp;€
                 </td>
                 <td className="px-6 py-4 text-right font-medium text-gray-900">
-                  €{formatPrice(item.itemSummary?.grandTotal ?? 0)}
+                  {formatPrice(item.itemSummary?.grandTotal ?? 0)}&nbsp;€
                 </td>
               </motion.tr>
             ))}

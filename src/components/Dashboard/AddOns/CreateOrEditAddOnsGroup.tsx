@@ -351,7 +351,7 @@ export default function CreateOrEditAddOnsGroup({
                               {option.name?.[lang]}
                             </p>
                             <p className="text-xs text-gray-500">
-                              {t("price")}: €{Number(option.price).toFixed(2)}
+                              {t("price")}: {Number(option.price).toFixed(2)}&nbsp;€
                               {taxRate !== undefined ? ` · incl. Tax: ${taxRate}%` : ""}
                             </p>
                           </div>

@@ -67,7 +67,7 @@ export default function StockVariationOption({ productId, option }: IProps) {
         </div>
         <div className="flex items-center gap-4 text-sm">
           <span className="text-gray-500">
-            Current: <strong className="text-gray-900">€{option.price}</strong>
+            Current: <strong className="text-gray-900">{option.price}&nbsp;€</strong>
           </span>
           <span className="text-gray-500">
             Stock:{" "}

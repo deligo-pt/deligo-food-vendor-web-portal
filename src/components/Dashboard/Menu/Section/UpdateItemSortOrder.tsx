@@ -125,7 +125,7 @@ export default function UpdateItemSortOrder({
                         </p>
                         {itemPrice !== undefined && (
                             <p className="text-xs text-[#DC3173] font-bold">
-                                {currency}{itemPrice}
+                                {itemPrice}&nbsp;{currency}
                             </p>
                         )}
                     </div>

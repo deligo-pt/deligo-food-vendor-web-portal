@@ -266,14 +266,14 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
               <div className="flex items-center gap-2 mb-2"></div>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold text-[#DC3173]">
-                  {product.pricing.currency}{" "}
                   {product.pricing.finalPrice.toFixed(2)}
+                  &nbsp;{product.pricing.currency}
                 </span>
                 {product?.pricing?.discount ? (
                   <>
                     <span className="text-lg text-gray-500 line-through">
-                      {product.pricing.currency}{" "}
                       {product.pricing.price.toFixed(2)}
+                      &nbsp;{product.pricing.currency}
                     </span>
                     <span className="text-sm font-medium text-green-600">
                       {product.pricing.discount}% {t("off")}
@@ -383,7 +383,7 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
                               <div className="flex items-start gap-3">
                                 <div>
                                   <span className="font-semibold">{t("price")}: </span>
-                                  <span>€{option.price}</span>
+                                  <span>{option.price}&nbsp;€</span>
                                 </div>
                                 {businessTypeSlug !== "restaurant" && (
                                   <div>

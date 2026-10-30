@@ -115,7 +115,7 @@ export default function SalesReport({ salesReportData }: IProps) {
         <StatsCard
           title={t("total_sales")}
           // value="€4,610.00"
-          value={`€${formatPrice(salesReportData?.data?.stats?.totalSales || 0)}`}
+          value={`${formatPrice(salesReportData?.data?.stats?.totalSales || 0)}\u00A0€`}
           icon={CreditCard}
           delay={0}
         />
@@ -127,7 +127,7 @@ export default function SalesReport({ salesReportData }: IProps) {
         />
         <StatsCard
           title={t("avg_order_value")}
-          value={`€${formatPrice(salesReportData?.data?.stats?.avgOrderValue || 0)}`}
+          value={`${formatPrice(salesReportData?.data?.stats?.avgOrderValue || 0)}\u00A0€`}
           icon={TrendingUp}
           delay={0.2}
         />

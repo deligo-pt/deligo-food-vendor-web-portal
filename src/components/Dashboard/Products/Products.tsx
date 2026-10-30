@@ -19,11 +19,13 @@ import CopyToBranchDialog from "@/src/components/Dashboard/Products/CopyToBranch
 import { approvedBranches, productCode } from "@/src/utils/productCopy";
 import { CheckSquare, LoaderCircle, Search, SquaresSubtract, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   appendPage,
   hasMore,
   localizedText,
   OTHER_SECTION_ID,
+  tabOf,
   type TCatalogueFilters,
 } from "@/src/utils/catalogueSections";
 import { toast } from "sonner";
@@ -67,9 +69,13 @@ function sectionsFrom(catalogue: TCatalogue, categories: TProductCategory[]): TS
   });
 }
 
+/** How many products each All / Active / Inactive tab holds; `undefined` if its count failed. */
+export type TStatusCounts = { all?: number; active?: number; inactive?: number; sdr?: number };
+
 interface IProps {
   catalogue: TCatalogue;
   filters: TCatalogueFilters;
+  statusCounts: TStatusCounts;
   businessTypeSlug: string;
   productCategories: TProductCategory[];
   /** Copy targets. Empty when the vendor has none, which hides the whole feature. */
@@ -79,6 +85,7 @@ interface IProps {
 export default function Products({
   catalogue,
   filters,
+  statusCounts,
   businessTypeSlug,
   productCategories,
   branches,
@@ -99,7 +106,8 @@ export default function Products({
   const [jumpTarget, setJumpTarget] = useState<string | null>(null);
   // True while a search, filter or sort change is loading its new results.
   // The current list stays on screen, dimmed, until they arrive.
-  const { isPending: updatingList } = useListNavigation();
+  const { push, isPending: updatingList } = useListNavigation();
+  const searchParams = useSearchParams();
   const [pickedCategoryId, setPickedCategoryId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | null;
@@ -139,6 +147,24 @@ export default function Products({
   /** The pill a click chose, held until the smooth scroll reaches it. */
   const clickedRef = useRef<string | null>(null);
 
+  // All / Active / Inactive (29 Oct 2026) and SDR (30 Oct). A tab is a URL
+  // change like every other filter here, so the API does the filtering
+  // (`meta.status`, `sdr.applicable`) and each category, count and page stays
+  // true to it.
+  const currentTab = tabOf(filters);
+  const statusTabs = [
+    { value: "all", label: t("items_tab_all"), count: statusCounts.all },
+    { value: "active", label: t("items_tab_active"), count: statusCounts.active },
+    { value: "inactive", label: t("items_tab_inactive"), count: statusCounts.inactive },
+    { value: "sdr", label: t("items_tab_sdr"), title: t("sdr_container_deposit"), count: statusCounts.sdr },
+  ] as const;
+  const selectTab = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "all") params.delete("tab");
+    else params.set("tab", value);
+    push(`?${params.toString()}`);
+  };
+
   const sortOptions = [
     { label: t("newest_first"), value: "-createdAt" },
     { label: t("oldest_first"), value: "createdAt" },
@@ -150,15 +176,7 @@ export default function Products({
     { label: t("lowest_rated"), value: "rating.average" },
   ];
 
-  // Stock status for stores; the SDR filter for every vendor (drinks are
-  // sold by restaurants too).
-  const sdrFilter = {
-    label: t("sdr_container_deposit"),
-    key: "sdr",
-    placeholder: t("all"),
-    type: "select",
-    items: [{ label: t("sdr_products_only"), value: "only" }],
-  };
+  // Stock status, for stores. SDR is a tab now, not a filter here.
   const stockFilterOptions = [
     {
       label: t("availability_status"),
@@ -725,15 +743,46 @@ export default function Products({
         subtitle={t("manage_your_restaurants_food_delivery_items")}
       />
 
+      {/* All / Active / Inactive / SDR – fixed height. On a phone: four equal
+          columns, each count under its label so the label keeps the width
+          (it fits 320px in PT); from sm up a row of label + count tabs. */}
+      <div
+        role="tablist"
+        aria-label={t("items_status_tabs")}
+        className="shrink-0 mb-4 grid w-full grid-cols-4 gap-1 rounded-xl border border-gray-200 bg-white p-1 sm:flex sm:w-fit"
+      >
+        {statusTabs.map((tab) => {
+          const selected = currentTab === tab.value;
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              title={"title" in tab ? tab.title : undefined}
+              onClick={() => !selected && selectTab(tab.value)}
+              className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1 py-1.5 text-sm font-medium transition-colors sm:flex-row sm:gap-2 sm:px-4 sm:py-2 ${selected
+                ? "bg-[#DC3173] text-white shadow-sm"
+                : "text-gray-600 hover:bg-gray-50"
+                }`}
+            >
+              <span className="truncate">{tab.label}</span>
+              <span
+                className={`shrink-0 rounded-full px-1.5 py-0.5 text-xs font-semibold sm:px-2 ${selected ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"}`}
+              >
+                {tab.count ?? "–"}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Filters – fixed height */}
       <div className="shrink-0 mb-4 flex items-start gap-3">
         <div className="flex-1 min-w-0">
           <AllFilters
             sortOptions={sortOptions}
-            filterOptions={[
-              ...(businessTypeSlug !== "restaurant" ? stockFilterOptions : []),
-              sdrFilter,
-            ]}
+            filterOptions={businessTypeSlug !== "restaurant" ? stockFilterOptions : undefined}
           />
         </div>
 
@@ -1079,10 +1128,21 @@ export default function Products({
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <Search className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="text-xl font-medium mb-2">{t("no_items_found")}</h3>
-          <p className="text-gray-500 max-w-md">
-            {t("no_items_match_current_filters")}
-          </p>
+          {/* An empty Active / Inactive tab with nothing else narrowing it
+              says so plainly, rather than blaming filters the vendor never set. */}
+          {currentTab !== "all" && !filters.searchTerm && !filters.availability ? (
+            <>
+              <h3 className="text-xl font-medium mb-2">{t(`no_${currentTab}_items`)}</h3>
+              <p className="text-gray-500 max-w-md">{t(`no_${currentTab}_items_body`)}</p>
+            </>
+          ) : (
+            <>
+              <h3 className="text-xl font-medium mb-2">{t("no_items_found")}</h3>
+              <p className="text-gray-500 max-w-md">
+                {t("no_items_match_current_filters")}
+              </p>
+            </>
+          )}
         </div>
       )}
 

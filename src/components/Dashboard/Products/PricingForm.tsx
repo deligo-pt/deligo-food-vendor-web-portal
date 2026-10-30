@@ -253,7 +253,7 @@ const PricingForm = ({
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-gray-500">{t("original_price")}</span>
                                 <span className="font-medium text-gray-800">
-                                    €{inputPrice.toFixed(2)}
+                                    {inputPrice.toFixed(2)}&nbsp;€
                                 </span>
                             </div>
 
@@ -266,7 +266,7 @@ const PricingForm = ({
                                         : ""}
                                 </span>
                                 <span className="font-medium text-red-500">
-                                    -€{shownDiscount.toFixed(2)}
+                                    -{shownDiscount.toFixed(2)}&nbsp;€
                                 </span>
                             </div>
 
@@ -280,7 +280,7 @@ const PricingForm = ({
                                         <p className="text-xs text-gray-500 mt-0.5">({t("incl_vat")})</p>
                                     </div>
                                     <span className="text-lg font-bold text-[#DC3173]">
-                                        €{finalPrice.toFixed(2)}
+                                        {finalPrice.toFixed(2)}&nbsp;€
                                     </span>
                                 </div>
 
@@ -301,7 +301,7 @@ const PricingForm = ({
                                             </span>
                                         </div>
                                         <span className="font-medium text-gray-800">
-                                            €{netItemPrice.toFixed(2)}
+                                            {netItemPrice.toFixed(2)}&nbsp;€
                                         </span>
                                     </div>
 
@@ -313,7 +313,7 @@ const PricingForm = ({
                                             </span>
                                         </div>
                                         <span className="font-medium text-gray-800">
-                                            €{taxAmount.toFixed(2)}
+                                            {taxAmount.toFixed(2)}&nbsp;€
                                         </span>
                                     </div>
                                 </div>
