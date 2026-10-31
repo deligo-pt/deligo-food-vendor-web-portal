@@ -6,9 +6,9 @@ type LocalizedType = {
   pt?: string;
 }
 
-// Container deposit (SDR) on one add-on option: charged per container, times
-// `containerCount` (a 2-can option carries 2). The backend defaults a missing
-// one to `{ applicable: false, containerCount: 1 }`.
+// Container deposit (SDR) on one add-on option. The panel always sends
+// `containerCount: 1` (see `toAddonSdr`); the backend defaults a missing one to
+// `{ applicable: false, containerCount: 1 }`.
 export type TAddonOptionSdr = {
   applicable: boolean;
   containerCount: number;

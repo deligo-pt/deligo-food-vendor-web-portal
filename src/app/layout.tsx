@@ -7,9 +7,9 @@ import "./globals.css";
 import { GoogleMapsProvider } from "../store/googleProvider";
 
 export const metadata: Metadata = {
-  title: "DeliGo Vendor Portal | Manage Orders, Menus & Growth",
+  title: "DeliGo | Portal de Parceiros | Gestão de Encomendas e Negócios",
   description:
-    "DeliGo Vendor Portal empowers restaurants and business partners to manage menus, orders, delivery operations, payouts, analytics, and growth — all from one smart dashboard.",
+    "A DeliGo ajuda restaurantes, supermercados e outros parceiros a gerir encomendas, menus, entregas, pagamentos e vendas, tudo numa única plataforma simples e intuitiva.",
   other: {
     google: "notranslate",
   },

@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { XIcon } from "lucide-react";
+import { PencilIcon, XIcon } from "lucide-react";
 
 import {
   Form,
@@ -44,7 +44,7 @@ import { toast } from "sonner";
 import z from "zod";
 import { useStore } from "@/src/store/store";
 import { translateObject } from "@/src/utils/translation/translationObject";
-import AddonSdrControl, { DEFAULT_ADDON_SDR, useSdrDeposit } from "./AddonSdrControl";
+import AddonSdrControl, { DEFAULT_ADDON_SDR, toAddonSdr, useSdrDeposit } from "./AddonSdrControl";
 
 const PRIMARY = "#DC3173";
 
@@ -87,10 +87,7 @@ export default function CreateOrEditAddOnsGroup({
           tax: (option.tax as TTax)?._id,
           // Kept so saving updates this option instead of adding a copy.
           sku: option.sku,
-          sdr: {
-            applicable: !!option.sdr?.applicable,
-            containerCount: option.sdr?.containerCount || 1,
-          },
+          sdr: toAddonSdr(!!option.sdr?.applicable),
         })) || [],
 
       currentLang: lang
@@ -107,10 +104,48 @@ export default function CreateOrEditAddOnsGroup({
 
   const router = useRouter();
 
-  const { fields: optionsFields, append, remove } = useFieldArray({
+  const { fields: optionsFields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "options",
   })
+
+  // The option being edited in place, by position, and its draft. Saving the
+  // group sends it with its `sku`, which the API updates rather than copies.
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editPrice, setEditPrice] = useState<number | undefined>(undefined);
+  const [editTax, setEditTax] = useState("");
+
+  const startEdit = (index: number) => {
+    const option = form.getValues(`options.${index}`);
+    setEditingIndex(index);
+    setEditName(option.name?.[lang] ?? "");
+    setEditPrice(option.price);
+    setEditTax(option.tax);
+  };
+
+  const editValid =
+    editName.trim() !== "" && editPrice !== undefined && editPrice >= 0 && editTax !== "";
+
+  const saveEdit = () => {
+    if (editingIndex === null || !editValid) return;
+    const option = form.getValues(`options.${editingIndex}`);
+    const name = editName.trim();
+    const otherLang = lang === "en" ? "pt" : "en";
+    update(editingIndex, {
+      ...option,
+      name: {
+        ...option.name,
+        [lang]: name,
+        // A renamed option is translated again on save: the translator keeps a
+        // filled other language, which would leave the old name there.
+        [otherLang]: name === option.name?.[lang] ? option.name?.[otherLang] ?? "" : "",
+      },
+      price: Number(editPrice),
+      tax: editTax,
+    });
+    setEditingIndex(null);
+  };
 
   const addOption = () => {
     if (
@@ -251,8 +286,22 @@ export default function CreateOrEditAddOnsGroup({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="p-6 overflow-auto">
+    <Sheet
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) setEditingIndex(null);
+        onOpenChange(next);
+      }}
+    >
+      <SheetContent
+        className="p-6 overflow-auto"
+        // Escape while an option is open for editing cancels that edit only.
+        onEscapeKeyDown={(e) => {
+          if (editingIndex === null) return;
+          e.preventDefault();
+          setEditingIndex(null);
+        }}
+      >
         <SheetHeader className="px-0">
           <SheetTitle>
             {actionType === "create" ? t("create") : t("edit")} {t("addon_group")}
@@ -345,6 +394,70 @@ export default function CreateOrEditAddOnsGroup({
                         key={option.id}
                         className="space-y-2 rounded-lg border border-[#DC3173]/20 bg-[#DC3173]/5 px-3 py-2"
                       >
+                        {editingIndex === index ? (
+                          <div className="space-y-3 py-1">
+                            <div className="space-y-1">
+                              <label htmlFor={`edit-option-name-${option.id}`} className="text-sm font-medium">
+                                {t("option_name")}
+                              </label>
+                              <Input
+                                id={`edit-option-name-${option.id}`}
+                                autoFocus
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    saveEdit();
+                                  }
+                                }}
+                                className="bg-white"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <span className="text-sm font-medium">{t("option_price")}</span>
+                              <PriceInput
+                                value={editPrice}
+                                onValueChange={setEditPrice}
+                                placeholder={t("option_price")}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <span className="text-sm font-medium">{t("option_tax")}</span>
+                              <Select value={editTax} onValueChange={setEditTax}>
+                                <SelectTrigger className="w-full bg-white">
+                                  <SelectValue placeholder={t("select_tax")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {taxes?.map((tax) => (
+                                    <SelectItem key={tax._id} value={tax._id}>
+                                      {tax.taxName} ({tax.taxRate}%)
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setEditingIndex(null)}
+                              >
+                                {t("cancel")}
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                onClick={saveEdit}
+                                disabled={!editValid}
+                                className="bg-[#DC3173] text-white hover:bg-[#B02458]"
+                              >
+                                {t("save")}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="text-sm font-medium text-gray-800 wrap-anywhere">
@@ -355,18 +468,32 @@ export default function CreateOrEditAddOnsGroup({
                               {taxRate !== undefined ? ` · incl. Tax: ${taxRate}%` : ""}
                             </p>
                           </div>
+                          <div className="flex shrink-0 items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => startEdit(index)}
+                            aria-label={`${t("edit")} ${option.name?.[lang] ?? ""}`.trim()}
+                            className="rounded p-0.5 text-gray-400 hover:bg-[#DC3173]/10 hover:text-[#DC3173]"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </button>
                           <button
                             type="button"
                             // By position, through the field array. When editing,
                             // saving deletes the removed options on the server
                             // (see `handleAddOrEditGroup`).
-                            onClick={() => remove(index)}
+                            onClick={() => {
+                              setEditingIndex(null);
+                              remove(index);
+                            }}
                             aria-label={`${t("remove")} ${option.name?.[lang] ?? ""}`.trim()}
-                            className="shrink-0 rounded p-0.5 text-gray-400 hover:bg-[#DC3173]/10 hover:text-[#DC3173]"
+                            className="rounded p-0.5 text-gray-400 hover:bg-[#DC3173]/10 hover:text-[#DC3173]"
                           >
                             <XIcon className="h-4 w-4" />
                           </button>
+                          </div>
                         </div>
+                        )}
                         <FormField
                           control={form.control}
                           name={`options.${index}.sdr`}
@@ -481,7 +608,9 @@ export default function CreateOrEditAddOnsGroup({
                 className="w-full"
                 style={{ background: PRIMARY }}
                 form="creatAddOnsForm"
-                disabled={isSubmitting}
+                // An option still open for editing must be saved or cancelled
+                // first, or its changes would be silently left out.
+                disabled={isSubmitting || editingIndex !== null}
               >
                 {actionType === "create" ? t("create") : t("update")}
               </Button>

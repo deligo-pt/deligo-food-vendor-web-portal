@@ -4,7 +4,7 @@ import AddVariationForm from "@/src/components/Dashboard/Products/VariationManag
 import AddVaritionOptionForm from "@/src/components/Dashboard/Products/VariationManagement/AddVaritionOptionForm";
 import VariationDeleteButton from "@/src/components/Dashboard/Products/VariationManagement/VariationDeleteButton";
 import VariationInlineEdit from "@/src/components/Dashboard/Products/VariationManagement/VariationInlineEdit";
-import VariationPriceInlineEdit from "@/src/components/Dashboard/Products/VariationManagement/VariationPriceInlineEdit";
+import VariationOptionRow from "@/src/components/Dashboard/Products/VariationManagement/VariationOptionRow";
 import {
   removeVariationReq,
   renameVariationReq,
@@ -18,7 +18,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircleIcon,
   ChevronDownIcon,
-  GripVerticalIcon,
   LayersIcon,
   PlusIcon,
   TagIcon,
@@ -48,6 +47,16 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
     (sum, v) => sum + (v?.options?.length || 0),
     0,
   );
+
+  // A renamed name or label is translated again: the translator keeps a
+  // filled other language, which would leave the old name there.
+  const renamed = (value: LocalizedType | undefined, next: string) => {
+    const other = lang === "en" ? "pt" : "en";
+    return {
+      [lang]: next,
+      [other]: next === value?.[lang] ? (value?.[other] ?? "") : "",
+    } as { en: string; pt: string };
+  };
 
   const renameVariation = async (data: {
     oldName: string;
@@ -170,8 +179,8 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
             {variationCount > 0 ? (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-600">
                 <LayersIcon size={11} />
-                {variationCount} {t("variation")}{variationCount !== 1 ? "s" : ""} ·{" "}
-                {optionCount} {t("option")}{optionCount !== 1 ? "s" : ""}
+                {t(variationCount === 1 ? "variation_count_one" : "variation_count_other").replace("{count}", String(variationCount))} ·{" "}
+                {t(optionCount === 1 ? "option_count_one" : "option_count_other").replace("{count}", String(optionCount))}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
@@ -290,28 +299,24 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
                     className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
                   >
                     {/* Variation Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-gray-50">
+                      <div className="flex min-w-0 items-center gap-2">
                         <div className="p-1 bg-[#DC3173]/10 rounded-md">
                           <TagIcon size={14} className="text-[#DC3173]" />
                         </div>
                         <VariationInlineEdit
-                          title={t("variation_name")}
                           value={variation.name?.[lang] as string}
                           onSave={(newName) =>
                             renameVariation({
                               oldName: variation.name?.en as string,
-                              newName: {
-                                en: lang === 'en' ? newName : (variation.name?.en as string),
-                                pt: lang === 'pt' ? newName : (variation.name?.pt as string),
-                              },
+                              newName: renamed(variation.name, newName),
                             })
                           }
+                          t={t}
                           className="text-sm font-bold text-gray-900"
                         />
-                        <span className="text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">
-                          {variation.options.length} {t("option")}
-                          {variation.options.length !== 1 ? "s" : ""}
+                        <span className="shrink-0 text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">
+                          {t(variation.options.length === 1 ? "option_count_one" : "option_count_other").replace("{count}", String(variation.options.length))}
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
@@ -350,63 +355,35 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
                               opacity: 0,
                               x: -20,
                             }}
-                            className="flex items-center gap-3 px-4 py-2.5 group"
                           >
-                            <div className="text-gray-200">
-                              <GripVerticalIcon size={14} />
-                            </div>
-
-                            <VariationInlineEdit
-                              title={t("option_label")}
-                              value={option.label?.[lang] as string}
-                              onSave={(newLabel) =>
+                            <VariationOptionRow
+                              label={option.label?.[lang] as string}
+                              price={option.price}
+                              stock={
+                                businessTypeSlug === "store"
+                                  ? { quantity: option.stockQuantity, isOutOfStock: option.isOutOfStock }
+                                  : undefined
+                              }
+                              onRename={(newLabel) =>
                                 renameVariation({
                                   oldName: variation.name?.en as string,
                                   oldLabel: option.label?.en,
-                                  newLabel: {
-                                    en: lang === 'en' ? newLabel : (option.label?.en as string),
-                                    pt: lang === 'pt' ? newLabel : (option.label?.pt as string),
-                                  }
+                                  newLabel: renamed(option.label, newLabel),
                                 })
                               }
-                              className="text-sm font-medium text-gray-800 min-w-20"
-                            />
-
-                            <span className="text-xs text-gray-500 shrink-0">
-                              <VariationPriceInlineEdit
-                                title={t("option_price")}
-                                value={option.price}
-                                onSave={(newPrice) =>
-                                  updatePrice({
-                                    newPrice,
-                                    variationSku: option?.sku,
-                                  })
-                                }
-                                className="text-sm font-medium text-gray-800 min-w-20"
-                              />
-                            </span>
-
-                            {businessTypeSlug === "store" && <span className="text-xs text-gray-500 shrink-0">
-                              {t("stock")}: {option.stockQuantity}
-                            </span>}
-
-                            {(businessTypeSlug === "store" && option.isOutOfStock) && (
-                              <span className="text-xs font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded shrink-0">
-                                {t("out_of_stock")}
-                              </span>
-                            )}
-
-                            <div className="flex-1" />
-
-                            <VariationDeleteButton
-                              onConfirm={() =>
+                              onPrice={(newPrice) =>
+                                updatePrice({
+                                  newPrice,
+                                  variationSku: option?.sku,
+                                })
+                              }
+                              onDelete={() =>
                                 deleteVariation({
                                   name: (variation.name?.en ?? variation.name?.[lang]) as string,
                                   labelToRemove: option.label?.en ?? option.label?.[lang],
                                 })
                               }
-                              label={t("delete_option")}
-                              size="xs"
+                              t={t}
                             />
                           </motion.div>
                         ))}
