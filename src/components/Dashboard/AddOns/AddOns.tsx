@@ -214,7 +214,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                                 title={t("sdr_container_deposit")}
                                 className="shrink-0 rounded-full bg-[#DC3173]/10 px-2 py-0.5 text-xs font-semibold text-[#DC3173]"
                               >
-                                {t("addon_sdr_badge").replace("{count}", String(option.sdr.containerCount || 1))}
+                                SDR
                               </span>
                             )}
                           </div>
