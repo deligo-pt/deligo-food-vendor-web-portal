@@ -7,7 +7,10 @@ import { TVendorAgreementForm } from "@/src/validations/become-vendor/agreement.
 import { CACHE_TAGS } from "@/src/consts/cache.const";
 import { revalidatePath, revalidateTag, updateTag } from "next/cache";
 
-export const registerVendorReq = async (data: Partial<TVendor>) => {
+// `referralCode` is optional and only sent when filled (guide §3.5); the
+// server matches it case-insensitively and answers 404 INVALID_REFERRAL_CODE
+// for an unknown code or another account type's code.
+export const registerVendorReq = async (data: Partial<TVendor> & { referralCode?: string }) => {
   return catchAsync<TVendor>(async () => {
     return await serverRequest.post("/auth/register", {
       data,

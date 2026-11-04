@@ -24,4 +24,8 @@ export const becomeVendorValidation = z.object({
     ),
 
   terms: z.boolean(),
+
+  // Optional: a code from another restaurant or store (plan.md Phase 5).
+  // Only length is checked here; whether it exists is the server's call.
+  referralCode: z.string().trim().max(32, "loyalty_referral_code_too_long").optional(),
 });

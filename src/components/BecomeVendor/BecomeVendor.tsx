@@ -24,9 +24,10 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { registerVendorReq } from "@/src/services/becomeVendor/become-vendor";
 import { setLocalOtpExpiry } from "@/src/utils/localOtpExpiry";
 import { becomeVendorValidation } from "@/src/validations/become-vendor/become-vendor.validation";
+import { errorKeyOf, fieldErrorsOf, loyaltyErrorCopyKey } from "@/src/utils/loyalty";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Lock, Mail, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Gift, Lock, Mail, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -36,9 +37,13 @@ type FormValues = {
   email: string;
   password: string;
   terms: boolean;
+  referralCode?: string;
 };
 
-export default function BecomeVendor() {
+/** Referral errors the server can answer on register (guide §3.5). */
+const REFERRAL_ERROR_KEYS = ["INVALID_REFERRAL_CODE", "SELF_REFERRAL_NOT_ALLOWED", "ALREADY_REFERRED"];
+
+export default function BecomeVendor({ initialReferralCode = "" }: { initialReferralCode?: string }) {
   const { t } = useTranslation();
   const form = useForm<FormValues>({
     resolver: zodResolver(becomeVendorValidation),
@@ -46,6 +51,7 @@ export default function BecomeVendor() {
       email: "",
       password: "",
       terms: false,
+      referralCode: initialReferralCode,
     },
   });
   const router = useRouter();
@@ -56,7 +62,15 @@ export default function BecomeVendor() {
   const onSubmit = async (data: FormValues) => {
     const toastId = toast.loading("Registering...");
 
-    const result = await registerVendorReq({ email: data.email, role: "VENDOR", password: data.password });
+    // Sent only when filled: an empty key adds nothing, and an older server
+    // rejected the key outright.
+    const referralCode = data.referralCode?.trim().toUpperCase();
+    const result = await registerVendorReq({
+      email: data.email,
+      role: "VENDOR",
+      password: data.password,
+      ...(referralCode ? { referralCode } : {}),
+    });
 
     if (result.success) {
       toast.success(result.message || "Registration successful!", {
@@ -64,6 +78,18 @@ export default function BecomeVendor() {
       });
       setLocalOtpExpiry();
       router.push(`/become-vendor/verify-otp?email=${data.email}`);
+      return;
+    }
+
+    // A bad referral code belongs on its field, not in a toast the vendor
+    // might read as "registration is broken".
+    const referralFieldError = fieldErrorsOf(result).referralCode;
+    if (REFERRAL_ERROR_KEYS.includes(errorKeyOf(result) ?? "") || referralFieldError) {
+      toast.dismiss(toastId);
+      form.setError("referralCode", {
+        message: referralFieldError && !errorKeyOf(result) ? t("loyalty_error_invalid_referral_code") : t(loyaltyErrorCopyKey(result)),
+      });
+      form.setFocus("referralCode");
       return;
     }
 
@@ -188,6 +214,36 @@ export default function BecomeVendor() {
                           </div>
                         </FormControl>
                       </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Referral code (optional) */}
+                <FormField
+                  control={form.control}
+                  name="referralCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center pointer-events-none mb-2 mx-1">
+                        <Gift className="text-[#DC3173] w-5 h-5" />
+                        <span>{t("loyalty_referral_code_label")}</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          autoComplete="off"
+                          autoCapitalize="characters"
+                          spellCheck={false}
+                          maxLength={32}
+                          placeholder={t("loyalty_referral_code_placeholder")}
+                          className="py-3 text-base uppercase placeholder:normal-case focus-visible:ring-2 focus-visible:ring-[#DC3173] focus:border-[#DC3173] transition-all duration-300 rounded-xl"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                        />
+                      </FormControl>
+                      <p className="text-xs text-gray-500 mx-1">{t("loyalty_referral_code_hint")}</p>
                       <FormMessage />
                     </FormItem>
                   )}

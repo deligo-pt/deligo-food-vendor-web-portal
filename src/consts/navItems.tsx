@@ -1,5 +1,6 @@
 import {
   AlertCircle,
+  Award,
   BarChart2,
   EuroIcon,
   FileText,
@@ -143,6 +144,22 @@ export const getNavItems = (
         { name: t("active_offers"), path: "/vendor/active-offers" },
         { name: t("inactive_offers"), path: "/vendor/inactive-offers" },
         { name: t("coupon_analytics"), path: "/vendor/coupon-analytics" },
+      ],
+    },
+    {
+      // Referral, points & rewards (4 Nov 2026). A branch has its own points
+      // and sees the Vendor rewards, but the referral stats endpoint refuses
+      // SUB_VENDOR, so only "Refer & earn" is left out for branches (the
+      // proxy also sends a branch away from `/vendor/referrals`).
+      id: "loyalty",
+      title: t("loyalty_nav_group"),
+      icon: <Award size={18} />,
+      items: [
+        ...(isBranch
+          ? []
+          : [{ name: t("loyalty_nav_referrals"), path: "/vendor/referrals" }]),
+        { name: t("loyalty_nav_points"), path: "/vendor/points" },
+        { name: t("loyalty_nav_rewards"), path: "/vendor/rewards" },
       ],
     },
     {

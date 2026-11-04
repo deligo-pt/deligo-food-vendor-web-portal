@@ -5,6 +5,7 @@ import RecentOrders from "@/src/components/Dashboard/Dashboard/RecentOrders";
 import StatCard from "@/src/components/Dashboard/Dashboard/StatCard";
 import StatusCard from "@/src/components/Dashboard/Dashboard/StatusCard";
 import TopProducts from "@/src/components/Dashboard/Dashboard/TopProducts";
+import PointsSummaryCard from "@/src/components/Dashboard/Loyalty/PointsSummaryCard";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { TAnalytics } from "@/src/types/analytics.type";
@@ -22,9 +23,12 @@ import {
 interface IProps {
   vendorName: string;
   analyticsData: TAnalytics;
+  /** `null` when the balance couldn't be read: the card is left out. */
+  points?: number | null;
+  isBranch?: boolean;
 }
 
-const Dashboard = ({ vendorName, analyticsData }: IProps) => {
+const Dashboard = ({ vendorName, analyticsData, points = null, isBranch = false }: IProps) => {
   const { t } = useTranslation();
 
   return (
@@ -34,6 +38,8 @@ const Dashboard = ({ vendorName, analyticsData }: IProps) => {
         title={`${t("hello")}, ${vendorName}`}
         subtitle={t("welcomeDashboard")}
       />
+
+      {points !== null && <PointsSummaryCard points={points} isBranch={isBranch} />}
 
       {/* Stats */}
       <motion.div

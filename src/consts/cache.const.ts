@@ -29,6 +29,8 @@ export const CACHE_TAGS = {
   profile: "profile",
   /** The SDR deposit in force (`/sdr-deposits/effective`). */
   sdr: "sdr-deposit",
+  /** Points balance, history and rewards; expired after a reward claim. */
+  loyalty: "loyalty",
 } as const;
 
 /** Seconds a cached entry is reused before it's fetched again. */
