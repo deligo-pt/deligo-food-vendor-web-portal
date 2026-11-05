@@ -130,6 +130,12 @@ export async function proxy(req: NextRequest) {
     return createResponse(new URL("/become-vendor/registration-status", req.url));
   }
 
+  // Referral stats are VENDOR only (the API answers 403 to SUB_VENDOR), and
+  // the menu hides the link for branches; this closes the URL too.
+  if (pathname.startsWith("/vendor/referrals") && role === USER_ROLE.SUB_VENDOR) {
+    return createResponse(new URL("/vendor/dashboard", req.url));
+  }
+
   // Handle protected registration path flows
   if (PROTECTED_REGISTRATION_PATHS.some((p) => pathname.startsWith(p))) {
     if (status === USER_STATUS.APPROVED) {
