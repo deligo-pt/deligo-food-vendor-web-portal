@@ -81,7 +81,7 @@ export default function ContactSupportSection() {
 
           {/* Support Links */}
           <div className="mt-8 flex flex-wrap gap-6 text-white">
-            <a href="https://wa.me/YOUR_NUMBER" target="_blank" className="flex items-center gap-2 hover:text-pink-400 transition">
+            <a href="https://wa.me/351932164451" target="_blank" className="flex items-center gap-2 hover:text-pink-400 transition">
               <Phone className="w-5 h-5" /> WhatsApp
             </a>
             <a href="mailto:support@yourplatform.com" className="flex items-center gap-2 hover:text-pink-400 transition">

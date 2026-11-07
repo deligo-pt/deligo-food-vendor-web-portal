@@ -207,7 +207,7 @@ export default function HelpCenterPage() {
             <div className="text-left">
               <p className="text-gray-300 font-medium text-sm">WhatsApp</p>
               <a
-                href="https://wa.me/YOUR_NUMBER"
+                href="https://wa.me/351932164451"
                 target="_blank"
                 className="text-white font-semibold text-base hover:text-white/90 transition"
               >
