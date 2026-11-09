@@ -12,6 +12,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,12 +33,14 @@ import { cn } from "@/lib/utils";
 import { updateOfferReq } from "@/src/services/dashboard/offers/offers";
 import { getAllProductsReq } from "@/src/services/dashboard/products/products";
 import { useStore } from "@/src/store/store";
-import { TOffer } from "@/src/types/offer.type";
+import { FIRST_ORDER_DEFAULTS, isFirstOrderOffer, TOffer } from "@/src/types/offer.type";
+import FirstOrderSection from "../CreateOffer/FirstOrderSection";
 import { TProduct } from "@/src/types/product.type";
 import { translateLocalizedFields } from "@/src/utils/translation/translateLocalized";
 import { useFormLanguage } from "@/src/hooks/use-form-language";
 import { countLabel } from "@/src/utils/countLabel";
 import {
+  flatMinOrderFor,
   getProductSkuOptions,
   offerValidation,
   productHasVariations,
@@ -48,6 +51,8 @@ import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { FieldErrors, Resolver, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import { formatPrice } from "@/src/utils/formatPrice";
+import { reportOfferFailure } from "@/src/utils/offerErrors";
 import { ProductSelector } from "../CreateOffer/ProductSelection";
 import { offerPickerProducts, offerProductIds } from "@/src/utils/offerProducts";
 import { useRouter } from "next/navigation";
@@ -147,6 +152,10 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
         ? String(offer.userUsageLimit)
         : "",
       isActive: (offer as any)?.isActive ?? true,
+      isFirstOrder: isFirstOrderOffer(offer),
+      requireVerifiedPhone:
+        offer?.eligibility?.requireVerifiedPhone ?? FIRST_ORDER_DEFAULTS.requireVerifiedPhone,
+      maxRestores: offer?.eligibility?.maxRestores ?? FIRST_ORDER_DEFAULTS.maxRestores,
       currentLang: lang,
     },
   });
@@ -157,6 +166,8 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
     setValue,
     getValues,
     reset,
+    setError,
+    trigger,
   } = form;
 
   // `currentLang` follows the page's language, and typed text follows the
@@ -224,6 +235,10 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
           ? String(offer.userUsageLimit)
           : "",
         isActive: (offer as any)?.isActive ?? true,
+        isFirstOrder: isFirstOrderOffer(offer),
+        requireVerifiedPhone:
+          offer?.eligibility?.requireVerifiedPhone ?? FIRST_ORDER_DEFAULTS.requireVerifiedPhone,
+        maxRestores: offer?.eligibility?.maxRestores ?? FIRST_ORDER_DEFAULTS.maxRestores,
         // Whatever `useFormLanguage` last set. The reset no longer depends on
         // `lang`: it used to, and switching language with the dialog open
         // reset the whole form, throwing away every edit.
@@ -242,6 +257,8 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
     watchRewardProductId,
     // watchRewardVariationSku,
     watchRewardOptions,
+    watchDiscountValue,
+    watchIsFirstOrder,
   ] = useWatch({
     control,
     name: [
@@ -254,8 +271,21 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
       "buyAndReward.reward.productId",
       // "buyAndReward.reward.variationSku",
       "buyAndReward.reward.options",
+      "discountValue",
+      "isFirstOrder",
     ],
   });
+
+  // The guardrails compare fields, so a change to the discount or the type
+  // re-checks the amount fields the vendor has already touched (or that a
+  // submit already flagged). Untouched fields stay quiet until submit.
+  useEffect(() => {
+    const { dirtyFields, errors, isSubmitted } = form.formState;
+    const due = (["minOrderAmount", "maxDiscountAmount"] as const).filter(
+      (name) => isSubmitted || dirtyFields[name] || errors[name],
+    );
+    if (due.length) void trigger(due);
+  }, [form, trigger, watchDiscountValue, watchOfferType]);
 
   /* -------------------- Helpers -------------------- */
   const toggleInArray = (
@@ -419,7 +449,9 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
         offerType: data.offerType,
         validFrom: format(data.validFrom, "yyyy-MM-dd"),
         expiresAt: format(data.expiresAt, "yyyy-MM-dd"),
-        ...(data.minOrderAmount != null && data.minOrderAmount > 0
+        // 0 is a real value (and FLAT offers need a minimum), so only
+        // an empty field is left out.
+        ...(data.minOrderAmount != null
           ? { minOrderAmount: data.minOrderAmount }
           : {}),
         ...(data.userUsageLimit
@@ -485,6 +517,18 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
         offerData.buyAndReward = { buy, reward };
       };
 
+      if (data.isFirstOrder) {
+        // Same scope as stored (changing it is refused); only the policy
+        // fields can move. The usage limit stays the backend's 1.
+        offerData.eligibility = {
+          type: "FIRST_ORDER",
+          scope: "VENDOR",
+          requireVerifiedPhone: data.requireVerifiedPhone,
+          maxRestores: data.maxRestores,
+        };
+        delete offerData.userUsageLimit;
+      }
+
       const result = await updateOfferReq(offer._id, offerData as Partial<TOffer>);
 
       if (result.success) {
@@ -496,16 +540,11 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
         return;
       }
 
-      if (result?.data?.errorSources) {
-        result.data.errorSources.forEach(
-          (err: { path: string; message: string }) => {
-            toast.error(err.message, { id: toastId });
-          },
-        );
-        return;
-      }
-
-      toast.error(result.message || "Offer update failed", { id: toastId });
+      // Every field error goes on its field (create can fail on several at
+      // once); what has no field left to sit on is the toast.
+      const toastText = reportOfferFailure(result, setError, t);
+      if (toastText) toast.error(toastText, { id: toastId });
+      else toast.error(t("offer_check_fields"), { id: toastId });
     } catch (error: any) {
       console.error(error);
       toast.error(
@@ -622,6 +661,14 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
               />
 
               {/* PERCENT / FLAT */}
+              {/* An existing offer can't become, or stop being, a first-order
+                  offer, and its scope is fixed (FIRST_ORDER_OFFER_SCOPE_IMMUTABLE),
+                  so the block is read-only here and only shown on welcome offers.
+                  Phone and restore settings stay editable. */}
+              {watchIsFirstOrder && (
+                <FirstOrderSection control={control} enabled locked />
+              )}
+
               {(watchOfferType === "PERCENT" ||
                 watchOfferType === "FLAT") && (
                   <>
@@ -669,7 +716,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                           render={({ field }) => (
                             <FormItem className="w-full">
                               <FormLabel>
-                                {t("max_discount_amount")}
+                                {t("max_discount_amount")}{" "}<span className="text-red-600">*</span>
                               </FormLabel>
                               <FormControl>
                                 <Input
@@ -692,6 +739,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                         />
                       )}
                     </div>
+                    <p className="-mt-2 text-xs text-gray-500">{t("offer_discount_rules_note")}</p>
 
                     <div className="space-y-3">
                       <Label className="font-medium text-sm text-gray-700">
@@ -1197,6 +1245,9 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                   <FormItem>
                     <FormLabel>
                       {t("minimum_order_amount")}
+                        {watchOfferType === "FLAT" && (
+                          <>{" "}<span className="text-red-600">*</span></>
+                        )}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -1213,11 +1264,31 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                         }
                       />
                     </FormControl>
+                    {watchOfferType === "FLAT" && flatMinOrderFor(watchDiscountValue) > 0 && (
+                      <FormDescription>
+                        {t("offer_flat_min_hint").replace(
+                          "{amount}",
+                          `${formatPrice(flatMinOrderFor(watchDiscountValue))} €`,
+                        )}
+                      </FormDescription>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {watchIsFirstOrder ? (
+                <div className="grid gap-2">
+                  <Label htmlFor="usageLimitFixedEdit">{t("users_usage_limit")}</Label>
+                  <Input
+                    id="usageLimitFixedEdit"
+                    readOnly
+                    disabled
+                    className="h-11"
+                    value={t("first_order_once_per_customer")}
+                  />
+                </div>
+              ) : (
               <FormField
                 control={control}
                 name="userUsageLimit"
@@ -1239,6 +1310,7 @@ export default function EditOffer({ offer, open, onOpenChange, t }: IProps) {
                   </FormItem>
                 )}
               />
+              )}
 
               {watchOfferType !== "BUY_AND_REWARD" && (
                 <FormField

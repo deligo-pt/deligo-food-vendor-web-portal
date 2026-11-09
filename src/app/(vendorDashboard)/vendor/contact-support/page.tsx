@@ -44,8 +44,8 @@ export default function VendorContactSupport() {
             <PhoneCall size={36} className="mx-auto text-pink-600" />
             <h3 className="font-bold text-lg text-gray-700">{t("call_us")}</h3>
             <div className="space-y-1">
+              <p className="text-sm text-gray-600">+351 932 164 451</p>
               <p className="text-sm text-gray-600">+351 217 570 184</p>
-              <p className="text-sm text-gray-600">+351 920 136 680</p>
             </div>
 
           </CardContent>

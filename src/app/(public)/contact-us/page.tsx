@@ -121,10 +121,10 @@ export default function ContactUsPremium() {
               <div>
                 <p className="text-gray-300 text-sm">WhatsApp</p>
                 <a
-                  href="https://wa.me/YOUR_NUMBER"
+                  href="https://wa.me/351932164451"
                   className="text-white font-medium hover:text-pink-400 transition"
                 >
-                  +351 920 136 680
+                  +351 932 164 451
                 </a>
               </div>
             </div>

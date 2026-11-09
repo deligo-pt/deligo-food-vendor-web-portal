@@ -75,5 +75,14 @@ export default async function CreateOfferPage({ searchParams }: IProps) {
     console.log("Server fetch error:", err);
     if (isRedirectError(err)) throw err;
   }
-  return <VendorCreateOffer itemsResult={initialData} />;
+  // "Welcome offer" in the menu opens this form with the first-order switch
+  // on. Keyed, so moving between the two menu items starts a fresh form.
+  const firstOrder = queries.firstOrder === "1";
+  return (
+    <VendorCreateOffer
+      key={firstOrder ? "first-order" : "standard"}
+      itemsResult={initialData}
+      initialFirstOrder={firstOrder}
+    />
+  );
 }

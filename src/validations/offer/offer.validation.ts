@@ -29,6 +29,13 @@ const buyAndRewardRewardSchema = z.object({
   options: z.array(rewardOptionSchema).optional(),
 });
 
+/** Smallest minimum order a FLAT offer may have: twice its discount. */
+export function flatMinOrderFor(discountValue: number | undefined | null): number {
+  return typeof discountValue === "number" && discountValue > 0
+    ? Math.round(discountValue * 2 * 100) / 100
+    : 0;
+}
+
 export const offerValidation = z.object({
   title: localizedTextSchema,
   description: localizedTextSchema,
@@ -59,6 +66,11 @@ export const offerValidation = z.object({
   userUsageLimit: z.string().optional(),
   isActive: z.boolean().default(true),
 
+  // First-Order (welcome) offer — sent as `eligibility` with `scope: "VENDOR"`.
+  isFirstOrder: z.boolean().default(false),
+  requireVerifiedPhone: z.boolean().default(true),
+  maxRestores: z.number().int().min(0).max(5).default(2),
+
   currentLang: z.enum(["en", "pt"]),
 })
   .superRefine((data, ctx) => {
@@ -76,6 +88,29 @@ export const offerValidation = z.object({
       ["description"],
       "offer_err_description_required",
     );
+
+    // Financial guardrails (`first-order-offers.md` §3). The backend enforces
+    // them on every PERCENT and FLAT offer, first-order or not; checking here
+    // only gives faster feedback, the server stays the source of truth.
+    if (data.offerType === "PERCENT") {
+      if (!(typeof data.maxDiscountAmount === "number" && data.maxDiscountAmount > 0)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "offer_err_percent_max_required",
+          path: ["maxDiscountAmount"],
+        });
+      }
+    }
+    if (data.offerType === "FLAT" && typeof data.discountValue === "number") {
+      // Exactly 2× is valid: a discount of 5 needs a minimum of 10 or more.
+      if ((data.minOrderAmount ?? 0) < flatMinOrderFor(data.discountValue)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "offer_err_flat_min_order",
+          path: ["minOrderAmount"],
+        });
+      }
+    }
   })
   .refine((data) => data.validFrom < data.expiresAt, {
     message: "offer_err_end_after_start",
@@ -208,6 +243,8 @@ export const offerValidation = z.object({
   )
   .refine(
     (data) => {
+      // A first-order offer is once per customer; the field is hidden.
+      if (data.isFirstOrder) return true;
       if (data.userUsageLimit && data.userUsageLimit.trim() !== "") {
         const num = Number(data.userUsageLimit);
         return !isNaN(num) && num >= 1;

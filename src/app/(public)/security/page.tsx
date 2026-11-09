@@ -107,7 +107,7 @@ export default function SecurityPage() {
 
                 <div className="flex items-center gap-4 bg-gray-800 p-4 rounded-2xl mt-4">
                   <Phone className="text-pink-400 w-6 h-6" />
-                  <span>+351 920 136 680</span>
+                  <span>+351 932 164 451</span>
                 </div>
               </motion.div>
             </motion.div>

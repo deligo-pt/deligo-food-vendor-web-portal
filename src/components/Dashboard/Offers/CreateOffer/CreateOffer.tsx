@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,12 +29,13 @@ import { useTranslation } from "@/src/hooks/use-translation";
 import { createOfferReq } from "@/src/services/dashboard/offers/offers";
 import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
-import { TOffer } from "@/src/types/offer.type";
+import { FIRST_ORDER_DEFAULTS, TOffer } from "@/src/types/offer.type";
 import { TProduct } from "@/src/types/product.type";
 import { translateLocalizedFields } from "@/src/utils/translation/translateLocalized";
 import { useFormLanguage } from "@/src/hooks/use-form-language";
 import { countLabel } from "@/src/utils/countLabel";
 import {
+  flatMinOrderFor,
   getProductSkuOptions,
   offerValidation,
   productHasVariations,
@@ -42,9 +44,14 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FieldErrors, Resolver, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import { formatPrice } from "@/src/utils/formatPrice";
+import { errorKeyOf } from "@/src/utils/apiError";
+import { OFFER_BANNER_ERRORS, reportOfferFailure } from "@/src/utils/offerErrors";
+import OfferErrorBanner from "../OfferErrorBanner";
+import FirstOrderSection from "./FirstOrderSection";
 import { ProductSelector } from "./ProductSelection";
 import { offerPickerProducts } from "@/src/utils/offerProducts";
 
@@ -52,9 +59,11 @@ const PRIMARY = "#DC3173";
 
 interface IProps {
   itemsResult: { data: TProduct[]; meta?: TMeta };
+  /** Opened with `?firstOrder=1` (a direct link to a welcome offer). */
+  initialFirstOrder?: boolean;
 }
 
-export default function VendorCreateOffer({ itemsResult }: IProps) {
+export default function VendorCreateOffer({ itemsResult, initialFirstOrder = false }: IProps) {
   const { t } = useTranslation();
   const { lang } = useStore();
   const router = useRouter();
@@ -107,6 +116,9 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       isAutoApply: true,
       userUsageLimit: "",
       isActive: true,
+      isFirstOrder: initialFirstOrder,
+      requireVerifiedPhone: FIRST_ORDER_DEFAULTS.requireVerifiedPhone,
+      maxRestores: FIRST_ORDER_DEFAULTS.maxRestores,
       currentLang: lang,
     },
   });
@@ -118,6 +130,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     getValues,
     setError,
     clearErrors,
+    trigger,
   } = form;
 
   // `currentLang` follows the page's language, and typed text follows the
@@ -134,6 +147,8 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     watchRewardProductId,
     // watchRewardVariationSku,
     watchRewardOptions,
+    watchDiscountValue,
+    watchIsFirstOrder,
   ] = useWatch({
     control,
     name: [
@@ -146,8 +161,28 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       "buyAndReward.reward.productId",
       // "buyAndReward.reward.variationSku",
       "buyAndReward.reward.options",
+      "discountValue",
+      "isFirstOrder",
     ],
   });
+
+  // A 409 the vendor has to act on (another active first-order offer, an
+  // identical auto-apply offer) is kept on screen, with the payload that hit
+  // it, so "Save as inactive" can resend it without the translation step.
+  const [bannerKey, setBannerKey] = useState<string | null>(null);
+  const [savingInactive, setSavingInactive] = useState(false);
+  const [lastPayload, setLastPayload] = useState<Record<string, any> | null>(null);
+
+  // The guardrails compare fields, so a change to the discount or the type
+  // re-checks the amount fields the vendor has already touched (or that a
+  // submit already flagged). Untouched fields stay quiet until submit.
+  useEffect(() => {
+    const { dirtyFields, errors, isSubmitted } = form.formState;
+    const due = (["minOrderAmount", "maxDiscountAmount"] as const).filter(
+      (name) => isSubmitted || dirtyFields[name] || errors[name],
+    );
+    if (due.length) void trigger(due);
+  }, [form, trigger, watchDiscountValue, watchOfferType]);
 
   const productsById = useMemo(() => {
     const map = new Map<string, TProduct>();
@@ -298,6 +333,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
       return;
     }
 
+    setBannerKey(null);
     const toastId = toast.loading(t("offer_creating"));
 
     try {
@@ -320,7 +356,9 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         offerType: data.offerType,
         validFrom: format(data.validFrom, "yyyy-MM-dd"),
         expiresAt: format(data.expiresAt, "yyyy-MM-dd"),
-        ...(data.minOrderAmount != null && data.minOrderAmount > 0
+        // 0 is a real value (and FLAT offers need a minimum), so only
+        // an empty field is left out.
+        ...(data.minOrderAmount != null
           ? { minOrderAmount: data.minOrderAmount }
           : {}),
         ...(data.userUsageLimit
@@ -385,7 +423,20 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
 
         offerData.buyAndReward = { buy, reward };
       }
-      console.log("payload", offerData);
+      if (data.isFirstOrder) {
+        // A store's welcome offer: always `scope: "VENDOR"` (omitting it means
+        // GLOBAL, which is admin-only). The backend sets the usage limit to 1
+        // and the funding itself, and refuses `maxUsageCount`.
+        offerData.eligibility = {
+          type: "FIRST_ORDER",
+          scope: "VENDOR",
+          requireVerifiedPhone: data.requireVerifiedPhone,
+          maxRestores: data.maxRestores,
+        };
+        delete offerData.userUsageLimit;
+      }
+
+      setLastPayload(offerData);
       const result = await createOfferReq(offerData as Partial<TOffer>);
 
       if (result.success) {
@@ -397,16 +448,18 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
         return;
       }
 
-      if (result?.data?.errorSources) {
-        result.data.errorSources.forEach(
-          (err: { path: string; message: string }) => {
-            toast.error(err.message, { id: toastId });
-          },
-        );
+      const failureKey = errorKeyOf(result);
+      if (failureKey && OFFER_BANNER_ERRORS.has(failureKey)) {
+        toast.dismiss(toastId);
+        setBannerKey(failureKey);
         return;
       }
 
-      toast.error(result.message || "Offer creation failed", { id: toastId });
+      // Every field error goes on its field (create can fail on several at
+      // once); what has no field left to sit on is the toast.
+      const toastText = reportOfferFailure(result, setError, t);
+      if (toastText) toast.error(toastText, { id: toastId });
+      else toast.error(t("offer_check_fields"), { id: toastId });
     } catch (error: any) {
       console.error(error);
       toast.error(
@@ -418,11 +471,36 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
     }
   };
 
+  const saveAsInactive = async () => {
+    if (!lastPayload) return;
+    setSavingInactive(true);
+    const toastId = toast.loading(t("offer_creating"));
+    const result = await createOfferReq({
+      ...lastPayload,
+      isActive: false,
+    } as Partial<TOffer>);
+    setSavingInactive(false);
+    if (result.success) {
+      toast.success(result.message || t("offer_created"), { id: toastId });
+      setBannerKey(null);
+      form.reset();
+      router.push("/vendor/inactive-offers");
+      return;
+    }
+    toast.error(reportOfferFailure(result, setError, t) ?? t("offer_check_fields"), {
+      id: toastId,
+    });
+  };
+
   return (
     <div className="min-h-screen space-y-10">
       <TitleHeader
-        title={t("create_new_offer")}
-        subtitle={t("add_promotion_boost_restaurant")}
+        title={initialFirstOrder ? t("first_order_welcome_offer") : t("create_new_offer")}
+        subtitle={
+          initialFirstOrder
+            ? t("first_order_switch_desc")
+            : t("add_promotion_boost_restaurant")
+        }
       />
 
       <Card className="rounded-3xl bg-white border shadow-lg">
@@ -567,6 +645,8 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                   )}
                 />
 
+                <FirstOrderSection control={control} enabled={!!watchIsFirstOrder} />
+
                 {(watchOfferType === "PERCENT" ||
                   watchOfferType === "FLAT") && (
                     <>
@@ -619,7 +699,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                             render={({ field }) => (
                               <FormItem className="w-full">
                                 <FormLabel>
-                                  {t("max_discount_amount")}
+                                  {t("max_discount_amount")}{" "}<span className="text-red-600">*</span>
                                 </FormLabel>
                                 <FormControl>
                                   <Input
@@ -643,6 +723,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           />
                         )}
                       </div>
+                      <p className="-mt-2 text-xs text-gray-500">{t("offer_discount_rules_note")}</p>
 
                       <div className="space-y-3">
                         <Label className="font-medium text-sm text-gray-700">
@@ -1154,6 +1235,9 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     <FormItem>
                       <FormLabel>
                         {t("minimum_order_amount")}
+                        {watchOfferType === "FLAT" && (
+                          <>{" "}<span className="text-red-600">*</span></>
+                        )}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -1171,11 +1255,32 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                           }
                         />
                       </FormControl>
+                      {watchOfferType === "FLAT" && flatMinOrderFor(watchDiscountValue) > 0 && (
+                        <FormDescription>
+                          {t("offer_flat_min_hint").replace(
+                            "{amount}",
+                            `${formatPrice(flatMinOrderFor(watchDiscountValue))} €`,
+                          )}
+                        </FormDescription>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
+                {watchIsFirstOrder ? (
+                  // Once per customer: the backend forces it to 1.
+                  <div className="grid gap-2">
+                    <Label htmlFor="usageLimitFixed">{t("users_usage_limit")}</Label>
+                    <Input
+                      id="usageLimitFixed"
+                      readOnly
+                      disabled
+                      className="h-12"
+                      value={t("first_order_once_per_customer")}
+                    />
+                  </div>
+                ) : (
                 <FormField
                   control={control}
                   name="userUsageLimit"
@@ -1198,6 +1303,7 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     </FormItem>
                   )}
                 />
+                )}
 
                 {watchOfferType !== "BUY_AND_REWARD" && (
                   <FormField
@@ -1252,6 +1358,14 @@ export default function VendorCreateOffer({ itemsResult }: IProps) {
                     />
                   </div>
                 )}
+
+              {bannerKey && (
+                <OfferErrorBanner
+                  errorKey={bannerKey}
+                  onSaveInactive={saveAsInactive}
+                  busy={savingInactive}
+                />
+              )}
 
               <div className="pt-4 flex justify-end gap-4">
                 <Button
