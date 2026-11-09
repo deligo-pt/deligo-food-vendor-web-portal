@@ -15,6 +15,7 @@ import type {
   TPointsHistoryItem,
   TReferralSummary,
 } from "@/src/types/loyalty.type";
+import { errorKeyOf, fieldErrorsOf, type TFailure } from "./apiError";
 
 /** A finite number, or 0. */
 function num(value: unknown): number {
@@ -100,34 +101,8 @@ export function pointsExpiringSoon(
   }, 0);
 }
 
-/**
- * The failed-request shape `catchAsync` returns: the backend's error body sits
- * in `data`, with `errorKey` (stable) and `errorSources` (per field).
- */
-type TFailure = {
-  statusCode?: number;
-  data?: unknown;
-} | null | undefined;
-
-export function errorKeyOf(result: TFailure): string | null {
-  const body = result?.data as { errorKey?: unknown } | null | undefined;
-  return typeof body?.errorKey === "string" ? body.errorKey : null;
-}
-
-/** Field-level validation errors (they carry no `errorKey`), keyed by field. */
-export function fieldErrorsOf(result: TFailure): Record<string, string> {
-  const body = result?.data as { errorSources?: unknown } | null | undefined;
-  const sources = Array.isArray(body?.errorSources) ? body.errorSources : [];
-  const out: Record<string, string> = {};
-  for (const source of sources) {
-    const path = (source as { path?: unknown })?.path;
-    const message = (source as { message?: unknown })?.message;
-    if (typeof path === "string" && path && typeof message === "string" && !(path in out)) {
-      out[path] = message;
-    }
-  }
-  return out;
-}
+// Shared with the rest of the panel (the offer forms need them too).
+export { errorKeyOf, fieldErrorsOf };
 
 const ERROR_COPY: Record<string, string> = {
   REWARD_PICKUP_DATE_INVALID: "loyalty_error_pickup_date",

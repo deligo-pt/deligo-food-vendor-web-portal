@@ -14,10 +14,17 @@ import {
 } from "@/src/services/dashboard/offers/offers";
 import { useStore } from "@/src/store/store";
 import { TMeta } from "@/src/types";
-import { TOffer } from "@/src/types/offer.type";
+import {
+  FIRST_ORDER_DEFAULTS,
+  isAdminCreatedOffer,
+  isFirstOrderOffer,
+  TOffer,
+} from "@/src/types/offer.type";
+import { errorKeyOf } from "@/src/utils/apiError";
+import { offerErrorCopyKey } from "@/src/utils/offerErrors";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { CalendarClock, Flame, Percent, Plus, Tag } from "lucide-react";
+import { CalendarClock, Flame, Percent, Plus, ShieldCheck, Sparkles, Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -47,7 +54,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
   ];
 
   const toggleStatus = async (offerId: string) => {
-    const toastId = toast.loading("Updating offer status...");
+    const toastId = toast.loading(t("offer_status_updating"));
     setIsSubmitting(true);
 
     const result = await toggleOfferStatusReq(offerId);
@@ -60,15 +67,20 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
       return;
     }
 
-    toast.error(result.message || "Offer status update failed", {
+    // e.g. 409 ACTIVE_FIRST_ORDER_VENDOR_OFFER_EXISTS when switching on a
+    // second welcome offer: translated copy, never the raw server text.
+    const copyKey =
+      errorKeyOf(result) === "ACTIVE_FIRST_ORDER_VENDOR_OFFER_EXISTS"
+        ? "offer_err_first_order_active_exists_toggle"
+        : offerErrorCopyKey(result);
+    toast.error(copyKey ? t(copyKey) : result.message || t("offer_err_generic"), {
       id: toastId,
     });
     setIsSubmitting(false);
-    console.log(result);
   };
 
   const deleteOffer = async () => {
-    const toastId = toast.loading("Deleting offer...");
+    const toastId = toast.loading(t("offer_deleting"));
     setIsDeleting(true);
 
     const result = await deleteOfferReq(deleteId);
@@ -82,11 +94,11 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
       return;
     }
 
-    toast.error(result.message || "Offer deletion failed", {
+    const copyKey = offerErrorCopyKey(result);
+    toast.error(copyKey ? t(copyKey) : result.message || t("offer_err_generic"), {
       id: toastId,
     });
     setIsDeleting(false);
-    console.log(result);
   };
 
   const title_lowercase = title.toLowerCase();
@@ -108,7 +120,13 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
 
       {/* OFFER LIST */}
       <div className="space-y-6 pt-4">
-        {offersResult?.data?.map((offer, idx) => (
+        {offersResult?.data?.map((offer, idx) => {
+          const firstOrder = isFirstOrderOffer(offer);
+          // Set up by DeliGo for this store: edit, toggle and delete all
+          // answer 403 (OFFER_LOCKED_BY_ADMIN), so they are not offered.
+          const locked = isAdminCreatedOffer(offer);
+          const restores = offer.eligibility?.maxRestores ?? FIRST_ORDER_DEFAULTS.maxRestores;
+          return (
           <motion.div
             key={offer?._id}
             initial={{ opacity: 0, y: 14 }}
@@ -127,7 +145,9 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                   <div className="flex items-start gap-4 min-w-0 md:flex-1">
                     <div className="w-16 h-16 shrink-0 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600">
                       {offer.offerType === "PERCENT" && <Percent size={28} />}
-                      {offer.offerType === "BOGO" && <Tag size={28} />}
+                      {(offer.offerType === "BUY_AND_REWARD" || offer.offerType === "BOGO") && (
+                        <Tag size={28} />
+                      )}
                       {offer.offerType === "FLAT" && <Flame size={28} />}
                     </div>
 
@@ -148,7 +168,37 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                             {t("code")}: {offer.code || "N/A"}
                           </span>
                         </Badge>
+                        {firstOrder && (
+                          <Badge className="gap-1 border-pink-200 bg-pink-50 text-pink-700 hover:bg-pink-50">
+                            <Sparkles size={12} />
+                            {t("first_order_offer_short")}
+                          </Badge>
+                        )}
+                        {locked && (
+                          <Badge
+                            variant="outline"
+                            className="gap-1 text-gray-600"
+                            title={t("offer_err_locked_by_admin")}
+                          >
+                            <ShieldCheck size={12} />
+                            {t("offer_set_by_deligo")}
+                          </Badge>
+                        )}
                       </div>
+
+                      {firstOrder && (
+                        <p className="mt-2 text-xs text-gray-500">
+                          {[
+                            t("first_order_once_per_customer"),
+                            ...(offer.eligibility?.requireVerifiedPhone !== false
+                              ? [t("first_order_policy_phone")]
+                              : []),
+                            restores > 0
+                              ? t("first_order_policy_restores").replace("{count}", String(restores))
+                              : t("first_order_restores_none"),
+                          ].join(" · ")}
+                        </p>
+                      )}
 
                       <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
                         <CalendarClock size={14} /> {t("valid_till")}:{" "}
@@ -178,7 +228,7 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                             : "bg-yellow-500 text-white"
                         }
                       >
-                        {offer.isActive ? "Active" : "Inactive"}
+                        {offer.isActive ? t("active") : t("inactive")}
                       </Badge>
                     </div>
                     <p className="text-sm text-gray-500 mt-1">
@@ -186,9 +236,11 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                         ? `${offer.discountValue}% Off`
                         : offer.offerType === "FLAT"
                           ? `${offer.discountValue}\u00A0€ Off`
-                          : offer.offerType === "BOGO"
-                            ? `${t("buy")} ${offer.bogo?.buyQty} ${t("get")} ${offer.bogo?.getQty}`
-                            : ""}
+                          : offer.offerType === "BUY_AND_REWARD"
+                            ? `${t("buy")} ${offer.buyAndReward?.buy?.quantity ?? ""} ${t("get")} ${offer.buyAndReward?.reward?.quantity ?? ""}`
+                            : offer.offerType === "BOGO"
+                              ? `${t("buy")} ${offer.bogo?.buyQty} ${t("get")} ${offer.bogo?.getQty}`
+                              : ""}
                     </p>
                   </div>
                 </div>
@@ -201,18 +253,21 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
                     }
                     size="sm"
                     onClick={() => toggleStatus(offer._id)}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || locked}
+                    title={locked ? t("offer_err_locked_by_admin") : undefined}
                   >
-                    {offer.isActive ? "Deactivate" : "Activate"}
+                    {offer.isActive ? t("offer_deactivate") : t("offer_activate")}
                   </Button>
                   <Button
                     className="bg-[#DC3173] hover:bg-[#DC3173]/90"
                     size="sm"
                     onClick={() => setEditOffer(offer)}
+                    disabled={locked}
+                    title={locked ? t("offer_err_locked_by_admin") : undefined}
                   >
                     {t("edit")}
                   </Button>
-                  {!offer.isActive && (
+                  {!offer.isActive && !locked && (
                     <Button
                       onClick={() => setDeleteId(offer._id)}
                       variant="destructive"
@@ -225,7 +280,8 @@ export default function ActiveOffers({ offersResult, title }: IProps) {
               </CardContent>
             </Card>
           </motion.div>
-        ))}
+          );
+        })}
 
         {offersResult?.meta?.total === 0 && (
           <p className="text-center text-gray-500 py-10">

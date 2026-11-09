@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronLeft, ChevronRight, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import TopbarIcons from "@/src/components/vendorTopbar/TopbarIcons";
@@ -35,6 +35,21 @@ export default function Sidebar({ open, setOpen, vendor }: IProps) {
 
   const navItems = getNavItems(t, businessType, isBranch);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams?.toString() ?? "";
+
+  // A menu item can carry a query ("Welcome offer" is
+  // `/vendor/create-offer?firstOrder=1`), so it is matched with its query,
+  // and the plain item for the same page steps aside while it is current.
+  const isSubActive = (
+    sub: { path: string },
+    siblings: { path: string }[] = [],
+  ) => {
+    const current = search ? `${pathname}?${search}` : pathname;
+    if (sub.path.includes("?")) return current.startsWith(sub.path);
+    if (pathname !== sub.path) return false;
+    return !siblings.some((o) => o.path.includes("?") && current.startsWith(o.path));
+  };
   const currentMenuId = navItems.find((menu) =>
     menu.items?.some((item) => pathname.includes(item.path)),
   )?.id;
@@ -184,7 +199,7 @@ export default function Sidebar({ open, setOpen, vendor }: IProps) {
                           <Link
                             key={sub.name}
                             href={sub.path}
-                            className={`text-sm px-2 py-1 rounded-md transition-all duration-300 ${pathname === sub.path
+                            className={`text-sm px-2 py-1 rounded-md transition-all duration-300 ${isSubActive(sub, menu.items)
                               ? "bg-linear-to-r from-pink-200 to-pink-100 text-pink-700 font-semibold"
                               : "text-gray-600 hover:text-pink-600 hover:bg-pink-50"
                               }`}
@@ -283,7 +298,7 @@ export default function Sidebar({ open, setOpen, vendor }: IProps) {
                                 key={sub.name}
                                 href={sub.path}
                                 onClick={() => setMobileOpen(false)}
-                                className={`text-sm py-1 transition-all ${pathname === sub.path
+                                className={`text-sm py-1 transition-all ${isSubActive(sub, menu.items)
                                   ? "text-pink-700 font-semibold"
                                   : "text-gray-600 hover:text-pink-600"
                                   }`}
