@@ -41,7 +41,7 @@ const RESTORE_CHOICES = Array.from(
 );
 
 /**
- * The "First-order offer" block of the offer form (`first-order-offers.md`).
+ * The "First Order Offer" block of the offer form (`first-order-offers.md`).
  * A store's welcome offer is always `scope: "VENDOR"` — never a choice here —
  * and is once per customer, funded by the store.
  */
