@@ -9,6 +9,7 @@ import {
     ArrowLeftCircle,
     Building2,
     CalendarClock,
+    Clock,
     CreditCard,
     Edit,
     FileTextIcon,
@@ -21,9 +22,11 @@ import {
     Utensils,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BranchSection, BranchStatusBadge, InfoRow } from "./BranchHelpers";
 import ProfileDoc, { IVendorDocs } from "../../Profile/ProfileDoc";
+import WeeklyScheduleSummary from "../../Schedule/WeeklyScheduleSummary";
 
 interface IProps {
     branch: TVendor;
@@ -189,26 +192,22 @@ export const BranchDetails = ({ branch }: IProps) => {
 
                 {/* Opening Hours */}
                 <BranchSection title={t("opening_hours")} icon={<Utensils />}>
+                    {/* The parent edits each branch's weekly schedule on its own
+                        page (FRONTEND_VENDOR_SCHEDULE_GUIDE §9). */}
+                    <div className="mb-3 flex justify-end">
+                        <Link
+                            href={`/vendor/branches/${branch.userId}/hours`}
+                            className="inline-flex items-center gap-2 rounded-lg bg-[#DC3173] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#c42a66]"
+                        >
+                            <Clock className="h-4 w-4" />
+                            {t("schedule_edit_hours")}
+                        </Link>
+                    </div>
+                    {/* Hours from the weekly schedule, or built from the legacy
+                        fields for a branch that has none (guide §7). */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
+                        <WeeklyScheduleSummary details={branch.businessDetails} className="mb-2" />
                         <div>
-                            <InfoRow
-                                label={t("opening_hours")}
-                                value={branch.businessDetails?.openingHours || "N/A"}
-                            />
-                            <InfoRow
-                                label={t("closing_hours")}
-                                value={branch.businessDetails?.closingHours || "N/A"}
-                            />
-                        </div>
-                        <div>
-                            <InfoRow
-                                label={t("closingDays")}
-                                value={
-                                    branch.businessDetails?.closingDays?.length
-                                        ? branch.businessDetails.closingDays.join(", ")
-                                        : t("none")
-                                }
-                            />
                             <InfoRow
                                 label={t("store_status")}
                                 value={

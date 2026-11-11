@@ -39,10 +39,18 @@ import {
   Briefcase,
   Building2,
   CalendarX2,
-  Clock,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import WeeklyScheduleEditor from "@/src/components/Schedule/WeeklyScheduleEditor";
+import type { TWeeklyDaySchedule } from "@/src/types/vendor.type";
+import { readScheduleFailure } from "@/src/utils/scheduleErrors";
+import {
+  initialWeek,
+  MAX_CLOSED_DAYS,
+  normalizeWeek,
+  scheduleErrorMap,
+} from "@/src/utils/weeklySchedule";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -66,21 +74,12 @@ interface IProps {
 type BusinessForm = z.infer<ReturnType<typeof businessDetailsValidation>>;
 
 /**
- * At most two closing days (7 Oct 2026): vendors were picking many without
- * knowing what a closing day is. A third pick opens a pop-up instead; the form
- * check holds the same limit for anything already saved.
+ * At most two closed days (7 Oct 2026): vendors were closing many without
+ * knowing what a closing day is. Closing a third day opens a pop-up instead;
+ * the schedule rules hold the same limit for anything already saved.
  */
-const MAX_CLOSING_DAYS = 2;
-
-const daysOfWeek = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+const closedDays = (week: TWeeklyDaySchedule[]) =>
+  week.filter((d) => d.periods.length === 0).length;
 
 export default function BusinessDetailsForm({
   onNext,
@@ -90,6 +89,8 @@ export default function BusinessDetailsForm({
 }: IProps) {
   const { t } = useTranslation();
   const [showDaysLimit, setShowDaysLimit] = useState(false);
+  // Schedule errors from the last save, keyed by editor path; cleared on edit.
+  const [scheduleServerErrors, setScheduleServerErrors] = useState<Record<string, string>>({});
   const router = useRouter();
   const isSubVendor = vendor?.role === "SUB_VENDOR";
   const form = useForm<BusinessForm>({
@@ -101,9 +102,9 @@ export default function BusinessDetailsForm({
       restaurantCuisineType: vendor?.businessDetails?.restaurantCuisineType || [],
       NIF: vendor?.businessDetails?.NIF || "",
       branchName: vendor?.businessDetails?.branchName || "",
-      openingHours: vendor?.businessDetails?.openingHours || "",
-      closingHours: vendor?.businessDetails?.closingHours || "",
-      closingDays: vendor?.businessDetails?.closingDays || [],
+      // The saved week, else prefilled from the legacy hours (guide §7). A
+      // store that has never set hours starts open 00:00–24:00 every day.
+      weeklySchedule: initialWeek(vendor?.businessDetails),
     },
   });
 
@@ -113,6 +114,14 @@ export default function BusinessDetailsForm({
     control: form.control,
     name: "businessType",
   });
+
+  const week = useWatch({ control: form.control, name: "weeklySchedule" });
+  // Live rule errors, shown on the shift they belong to; the server's on top
+  // until the next edit.
+  const scheduleErrors = useMemo(
+    () => ({ ...scheduleServerErrors, ...scheduleErrorMap(week ?? []) }),
+    [week, scheduleServerErrors],
+  );
 
   const onSubmit = async (data: BusinessForm) => {
     const toastId = toast.loading("Updating...");
@@ -141,9 +150,9 @@ export default function BusinessDetailsForm({
       businessDetailsPayload = {
         businessDetails: {
           branchName: data?.branchName,
-          openingHours: data.openingHours,
-          closingHours: data.closingHours,
-          closingDays: data.closingDays || [],
+          // Only the weekly schedule, never the legacy hours with it (guide §5:
+          // mixing is a 400; legacy changes on a scheduled store are a 409).
+          weeklySchedule: normalizeWeek(data.weeklySchedule),
           // A branch serves what it serves. The cuisine is cloned from the
           // parent when the branch is created, but a branch can differ from it,
           // so this is editable here and has to be sent — it used to be
@@ -169,6 +178,7 @@ export default function BusinessDetailsForm({
       businessDetailsPayload = {
         businessDetails: {
           ...processedData,
+          weeklySchedule: normalizeWeek(data.weeklySchedule),
           businessType: data.businessType,
           NIF: data.NIF.toUpperCase(),
         },
@@ -187,6 +197,17 @@ export default function BusinessDetailsForm({
         router.push("/become-vendor/business-location");
         return;
       }
+    }
+
+    // Schedule field errors go on their shift; a schedule errorKey (locked
+    // profile, 409) gets our translated copy.
+    const scheduleFailure = readScheduleFailure(result, t);
+    if (Object.keys(scheduleFailure.fieldErrors).length) {
+      setScheduleServerErrors(scheduleFailure.fieldErrors);
+    }
+    if (scheduleFailure.errorKey && (scheduleFailure.locked || scheduleFailure.reload)) {
+      toast.error(scheduleFailure.summary ?? t("schedule_err_generic"), { id: toastId });
+      return;
     }
 
     if (result?.data?.errorSources) {
@@ -424,104 +445,35 @@ export default function BusinessDetailsForm({
                   {t("workingHours")}
                 </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Opening Hours */}
-                  <FormField
-                    control={form.control}
-                    name="openingHours"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="relative">
-                          <FormLabel className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-[#DC3173]" />
-                            {t("openingTime")}{" "}
-                            <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="time"
-                              className="px-3 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
-                              {...field}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <p className="-mt-1 mb-4 flex items-center gap-2 text-sm text-gray-500">
+                  {t("schedule_page_subtitle")}
+                  <ClosingDaysInfo />
+                </p>
 
-                  {/* Closing Hours */}
-                  <FormField
-                    control={form.control}
-                    name="closingHours"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="relative">
-                          <FormLabel className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-[#DC3173]" />
-                            {t("closingTime")}{" "}
-                            <span className="text-red-500">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="time"
-                              className="px-3 h-12 border-gray-300 focus-visible:ring-2 focus-visible:ring-[#DC3173]/60"
-                              {...field}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Closing Days */}
                 <FormField
                   control={form.control}
-                  name="closingDays"
-                  render={({ field, fieldState }) => (
+                  name="weeklySchedule"
+                  render={({ field }) => (
                     <FormItem>
-                      <div className="mt-5">
-                        <div className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                          <CalendarX2 className="w-4 h-4 text-[#DC3173]" />
-                          {t("closingDays")}
-                          <ClosingDaysInfo />
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {daysOfWeek.map((day) => (
-                            <motion.button
-                              key={day}
-                              type="button"
-                              onClick={() => {
-                                const selected = field.value || [];
-                                if (selected.includes(day)) {
-                                  field.onChange(selected.filter((d) => d !== day));
-                                  return;
-                                }
-                                if (selected.length >= MAX_CLOSING_DAYS) {
-                                  setShowDaysLimit(true);
-                                  return;
-                                }
-                                field.onChange([...selected, day]);
-                              }}
-                              whileTap={{ scale: 0.95 }}
-                              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${field.value?.includes(day)
-                                ? "bg-[#DC3173] text-white border-[#DC3173]"
-                                : "bg-white text-gray-700 border-gray-300 hover:border-[#DC3173]/70"
-                                }`}
-                            >
-                              {t(day.toLowerCase())}
-                            </motion.button>
-                          ))}
-                        </div>
-                      </div>
-                      {/* The message is a translation key (see the validation). */}
-                      {fieldState.error?.message && (
-                        <p className="text-sm font-medium text-destructive">
-                          {t(fieldState.error.message)}
-                        </p>
-                      )}
+                      <FormControl>
+                        <WeeklyScheduleEditor
+                          value={field.value ?? []}
+                          onChange={(next) => {
+                            // A third closed day: say why, instead of an error.
+                            if (
+                              closedDays(next) > MAX_CLOSED_DAYS &&
+                              closedDays(next) > closedDays(field.value ?? [])
+                            ) {
+                              setShowDaysLimit(true);
+                              return;
+                            }
+                            setScheduleServerErrors({});
+                            field.onChange(next);
+                          }}
+                          errors={scheduleErrors}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
