@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { weeklyScheduleSchema } from "@/src/validations/schedule/weekly-schedule.validation";
 
 export const businessDetailsValidation = (isSubVendor = false) =>
   z
@@ -39,35 +40,14 @@ export const businessDetailsValidation = (isSubVendor = false) =>
           .nonempty("Branch name is required")
         : z.string().optional(),
 
-      openingHours: z.string().nonempty("Opening hours is required"),
-
-      closingHours: z.string().nonempty("Closing hours is required"),
-
-      // At most two (7 Oct 2026). The message is a translation key: the form
-      // shows it through `t()`.
-      closingDays: z
-        .array(z.string())
-        .max(2, "closing_days_limit_body")
-        .optional(),
+      // The week, Monday first, as the editor holds it
+      // (FRONTEND_VENDOR_SCHEDULE_GUIDE). Replaces openingHours / closingHours
+      // / closingDays: those are a read-only summary once a schedule exists,
+      // and changing them answers 409. The schema carries every rule — the
+      // backend's, plus the panel's at-least-6-hours-a-day and at-most-2-closed-
+      // days (agreed 10 Nov 2026) — with translation keys as messages.
+      weeklySchedule: weeklyScheduleSchema,
     })
-    .refine(
-      (data) => {
-        const [openH, openM] = data.openingHours.split(":").map(Number);
-        const [closeH, closeM] = data.closingHours.split(":").map(Number);
-
-        const openTotal = openH * 60 + openM;
-        const closeTotal = closeH * 60 + closeM;
-
-        let diff = (closeTotal - openTotal) / 60;
-        if (diff < 0) diff += 24;
-
-        return diff >= 6;
-      },
-      {
-        message: "Business must be open at least 6 hours",
-        path: ["closingHours"],
-      },
-    )
     .superRefine((data, ctx) => {
       // Use slug instead of localized name
       if (data.businessType === "restaurant") {

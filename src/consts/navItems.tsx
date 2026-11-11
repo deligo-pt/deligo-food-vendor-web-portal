@@ -177,6 +177,7 @@ export const getNavItems = (
       title: t("settings"),
       icon: <Settings size={18} />,
       items: [
+        { name: t("schedule_page_title"), path: "/vendor/opening-hours" },
         { name: t("change_password"), path: "/vendor/change-password" },
         { name: t("notifications"), path: "/vendor/notifications" },
       ],

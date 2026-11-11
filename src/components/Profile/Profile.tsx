@@ -17,8 +17,6 @@ import {
   CalendarIcon,
   ClockIcon,
   CreditCardIcon,
-  DoorClosedIcon,
-  DoorOpenIcon,
   FileTextIcon,
   GlobeIcon,
   HashIcon,
@@ -27,6 +25,7 @@ import {
   MapIcon,
   MapPinIcon,
   NetworkIcon,
+  PencilLine,
   PhoneIcon,
   ShieldCheckIcon,
   ShoppingBagIcon,
@@ -34,6 +33,8 @@ import {
   UserIcon,
 } from "lucide-react";
 import AgreementHistory from "./AgreementHistory";
+import WeeklyScheduleSummary from "@/src/components/Schedule/WeeklyScheduleSummary";
+import Link from "next/link";
 import { IAgreement, IAgreementsResponse } from "@/src/types/agreement.type";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
@@ -64,21 +65,6 @@ export default function Profile({ vendor, agreementsData, currentAgreement }: IP
     (1000 * 60 * 60 * 24),
   );
 
-  const convertTo12HourFormat = (timeStr: string): string => {
-    const [hoursStr, minutesStr] = timeStr.split(":");
-
-    let hours = parseInt(hoursStr, 10);
-    const minutes = minutesStr;
-
-    // Determine AM or PM
-    const ampm = hours >= 12 ? "PM" : "AM";
-
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-
-    const formattedHours = hours < 10 ? `0${hours}` : hours;
-    return `${formattedHours}:${minutes} ${ampm}`;
-  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
@@ -283,25 +269,28 @@ export default function Profile({ vendor, agreementsData, currentAgreement }: IP
                 value={vendor.businessDetails?.totalBranches}
                 icon={NetworkIcon}
               />
-              <ProfileInfoRow
-                label={t("opening_hours")}
-                // value={vendor.businessDetails?.openingHours}
-                value={convertTo12HourFormat(vendor.businessDetails?.openingHours as string)}
-                icon={DoorOpenIcon}
-              />
-              <ProfileInfoRow
-                label={t("closing_hours")}
-                value={convertTo12HourFormat(vendor.businessDetails?.closingHours as string)}
-                // value={vendor.businessDetails?.closingHours}
-                icon={DoorClosedIcon}
-              />
-              {vendor.businessDetails?.closingDays && (
-                <ProfileInfoRow
-                  label={t("closingDays")}
-                  value={vendor.businessDetails.closingDays.join(", ")}
-                  icon={CalendarDaysIcon}
-                />
-              )}
+              {/* Hours from the weekly schedule (or built from the legacy
+                  fields for a store that has none yet), with a link to the
+                  editor. The three legacy rows are a lossy summary once a
+                  schedule exists (FRONTEND_VENDOR_SCHEDULE_GUIDE §7). */}
+              <div className="flex items-start gap-3 py-2">
+                <div className="w-5 h-5 text-[#DC3173] mt-0.5">
+                  <CalendarDaysIcon className="w-full h-full" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm text-gray-500">{t("opening_hours")}</p>
+                    <Link
+                      href="/vendor/opening-hours"
+                      className="inline-flex items-center gap-1 text-sm font-medium text-[#DC3173] hover:underline"
+                    >
+                      <PencilLine className="h-3.5 w-3.5" />
+                      {t("schedule_edit_hours")}
+                    </Link>
+                  </div>
+                  <WeeklyScheduleSummary details={vendor.businessDetails} className="mt-1" />
+                </div>
+              </div>
             </div>
           </ProfileSection>
 
