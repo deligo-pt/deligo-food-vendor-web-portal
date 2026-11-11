@@ -211,7 +211,8 @@ export default function OpeningHoursForm({
 
   return (
     <div
-      className={cn("mx-auto max-w-5xl space-y-5", locked ? "pb-6" : "pb-28")}
+      // Bottom space so the fixed Save bar (2 rows on a phone) never covers Sunday.
+      className={cn("mx-auto max-w-5xl space-y-4 sm:space-y-5", locked ? "pb-6" : "pb-44 sm:pb-28")}
     >
       {backHref && (
         <Link
@@ -224,8 +225,9 @@ export default function OpeningHoursForm({
       )}
 
       {/* Header */}
-      <div className="flex flex-wrap items-start gap-4 rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-pink-100 text-[#DC3173]">
+      <div className="flex flex-wrap items-start gap-4 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+        {/* The icon gives its column back to the text on a phone. */}
+        <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-pink-100 text-[#DC3173] sm:flex">
           <Clock className="h-6 w-6" />
         </div>
         <div className="min-w-0 flex-1">
@@ -246,7 +248,7 @@ export default function OpeningHoursForm({
           </p>
         </div>
         {state && (
-          <div className="flex basis-full flex-col items-start gap-1 pl-16 sm:basis-auto sm:items-end sm:pl-0">
+          <div className="flex basis-full flex-col items-start gap-1 sm:basis-auto sm:items-end">
             <span
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold",
@@ -336,16 +338,19 @@ export default function OpeningHoursForm({
           {/* Save bar. Fixed, not sticky: the dashboard's <main> has
           overflow-x-hidden, which stops sticky from pinning. The left offsets
           mirror the content column in DesktopSidebar (md:ml-60 lg:ml-[20%]). */}
-          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur md:left-60 lg:left-[20%]">
-            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-end gap-3 px-4 py-3">
-              {hasClientErrors && (
-                <span className="mr-auto text-sm font-medium text-red-600">
-                  {t("schedule_fix_errors")}
-                </span>
-              )}
-              {!hasClientErrors && edited && (
-                <span className="mr-auto text-sm text-gray-500">
-                  {t("schedule_unsaved")}
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur md:left-60 lg:left-[20%]">
+            {/* Phone: the message on its own line, then Discard and Save as 2
+                equal buttons. From sm: one row, buttons on the right. */}
+            <div className="mx-auto grid max-w-5xl grid-cols-2 items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex sm:justify-end">
+              {(hasClientErrors || edited) && (
+                <span
+                  role={hasClientErrors ? "alert" : undefined}
+                  className={cn(
+                    "col-span-2 text-sm sm:mr-auto",
+                    hasClientErrors ? "font-medium text-red-600" : "text-gray-500",
+                  )}
+                >
+                  {hasClientErrors ? t("schedule_fix_errors") : t("schedule_unsaved")}
                 </span>
               )}
               <button
@@ -355,15 +360,17 @@ export default function OpeningHoursForm({
                   setWeek(JSON.parse(baseline));
                   setServerErrors({});
                 }}
-                className="h-10 rounded-lg px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-40"
+                className="h-11 whitespace-nowrap rounded-xl border border-gray-200 px-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-40 sm:border-transparent sm:px-4"
               >
-                {t("schedule_discard")}
+                {/* "Discard" fits a 320 px phone in EN and PT. */}
+                <span className="sm:hidden">{t("schedule_discard_short")}</span>
+                <span className="hidden sm:inline">{t("schedule_discard")}</span>
               </button>
               <button
                 type="button"
                 onClick={save}
                 disabled={!dirty || saving || hasClientErrors}
-                className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#DC3173] px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#c42a66] disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#DC3173] px-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#c42a66] disabled:pointer-events-none disabled:opacity-50 sm:px-5"
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
