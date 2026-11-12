@@ -111,7 +111,7 @@ const EditBranch = ({ branch, cuisines, businessCategories }: IProps) => {
     };
 
     return (
-        <div className="w-full min-h-screen bg-linear-to-b from-white to-gray-50 px-4 md:px-6">
+        <div className="w-full min-h-screen bg-linear-to-b from-white to-gray-50 px-0 sm:px-4 md:px-6">
             <div className="">
                 <motion.div
                     initial={{
@@ -196,7 +196,7 @@ const EditBranch = ({ branch, cuisines, businessCategories }: IProps) => {
                         </div>
                     </div>
                     {/* Form Content */}
-                    <div className="p-6 md:p-8">
+                    <div className="p-3 sm:p-6 md:p-8">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentStep}

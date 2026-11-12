@@ -225,12 +225,13 @@ export default function BusinessDetailsForm({
 
   return (
     <motion.div
-      className="flex justify-center items-center min-h-screen bg-linear-to-br from-pink-50 via-white to-pink-100 p-4"
+      className="flex justify-center items-center min-h-screen bg-linear-to-br from-pink-50 via-white to-pink-100 p-0 sm:p-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
-      <Card className="w-full max-w-2xl p-6 shadow-2xl border-t-4 border-[#DC3173] bg-white rounded-2xl relative">
+      {/* Less side padding on a phone: the opening hours need the width. */}
+      <Card className="w-full max-w-2xl px-0 py-6 sm:p-6 shadow-2xl border-t-4 border-[#DC3173] bg-white rounded-2xl relative">
         {!isSubVendor && <div className="absolute top-3 left-0">
           <Button
             onClick={() => router.push("/become-vendor/personal-details")}
@@ -241,7 +242,7 @@ export default function BusinessDetailsForm({
           </Button>
         </div>}
 
-        <CardHeader>
+        <CardHeader className="px-4 sm:px-6">
           <CardTitle className="text-center text-2xl font-bold text-[#DC3173] mt-2">
             {t("businessDetails")}
           </CardTitle>
@@ -250,7 +251,7 @@ export default function BusinessDetailsForm({
           </p>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               {/* ========== Section 1: Basic Info ========== */}
