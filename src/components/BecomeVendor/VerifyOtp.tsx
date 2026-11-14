@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
+import { emptyOtp, OTP_LENGTH } from "@/src/consts/otp.const";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { resendOtpReq, verifyOtpReq } from "@/src/services/auth/auth";
 import { setCookie } from "@/src/utils/cookies";
@@ -29,7 +30,7 @@ export default function VerifyOtp({ email }: { email: string }) {
   const { t } = useTranslation();
   const router = useRouter();
   const [timer, setTimer] = useState(getExpiryTime() || 0);
-  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [otp, setOtp] = useState<string[]>(emptyOtp);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResendSubmitting, setIsResendSubmitting] = useState(false);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -54,7 +55,7 @@ export default function VerifyOtp({ email }: { email: string }) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-      if (value && index < 3) inputRefs.current[index + 1]?.focus();
+      if (value && index < OTP_LENGTH - 1) inputRefs.current[index + 1]?.focus();
     }
   };
 
@@ -73,7 +74,7 @@ export default function VerifyOtp({ email }: { email: string }) {
     const deviceDetails = await getDeviceInfo();
 
     setIsSubmitting(true);
-    if (finalOtp.length === 4) {
+    if (finalOtp.length === OTP_LENGTH) {
       const toastId = toast.loading("Verifying OTP...");
 
       const result = await verifyOtpReq({
@@ -105,25 +106,25 @@ export default function VerifyOtp({ email }: { email: string }) {
       toast.error(result.message || "OTP verification failed", { id: toastId });
       console.log(result);
     } else {
-      toast.error("Please enter a valid 4-digit OTP");
+      toast.error(`Please enter a valid ${OTP_LENGTH}-digit OTP`);
     }
     setIsSubmitting(false);
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").trim();
+    const pastedData = e.clipboardData.getData("text").replace(/\D/g, ""); // "222 955" or "222-955" pastes too
 
     if (/^\d+$/.test(pastedData)) {
-      const codeDigits = pastedData.slice(0, 4).split("");
+      const codeDigits = pastedData.slice(0, OTP_LENGTH).split("");
 
       const newOtp = [...otp];
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < OTP_LENGTH; i++) {
         newOtp[i] = codeDigits[i] || "";
       }
       setOtp(newOtp);
 
-      const targetIndex = Math.min(codeDigits.length, 3);
+      const targetIndex = Math.min(codeDigits.length, OTP_LENGTH - 1);
       inputRefs.current[targetIndex]?.focus();
     }
   };
@@ -175,13 +176,13 @@ export default function VerifyOtp({ email }: { email: string }) {
             <CardTitle className="text-2xl font-semibold text-[#DC3173]">
               {t("verifyOTP")}
             </CardTitle>
-            <p className="text-gray-500 text-sm mt-1">{t("otp4DigitCode")}</p>
+            <p className="text-gray-500 text-sm mt-1">{t("otpEmailCodeHint")}</p>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* OTP Inputs */}
-              <div className="flex justify-center gap-4">
+              <div className="flex justify-center gap-2 sm:gap-3">
                 {otp.map((digit, index) => (
                   <div
                     key={index}
@@ -198,7 +199,7 @@ export default function VerifyOtp({ email }: { email: string }) {
                         inputRefs.current[index] = el;
                       }}
                       // autoFocus={index === 0}
-                      className="w-14 h-14 text-center text-2xl font-bold rounded-xl border border-gray-300 shadow-sm bg-white focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173] group-hover:border-[#DC3173]/50 transition-all duration-300"
+                      className="w-11 h-12 sm:w-12 sm:h-14 px-0 text-center text-xl sm:text-2xl font-bold rounded-xl border border-gray-300 shadow-sm bg-white focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173] group-hover:border-[#DC3173]/50 transition-all duration-300"
                     />
 
                     {/* Glowing animated ring when focused */}
@@ -237,7 +238,7 @@ export default function VerifyOtp({ email }: { email: string }) {
               {/* Verify Button */}
               <Button
                 type="submit"
-                disabled={isSubmitting || isResendSubmitting || otp.join("").length !== 4}
+                disabled={isSubmitting || isResendSubmitting || otp.join("").length !== OTP_LENGTH}
                 className="w-full bg-[#DC3173] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-[#a72b5c] transition-all duration-300 text-white text-lg font-medium py-2 rounded-lg shadow-md hover:shadow-lg"
               >
                 {isSubmitting ? "Verifying..." : t("verify")}
