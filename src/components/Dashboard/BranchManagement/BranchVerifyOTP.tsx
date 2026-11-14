@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { emptyOtp, OTP_LENGTH } from "@/src/consts/otp.const";
 import { useTranslation } from "@/src/hooks/use-translation";
 import { resendOtpReq, verifyOtpReq } from "@/src/services/auth/auth";
 import { motion } from "framer-motion";
@@ -23,7 +24,7 @@ const BranchVerifyOTP = ({ email }: { email: string }) => {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [timer, setTimer] = useState(300);
-    const [otp, setOtp] = useState(["", "", "", ""]);
+    const [otp, setOtp] = useState<string[]>(emptyOtp);
     const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
     const canResend = timer <= 0;
 
@@ -41,7 +42,7 @@ const BranchVerifyOTP = ({ email }: { email: string }) => {
             const newOtp = [...otp];
             newOtp[index] = value;
             setOtp(newOtp);
-            if (value && index < 3) inputRefs.current[index + 1]?.focus();
+            if (value && index < OTP_LENGTH - 1) inputRefs.current[index + 1]?.focus();
         }
     };
 
@@ -60,7 +61,7 @@ const BranchVerifyOTP = ({ email }: { email: string }) => {
         const toastId = toast.loading("Verifying OTP...");
         const finalOtp = otp.join("");
 
-        if (finalOtp.length === 4) {
+        if (finalOtp.length === OTP_LENGTH) {
             const result = await verifyOtpReq({
                 email,
                 otp: finalOtp,
@@ -79,25 +80,25 @@ const BranchVerifyOTP = ({ email }: { email: string }) => {
             toast.error(result.message || "OTP verification failed", { id: toastId });
             setIsSubmitting(false);
         } else {
-            toast.error("Please enter a valid 4-digit OTP", { id: toastId });
+            toast.error(`Please enter a valid ${OTP_LENGTH}-digit OTP`, { id: toastId });
             setIsSubmitting(false);
         }
     };
 
     const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
         e.preventDefault();
-        const pastedData = e.clipboardData.getData("text").trim();
+        const pastedData = e.clipboardData.getData("text").replace(/\D/g, ""); // "222 955" or "222-955" pastes too
 
         if (/^\d+$/.test(pastedData)) {
-            const codeDigits = pastedData.slice(0, 4).split("");
+            const codeDigits = pastedData.slice(0, OTP_LENGTH).split("");
 
             const newOtp = [...otp];
-            for (let i = 0; i < 4; i++) {
+            for (let i = 0; i < OTP_LENGTH; i++) {
                 newOtp[i] = codeDigits[i] || "";
             }
             setOtp(newOtp);
 
-            const targetIndex = Math.min(codeDigits.length, 3);
+            const targetIndex = Math.min(codeDigits.length, OTP_LENGTH - 1);
             inputRefs.current[targetIndex]?.focus();
         }
     };
@@ -159,14 +160,14 @@ const BranchVerifyOTP = ({ email }: { email: string }) => {
                         {t("verify_branch_email")}
                     </CardTitle>
                     <CardDescription className="text-center">
-                        {t("otp4DigitCode")}
+                        {t("otpEmailCodeHint")}
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6 py-6">
                         {/* OTP Inputs */}
-                        <div className="flex justify-center gap-4">
+                        <div className="flex justify-center gap-2 sm:gap-3">
                             {otp.map((digit, index) => (
                                 <div
                                     key={index}
@@ -182,7 +183,7 @@ const BranchVerifyOTP = ({ email }: { email: string }) => {
                                         ref={(el) => {
                                             inputRefs.current[index] = el;
                                         }}
-                                        className="w-14 h-14 text-center text-2xl font-bold rounded-xl border border-gray-300 shadow-sm bg-white focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173] group-hover:border-[#DC3173]/50 transition-all duration-300"
+                                        className="w-11 h-12 sm:w-12 sm:h-14 px-0 text-center text-xl sm:text-2xl font-bold rounded-xl border border-gray-300 shadow-sm bg-white focus-visible:ring-2 focus-visible:ring-[#DC3173]/70 focus-visible:border-[#DC3173] group-hover:border-[#DC3173]/50 transition-all duration-300"
                                     />
 
                                     {/* Glowing animated ring when focused */}

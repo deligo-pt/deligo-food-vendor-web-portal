@@ -790,7 +790,7 @@ export const pt = {
     "A sua candidatura foi rejeitada. Pode tentar novamente.",
   // verify otp
   verifyOTP: "Verificar OTP",
-  otp4DigitCode: "Introduza o código de 4 dígitos enviado para o seu email",
+  otpEmailCodeHint: "Introduza o código de 6 dígitos enviado para o seu email",
   expired: "Expirado",
   remaining: "restantes",
   resendOTP: "Reenviar OTP",
