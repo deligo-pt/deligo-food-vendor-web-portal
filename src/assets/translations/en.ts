@@ -779,7 +779,7 @@ export const en = {
   applicationTryAgain: "Your application has been rejected. You can try again.",
   // verify otp
   verifyOTP: "Verify OTP",
-  otp4DigitCode: "Enter the 4-digit code sent to your email",
+  otpEmailCodeHint: "Enter the 6-digit code sent to your email",
   expired: "Expired",
   remaining: "remaining",
   resendOTP: "Resend OTP",
