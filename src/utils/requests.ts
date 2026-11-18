@@ -32,7 +32,9 @@ api.interceptors.response.use(
       Cookies.remove("accessToken");
       Cookies.remove("refreshToken");
 
-      window.location.href = "/login";
+      // `clearSession` has the proxy remove the httpOnly refresh token too —
+      // left behind, it would sign the vendor straight back in.
+      window.location.href = "/login?clearSession=true";
     }
 
     return Promise.reject(error);

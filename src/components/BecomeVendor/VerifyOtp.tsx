@@ -82,11 +82,11 @@ export default function VerifyOtp({ email }: { email: string }) {
         role: "VENDOR",
         otp: finalOtp,
         deviceDetails,
-      });
+      }, { keepSession: true });
 
       if (result.success) {
         setCookie("accessToken", result.data.accessToken, 7);
-        setCookie("refreshToken", result.data.refreshToken, 365);
+        // The refresh token is kept server-side by `verifyOtpReq` (httpOnly).
 
         toast.success(result.message || "OTP verified successfully!", {
           id: toastId,
