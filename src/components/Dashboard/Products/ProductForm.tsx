@@ -33,10 +33,15 @@ import AddOnsAndVariants from "./AddOns&Variants";
 import PricingForm from "./PricingForm";
 import StockInformationForm from "./StockInformationForm";
 import DeligoMetadata from "./DeligoMetadata";
-import { catchAsync } from "@/src/utils/catchAsync";
-import { postData } from "@/src/utils/requests";
-import { TProduct } from "@/src/types/product.type";
-import { TResponse } from "@/src/types";
+import { bulkCreateProductsReq } from "@/src/services/dashboard/products/product-bulk.service";
+import type { TBulkProductItem } from "@/src/types/product-bulk.type";
+import { bulkErrorText, bulkRequestErrorText } from "@/src/utils/bulkErrors";
+import {
+  productFieldForCode,
+  productFieldForPath,
+  productTabKeyForField,
+  type TProductFormField,
+} from "@/src/utils/productFormErrors";
 import { useStore } from "@/src/store/store";
 import { translateObject } from "@/src/utils/translation/translationObject";
 import { useRouter } from "next/navigation";
@@ -178,8 +183,62 @@ export function ProductForm({
     ? `${t("add_new_item")} - ${productName}`
     : t("add_new_item");
 
+  /**
+   * A refused save: each problem goes on its field and the form opens the
+   * step holding the first one; what has no field is shown in the toast.
+   */
+  const showServerErrors = (
+    result: Awaited<ReturnType<typeof bulkCreateProductsReq>>,
+    toastId: string | number,
+  ) => {
+    const failed = result.data?.failed?.[0];
+
+    // The request itself was refused (429, 403, network…): nothing per item.
+    if (!failed && !result.errorSources.some((e) => productFieldForPath(e.path))) {
+      toast.error(bulkRequestErrorText(t, result), { id: toastId });
+      return;
+    }
+
+    const problems = failed
+      ? failed.errors?.length
+        ? failed.errors
+        : [{ path: "", message: failed.message }]
+      : result.errorSources;
+
+    const leftovers: string[] = [];
+    let firstField: TProductFormField | null = null;
+    const placed = new Set<string>();
+
+    for (const problem of problems) {
+      const field =
+        productFieldForPath(problem.path) ??
+        (problem.path ? null : productFieldForCode(failed?.code));
+      const text = problem.path
+        ? problem.message
+        : bulkErrorText(t, failed?.code, problem.message);
+
+      if (field && !placed.has(field)) {
+        placed.add(field);
+        form.setError(field as never, { type: "server", message: text });
+        firstField ??= field;
+      } else if (!leftovers.includes(text)) {
+        leftovers.push(text);
+      }
+    }
+
+    if (firstField) {
+      const tabIndex = tabs.findIndex((tab) => tab.name === t(productTabKeyForField(firstField!)));
+      if (tabIndex >= 0) setActiveTab(tabIndex);
+    }
+
+    toast.error(
+      leftovers[0] ?? bulkErrorText(t, failed?.code ?? result.errorKey, failed?.message ?? result.message),
+      { id: toastId },
+    );
+  };
+
   const onSubmit = async (data: FormData) => {
-    const toastId = toast.loading("Translating and Creating product...");
+    const toastId = toast.loading(t("translating_and_creating_product"));
     // if (!selectedSectionId) {
     //   toast.error("Please select a menu", { id: toastId });
     //   return;
@@ -196,11 +255,18 @@ export function ProductForm({
         return;
       }
 
-      const productData = {
-        name: translated.name,
-        description: translated.description,
+      const hasOptions = (translated.variations ?? []).some(
+        (v: { options?: unknown[] }) => (v.options?.length ?? 0) > 0,
+      );
+
+      const productData: TBulkProductItem = {
+        // Both languages are filled by the translation step above.
+        name: translated.name as TBulkProductItem["name"],
+        description: translated.description as TBulkProductItem["description"],
         category: data.category,
-        ...(data.additionalCategories && { additionalCategories: data.additionalCategories }),
+        ...(data.additionalCategories && {
+          additionalCategories: data.additionalCategories.filter((id): id is string => !!id),
+        }),
         // A single `image` string, not the `images: [url]` array this used to
         // send: the API's product schema is strict and rejects `images`
         // outright ("Unrecognized key(s) in object: 'images'"), which is what
@@ -213,15 +279,31 @@ export function ProductForm({
         // It must be left out, not sent empty: the API rejects `""` and `null`.
         ...(data.images?.[0] && { image: data.images[0] }),
         pricing: {
-          price: data.price ?? undefined,
-          discountType: data.discountType,
+          // With options the product's price is the cheapest option (the API
+          // sets it), so no price is sent.
+          ...(!hasOptions && { price: data.price ?? undefined }),
+          discountType: data.discountType as "PERCENTAGE" | "FLAT",
           // An emptied discount box is no discount.
           discount: data.discount ?? 0,
           taxId: data.taxId,
+          // "€", as every existing product has it: the cards print the stored
+          // text as-is, so "EUR" would show as "4,00 EUR" (D4, 19 Nov 2026).
           currency: "€",
         },
         addonGroups: data.addonGroups,
-        variations: translated.variations,
+        // Left out, not `[]`, when there are none (the bulk API's rule).
+        ...(translated.variations?.length && {
+          variations: translated.variations.map((v: any) => ({
+            name: v.name,
+            options: v.options.map((o: any) => ({
+              label: o.label,
+              price: o.price,
+              // Restaurants don't track stock, per option either.
+              ...(businessTypeSlug !== "restaurant" &&
+                o.stockQuantity != null && { stockQuantity: o.stockQuantity }),
+            })),
+          })),
+        }),
         // SDR: only the flag — the amount is the admin's (`sdr` is strict and
         // rejects any other key).
         sdr: { applicable: data.sdrApplicable === true },
@@ -233,30 +315,19 @@ export function ProductForm({
         ...(businessTypeSlug !== "restaurant"
           ? {
             stock: {
-              quantity: data.quantity,
+              quantity: data.quantity ?? 0,
               unit: data.unit,
-              availabilityStatus: data.availabilityStatus,
+              availabilityStatus: data.availabilityStatus as NonNullable<TBulkProductItem["stock"]>["availabilityStatus"],
             },
           }
           : {}),
       };
 
-      const result = await catchAsync<TProduct>(async () => {
-        return (await postData(
-          "/products/create-product",
-          productData,
-        )) as unknown as TResponse<TProduct>;
-      });
+      // One item through the unified create (`create-product` is deprecated).
+      const result = await bulkCreateProductsReq([productData]);
 
-      if (result.success) {
-        // const payload = {
-        //   productId: result?.data?._id as string,
-        //   sortOrder: 0,
-        //   isAvailable: true
-        // };
-        // await addItemToSection(payload, selectedSectionId);
-
-        toast.success(result.message || "Product created successfully!", {
+      if (result.ok && result.data?.created.length) {
+        toast.success(result.message || t("product_created_successfully"), {
           id: toastId,
         });
         form.reset();
@@ -266,17 +337,7 @@ export function ProductForm({
         return;
       }
 
-      if (result?.data?.errorSources) {
-        result?.data?.errorSources?.map((err: { path: string, message: string }) => (
-          toast.error(err?.message, { id: toastId })
-        ));
-        return;
-      } else {
-        toast.error(result.message || "Product creation failed", {
-          id: toastId,
-        });
-      }
-
+      showServerErrors(result, toastId);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong", {
@@ -325,6 +386,15 @@ export function ProductForm({
           case "unit":
           case "availabilityStatus":
             newErrors[t("stock")] = true;
+            return;
+          case "addonGroups":
+          case "variations":
+            newErrors[t("add_ons_and_variants")] = true;
+            return;
+          case "sdrApplicable":
+          case "isFeatured":
+          case "isAvailableForPreOrder":
+            newErrors[t("deligo_metadata")] = true;
             return;
         }
       });

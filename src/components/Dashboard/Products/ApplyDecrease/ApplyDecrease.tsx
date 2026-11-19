@@ -16,6 +16,7 @@ import { useTranslation } from '@/src/hooks/use-translation';
 import { cn } from '@/lib/utils';
 import { applyIncreaseDecrease } from '@/src/services/dashboard/products/products';
 import { isActiveProduct } from '@/src/utils/offerProducts';
+import { displayCurrency } from "@/src/utils/currency";
 
 type Props = {
     products: TProduct[];
@@ -283,7 +284,7 @@ const ApplyDecrease = ({ products, productCategries }: Props) => {
                                         const isSelected = selectedProductIds.includes(productKey);
 
                                         const originalPrice = product.pricing.price;
-                                        const currency = product.pricing.currency;
+                                        const currency = displayCurrency(product.pricing.currency);
                                         const discounted = isSelected
                                             ? getDiscountedPrice(originalPrice)
                                             : null;

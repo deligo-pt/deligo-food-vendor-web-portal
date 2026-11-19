@@ -7,6 +7,7 @@ import { Check, Clock, ShoppingBag, Star, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getProductImage } from "@/src/consts/product.const";
+import { displayCurrency } from "@/src/utils/currency";
 
 interface IProps {
   product: TProduct;
@@ -186,7 +187,7 @@ export default function ProductCard({
                 {new Intl.NumberFormat("de-DE", {
                   minimumFractionDigits: 2,
                 }).format(product.pricing.finalPrice)}
-                &nbsp;{product.pricing.currency}
+                &nbsp;{displayCurrency(product.pricing.currency)}
               </span>
 
               {product?.pricing?.discount ? (
@@ -194,7 +195,7 @@ export default function ProductCard({
                   {new Intl.NumberFormat("de-DE", {
                     minimumFractionDigits: 2,
                   }).format(product.pricing.price)}
-                  &nbsp;{product.pricing.currency}
+                  &nbsp;{displayCurrency(product.pricing.currency)}
                 </span>
               ) : null}
 
@@ -230,7 +231,7 @@ export default function ProductCard({
                     ({new Intl.NumberFormat("de-DE", {
                       minimumFractionDigits: 2,
                     }).format(taxAmount)}
-                    &nbsp;{product.pricing.currency}
+                    &nbsp;{displayCurrency(product.pricing.currency)}
                     )
                   </span>
                 )}
