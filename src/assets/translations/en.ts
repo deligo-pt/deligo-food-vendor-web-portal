@@ -2769,6 +2769,11 @@ export const en = {
   sheet_server_unknown: "The server didn't say which field. Open the details (›) and check each field, then press Import.",
   sheet_required_legend: "Required",
   sheet_import: "Import products",
+  import_cleaned_title: "We tidied your file before importing",
+  import_cleaned_sdr: "Left out {count} SDR container counts (only used when sdr_applicable is TRUE).",
+  import_cleaned_stock: "Left out {count} stock values (restaurants don't track stock).",
+  import_cause_sdr: "Cause: sdr_container_count is filled in but SDR is off. Leave it empty — or use “Fix in the editor”, which does it for you.",
+  import_cause_stock: "Cause: stock is filled in, but restaurants can't have stock. Leave stock_quantity and option_stock empty — or use “Fix in the editor”.",
   // product bulk create / import / bulk delete — error codes (bulkErrors.ts)
   bulk_err_UNKNOWN: "Something went wrong. Please try again.",
   bulk_err_NETWORK: "Could not reach the server. Check your connection and try again.",

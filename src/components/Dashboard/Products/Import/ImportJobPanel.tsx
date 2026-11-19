@@ -38,6 +38,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { explainImportRow } from "@/src/utils/productSheet";
 import { downloadText } from "./importStorage";
 
 const POLL_MS = 2500;
@@ -55,6 +56,7 @@ const STATUS_STYLE: Record<TImportStatus, string> = {
 interface IProps {
   jobId: string;
   t: (key: string) => string;
+  isRestaurant: boolean;
   /** The job no longer exists (404). */
   onGone: () => void;
   /** "Import another file". */
@@ -63,7 +65,7 @@ interface IProps {
   onFixInEditor: (rows: TImportRowError[]) => void;
 }
 
-export default function ImportJobPanel({ jobId, t, onGone, onStartOver, onFixInEditor }: IProps) {
+export default function ImportJobPanel({ jobId, t, isRestaurant, onGone, onStartOver, onFixInEditor }: IProps) {
   const [loadingFailed, setLoadingFailed] = useState(false);
 
   /** Every failed row (all pages), duplicates that were skipped left out. */
@@ -246,7 +248,7 @@ export default function ImportJobPanel({ jobId, t, onGone, onStartOver, onFixInE
         )}
       </section>
 
-      {final && needsAttention > 0 && <ImportErrors jobId={job._id} t={t} />}
+      {final && needsAttention > 0 && <ImportErrors jobId={job._id} t={t} isRestaurant={isRestaurant} />}
     </div>
   );
 }
@@ -261,7 +263,7 @@ function Counter({ label, value, className }: { label: string; value: number; cl
 }
 
 /** The rows that didn't become products, 20 at a time, and their CSV. */
-function ImportErrors({ jobId, t }: { jobId: string; t: (key: string) => string }) {
+function ImportErrors({ jobId, t, isRestaurant }: { jobId: string; t: (key: string) => string; isRestaurant: boolean }) {
   const [page, setPage] = useState(1);
   const [rows, setRows] = useState<TImportRowError[] | null>(null);
   const [meta, setMeta] = useState<TMeta | undefined>();
@@ -341,7 +343,7 @@ function ImportErrors({ jobId, t }: { jobId: string; t: (key: string) => string 
                       <ResultPill code={row.code} t={t} />
                     </td>
                     <td className="px-3 py-2">
-                      <Problem row={row} t={t} />
+                      <Problem row={row} t={t} isRestaurant={isRestaurant} />
                     </td>
                   </tr>
                 ))}
@@ -361,7 +363,7 @@ function ImportErrors({ jobId, t }: { jobId: string; t: (key: string) => string 
                   <ResultPill code={row.code} t={t} />
                 </div>
                 <div className="mt-1.5">
-                  <Problem row={row} t={t} />
+                  <Problem row={row} t={t} isRestaurant={isRestaurant} />
                 </div>
               </li>
             ))}
@@ -418,12 +420,19 @@ function ResultPill({ code, t }: { code: string; t: (key: string) => string }) {
  * own message under it when it says more — it names the value at fault
  * ("Category 'Fish' was not found…") in the language of the upload.
  */
-function Problem({ row, t }: { row: TImportRowError; t: (key: string) => string }) {
+function Problem({ row, t, isRestaurant }: { row: TImportRowError; t: (key: string) => string; isRestaurant: boolean }) {
   const ours = bulkErrorText(t, row.code, row.message);
+  // The server only says "some fields are invalid" for these: name the cell.
+  const causes = isSkipped(row.code) || !row.raw ? [] : explainImportRow(row, isRestaurant);
   return (
     <>
       <p className={isSkipped(row.code) ? "text-amber-800" : "text-red-700"}>{ours}</p>
       {row.message && row.message !== ours && <p className="mt-0.5 text-xs text-gray-500">{row.message}</p>}
+      {causes.map((key) => (
+        <p key={key} className="mt-1 text-xs font-medium text-gray-700">
+          {t(key === "sheet_fix_sdr_count_removed" ? "import_cause_sdr" : "import_cause_stock")}
+        </p>
+      ))}
     </>
   );
 }

@@ -547,3 +547,53 @@ export function explainImportRow(
   }
   return fixes;
 }
+
+/* ---------- cleaning an uploaded file ---------- */
+
+export type TFileCleanup = { sdrCounts: number; stocks: number };
+
+/**
+ * Drops, from a vendor's own file, the cells the backend refuses but that
+ * carry no meaning: an SDR container count while SDR is off, and stock for
+ * a restaurant (the same cells the editor leaves out). Every row stays where
+ * it was, so the server's row numbers still match the vendor's file. Returns
+ * null when there is nothing to drop — the file is then sent untouched.
+ */
+export async function cleanImportFile(
+  file: File,
+  isRestaurant: boolean,
+): Promise<{ file: File; cleanup: TFileCleanup } | null> {
+  const rows = await readSheetFile(file);
+  const cleanup: TFileCleanup = { sdrCounts: 0, stocks: 0 };
+  let groupSdr = "";
+  let currentKey: string | null = null;
+
+  const cleaned = rows.map((row) => {
+    const r: Record<string, string> = { ...(row as Record<string, string>) };
+    // Option rows inherit the product's SDR setting from its first row.
+    const key = groupKeyOf(row);
+    if (!(key !== null && key === currentKey)) groupSdr = normaliseBoolean(r.sdr_applicable ?? "");
+    currentKey = key;
+
+    if (groupSdr !== "true" && (r.sdr_container_count ?? "").trim() !== "") {
+      r.sdr_container_count = "";
+      cleanup.sdrCounts += 1;
+    }
+    if (isRestaurant) {
+      for (const col of ["stock_quantity", "option_stock"] as const) {
+        if ((r[col] ?? "").trim() !== "") {
+          r[col] = "";
+          cleanup.stocks += 1;
+        }
+      }
+    }
+    return r;
+  });
+
+  if (!cleanup.sdrCounts && !cleanup.stocks) return null;
+
+  const fields = Array.from(new Set(cleaned.flatMap((r) => Object.keys(r)))).filter(Boolean);
+  const csv = Papa.unparse({ fields, data: cleaned.map((r) => fields.map((f) => r[f] ?? "")) });
+  const name = file.name.replace(/\.(xlsx|csv)$/i, "") + ".csv";
+  return { file: new File([csv], name, { type: "text/csv" }), cleanup };
+}

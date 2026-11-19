@@ -2829,6 +2829,11 @@ export const pt = {
   sheet_server_unknown: "O servidor não indicou o campo. Abra os detalhes (›), verifique cada campo e carregue em Importar.",
   sheet_required_legend: "Obrigatório",
   sheet_import: "Importar produtos",
+  import_cleaned_title: "Arrumámos o seu ficheiro antes de importar",
+  import_cleaned_sdr: "Deixámos de fora {count} números de embalagens SDR (só usados quando sdr_applicable é TRUE).",
+  import_cleaned_stock: "Deixámos de fora {count} valores de stock (os restaurantes não gerem stock).",
+  import_cause_sdr: "Causa: sdr_container_count está preenchido mas o SDR está desligado. Deixe-o vazio — ou use “Corrigir no editor”, que o faz por si.",
+  import_cause_stock: "Causa: o stock está preenchido, mas os restaurantes não podem ter stock. Deixe stock_quantity e option_stock vazios — ou use “Corrigir no editor”.",
   // product bulk create / import / bulk delete — error codes (bulkErrors.ts)
   bulk_err_UNKNOWN: "Algo correu mal. Tente novamente.",
   bulk_err_NETWORK: "Não foi possível contactar o servidor. Verifique a ligação e tente novamente.",

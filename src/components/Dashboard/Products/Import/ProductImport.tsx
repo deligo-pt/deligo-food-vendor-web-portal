@@ -24,6 +24,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import ImportJobPanel from "./ImportJobPanel";
 import SheetEditor, { type TSheetCategory, type TSheetLoad } from "./SheetEditor";
+import { cleanImportFile, type TFileCleanup } from "@/src/utils/productSheet";
 import { downloadText, forgetJob, readSavedJob, saveJob } from "./importStorage";
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -135,7 +136,24 @@ export default function ProductImport({ vendorKey, isRestaurant, categories, tax
   const startImport = async () => {
     if (!file || uploading) return;
     setUploading(true);
-    const started = await uploadFile(file);
+    // Cells the backend refuses but that mean nothing (SDR count with SDR
+    // off, a restaurant's stock) are dropped here, as the editor does.
+    let toSend = file;
+    let cleanup: TFileCleanup | null = null;
+    try {
+      const cleaned = await cleanImportFile(file, isRestaurant);
+      if (cleaned) ({ file: toSend, cleanup } = cleaned);
+    } catch {
+      /* unreadable here: send it as it is, the server reports what's wrong */
+    }
+    const started = await uploadFile(toSend);
+    if (started && cleanup) {
+      const parts = [
+        cleanup.sdrCounts ? fillVars(t("import_cleaned_sdr"), { count: cleanup.sdrCounts }) : "",
+        cleanup.stocks ? fillVars(t("import_cleaned_stock"), { count: cleanup.stocks }) : "",
+      ].filter(Boolean);
+      toast.info(t("import_cleaned_title"), { description: parts.join(" "), duration: 8000 });
+    }
     setUploading(false);
     if (started) clearFile();
   };
@@ -157,6 +175,7 @@ export default function ProductImport({ vendorKey, isRestaurant, categories, tax
         <ImportJobPanel
           jobId={jobId}
           t={t}
+          isRestaurant={isRestaurant}
           onGone={startOver}
           onStartOver={startOver}
           onFixInEditor={(rows) => {
