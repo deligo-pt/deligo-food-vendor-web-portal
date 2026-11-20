@@ -2,6 +2,7 @@
 
 import { verifyJWT } from "@/src/utils/verifyJWT";
 import { cookies } from "next/headers";
+import { refreshTokenFrom } from "@/src/utils/refreshTokenCookie";
 
 const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1";
 
@@ -34,6 +35,9 @@ export const getNewAccessToken = async () => {
 
     return {
       accessToken: result?.data?.accessToken,
+      // A new refresh token, if the backend rotated it — in the body or, since
+      // 17 Nov 2026, its httpOnly Set-Cookie. The proxy keeps it.
+      refreshToken: refreshTokenFrom(response, result),
     };
   } catch {
     return null;

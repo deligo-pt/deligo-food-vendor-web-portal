@@ -22,6 +22,7 @@ import { TProduct } from "@/src/types/product.type";
 import AddItemToSection from "./AddItemToSection";
 import UpdateItemSortOrder from "./UpdateItemSortOrder";
 import { getProductImage } from "@/src/consts/product.const";
+import { displayCurrency } from "@/src/utils/currency";
 
 interface IProps {
     menuId: string;
@@ -300,7 +301,7 @@ export default function MenuSectionsList({
                                                                         <div className="flex items-center gap-2 mt-1">
                                                                             <span className="text-xs font-bold text-[#DC3173]">
                                                                                 {prod.pricing?.finalPrice ?? prod.pricing?.price}
-                                                                                &nbsp;{prod.pricing?.currency || "€"}
+                                                                                &nbsp;{displayCurrency(prod.pricing?.currency)}
                                                                             </span>
                                                                         </div>
                                                                     </div>

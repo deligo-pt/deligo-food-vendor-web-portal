@@ -16,10 +16,11 @@ import { TProductCategory } from "@/src/types/category.type";
 import { TProduct } from "@/src/types/product.type";
 import { TVendor } from "@/src/types/vendor.type";
 import CopyToBranchDialog from "@/src/components/Dashboard/Products/CopyToBranchDialog";
+import BulkDeleteDialog from "@/src/components/Dashboard/Products/BulkDeleteDialog";
 import { approvedBranches, productCode } from "@/src/utils/productCopy";
-import { CheckSquare, LoaderCircle, Search, SquaresSubtract, X } from "lucide-react";
+import { CheckSquare, LoaderCircle, Search, SquaresSubtract, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   appendPage,
   hasMore,
@@ -130,6 +131,8 @@ export default function Products({
   /** A newer selection (Clear, the "All products" button) cancels the load. */
   const leavingRun = useRef(0);
   const [isCopyOpen, setIsCopyOpen] = useState(false);
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
+  const router = useRouter();
 
   const copyTargets = useMemo(() => approvedBranches(branches), [branches]);
 
@@ -687,6 +690,55 @@ export default function Products({
     setSelectMode(false);
   };
 
+  /**
+   * The codes "Delete selected" sends: the ticked cards, or with "All
+   * products" every code in the catalogue (read the same way an untick reads
+   * them). `null` when that read fails.
+   */
+  const resolveDeleteIds = async (): Promise<string[] | null> => {
+    if (!copyAll) return selectedIds;
+    const result = await loadEveryCode();
+    return result.success ? result.codes : null;
+  };
+
+  /** A product's name in the reading language, from whatever is loaded. */
+  const productNameFor = (code: string) => {
+    const product =
+      sections.flatMap((s) => s.items).find((p) => productCode(p) === code) ??
+      other.items.find((p) => productCode(p) === code);
+    return product ? localizedText(product.name, lang) || undefined : undefined;
+  };
+
+  /**
+   * After "Delete selected": deleted products leave every section they were
+   * listed in, and the ones that couldn't be deleted stay selected so the
+   * vendor can try again. The tab counts come back with `router.refresh()`.
+   */
+  const onBulkDeleted = ({ deleted, failed }: { deleted: string[]; failed: string[] }) => {
+    const gone = new Set(deleted);
+    if (gone.size) {
+      const isGone = (product: TProduct) => gone.has(productCode(product));
+      setSections((prev) =>
+        prev.map((s) => {
+          const removed = s.items.filter(isGone).length;
+          return removed
+            ? { ...s, items: s.items.filter((p) => !isGone(p)), total: Math.max(0, (s.total ?? removed) - removed) }
+            : s;
+        }),
+      );
+      setOther((prev) => ({ ...prev, items: prev.items.filter((p) => !isGone(p)) }));
+      everyCode.current = null;
+      router.refresh();
+    }
+    if (failed.length) {
+      cancelLeavingAll();
+      setCopyAll(false);
+      setSelectedIds(failed);
+    } else {
+      exitSelectMode();
+    }
+  };
+
   const selectionCount = copyAll ? Math.max(0, catalogue.total - (leavingAll?.length ?? 0)) : selectedIds.length;
 
   const scrollToCategory = (id: string) => {
@@ -843,12 +895,13 @@ export default function Products({
               </span>
             ) : (
               <span className="text-muted-foreground">
-                {t("select_items_to_copy")}
+                {t("select_items_to_copy_or_delete")}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Wraps on a phone: with Delete selected the four buttons don't fit 360 px. */}
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => {
@@ -880,11 +933,22 @@ export default function Products({
 
             <button
               type="button"
+              // Same rule as Copy: "all except…" must finish loading first.
+              disabled={selectionCount === 0 || leavingAll !== null}
+              onClick={() => setIsBulkDeleteOpen(true)}
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              {t("delete_selected")}
+            </button>
+
+            <button
+              type="button"
               // Not while "all except…" is loading: the copy would still go
               // out as "all products", unticked cards included.
               disabled={selectionCount === 0 || leavingAll !== null}
               onClick={() => setIsCopyOpen(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#DC3173] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#c71d62] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-[#DC3173] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#c71d62] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <SquaresSubtract className="h-4 w-4" />
               {t("copy_to_branch")}
@@ -1153,6 +1217,15 @@ export default function Products({
           setSelectedProduct({ id: null, action: null, product: null })
         }
         onConfirm={handleDeleteProduct}
+        t={t}
+      />
+      <BulkDeleteDialog
+        open={isBulkDeleteOpen}
+        onOpenChange={setIsBulkDeleteOpen}
+        count={selectionCount}
+        resolveIds={resolveDeleteIds}
+        nameFor={productNameFor}
+        onFinished={onBulkDeleted}
         t={t}
       />
       <CopyToBranchDialog

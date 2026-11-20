@@ -28,6 +28,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import CopyToBranchDialog from "./CopyToBranchDialog";
 import { getProductImage } from "@/src/consts/product.const";
+import { displayCurrency } from "@/src/utils/currency";
 
 interface IProps {
   product: TProduct;
@@ -267,13 +268,13 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold text-[#DC3173]">
                   {product.pricing.finalPrice.toFixed(2)}
-                  &nbsp;{product.pricing.currency}
+                  &nbsp;{displayCurrency(product.pricing.currency)}
                 </span>
                 {product?.pricing?.discount ? (
                   <>
                     <span className="text-lg text-gray-500 line-through">
                       {product.pricing.price.toFixed(2)}
-                      &nbsp;{product.pricing.currency}
+                      &nbsp;{displayCurrency(product.pricing.currency)}
                     </span>
                     <span className="text-sm font-medium text-green-600">
                       {product.pricing.discount}% {t("off")}

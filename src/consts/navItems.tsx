@@ -93,6 +93,7 @@ export const getNavItems = (
         // { name: t("all_menus"), path: "/vendor/menu/all" },
         { name: t("add_new_item"), path: "/vendor/add-item" },
         { name: t("all_items"), path: "/vendor/all-items" },
+        { name: t("import_items"), path: "/vendor/items/import" },
         { name: t("update_discounts"), path: "/vendor/items/apply-decrease" },
         { name: t("increase_prices"), path: "/vendor/items/apply-increase" },
         ...(businessType === "store"

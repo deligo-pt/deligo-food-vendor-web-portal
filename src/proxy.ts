@@ -2,6 +2,7 @@ import { USER_ROLE, USER_STATUS } from "@/src/consts/user.const";
 import { NextRequest, NextResponse } from "next/server";
 import { getNewAccessToken } from "./utils/getNewAccessToken";
 import { verifyJWT } from "./utils/verifyJWT";
+import { REFRESH_TOKEN_COOKIE, refreshTokenCookieOptions } from "./utils/refreshTokenCookie";
 
 const PUBLIC_AUTH_PATHS = [
   "/login",
@@ -47,6 +48,7 @@ export async function proxy(req: NextRequest) {
   let decodedData = null;
   let isTokenRefreshed = false;
   let newAccessTokenValue = "";
+  let newRefreshTokenValue = "";
 
   // === Token Verification & Silent Refresh ===
   if (accessToken) {
@@ -68,6 +70,9 @@ export async function proxy(req: NextRequest) {
           decodedData = verified.data;
           newAccessTokenValue = newAccessToken;
           isTokenRefreshed = true;
+          if (typeof newAccessTokenResponse === "object" && newAccessTokenResponse?.refreshToken) {
+            newRefreshTokenValue = newAccessTokenResponse.refreshToken;
+          }
         }
       }
     }
@@ -104,6 +109,10 @@ export async function proxy(req: NextRequest) {
         sameSite: "lax",
         path: "/",
       });
+      // The backend rotated the refresh token: the old one no longer works.
+      if (newRefreshTokenValue) {
+        res.cookies.set(REFRESH_TOKEN_COOKIE, newRefreshTokenValue, refreshTokenCookieOptions(newRefreshTokenValue));
+      }
     }
     return res;
   };

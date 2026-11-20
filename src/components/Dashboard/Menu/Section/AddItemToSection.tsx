@@ -25,6 +25,7 @@ import { Switch } from "@/components/ui/switch";
 import { addItemToSection } from "@/src/services/dashboard/menu/menu.service";
 import { itemAddSchema } from "@/src/validations/menu/section.validation";
 import { getProductImage } from "@/src/consts/product.const";
+import { displayCurrency } from "@/src/utils/currency";
 
 export type AddItemToSectionSchema = z.infer<typeof itemAddSchema>;
 
@@ -164,7 +165,7 @@ export default function AddItemToSection({
                                                                         </p>
                                                                         <p className="text-[10px] text-[#DC3173] font-bold">
                                                                             {prod.pricing?.price}
-                                                                            &nbsp;{prod.pricing?.currency || "€"}
+                                                                            &nbsp;{displayCurrency(prod.pricing?.currency)}
                                                                         </p>
                                                                     </div>
                                                                 </div>

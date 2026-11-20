@@ -76,7 +76,7 @@ export default function LoginForm({ redirect }: IProps) {
         };
         if (decoded.role === "VENDOR" || decoded?.role === "SUB_VENDOR") {
           setCookie("accessToken", result.data.accessToken, 7);
-          setCookie("refreshToken", result.data.refreshToken, 365);
+          // The refresh token is kept server-side by `loginReq` (httpOnly).
           toast.success(result?.message || "Login successful!", {
             id: toastId,
           });

@@ -5,6 +5,13 @@ import { DEVICE_KEY } from "@/src/consts/device.const";
 import { TResponse } from "@/src/types";
 import { catchAsync } from "@/src/utils/catchAsync";
 import { cookies } from "next/headers";
+import {
+  REFRESH_TOKEN_COOKIE,
+  refreshTokenCookieOptions,
+  refreshTokenFrom,
+  roleOf,
+  withoutRefreshToken,
+} from "@/src/utils/refreshTokenCookie";
 
 type TDeviceDetails = {
   deviceId: string;
@@ -31,7 +38,18 @@ export const loginReq = async (data: {
 
   const result = await response.json();
 
-  return result;
+  // The refresh token arrives as the backend's httpOnly cookie now, not in
+  // the body (security update, 17 Nov 2026): keep it here, server-side, as
+  // the panel's own httpOnly cookie — only for the roles the panel signs in.
+  if (result?.success) {
+    const role = roleOf(result?.data?.accessToken);
+    const refreshToken = refreshTokenFrom(response, result);
+    if (refreshToken && (role === "VENDOR" || role === "SUB_VENDOR")) {
+      (await cookies()).set(REFRESH_TOKEN_COOKIE, refreshToken, refreshTokenCookieOptions(refreshToken));
+    }
+  }
+
+  return withoutRefreshToken(result);
 };
 
 export const resendOtpReq = async (data: { email: string; role: string }) => {
@@ -53,13 +71,22 @@ export const resendOtpReq = async (data: { email: string; role: string }) => {
   });
 };
 
-export const verifyOtpReq = async (data: {
-  email: string;
-  otp: string;
-  role: string;
-  deviceDetails?: TDeviceDetails;
-}) => {
-  return catchAsync<{ accessToken: string; refreshToken: string }>(async () => {
+/**
+ * `keepSession`: this verification signs the vendor in (become-vendor), so
+ * its refresh token is kept as the panel's cookie. Off for a branch's
+ * verification — that token is the branch's, and keeping it would replace
+ * the signed-in vendor's own session.
+ */
+export const verifyOtpReq = async (
+  data: {
+    email: string;
+    otp: string;
+    role: string;
+    deviceDetails?: TDeviceDetails;
+  },
+  options: { keepSession?: boolean } = {},
+) => {
+  return catchAsync<{ accessToken: string }>(async () => {
     const response = await fetch(`${BASE_URL}/auth/verify-otp`, {
       method: "POST",
       headers: {
@@ -74,7 +101,14 @@ export const verifyOtpReq = async (data: {
       throw new Error(result?.message || "Verify otp failed!");
     }
 
-    return result;
+    if (options.keepSession) {
+      const refreshToken = refreshTokenFrom(response, result);
+      if (refreshToken) {
+        (await cookies()).set(REFRESH_TOKEN_COOKIE, refreshToken, refreshTokenCookieOptions(refreshToken));
+      }
+    }
+
+    return withoutRefreshToken(result);
   });
 };
 
@@ -96,6 +130,11 @@ export const logoutReq = async () => {
 
   const cookieStr = cookieStore.toString();
   const accessToken = cookieStore.get("accessToken")?.value || "";
+
+  // The refresh token cookie is httpOnly now, so the browser cannot remove
+  // it: it goes here, whatever the backend answers.
+  cookieStore.delete(REFRESH_TOKEN_COOKIE);
+  cookieStore.delete("accessToken");
 
   return catchAsync<null>(async () => {
     const response = await fetch(`${BASE_URL}/auth/logout`, {
@@ -119,6 +158,16 @@ export const logoutReq = async () => {
 
     return result;
   });
+};
+
+/**
+ * Signs the browser out of the panel: both session cookies, removed on the
+ * server (the refresh token's is httpOnly, out of page script's reach).
+ */
+export const clearSessionReq = async () => {
+  const cookieStore = await cookies();
+  cookieStore.delete(REFRESH_TOKEN_COOKIE);
+  cookieStore.delete("accessToken");
 };
 
 export const updateFcmTockenReq = async (data: {
