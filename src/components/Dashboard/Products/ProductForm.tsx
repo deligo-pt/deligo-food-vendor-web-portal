@@ -22,7 +22,7 @@ import {
   StarIcon,
   TagIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -33,6 +33,9 @@ import AddOnsAndVariants from "./AddOns&Variants";
 import PricingForm from "./PricingForm";
 import StockInformationForm from "./StockInformationForm";
 import DeligoMetadata from "./DeligoMetadata";
+import { createTwoForOneReq } from "@/src/services/dashboard/offers/offers";
+import { getCategoryProductsPage } from "@/src/services/dashboard/products/products";
+import { KIND_SETTINGS, kindFromProducts, taxIdForRate, type TProductKind } from "@/src/utils/productKind";
 import { bulkCreateProductsReq } from "@/src/services/dashboard/products/product-bulk.service";
 import type { TBulkProductItem } from "@/src/types/product-bulk.type";
 import { bulkErrorText, bulkRequestErrorText } from "@/src/utils/bulkErrors";
@@ -147,6 +150,7 @@ export function ProductForm({
       isFeatured: false,
       sdrApplicable: false,
       isAvailableForPreOrder: false,
+      isTwoForOne: false,
       isActive: true,
       businessTypeSlug,
       currentLang: lang
@@ -236,6 +240,51 @@ export function ProductForm({
       { id: toastId },
     );
   };
+
+  /* ----- Food | Drinks pre-selected from the category (§10.3) ----- */
+
+  const [watchCategory, watchSdr] = useWatch({ control: form.control, name: ["category", "sdrApplicable"] });
+  /** Each category's kind, once looked up while the form is open. */
+  const kindByCategory = useRef(new Map<string, TProductKind | null>());
+  /** What the last pre-selection wrote: only that may be replaced, never a vendor's own choice. */
+  const autoKind = useRef<{ taxId: string; sdr: boolean }>({ taxId: "", sdr: false });
+  const [kindFromCategory, setKindFromCategory] = useState(false);
+
+  useEffect(() => {
+    if (!watchCategory) return;
+    let stale = false;
+    const apply = (kind: TProductKind | null) => {
+      if (stale || !kind) return;
+      const taxId = form.getValues("taxId") || "";
+      const sdr = form.getValues("sdrApplicable") === true;
+      // The vendor set VAT or SDR by hand: leave them.
+      if (taxId !== autoKind.current.taxId || sdr !== autoKind.current.sdr) return;
+      const id = taxIdForRate(taxesData, KIND_SETTINGS[kind].rate);
+      if (!id) return;
+      form.setValue("taxId", id, { shouldValidate: !!taxId });
+      form.setValue("sdrApplicable", KIND_SETTINGS[kind].sdr);
+      autoKind.current = { taxId: id, sdr: KIND_SETTINGS[kind].sdr };
+      setKindFromCategory(true);
+    };
+    if (kindByCategory.current.has(watchCategory)) {
+      apply(kindByCategory.current.get(watchCategory) ?? null);
+    } else {
+      getCategoryProductsPage(watchCategory, 1, { lang }).then((res) => {
+        const kind = res.success ? kindFromProducts(res.data) : null;
+        if (res.success) kindByCategory.current.set(watchCategory, kind);
+        apply(kind);
+      });
+    }
+    return () => {
+      stale = true;
+    };
+    // A new category only; taxes and the form are stable for the page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchCategory]);
+
+  // "Chosen from the category" only while VAT and SDR are still what it chose.
+  const kindStillAuto =
+    kindFromCategory && watchTaxId === autoKind.current.taxId && (watchSdr === true) === autoKind.current.sdr;
 
   const onSubmit = async (data: FormData) => {
     const toastId = toast.loading(t("translating_and_creating_product"));
@@ -330,6 +379,16 @@ export function ProductForm({
         toast.success(result.message || t("product_created_successfully"), {
           id: toastId,
         });
+        // 2×1 (§10.2): an offer for the new product, made once it exists.
+        // The product stays saved whatever happens here.
+        if (data.isTwoForOne) {
+          const offer = await createTwoForOneReq(
+            result.data.created[0]._id,
+            translated.name as { en: string; pt: string },
+          );
+          if (offer.success) toast.success(t("two_for_one_created"));
+          else toast.warning(t("two_for_one_create_failed").replace("{reason}", offer.message || ""), { duration: 10000 });
+        }
         form.reset();
         setTabError({});
         setActiveTab(0);
@@ -521,6 +580,7 @@ export function ProductForm({
                     watchTaxId={watchTaxId}
                     watchDiscountType={watchDiscountType}
                     showVatInfo
+                    kindFromCategory={kindStillAuto}
                   />
                 )}
                 {businessTypeSlug !== "restaurant" && activeTab === 4 && (

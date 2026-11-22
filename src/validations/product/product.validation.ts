@@ -73,6 +73,9 @@ export const productValidation = z.object({
 
   isAvailableForPreOrder: z.boolean().optional(),
 
+  /** "2×1": a buy-one-get-one-free offer for this product (not a product field; §10.2). */
+  isTwoForOne: z.boolean().optional(),
+
   isActive: z.boolean().optional(),
 
   businessTypeSlug: z.string(),

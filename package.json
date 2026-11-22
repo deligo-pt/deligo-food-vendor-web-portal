@@ -18,7 +18,10 @@
     "verify:all-items": "node --experimental-strip-types --no-warnings scripts/verify-all-items.mjs",
     "verify:responsive": "node --no-warnings scripts/verify-responsive.mjs",
     "verify:sdr": "node --experimental-strip-types --no-warnings scripts/verify-sdr.mjs",
-    "verify:translation": "node --experimental-strip-types --no-warnings scripts/verify-translation.mjs"
+    "verify:translation": "node --experimental-strip-types --no-warnings scripts/verify-translation.mjs",
+    "verify:sheet-import": "node --experimental-strip-types --no-warnings scripts/verify-sheet-import.mjs",
+    "verify:two-for-one": "node --experimental-strip-types --no-warnings scripts/verify-two-for-one.mjs",
+    "verify:product-kind": "node --experimental-strip-types --no-warnings scripts/verify-product-kind.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "6.3.1",
