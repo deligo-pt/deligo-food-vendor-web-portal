@@ -37,7 +37,8 @@ import { toast } from "sonner";
 import z from "zod";
 import { useStore } from "@/src/store/store";
 import { translateObject } from "@/src/utils/translation/translationObject";
-import AddonSdrControl, { DEFAULT_ADDON_SDR, useSdrDeposit } from "./AddonSdrControl";
+import AddonSdrControl, { DEFAULT_ADDON_SDR, toAddonSdr, useSdrDeposit } from "./AddonSdrControl";
+import { commonPrice, commonSdr, commonTax } from "@/src/utils/addonGroup";
 
 const PRIMARY = "#DC3173";
 
@@ -60,6 +61,14 @@ export default function AddOptionsForm({
 }: IProps) {
   const router = useRouter();
   const { lang } = useStore();
+  // A new extra starts like the group's others when they all share a price,
+  // VAT and SDR (plan.md §11, X9).
+  const groupOptions = (selectedGroup?.options ?? []).map((option) => ({
+    price: Number(option.price),
+    tax: typeof option.tax === "string" ? option.tax : option.tax?._id ?? "",
+    sdr: option.sdr,
+  }));
+  const groupSdr = commonSdr(groupOptions);
   const form = useForm<TAddonOptionForm>({
     resolver: zodResolver(createAddonOptionValidationSchema),
     values: {
@@ -69,9 +78,9 @@ export default function AddOptionsForm({
       },
       // Empty, not 0: the vendor types the price from scratch, and an empty
       // box is "required", not a silent €0.
-      price: undefined as unknown as number,
-      tax: "",
-      sdr: DEFAULT_ADDON_SDR,
+      price: commonPrice(groupOptions) as number,
+      tax: commonTax(groupOptions),
+      sdr: groupSdr === undefined ? DEFAULT_ADDON_SDR : toAddonSdr(groupSdr),
       currentLang: lang
     },
   });

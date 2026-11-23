@@ -6,9 +6,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { CheckCircle, Dot, Edit, Plus, Trash2 } from "lucide-react";
+import { CheckCircle, Copy, Dot, Edit, Plus, Trash2 } from "lucide-react";
 
 import AddOptionsForm from "@/src/components/Dashboard/AddOns/AddOptionsForm";
+import CloneAddonGroupDialog from "@/src/components/Dashboard/AddOns/CloneAddonGroupDialog";
 import CreateOrEditAddOnsGroup from "@/src/components/Dashboard/AddOns/CreateOrEditAddOnsGroup";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
@@ -29,9 +30,11 @@ const SHADOW =
 interface IProps {
   addOnsResult: { data: TAddonGroup[]; meta?: TMeta };
   taxes: TTax[];
+  /** Every group of the vendor (all pages), for the duplicate-title check. */
+  allGroups: TAddonGroup[];
 }
 
-export default function AddOns({ addOnsResult, taxes }: IProps) {
+export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
   const { t } = useTranslation();
   const { lang } = useStore();
   const router = useRouter();
@@ -51,6 +54,9 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [openCreateForm, setOpenCreateForm] = useState<boolean>(false);
+  // Bumped on every "Add Group" so the sheet opens with an empty form.
+  const [createKey, setCreateKey] = useState(0);
+  const [groupToClone, setGroupToClone] = useState<TAddonGroup | undefined>(undefined);
   const [selectedGroupForAddOption, setSelectedGroupForAddOption] = useState<
     TAddonGroup | undefined
   >(undefined);
@@ -90,13 +96,18 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
           buttonInfo={{
             text: t("add_group"),
             icon: Plus,
-            onClick: () => setOpenCreateForm(true),
+            onClick: () => {
+              setCreateKey((key) => key + 1);
+              setOpenCreateForm(true);
+            },
           }}
         />
         <CreateOrEditAddOnsGroup
+          key={`create-${createKey}`}
           open={openCreateForm}
           onOpenChange={(open) => !open && setOpenCreateForm(false)}
           taxes={taxes}
+          allGroups={allGroups}
           t={t}
         />
 
@@ -179,6 +190,16 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                           <Edit size={16} /> {t("edit")}
                         </Button>
 
+                        {/* CLONE */}
+                        <Button
+                          onClick={() => setGroupToClone(group)}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-1"
+                        >
+                          <Copy size={16} /> {t("addon_clone")}
+                        </Button>
+
                         {/* DELETE */}
                         {/* <Button
                           variant="destructive"
@@ -226,7 +247,7 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
                               </span>
                               {option.tax && (
                                 <span className="text-xs text-slate-800">
-                                  {t("tax")}: {(option.tax as TTax)?.taxRate}%)
+                                  {t("tax")}: {(option.tax as TTax)?.taxRate}%
                                 </span>
                               )}
                               <CheckCircle
@@ -291,11 +312,22 @@ export default function AddOns({ addOnsResult, taxes }: IProps) {
 
       {/* Edit AddOns Group */}
       <CreateOrEditAddOnsGroup
+        key={`edit-${selectedGroupForEdit?._id ?? "none"}`}
         open={!!selectedGroupForEdit}
         onOpenChange={(open) => !open && setSelectedGroupForEdit(undefined)}
         prevValues={selectedGroupForEdit}
         taxes={taxes}
+        allGroups={allGroups}
         actionType="edit"
+        t={t}
+      />
+
+      {/* Clone a group (plan.md §11) */}
+      <CloneAddonGroupDialog
+        key={`clone-${groupToClone?._id ?? "none"}`}
+        group={groupToClone}
+        onClose={() => setGroupToClone(undefined)}
+        allGroups={allGroups}
         t={t}
       />
     </>

@@ -28,6 +28,9 @@ export default async function AddOnsPage({ searchParams }: IProps) {
 
   let taxData = [] as TTax[];
   const addOnsData: { data: TAddonGroup[]; meta?: TMeta } = { data: [] };
+  // Every group, whatever the page or search: the form refuses a title the
+  // vendor already uses, and Clone checks the copy's title (plan.md §11).
+  let allGroups: TAddonGroup[] = [];
 
   try {
     const taxResult = (await serverRequest.get("/taxes"));
@@ -47,10 +50,15 @@ export default async function AddOnsPage({ searchParams }: IProps) {
       addOnsData.data = addonsResult.data || [];
       addOnsData.meta = addonsResult.meta;
     }
+
+    const allResult = (await serverRequest.get("/add-ons", {
+      params: { limit: 200 },
+    })) as TResponse<TAddonGroup[]>;
+    if (allResult?.success) allGroups = allResult.data || [];
   } catch (err) {
     console.log("Server fetch error:", err);
     if (isRedirectError(err)) throw err;
   }
 
-  return <AddOns addOnsResult={addOnsData} taxes={taxData} />;
+  return <AddOns addOnsResult={addOnsData} taxes={taxData} allGroups={allGroups} />;
 }

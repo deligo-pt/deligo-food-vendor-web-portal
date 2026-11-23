@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import AddonGroupOrder from "./AddonGroupOrder";
 import {
   Form,
   FormControl,
@@ -46,7 +47,6 @@ import {
   SaveIcon,
   StarIcon,
   TagIcon,
-  XIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -262,13 +262,6 @@ export function EditProductForm({
       const newAddonGroups = [...form?.getValues("addonGroups"), id];
       form.setValue("addonGroups", newAddonGroups);
     }
-  };
-
-  const removeAddon = (idToRemove: string) => {
-    const newAddonGroups = form
-      ?.getValues("addonGroups")
-      ?.filter((id) => id !== idToRemove);
-    form.setValue("addonGroups", newAddonGroups);
   };
 
   const onSubmit = async (data: FormData) => {
@@ -541,7 +534,8 @@ export function EditProductForm({
   };
 
   useEffect(() => {
-    (() => getAddonsGroups({ limit: 10 }))();
+    // All of the store's groups: with 10, an 11th group could not be picked.
+    (() => getAddonsGroups({ limit: 200 }))();
     // Only when the page didn't hand them in (see `productCategories`).
     if (!productCategories?.length) (() => getProductCategories())();
     (() => getTaxes({ limit: 10 }))();
@@ -697,44 +691,21 @@ export function EditProductForm({
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         {t("add_ons")}
                       </label>
-                      {watchAddons?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-1">
-                          {watchAddons?.map((id) => (
-                            <motion.div
-                              key={id}
-                              initial={{
-                                scale: 0,
-                              }}
-                              animate={{
-                                scale: 1,
-                              }}
-                              className="flex items-center bg-[#DC3173] bg-opacity-10 text-white px-3 py-1 rounded-full"
-                            >
-                              <span>
-                                {
-                                  addonGroupsData?.data?.find(
-                                    (group) => group._id === id,
-                                  )?.title?.[lang]
-                                }
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => removeAddon(id)}
-                                className="ml-2 text-white hover:text-[#CCC]"
-                              >
-                                <XIcon className="h-4 w-4" />
-                              </button>
-                            </motion.div>
-                          ))}
-                        </div>
-                      )}
+                      {/* Picked Extra groups, in the order customers see them (plan.md §11.6). */}
+                      <AddonGroupOrder
+                        ids={watchAddons ?? []}
+                        groups={addonGroupsData?.data}
+                        lang={lang as "en" | "pt"}
+                        onChange={(ids) => form.setValue("addonGroups", ids, { shouldDirty: true })}
+                        t={t}
+                      />
                       <FormField
                         control={form.control}
                         name="addonGroups"
                         render={({ fieldState }) => (
                           <FormItem className="gap-1">
                             <FormControl>
-                              <Select onValueChange={(val) => addAddon(val)}>
+                              <Select value="" onValueChange={(val) => addAddon(val)}>
                                 <SelectTrigger
                                   className={cn(
                                     "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-0! foce focus:border-[#DC3173]! outline-none inset-0 h-10!",
