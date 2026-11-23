@@ -9,7 +9,8 @@ import {
 } from "./translateWith";
 import { reviewTranslations } from "./translationReview";
 
-async function requestTranslations(request: TranslationRequest): Promise<TranslationReply> {
+/** One call to `/api/translate`; never throws. Also used by the import's batch translator. */
+export async function requestTranslations(request: TranslationRequest): Promise<TranslationReply> {
     try {
         const response = await fetch("/api/translate", {
             method: "POST",

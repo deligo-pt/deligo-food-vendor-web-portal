@@ -59,7 +59,8 @@ import PricingForm from "./PricingForm";
 import StockInformationForm from "./StockInformationForm";
 import AddVariationForm from "./VariationManagement/AddVariationForm";
 import AddVaritionOptionForm from "./VariationManagement/AddVaritionOptionForm";
-import DeligoMetadata from "./DeligoMetadata";
+import DeligoMetadata, { type TTwoForOneInfo } from "./DeligoMetadata";
+import { createTwoForOneReq, getTwoForOneStateReq, removeTwoForOneReq } from "@/src/services/dashboard/offers/offers";
 import TitleHeader from "../../TitleHeader/TitleHeader";
 
 type FormData = z.infer<typeof productValidation>;
@@ -190,11 +191,42 @@ export function EditProductForm({
       isFeatured: prevData?.meta?.isFeatured || false,
       sdrApplicable: prevData?.sdr?.applicable === true,
       isAvailableForPreOrder: prevData?.meta?.isAvailableForPreOrder || false,
+      // Set from the product's offers once they are read (below).
+      isTwoForOne: false,
       isActive: prevData?.meta?.status === "ACTIVE" ? true : false,
       businessTypeSlug,
       currentLang: lang
     },
   });
+
+  /* ----- 2×1 (§10.2): read from the store's offers, changed on save ----- */
+  const [twoForOneInfo, setTwoForOneInfo] = useState<TTwoForOneInfo>({ status: "loading" });
+  /** The product's own 2×1 offer when the form opened; null when it had none. */
+  const [twoForOneOfferId, setTwoForOneOfferId] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    if (!prevData?._id) return;
+    getTwoForOneStateReq(prevData._id).then((found) => {
+      if (cancelled) return;
+      if (!found) {
+        setTwoForOneInfo({ status: "unknown" });
+        return;
+      }
+      if (found.state === "locked") {
+        setTwoForOneInfo({ status: "locked", reason: found.reason, title: found.title });
+        form.setValue("isTwoForOne", true);
+        return;
+      }
+      setTwoForOneOfferId(found.state === "on" ? found.offerId : null);
+      form.setValue("isTwoForOne", found.state === "on");
+      setTwoForOneInfo({ status: "ready" });
+    });
+    return () => {
+      cancelled = true;
+    };
+    // Once per product opened.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prevData?._id]);
 
   const [tabError, setTabError] = useState(
     tabs.reduce(
@@ -379,8 +411,37 @@ export function EditProductForm({
     // price check
     const priceChanged = hasChanged(data.price, prevData?.pricing?.price || 0);
 
+    // 2×1: only when the offers were read and the switch really moved.
+    const twoForOneChanged =
+      twoForOneInfo.status === "ready" && (data.isTwoForOne === true) !== Boolean(twoForOneOfferId);
+    const syncTwoForOne = async () => {
+      if (!twoForOneChanged) return;
+      if (data.isTwoForOne) {
+        const name = (productData.name ?? prevData?.name ?? {}) as { en?: string; pt?: string };
+        const res = await createTwoForOneReq(prevData._id, { en: name.en || name.pt || "", pt: name.pt || name.en || "" });
+        if (res.success) toast.success(t("two_for_one_created"));
+        else toast.warning(t("two_for_one_create_failed").replace("{reason}", res.message || ""), { duration: 10000 });
+      } else if (twoForOneOfferId) {
+        const res = await removeTwoForOneReq(twoForOneOfferId);
+        if (res.success) toast.success(t("two_for_one_removed"));
+        else toast.warning(t("two_for_one_remove_failed").replace("{reason}", res.message || ""), { duration: 10000 });
+      }
+    };
+
     // final validation
     const hasAnyChange = Object.keys(productData).length > 0 || priceChanged;
+
+    if (!hasAnyChange && twoForOneChanged) {
+      // Only the 2×1 switch moved: nothing to send for the product itself.
+      toast.dismiss(toastId);
+      await syncTwoForOne();
+      setActiveTab(0);
+      setTabError({});
+      router.refresh();
+      closeModal();
+      setIsSubmitting(false);
+      return;
+    }
 
     if (!hasAnyChange) {
       // The picture was deleted through the uploader, which already called the
@@ -410,6 +471,7 @@ export function EditProductForm({
     });
 
     if (result.success) {
+      await syncTwoForOne();
       if (
         (result?.data?.variations?.length === 0 || !result?.data?.variations) &&
         priceChanged
@@ -833,6 +895,7 @@ export function EditProductForm({
                 {activeTab === lastTabIndex && (
                   <DeligoMetadata
                     form={form}
+                    twoForOne={twoForOneInfo}
                   />
                 )}
                 <div className="flex justify-between pt-6">
