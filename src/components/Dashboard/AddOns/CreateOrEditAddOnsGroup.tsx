@@ -4,7 +4,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { PencilIcon, XIcon } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+import { ArrowDown, ArrowUp, CupSoda, PencilIcon, UtensilsCrossed, XIcon } from "lucide-react";
 
 import {
   Form,
@@ -38,8 +40,19 @@ import { createAddonGroupValidationSchema } from "@/src/validations/addons/addOn
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  commonPrice,
+  commonSdr,
+  commonTax,
+  kindOfOptions,
+  sortByName,
+  titleTaken,
+  withKind,
+  withPrice,
+} from "@/src/utils/addonGroup";
+import { KIND_SETTINGS, kindOfRate, taxIdForRate, type TProductKind } from "@/src/utils/productKind";
 import PriceInput from "@/src/components/PriceInput/PriceInput";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { useStore } from "@/src/store/store";
@@ -57,7 +70,11 @@ interface IProps {
   taxes: TTax[];
   actionType?: "create" | "edit";
   t: (key: string) => string;
+  /** Every group of the vendor, for the duplicate-title check. */
+  allGroups?: TAddonGroup[];
 }
+
+const taxIdOf = (tax: TTax | string | undefined) => (typeof tax === "string" ? tax : tax?._id ?? "");
 
 export default function CreateOrEditAddOnsGroup({
   open,
@@ -66,6 +83,7 @@ export default function CreateOrEditAddOnsGroup({
   taxes,
   t,
   actionType = "create",
+  allGroups = [],
 }: IProps) {
   const { lang } = useStore();
   const form = useForm<TAddonGroupForm>({
@@ -95,19 +113,72 @@ export default function CreateOrEditAddOnsGroup({
   });
   const { formState: { isSubmitting } } = form;
 
+  // What the saved options share, so Edit opens with the group price, the
+  // kind and the "new option" box already filled. The parent remounts this
+  // sheet per group (`key`), so these start fresh each time.
+  const prevOptions = (prevValues?.options ?? []).map((option) => ({
+    price: Number(option.price),
+    tax: taxIdOf(option.tax),
+    sdr: option.sdr,
+  }));
+  const startPrice = commonPrice(prevOptions);
+  const startSdr = commonSdr(prevOptions);
+
+  // The price for the whole group (plan.md §11): typing it sets every option.
+  const [groupPrice, setGroupPrice] = useState<number | undefined>(startPrice);
+  const [sortAz, setSortAz] = useState(false);
+
   const [optionName, setOptionName] = useState("");
   // `undefined` until something is typed; 0 is a real price (a free option).
-  const [optionPrice, setOptionPrice] = useState<number | undefined>(undefined);
-  const [optionTax, setOptionTax] = useState("");
-  const [optionSdr, setOptionSdr] = useState<TAddonOptionSdr>(DEFAULT_ADDON_SDR);
+  const [optionPrice, setOptionPrice] = useState<number | undefined>(startPrice);
+  const [optionTax, setOptionTax] = useState(commonTax(prevOptions));
+  const [optionSdr, setOptionSdr] = useState<TAddonOptionSdr>(
+    startSdr === undefined ? DEFAULT_ADDON_SDR : toAddonSdr(startSdr),
+  );
   const deposit = useSdrDeposit(open);
 
   const router = useRouter();
 
-  const { fields: optionsFields, append, remove, update } = useFieldArray({
+  const { fields: optionsFields, append, remove, update, replace, move } = useFieldArray({
     control: form.control,
     name: "options",
   })
+
+  const watchedOptions = useWatch({ control: form.control, name: "options" }) ?? [];
+  const watchedTitle = useWatch({ control: form.control, name: `title.${lang}` }) ?? "";
+  const titleIsTaken = titleTaken(allGroups, watchedTitle, prevValues?._id);
+
+  // Food | Drinks: lit when every option has that kind's VAT; with no
+  // options yet, from the "new option" box.
+  const optionTaxRate = taxes.find((tax) => tax._id === optionTax)?.taxRate;
+  const currentKind = watchedOptions.length
+    ? kindOfOptions(watchedOptions, taxes)
+    : kindOfRate(optionTaxRate === undefined ? null : Number(optionTaxRate));
+  const missingRate = (kind: TProductKind) => !taxIdForRate(taxes, KIND_SETTINGS[kind].rate);
+
+  const pickKind = (kind: TProductKind) => {
+    const taxId = taxIdForRate(taxes, KIND_SETTINGS[kind].rate);
+    if (!taxId) return;
+    setEditingIndex(null);
+    replace(withKind(form.getValues("options"), kind, taxes));
+    setOptionTax(taxId);
+    setOptionSdr(toAddonSdr(KIND_SETTINGS[kind].sdr));
+  };
+
+  const changeGroupPrice = (price: number | undefined) => {
+    setGroupPrice(price);
+    if (price === undefined) return;
+    setEditingIndex(null);
+    replace(withPrice(form.getValues("options"), price));
+    setOptionPrice(price);
+  };
+
+  const toggleSort = (checked: boolean) => {
+    setSortAz(checked);
+    if (!checked) return;
+    setEditingIndex(null);
+    replace(sortByName(form.getValues("options"), lang));
+  };
 
   // The option being edited in place, by position, and its draft. Saving the
   // group sends it with its `sku`, which the API updates rather than copies.
@@ -154,7 +225,7 @@ export default function CreateOrEditAddOnsGroup({
       optionPrice >= 0 &&
       optionTax !== ""
     ) {
-      append({
+      const added = {
         name: {
           en: lang === "en" ? optionName.trim() : "",
           pt: lang === "pt" ? optionName.trim() : "",
@@ -162,21 +233,33 @@ export default function CreateOrEditAddOnsGroup({
         price: Number(optionPrice),
         tax: optionTax,
         sdr: optionSdr,
-      });
+      };
+      if (sortAz) {
+        setEditingIndex(null);
+        replace(sortByName([...form.getValues("options"), added], lang));
+      } else {
+        append(added);
+      }
 
+      // The next option starts like this one: usually every extra in a group
+      // has the same price, VAT and SDR.
       setOptionName("");
-      setOptionPrice(undefined);
-      setOptionTax("");
-      setOptionSdr(DEFAULT_ADDON_SDR);
+      setOptionPrice(groupPrice);
     }
   };
 
 
   const handleAddOrEditGroup = async (data: TAddonGroupForm) => {
     if (isSubmitting) return;
+    if (titleTaken(allGroups, data.title?.[lang] ?? "", prevValues?._id)) {
+      toast.error(t("addon_title_taken"));
+      return;
+    }
     const payload = {
       title: data.title,
-      options: data.options,
+      // A→Z when asked. Only a new group keeps this order: the API doesn't
+      // reorder an existing one (plan.md §11.1).
+      options: sortAz ? sortByName(data.options, lang) : data.options,
       maxSelectable: data.maxSelectable,
       minSelectable: data.minSelectable
     };
@@ -340,6 +423,11 @@ export default function CreateOrEditAddOnsGroup({
                 </FormItem>
               )}
             />}
+            {titleIsTaken && (
+              <p role="alert" className="-mt-2 text-sm text-destructive" data-testid="addon-title-taken">
+                {t("addon_title_taken")}
+              </p>
+            )}
 
             <FormField
               control={form.control}
@@ -381,8 +469,80 @@ export default function CreateOrEditAddOnsGroup({
               )}
             />
 
+            {/* One price for the whole group (0 = all free). */}
+            <div className="space-y-1">
+              <label htmlFor="addon-group-price" className="text-sm font-medium">
+                {t("addon_group_price")}
+              </label>
+              <PriceInput
+                id="addon-group-price"
+                value={groupPrice}
+                onValueChange={changeGroupPrice}
+                placeholder="0.00"
+              />
+              <p className="text-xs text-gray-500">{t("addon_group_price_help")}</p>
+            </div>
+
+            {/* Food | Drinks: VAT and SDR for every option. */}
+            <fieldset className="space-y-2">
+              <legend className="mb-2 text-sm font-medium">{t("product_kind_label")}</legend>
+              <div className="inline-flex rounded-xl border border-gray-200 bg-white p-1" role="radiogroup" aria-label={t("product_kind_label")}>
+                {(["FOOD", "DRINK"] as const).map((kind) => {
+                  const Icon = kind === "FOOD" ? UtensilsCrossed : CupSoda;
+                  const selected = currentKind === kind;
+                  return (
+                    <button
+                      key={kind}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      disabled={missingRate(kind)}
+                      onClick={() => pickKind(kind)}
+                      className={cn(
+                        "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                        selected ? "bg-[#DC3173] text-white" : "text-gray-600 hover:bg-gray-50",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" aria-hidden />
+                      {t(kind === "FOOD" ? "product_kind_food" : "product_kind_drink")}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-gray-500">{t("addon_kind_help")}</p>
+              {(["FOOD", "DRINK"] as const).filter(missingRate).map((kind) => (
+                <p key={kind} className="text-xs text-amber-700">
+                  {t("product_kind_missing_rate").replace("{rate}", String(KIND_SETTINGS[kind].rate))}
+                </p>
+              ))}
+            </fieldset>
+
             <div className="space-y-2 ">
-              <label className="block mb-1">{t("options")}</label>
+              {/* The title stays in view while scrolling a long list of
+                  options — the sheet itself is what scrolls (p-6). */}
+              <div
+                className="sticky -top-6 z-10 -mx-6 border-y border-gray-100 bg-white/95 px-6 py-2 backdrop-blur"
+                data-testid="addon-options-for"
+              >
+                <p className="text-xs text-gray-500">{t("addon_options_for")}</p>
+                <p className="truncate font-semibold text-gray-900">
+                  {watchedTitle.trim() || <span className="font-normal italic text-gray-400">{t("addon_no_title_yet")}</span>}
+                  <span className="ml-1 font-normal text-gray-400">({optionsFields.length})</span>
+                </p>
+              </div>
+              <label className="flex cursor-pointer items-start gap-2 py-1">
+                <Checkbox
+                  checked={sortAz}
+                  onCheckedChange={(checked) => toggleSort(checked === true)}
+                  className="mt-0.5 data-[state=checked]:border-[#DC3173] data-[state=checked]:bg-[#DC3173]"
+                />
+                <span className="space-y-0.5">
+                  <span className="block text-sm font-medium">{t("addon_sort_az")}</span>
+                  <span className="block text-xs text-gray-500">
+                    {t(actionType === "create" ? "addon_sort_az_help_create" : "addon_sort_az_help_edit")}
+                  </span>
+                </span>
+              </label>
               {optionsFields?.length > 0 && (
                 <div className="space-y-2 mb-1">
                   {optionsFields?.map((option, index) => {
@@ -469,6 +629,41 @@ export default function CreateOrEditAddOnsGroup({
                             </p>
                           </div>
                           <div className="flex shrink-0 items-center gap-1">
+                          {/* Arrange by hand — only when creating: the API keeps
+                              the order sent on create, but an update doesn't
+                              reorder (plan.md §11.7). Moving one turns A→Z off. */}
+                          {actionType === "create" && (
+                            <>
+                              <button
+                                type="button"
+                                disabled={index === 0}
+                                onClick={() => {
+                                  setEditingIndex(null);
+                                  setSortAz(false);
+                                  move(index, index - 1);
+                                }}
+                                aria-label={`${t("addon_order_up")}: ${option.name?.[lang] ?? ""}`}
+                                title={t("addon_order_up")}
+                                className="rounded p-0.5 text-gray-400 hover:bg-[#DC3173]/10 hover:text-[#DC3173] disabled:pointer-events-none disabled:opacity-30"
+                              >
+                                <ArrowUp className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={index === optionsFields.length - 1}
+                                onClick={() => {
+                                  setEditingIndex(null);
+                                  setSortAz(false);
+                                  move(index, index + 1);
+                                }}
+                                aria-label={`${t("addon_order_down")}: ${option.name?.[lang] ?? ""}`}
+                                title={t("addon_order_down")}
+                                className="rounded p-0.5 text-gray-400 hover:bg-[#DC3173]/10 hover:text-[#DC3173] disabled:pointer-events-none disabled:opacity-30"
+                              >
+                                <ArrowDown className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
                           <button
                             type="button"
                             onClick={() => startEdit(index)}
@@ -610,7 +805,7 @@ export default function CreateOrEditAddOnsGroup({
                 form="creatAddOnsForm"
                 // An option still open for editing must be saved or cancelled
                 // first, or its changes would be silently left out.
-                disabled={isSubmitting || editingIndex !== null}
+                disabled={isSubmitting || editingIndex !== null || titleIsTaken}
               >
                 {actionType === "create" ? t("create") : t("update")}
               </Button>

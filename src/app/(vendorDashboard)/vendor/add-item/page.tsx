@@ -14,9 +14,10 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 export default async function AddItemPage() {
   // const {data} = await getAllMenus();
 
+  // All of the store's groups — the API gives 10 without a limit.
   const loadAddons = async (): Promise<TAddonGroup[]> => {
     try {
-      const result = (await serverRequest.get("/add-ons")) as TResponse<
+      const result = (await serverRequest.get("/add-ons?limit=200")) as TResponse<
         TAddonGroup[]
       >;
 

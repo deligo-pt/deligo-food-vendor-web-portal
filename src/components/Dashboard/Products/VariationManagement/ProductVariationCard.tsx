@@ -2,6 +2,7 @@
 
 import AddVariationForm from "@/src/components/Dashboard/Products/VariationManagement/AddVariationForm";
 import AddVaritionOptionForm from "@/src/components/Dashboard/Products/VariationManagement/AddVaritionOptionForm";
+import CloneVariationsDialog from "@/src/components/Dashboard/Products/VariationManagement/CloneVariationsDialog";
 import VariationDeleteButton from "@/src/components/Dashboard/Products/VariationManagement/VariationDeleteButton";
 import VariationInlineEdit from "@/src/components/Dashboard/Products/VariationManagement/VariationInlineEdit";
 import VariationOptionRow from "@/src/components/Dashboard/Products/VariationManagement/VariationOptionRow";
@@ -18,6 +19,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircleIcon,
   ChevronDownIcon,
+  CopyIcon,
   LayersIcon,
   PlusIcon,
   TagIcon,
@@ -40,6 +42,7 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAddVariation, setShowAddVariation] = useState(false);
+  const [showClone, setShowClone] = useState(false);
   const [addingOptionFor, setAddingOptionFor] = useState<LocalizedType>({});
 
   const variationCount = product?.variations?.length || 0;
@@ -197,6 +200,19 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
           {/* One variation group per product (23 Oct 2026): a product that has
               one adds options to it instead. Products saved earlier with
               several groups keep them. */}
+          {/* Copy these variations to other products (plan.md §11, E4). */}
+          {variationCount > 0 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowClone(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#DC3173] bg-[#DC3173]/10 rounded-lg hover:bg-[#DC3173]/30 transition-colors"
+            >
+              <CopyIcon size={14} />
+              {t("variation_clone")}
+            </button>
+          )}
           {variationCount === 0 && (
             <button
               onClick={(e) => {
@@ -420,6 +436,10 @@ export default function ProductVariationCard({ product, businessTypeSlug, t }: I
           </motion.div>
         )}
       </AnimatePresence>
+
+      {showClone && (
+        <CloneVariationsDialog source={product} onClose={() => setShowClone(false)} t={t} />
+      )}
     </motion.div>
   );
 }
