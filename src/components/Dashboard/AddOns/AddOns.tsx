@@ -147,6 +147,12 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
                     <div className="flex flex-wrap items-center justify-between gap-3 p-5 border-b">
                       <div className="min-w-0">
                         <h2 className="text-xl font-bold wrap-anywhere">{group.title?.[lang]}</h2>
+                        {/* The optional name, when the group has one. */}
+                        {(group.name?.[lang] || group.name?.en || group.name?.pt) && (
+                          <p className="text-sm font-medium text-gray-500 wrap-anywhere" data-testid="addon-group-name">
+                            {group.name?.[lang] || group.name?.en || group.name?.pt}
+                          </p>
+                        )}
 
                         <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
                           <span>{t("min")}:</span>
