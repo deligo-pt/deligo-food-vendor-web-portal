@@ -46,6 +46,7 @@ import {
   commonTax,
   kindOfOptions,
   sortByName,
+  presentText,
   titleTaken,
   withKind,
   withPrice,
@@ -92,6 +93,10 @@ export default function CreateOrEditAddOnsGroup({
       title: {
         en: prevValues?.title?.en || "",
         pt: prevValues?.title?.pt || ""
+      },
+      name: {
+        en: prevValues?.name?.en || "",
+        pt: prevValues?.name?.pt || ""
       },
       minSelectable: prevValues?.minSelectable || 0,
       maxSelectable: prevValues?.maxSelectable || 1,
@@ -255,8 +260,18 @@ export default function CreateOrEditAddOnsGroup({
       toast.error(t("addon_title_taken"));
       return;
     }
+    // The optional name: once saved it can be changed but not removed (the
+    // API rejects "" and null), so an emptied box is stopped here rather
+    // than silently keeping the old name.
+    const typedName = data.name?.[lang]?.trim() ?? "";
+    if (!typedName && presentText(prevValues?.name)) {
+      form.setError(`name.${lang}`, { message: t("addon_group_name_keep") });
+      return;
+    }
     const payload = {
       title: data.title,
+      // Sent only with text in it; translated with the title below.
+      ...(typedName ? { name: data.name } : {}),
       // A→Z when asked. Only a new group keeps this order: the API doesn't
       // reorder an existing one (plan.md §11.1).
       options: sortAz ? sortByName(data.options, lang) : data.options,
@@ -278,7 +293,10 @@ export default function CreateOrEditAddOnsGroup({
         const addonsPayload = {
           ...payload,
           title: translated.title,
-          options: translated.options
+          options: translated.options,
+          // Empty languages left out ("" is refused; a missing one keeps the
+          // server's); undefined when there is no name, so not sent at all.
+          name: presentText(translated.name),
         };
 
         const result = await createAddOnsGroup(addonsPayload);
@@ -316,7 +334,10 @@ export default function CreateOrEditAddOnsGroup({
         const addonsPayload = {
           ...payload,
           title: translated.title,
-          options: translated.options
+          options: translated.options,
+          // Empty languages left out ("" is refused; a missing one keeps the
+          // server's); undefined when there is no name, so not sent at all.
+          name: presentText(translated.name),
         };
 
         const result = await updateAddOnsGroup(
@@ -428,6 +449,36 @@ export default function CreateOrEditAddOnsGroup({
                 {t("addon_title_taken")}
               </p>
             )}
+
+            {/* Optional group name (backend 24 Nov 2026), under the title. */}
+            {lang === 'en' && <FormField
+              control={form.control}
+              name="name.en"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("addon_group_name")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("addon_group_name_placeholder")} {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">{t("addon_group_name_hint")}</p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />}
+            {lang === 'pt' && <FormField
+              control={form.control}
+              name="name.pt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("addon_group_name")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("addon_group_name_placeholder")} {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">{t("addon_group_name_hint")}</p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />}
 
             <FormField
               control={form.control}

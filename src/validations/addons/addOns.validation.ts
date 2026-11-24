@@ -40,6 +40,8 @@ export const createAddonOptionValidationSchema = z.object({
 export const createAddonGroupValidationSchema = z.object({
 
   title: localizedTextSchema,
+  // Optional (24 Nov 2026); see presentText for what is sent.
+  name: localizedTextSchema.optional(),
 
   minSelectable: z
     .number("Minimum selection must be a number")
