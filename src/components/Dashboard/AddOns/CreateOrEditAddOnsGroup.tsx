@@ -69,7 +69,8 @@ interface IProps {
   onOpenChange: (open: boolean) => void;
   prevValues?: TAddonGroup;
   taxes: TTax[];
-  actionType?: "create" | "edit";
+  /** clone → the create form, filled from `prevValues` (a new title is needed). */
+  actionType?: "create" | "edit" | "clone";
   t: (key: string) => string;
   /** Every group of the vendor, for the duplicate-title check. */
   allGroups?: TAddonGroup[];
@@ -87,6 +88,7 @@ export default function CreateOrEditAddOnsGroup({
   allGroups = [],
 }: IProps) {
   const { lang } = useStore();
+  const isEdit = actionType === "edit";
   const form = useForm<TAddonGroupForm>({
     resolver: zodResolver(createAddonGroupValidationSchema),
     values: {
@@ -108,8 +110,9 @@ export default function CreateOrEditAddOnsGroup({
           },
           price: option.price,
           tax: (option.tax as TTax)?._id,
-          // Kept so saving updates this option instead of adding a copy.
-          sku: option.sku,
+          // Kept so saving updates this option instead of adding a copy;
+          // a clone saves them as new options, so no sku.
+          ...(isEdit ? { sku: option.sku } : {}),
           sdr: toAddonSdr(!!option.sdr?.applicable),
         })) || [],
 
@@ -151,7 +154,7 @@ export default function CreateOrEditAddOnsGroup({
 
   const watchedOptions = useWatch({ control: form.control, name: "options" }) ?? [];
   const watchedTitle = useWatch({ control: form.control, name: `title.${lang}` }) ?? "";
-  const titleIsTaken = titleTaken(allGroups, watchedTitle, prevValues?._id);
+  const titleIsTaken = titleTaken(allGroups, watchedTitle, isEdit ? prevValues?._id : undefined);
 
   // Food | Drinks: lit when every option has that kind's VAT; with no
   // options yet, from the "new option" box.
@@ -256,7 +259,7 @@ export default function CreateOrEditAddOnsGroup({
 
   const handleAddOrEditGroup = async (data: TAddonGroupForm) => {
     if (isSubmitting) return;
-    if (titleTaken(allGroups, data.title?.[lang] ?? "", prevValues?._id)) {
+    if (titleTaken(allGroups, data.title?.[lang] ?? "", isEdit ? prevValues?._id : undefined)) {
       toast.error(t("addon_title_taken"));
       return;
     }
@@ -264,7 +267,7 @@ export default function CreateOrEditAddOnsGroup({
     // API rejects "" and null), so an emptied box is stopped here rather
     // than silently keeping the old name.
     const typedName = data.name?.[lang]?.trim() ?? "";
-    if (!typedName && presentText(prevValues?.name)) {
+    if (isEdit && !typedName && presentText(prevValues?.name)) {
       form.setError(`name.${lang}`, { message: t("addon_group_name_keep") });
       return;
     }
@@ -280,7 +283,7 @@ export default function CreateOrEditAddOnsGroup({
     };
 
     try {
-      if (actionType === "create") {
+      if (!isEdit) {
         const toastId = toast.loading("Creating add-on group...");
         const translated = await translateObject(payload, lang);
 
@@ -408,7 +411,7 @@ export default function CreateOrEditAddOnsGroup({
       >
         <SheetHeader className="px-0">
           <SheetTitle>
-            {actionType === "create" ? t("create") : t("edit")} {t("addon_group")}
+            {actionType === "clone" ? t("addon_clone_title") : <>{actionType === "create" ? t("create") : t("edit")} {t("addon_group")}</>}
           </SheetTitle>
         </SheetHeader>
 
@@ -590,7 +593,7 @@ export default function CreateOrEditAddOnsGroup({
                 <span className="space-y-0.5">
                   <span className="block text-sm font-medium">{t("addon_sort_az")}</span>
                   <span className="block text-xs text-gray-500">
-                    {t(actionType === "create" ? "addon_sort_az_help_create" : "addon_sort_az_help_edit")}
+                    {t(!isEdit ? "addon_sort_az_help_create" : "addon_sort_az_help_edit")}
                   </span>
                 </span>
               </label>
@@ -683,7 +686,7 @@ export default function CreateOrEditAddOnsGroup({
                           {/* Arrange by hand — only when creating: the API keeps
                               the order sent on create, but an update doesn't
                               reorder (plan.md §11.7). Moving one turns A→Z off. */}
-                          {actionType === "create" && (
+                          {!isEdit && (
                             <>
                               <button
                                 type="button"
@@ -858,7 +861,7 @@ export default function CreateOrEditAddOnsGroup({
                 // first, or its changes would be silently left out.
                 disabled={isSubmitting || editingIndex !== null || titleIsTaken}
               >
-                {actionType === "create" ? t("create") : t("update")}
+                {actionType === "clone" ? t("addon_clone") : actionType === "create" ? t("create") : t("update")}
               </Button>
             </div>
           </form>
