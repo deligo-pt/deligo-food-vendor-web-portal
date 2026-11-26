@@ -16,7 +16,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { RefreshCcw, SlidersHorizontal, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useListNavigation } from "@/src/hooks/use-list-navigation";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 interface IProps {
   sortOptions: { label: string; value: string }[];
@@ -35,6 +35,11 @@ interface IProps {
     defaultValue?: string;
     isAllNeeded?: boolean;
   };
+  /** One line with the page's other controls: search, then sort and `trailing`.
+   *  On a phone search gets the line and sort + `trailing` share the next. */
+  compact?: boolean;
+  /** Shown after the sort box in the compact layout (e.g. a Select button). */
+  trailing?: ReactNode;
 }
 
 export default function AllFilters({
@@ -42,6 +47,8 @@ export default function AllFilters({
   filterOptions,
   searchPlaceholder,
   extraSelectFilter,
+  compact = false,
+  trailing,
 }: IProps) {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
@@ -106,12 +113,18 @@ export default function AllFilters({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-1"
+      className={compact ? "" : "mb-1"}
     >
-      <div className="flex flex-col lg:flex-row gap-4 items-start md:items-center justify-between">
-        <div className="flex flex-col lg:flex-row gap-2 w-full">
+      <div
+        className={
+          compact
+            ? "flex flex-wrap items-center gap-2"
+            : "flex flex-col lg:flex-row gap-4 items-start md:items-center justify-between"
+        }
+      >
+        <div className={compact ? "flex min-w-0 basis-full gap-2 sm:basis-56 sm:flex-1" : "flex flex-col lg:flex-row gap-2 w-full"}>
           {/* Search + Clear button */}
-          <div className="relative w-full lg:w-auto flex-1 max-w-xs">
+          <div className={compact ? "relative min-w-0 flex-1 sm:max-w-sm" : "relative w-full lg:w-auto flex-1 max-w-xs"}>
             <SearchFilter
               paramName="searchTerm"
               placeholder={
@@ -144,7 +157,7 @@ export default function AllFilters({
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+        <div className={compact ? "flex min-w-0 flex-1 items-center gap-2 sm:flex-none" : "flex flex-col sm:flex-row gap-3 w-full lg:w-auto"}>
           {filterOptions && (
             <Button
               variant="outline"
@@ -166,7 +179,7 @@ export default function AllFilters({
           )}
           {/* No options, no sort (a list the API keeps in a fixed order). */}
           {sortOptions.length > 0 && (
-            <div className="w-full lg:w-48">
+            <div className={compact ? "min-w-0 flex-1 sm:w-44 sm:flex-none" : "w-full lg:w-48"}>
               <SelectFilter
                 paramName="sortBy"
                 options={sortOptions}
@@ -174,11 +187,12 @@ export default function AllFilters({
               />
             </div>
           )}
+          {compact && trailing}
         </div>
       </div>
 
-      {/* Active filter badges */}
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      {/* Active filter badges (the compact line drops the box while there are none) */}
+      <div className={compact ? "mt-2 flex flex-wrap items-center gap-2 empty:hidden" : "mt-4 flex flex-wrap items-center gap-2"}>
         {filterOptions?.map((option, i) =>
           paramFilters[option.key]?.length > 0 ? (
             <Badge
