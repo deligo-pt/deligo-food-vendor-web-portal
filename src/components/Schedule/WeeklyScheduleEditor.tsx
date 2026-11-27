@@ -196,7 +196,7 @@ export default function WeeklyScheduleEditor({ value, onChange, errors = {}, dis
 
                       return (
                         <li key={p} className={cn(p > 0 && "border-t border-gray-100 pt-3")}>
-                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 gap-y-3 @min-[21rem]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_auto] @min-[21rem]:gap-x-1.5 @xl:grid-cols-[minmax(0,10rem)_auto_minmax(0,10rem)_auto_auto] @xl:justify-start @xl:gap-x-3">
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 gap-y-3 @min-[21rem]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] @min-[21rem]:gap-x-1.5 @xl:grid-cols-[minmax(0,10rem)_auto_minmax(0,10rem)_auto] @xl:justify-start @xl:gap-x-3">
                             <label className={cn("col-start-1 row-start-1 block min-w-0", ONE_ROW)}>
                               <span className="mb-1 block text-xs font-medium text-gray-500">{t("schedule_opens")}</span>
                               <input
@@ -218,52 +218,24 @@ export default function WeeklyScheduleEditor({ value, onChange, errors = {}, dis
 
                             <label className={cn("col-start-1 row-start-2 block min-w-0", ONE_ROW)}>
                               <span className="mb-1 block text-xs font-medium text-gray-500">{t("schedule_closes")}</span>
-                              {/* A time input can't hold 24:00: the moon button stands for it. */}
-                              {untilMidnight ? (
-                                <span
-                                  aria-label={`${slotLabel} ${t("schedule_closes")}`}
-                                  className={cn(timeBox, "flex items-center gap-2 border-indigo-200 bg-indigo-50 text-indigo-800")}
-                                >
-                                  <Moon className="h-4 w-4 shrink-0" />
-                                  24:00
-                                </span>
-                              ) : (
-                                <input
-                                  type="time"
-                                  step={60}
-                                  required
-                                  aria-label={`${slotLabel} ${t("schedule_closes")}`}
-                                  aria-invalid={!!closeError}
-                                  disabled={disabled}
-                                  value={period.close}
-                                  onChange={(e) => setPeriod(d, p, { close: e.target.value })}
-                                  className={cn(timeBox, closeError ? "border-red-400" : "border-gray-300")}
-                                />
-                              )}
+                              {/* No "until midnight" button any more: a saved 24:00 shows as
+                                  23:59 (a time input can't hold 24:00) and stays 24:00 until edited. */}
+                              <input
+                                type="time"
+                                step={60}
+                                required
+                                aria-label={`${slotLabel} ${t("schedule_closes")}`}
+                                aria-invalid={!!closeError}
+                                disabled={disabled}
+                                value={untilMidnight ? "23:59" : period.close}
+                                onChange={(e) => setPeriod(d, p, { close: e.target.value })}
+                                className={cn(timeBox, closeError ? "border-red-400" : "border-gray-300")}
+                              />
                             </label>
 
-                            {/* Read-only (locked): no greyed-out buttons; the purple
-                                24:00 box already shows "until midnight". */}
+                            {/* Read-only (locked): no greyed-out buttons. */}
                             {!disabled && (
                               <>
-                                <button
-                                  type="button"
-                                  aria-pressed={untilMidnight}
-                                  title={t("schedule_until_midnight")}
-                                  aria-label={`${t("schedule_until_midnight")} (${slotLabel})`}
-                                  onClick={() => setPeriod(d, p, { close: untilMidnight ? "23:00" : "24:00" })}
-                                  className={cn(
-                                    sideButton,
-                                    "col-start-2 row-start-2",
-                                    ONE_ROW,
-                                    untilMidnight
-                                      ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                                      : "border-gray-200 bg-white text-gray-500 hover:border-indigo-200 hover:text-indigo-700",
-                                  )}
-                                >
-                                  <Moon className="h-5 w-5" />
-                                </button>
-
                                 <button
                                   type="button"
                                   onClick={() => setDay(d, day.periods.filter((_, i) => i !== p))}

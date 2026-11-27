@@ -6,17 +6,17 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { CheckCircle, Copy, Dot, Edit, Plus, Trash2 } from "lucide-react";
+import { Copy, Dot, Edit, Plus, Trash2 } from "lucide-react";
 
 import AddOptionsForm from "@/src/components/Dashboard/AddOns/AddOptionsForm";
-import CloneAddonGroupDialog from "@/src/components/Dashboard/AddOns/CloneAddonGroupDialog";
 import CreateOrEditAddOnsGroup from "@/src/components/Dashboard/AddOns/CreateOrEditAddOnsGroup";
 import AllFilters from "@/src/components/Filtering/AllFilters";
 import PaginationComponent from "@/src/components/Filtering/PaginationComponent";
 import DeleteModal from "@/src/components/Modals/DeleteModal";
 import TitleHeader from "@/src/components/TitleHeader/TitleHeader";
 import { useTranslation } from "@/src/hooks/use-translation";
-import { deleteOptionFromGroup } from "@/src/services/dashboard/add-ons/add-ons";
+import { Switch } from "@/components/ui/switch";
+import { deleteOptionFromGroup, toggleOptionStatus, updateAddOnsGroup } from "@/src/services/dashboard/add-ons/add-ons";
 import { TMeta } from "@/src/types";
 import { TAddonGroup } from "@/src/types/add-ons.type";
 import { TTax } from "@/src/types/tax.type";
@@ -62,6 +62,34 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
   >(undefined);
 
   // const deleteGroup = (id: string) => {};
+
+  // Active / Inactive for a group (key: its id) or an option (key: its sku),
+  // shown at once. What was chosen here wins until the page reloads, so a
+  // list that comes back stale after the save can't flip the switch back.
+  const [chosen, setChosen] = useState<Record<string, boolean>>({});
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
+  /** Flip at once, save, and flip back with a message if saving fails. */
+  const saveStatus = async (
+    key: string,
+    isActive: boolean,
+    save: () => Promise<{ success: boolean; message?: string }>,
+  ) => {
+    setChosen((c) => ({ ...c, [key]: isActive }));
+    setSaving((s) => ({ ...s, [key]: true }));
+    try {
+      const result = await save();
+      if (!result.success) throw new Error(result.message);
+      router.refresh();
+    } catch (error) {
+      setChosen((c) => ({ ...c, [key]: !isActive }));
+      toast.error((error as Error)?.message || t("addon_status_failed"));
+    } finally {
+      setSaving((s) => ({ ...s, [key]: false }));
+    }
+  };
+  const groupActive = (group: TAddonGroup) => chosen[group._id] ?? group.isActive !== false;
+  const optionActive = (option: TAddonGroup["options"][number]) =>
+    (option.sku ? chosen[option.sku] : undefined) ?? option.isActive !== false;
 
   const handleDeleteOption = async () => {
     const toastId = toast.loading("Deleting option...");
@@ -141,12 +169,21 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
                   style={{ boxShadow: SHADOW }}
                 >
                   <CardContent className="p-0">
-                    {/* GROUP HEADER */}
-                    {/* Wraps on phones: the two buttons used to push past the
-                        edge at 360px. */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 p-5 border-b">
+                    {/* GROUP HEADER: title above the buttons on phones,
+                        side by side from sm. */}
+                    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5 border-b">
                       <div className="min-w-0">
-                        <h2 className="text-xl font-bold wrap-anywhere">{group.title?.[lang]}</h2>
+                        <h2 className="flex flex-wrap items-center gap-2 text-xl font-bold wrap-anywhere">
+                          {group.title?.[lang]}
+                          {!groupActive(group) && (
+                            <span
+                              className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-semibold text-gray-600"
+                              data-testid="addon-group-inactive"
+                            >
+                              {t("addon_inactive")}
+                            </span>
+                          )}
+                        </h2>
                         {/* The optional name, when the group has one. */}
                         {(group.name?.[lang] || group.name?.en || group.name?.pt) && (
                           <p className="text-sm font-medium text-gray-500 wrap-anywhere" data-testid="addon-group-name">
@@ -175,7 +212,23 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex shrink-0 flex-wrap items-center gap-2">
+                        {/* ACTIVE / INACTIVE for the whole group, as tall as the buttons */}
+                        <label className="flex h-8 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm font-medium text-gray-700">
+                          <Switch
+                            checked={groupActive(group)}
+                            disabled={!!saving[group._id]}
+                            onCheckedChange={(checked) =>
+                              saveStatus(group._id, checked, () => updateAddOnsGroup(group._id, { isActive: checked }))
+                            }
+                            aria-label={t("addon_group_status")}
+                            data-testid="addon-group-switch"
+                            className="data-[state=checked]:bg-[#DC3173]"
+                          />
+                          {/* fixed width: the buttons beside it don't move when the word changes */}
+                          <span className="w-14">{groupActive(group) ? t("addon_active") : t("addon_inactive")}</span>
+                        </label>
+
                         {/* ADD ADDON BUTTON */}
                         <Button
                           variant="outline"
@@ -223,7 +276,7 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
                       {group.options.map((option, idx) => (
                         <div
                           key={idx}
-                          className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl border bg-white"
+                          className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl border bg-white"
                           style={{
                             boxShadow:
                               "inset 0px 0px 8px rgba(0,0,0,0.03), 0px 4px 12px rgba(0,0,0,0.04)",
@@ -233,7 +286,13 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
                               price and delete move under it. */}
                           <div className="flex min-w-0 flex-1 basis-32 items-center gap-2 text-gray-800">
                             <Dot size={24} className="shrink-0 text-gray-400" />
-                            <span className="text-base font-medium wrap-anywhere">
+                            <span
+                              className={
+                                optionActive(option)
+                                  ? "text-base font-medium wrap-anywhere"
+                                  : "text-base font-medium wrap-anywhere text-gray-400 line-through"
+                              }
+                            >
                               {option?.name?.[lang]}
                             </span>
                             {option.sdr?.applicable && (
@@ -246,7 +305,7 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
                             )}
                           </div>
 
-                          <div className="ml-auto flex shrink-0 items-center gap-4 sm:gap-8">
+                          <div className="ml-auto flex shrink-0 items-center gap-4 sm:gap-6">
                             <div className="flex items-center gap-2">
                               <span className="font-semibold text-gray-900">
                                 {option.price.toFixed(2)}&nbsp;€
@@ -256,11 +315,22 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
                                   {t("tax")}: {(option.tax as TTax)?.taxRate}%
                                 </span>
                               )}
-                              <CheckCircle
-                                size={18}
-                                className="text-green-500 opacity-70"
-                              />
                             </div>
+                            {/* ACTIVE / INACTIVE for this option */}
+                            {option.sku && (
+                              <Switch
+                                checked={optionActive(option)}
+                                disabled={!!saving[option.sku]}
+                                onCheckedChange={(checked) =>
+                                  saveStatus(option.sku as string, checked, () =>
+                                    toggleOptionStatus(group._id, option.sku as string, checked),
+                                  )
+                                }
+                                aria-label={t("addon_option_status")}
+                                data-testid="addon-option-switch"
+                                className="data-[state=checked]:bg-[#DC3173]"
+                              />
+                            )}
                             <div className="flex items-center gap-2">
                               <Button
                                 variant="ghost"
@@ -328,12 +398,15 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
         t={t}
       />
 
-      {/* Clone a group (plan.md §11) */}
-      <CloneAddonGroupDialog
+      {/* Clone a group: the create form, filled from it (plan.md §11) */}
+      <CreateOrEditAddOnsGroup
         key={`clone-${groupToClone?._id ?? "none"}`}
-        group={groupToClone}
-        onClose={() => setGroupToClone(undefined)}
+        open={!!groupToClone}
+        onOpenChange={(open) => !open && setGroupToClone(undefined)}
+        prevValues={groupToClone}
+        taxes={taxes}
         allGroups={allGroups}
+        actionType="clone"
         t={t}
       />
     </>

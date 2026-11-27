@@ -787,21 +787,31 @@ export default function Products({
 
        `lg:` only. On a phone the banner, search, Sort By and the selection bar
        stack and ate nearly all of `100dvh`, leaving the scroller a sliver;
-       below `lg` the page scrolls like a page and the grid flows down it. */
+       below `lg` the page scrolls like a page and the grid flows down it.
+
+       The slim banner and the one-line toolbar above the list (26 Nov 2026)
+       are what make this box work on a short laptop: with the old tall banner
+       and two toolbar rows the list was shorter than one card at 800px, so
+       the View / Edit / Delete row was always cut off. */
     <div className="w-full flex flex-col lg:h-[calc(100dvh-6rem)] lg:max-h-[calc(100dvh-6rem)] lg:overflow-hidden">
-      {/* Header – fixed height */}
+      {/* Header – slim, so the products start high on the screen */}
       <TitleHeader
+        compact
         title={t("food_items")}
         subtitle={t("manage_your_restaurants_food_delivery_items")}
       />
 
-      {/* All / Active / Inactive / SDR – fixed height. On a phone: four equal
+      {/* The toolbar – one line on a laptop: status tabs, search, sort and
+          Select. It wraps on smaller screens; on a phone the tabs, then search,
+          then sort + Select each get a line. */}
+      <div className="shrink-0 mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+      {/* All / Active / Inactive / SDR. On a phone: four equal
           columns, each count under its label so the label keeps the width
           (it fits 320px in PT); from sm up a row of label + count tabs. */}
       <div
         role="tablist"
         aria-label={t("items_status_tabs")}
-        className="shrink-0 mb-4 grid w-full grid-cols-4 gap-1 rounded-xl border border-gray-200 bg-white p-1 sm:flex sm:w-fit"
+        className="grid w-full grid-cols-4 gap-1 rounded-xl border border-gray-200 bg-white p-1 sm:flex sm:w-fit"
       >
         {statusTabs.map((tab) => {
           const selected = currentTab === tab.value;
@@ -829,43 +839,44 @@ export default function Products({
         })}
       </div>
 
-      {/* Filters – fixed height */}
-      <div className="shrink-0 mb-4 flex items-start gap-3">
-        <div className="flex-1 min-w-0">
+        {/* Search + sort, with Select after them (hidden entirely when
+            there is nowhere to copy to). */}
+        <div className="min-w-0 basis-full sm:basis-80 sm:flex-1">
           <AllFilters
+            compact
             sortOptions={sortOptions}
             filterOptions={businessTypeSlug !== "restaurant" ? stockFilterOptions : undefined}
+            trailing={
+              copyTargets.length > 0 && catalogue.total > 0 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectMode) return exitSelectMode();
+                  // Read ahead, so unticking a card under "All products" is instant.
+                  void loadEveryCode();
+                  setSelectMode(true);
+                }}
+                className={`shrink-0 inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-medium transition-colors ${selectMode
+                  ? "border-[#DC3173] bg-[#DC3173]/5 text-[#DC3173]"
+                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                {selectMode ? (
+                  <>
+                    <X className="h-4 w-4" />
+                    {t("cancel")}
+                  </>
+                ) : (
+                  <>
+                    <CheckSquare className="h-4 w-4" />
+                    {t("select")}
+                  </>
+                )}
+              </button>
+              ) : undefined
+            }
           />
         </div>
-
-        {/* Hidden entirely when there is nowhere to copy to. */}
-        {copyTargets.length > 0 && catalogue.total > 0 && (
-          <button
-            type="button"
-            onClick={() => {
-              if (selectMode) return exitSelectMode();
-              // Read ahead, so unticking a card under "All products" is instant.
-              void loadEveryCode();
-              setSelectMode(true);
-            }}
-            className={`shrink-0 inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${selectMode
-              ? "border-[#DC3173] bg-[#DC3173]/5 text-[#DC3173]"
-              : "border-gray-200 text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            {selectMode ? (
-              <>
-                <X className="h-4 w-4" />
-                {t("cancel")}
-              </>
-            ) : (
-              <>
-                <CheckSquare className="h-4 w-4" />
-                {t("select")}
-              </>
-            )}
-          </button>
-        )}
       </div>
 
       {updatingList && (
@@ -989,7 +1000,8 @@ export default function Products({
             })}
           </div>
 
-          <div className="hidden lg:block w-64 shrink-0 h-full overflow-y-auto deligo-scroll">
+          {/* 13rem (was 16rem), so the cards get the room. */}
+          <div className="hidden lg:block w-52 shrink-0 h-full overflow-y-auto deligo-scroll">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sticky top-0">
               <h3 className="text-sm font-semibold text-gray-800 mb-3">
                 {t("product_categories") || "Product categories"}
@@ -1057,13 +1069,15 @@ export default function Products({
                 The thresholds come from what a card actually needs, which is
                 less than it looks: the widest row in it is the buttons (tick,
                 View, Edit, Delete) at ~200px, plus `p-4`. Three columns from
-                50rem therefore leaves ~253px per card and two from 36rem leaves
-                ~278px — both comfortable, and the price no longer fights for
-                the line since the VAT moved onto its own.
+                46rem leaves ~232px per card and two from 30rem ~230px (were
+                50rem and 36rem; lowered 26 Nov 2026 so a small laptop gets
+                three columns and a portrait tablet two) — enough, and the
+                price no longer fights for the line since the VAT moved onto
+                its own.
 
                 Capped at three on purpose. An intrinsic `auto-fill` grid would
                 keep adding columns on a wide monitor; three is the layout this
-                page is designed around, so beyond 50rem the cards get roomier
+                page is designed around, so beyond 46rem the cards get roomier
                 rather than more numerous. */}
             <div className="@container space-y-10">
               {groupedProducts.map((group) => {
@@ -1122,7 +1136,7 @@ export default function Products({
                           with transforms. The browser's scroll anchoring kept
                           the page still, but the cards visibly jumped by
                           300-700px with no input (measured 6 Oct 2026). */}
-                      <div className="grid auto-rows-fr grid-cols-1 @xl:grid-cols-2 @min-[50rem]:grid-cols-3 gap-5">
+                      <div className="grid auto-rows-fr grid-cols-1 @min-[30rem]:grid-cols-2 @min-[46rem]:grid-cols-3 gap-5">
                           {group.products.map((product) => (
                             <ProductCard
                               key={product._id}
@@ -1317,9 +1331,9 @@ function CategoryCount({ total, loading, t }: { total: number | null; loading: b
 /** Three cards' worth of placeholder, the grid's own columns and height. */
 function SkeletonRow() {
   return (
-    <div aria-hidden="true" className="grid grid-cols-1 @xl:grid-cols-2 @min-[50rem]:grid-cols-3 gap-5">
+    <div aria-hidden="true" className="grid grid-cols-1 @min-[30rem]:grid-cols-2 @min-[46rem]:grid-cols-3 gap-5">
       {[0, 1, 2].map((i) => (
-        <div key={i} className={`overflow-hidden rounded-2xl border border-gray-100 bg-white ${i > 0 ? "hidden @xl:block" : ""} ${i > 1 ? "@xl:hidden @min-[50rem]:block" : ""}`}>
+        <div key={i} className={`overflow-hidden rounded-2xl border border-gray-100 bg-white ${i > 0 ? "hidden @min-[30rem]:block" : ""} ${i > 1 ? "@min-[30rem]:hidden @min-[46rem]:block" : ""}`}>
           <div className="h-44 animate-pulse bg-gray-100" />
           <div className="space-y-3 p-4">
             <div className="h-4 w-2/3 animate-pulse rounded bg-gray-100" />

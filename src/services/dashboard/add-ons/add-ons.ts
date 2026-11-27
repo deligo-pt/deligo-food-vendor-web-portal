@@ -45,6 +45,15 @@ export const addOptionInGroup = async (
   });
 };
 
+/** Turn one option on or off (the API needs the new state, 25 Nov 2026). */
+export const toggleOptionStatus = async (groupId: string, optionSku: string, isActive: boolean) => {
+  return catchAsync<null>(async () => {
+    return await serverRequest.patch(`/add-ons/${groupId}/toggle-option-status`, {
+      data: { optionSku, isActive },
+    });
+  });
+};
+
 export const deleteOptionFromGroup = async (
   groupId: string,
   optionSku: string,
