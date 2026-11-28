@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { Copy, Dot, Edit, Plus, Trash2 } from "lucide-react";
+import { Copy, Edit, Plus, Trash2 } from "lucide-react";
 
 import AddOptionsForm from "@/src/components/Dashboard/AddOns/AddOptionsForm";
 import CreateOrEditAddOnsGroup from "@/src/components/Dashboard/AddOns/CreateOrEditAddOnsGroup";
@@ -23,9 +23,13 @@ import { TTax } from "@/src/types/tax.type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useStore } from "@/src/store/store";
+import { groupLabel, presentText } from "@/src/utils/addonGroup";
 
 const SHADOW =
   "0px 6px 24px rgba(0,0,0,0.06), inset 0px 0px 10px rgba(0,0,0,0.03)";
+
+/** Option rows and their header: name · price · VAT · on/off · delete. */
+const OPTION_GRID = "grid grid-cols-[minmax(0,1fr)_4.5rem_2.75rem_2.75rem_2rem] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_6rem_4rem_3.5rem_2.5rem] sm:gap-3";
 
 interface IProps {
   addOnsResult: { data: TAddonGroup[]; meta?: TMeta };
@@ -161,193 +165,192 @@ export default function AddOns({ addOnsResult, taxes, allGroups }: IProps) {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                whileHover={{ scale: 1.01 }}
                 transition={{ type: "spring", stiffness: 170, damping: 16 }}
               >
                 <Card
-                  className="border bg-white rounded-3xl overflow-hidden"
+                  className="gap-0 overflow-hidden rounded-3xl border bg-white py-0"
                   style={{ boxShadow: SHADOW }}
                 >
                   <CardContent className="p-0">
-                    {/* GROUP HEADER: title above the buttons on phones,
-                        side by side from sm. */}
-                    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5 border-b">
-                      <div className="min-w-0">
-                        <h2 className="flex flex-wrap items-center gap-2 text-xl font-bold wrap-anywhere">
-                          {group.title?.[lang]}
-                          {!groupActive(group) && (
-                            <span
-                              className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-semibold text-gray-600"
-                              data-testid="addon-group-inactive"
+                    {/* One left edge: the group's switch has its own column, and
+                        the name, details, divider and options all start to its
+                        right — it controls everything in that column. */}
+                    <div className="flex gap-3 p-4 sm:gap-4 sm:p-5">
+                      {/* ACTIVE / INACTIVE for the whole group. Off here turns every
+                          option off for customers; each option keeps its own state. */}
+                      <div className="flex h-7 shrink-0 items-center">
+                        <Switch
+                          checked={groupActive(group)}
+                          disabled={!!saving[group._id]}
+                          onCheckedChange={(checked) =>
+                            saveStatus(group._id, checked, () => updateAddOnsGroup(group._id, { isActive: checked }))
+                          }
+                          aria-label={t("addon_group_status")}
+                          data-testid="addon-group-switch"
+                          className="data-[state=checked]:bg-[#DC3173]"
+                        />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        {/* GROUP HEADER: name and details, buttons on the right
+                            (under them on phones). */}
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="min-w-0">
+                            <h2 className="text-xl font-bold leading-7 text-gray-900 wrap-anywhere">
+                              {/* The vendor's own name; the title when it has none. */}
+                              {groupLabel(group, lang)}
+                            </h2>
+                            <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500">
+                              {/* With a name as the heading, the title customers see. */}
+                              {presentText(group.name) && (
+                                <>
+                                  <span className="wrap-anywhere" data-testid="addon-group-title">
+                                    {t("addon_customers_see")}:{" "}
+                                    <span className="text-gray-700">
+                                      {group.title?.[lang] || group.title?.en || group.title?.pt}
+                                    </span>
+                                  </span>
+                                  <span aria-hidden className="text-gray-300">·</span>
+                                </>
+                              )}
+                              <span>
+                                {t("min")} <span className="font-medium text-gray-700">{group.minSelectable}</span>
+                              </span>
+                              <span aria-hidden className="text-gray-300">·</span>
+                              <span>
+                                {t("max")} <span className="font-medium text-gray-700">{group.maxSelectable}</span>
+                              </span>
+                              <span aria-hidden className="text-gray-300">·</span>
+                              <span
+                                className={groupActive(group) ? "font-medium text-[#DC3173]" : "font-medium text-gray-500"}
+                                data-testid="addon-group-status"
+                              >
+                                {groupActive(group) ? t("addon_active") : t("addon_inactive")}
+                              </span>
+                            </p>
+                          </div>
+
+                          <div className="flex shrink-0 flex-wrap items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 gap-1"
+                              onClick={() => setSelectedGroupForAddOption(group)}
                             >
-                              {t("addon_inactive")}
-                            </span>
-                          )}
-                        </h2>
-                        {/* The optional name, when the group has one. */}
-                        {(group.name?.[lang] || group.name?.en || group.name?.pt) && (
-                          <p className="text-sm font-medium text-gray-500 wrap-anywhere" data-testid="addon-group-name">
-                            {group.name?.[lang] || group.name?.en || group.name?.pt}
+                              <Plus size={16} /> {t("add_addon")}
+                            </Button>
+                            <Button
+                              onClick={() => setSelectedGroupForEdit(group)}
+                              variant="outline"
+                              size="sm"
+                              className="h-8 gap-1"
+                            >
+                              <Edit size={16} /> {t("edit")}
+                            </Button>
+                            <Button
+                              onClick={() => setGroupToClone(group)}
+                              variant="outline"
+                              size="sm"
+                              className="h-8 gap-1"
+                            >
+                              <Copy size={16} /> {t("addon_clone")}
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="my-4 border-t" />
+
+                        {/* A group that is off hides all its options from customers.
+                            Each option keeps its own saved on/off (the API doesn't
+                            change it — checked 28 Nov 2026), so turning the group
+                            back on brings back exactly the options that were on. */}
+                        {!groupActive(group) && group.options.length > 0 && (
+                          <p className="mb-3 rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600" data-testid="addon-group-off-note">
+                            {t("addon_group_off_note")}
                           </p>
                         )}
 
-                        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                          <span>{t("min")}:</span>
-                          <span className="font-medium text-gray-800">
-                            {group.minSelectable}
-                          </span>{" "}
-                          ● <span>{t("max")}:</span>
-                          <span className="font-medium text-gray-800">
-                            {group.maxSelectable}
-                          </span>
-                          {/* {group.required ? (
-                            <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-600">
-                              Required
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600">
-                              Optional
-                            </span>
-                          )} */}
-                        </div>
-                      </div>
-
-                      <div className="flex shrink-0 flex-wrap items-center gap-2">
-                        {/* ACTIVE / INACTIVE for the whole group, as tall as the buttons */}
-                        <label className="flex h-8 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm font-medium text-gray-700">
-                          <Switch
-                            checked={groupActive(group)}
-                            disabled={!!saving[group._id]}
-                            onCheckedChange={(checked) =>
-                              saveStatus(group._id, checked, () => updateAddOnsGroup(group._id, { isActive: checked }))
-                            }
-                            aria-label={t("addon_group_status")}
-                            data-testid="addon-group-switch"
-                            className="data-[state=checked]:bg-[#DC3173]"
-                          />
-                          {/* fixed width: the buttons beside it don't move when the word changes */}
-                          <span className="w-14">{groupActive(group) ? t("addon_active") : t("addon_inactive")}</span>
-                        </label>
-
-                        {/* ADD ADDON BUTTON */}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1"
-                          onClick={() => setSelectedGroupForAddOption(group)}
-                        >
-                          <Plus size={16} /> {t("add_addon")}
-                        </Button>
-
-                        {/* EDIT */}
-                        <Button
-                          onClick={() => setSelectedGroupForEdit(group)}
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1"
-                        >
-                          <Edit size={16} /> {t("edit")}
-                        </Button>
-
-                        {/* CLONE */}
-                        <Button
-                          onClick={() => setGroupToClone(group)}
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1"
-                        >
-                          <Copy size={16} /> {t("addon_clone")}
-                        </Button>
-
-                        {/* DELETE */}
-                        {/* <Button
-                          variant="destructive"
-                          size="sm"
-                          className="flex items-center gap-1"
-                          onClick={() => deleteGroup(group._id)}
-                        >
-                          <Trash2 size={16} /> Delete
-                        </Button> */}
-                      </div>
-                    </div>
-
-                    {/* ADDONS LIST */}
-                    <div className="p-5 space-y-3">
-                      {group.options.map((option, idx) => (
-                        <div
-                          key={idx}
-                          className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl border bg-white"
-                          style={{
-                            boxShadow:
-                              "inset 0px 0px 8px rgba(0,0,0,0.03), 0px 4px 12px rgba(0,0,0,0.04)",
-                          }}
-                        >
-                          {/* The name keeps at least 8rem; below that the
-                              price and delete move under it. */}
-                          <div className="flex min-w-0 flex-1 basis-32 items-center gap-2 text-gray-800">
-                            <Dot size={24} className="shrink-0 text-gray-400" />
-                            <span
-                              className={
-                                optionActive(option)
-                                  ? "text-base font-medium wrap-anywhere"
-                                  : "text-base font-medium wrap-anywhere text-gray-400 line-through"
-                              }
-                            >
-                              {option?.name?.[lang]}
-                            </span>
-                            {option.sdr?.applicable && (
-                              <span
-                                title={t("sdr_container_deposit")}
-                                className="shrink-0 rounded-full bg-[#DC3173]/10 px-2 py-0.5 text-xs font-semibold text-[#DC3173]"
+                        {/* OPTIONS: fixed columns so prices, VAT and switches line up. */}
+                        <div className={groupActive(group) ? "space-y-2" : "space-y-2 opacity-60"}>
+                          {group.options.length > 0 && (
+                            <div className={`${OPTION_GRID} px-3 text-xs font-medium uppercase tracking-wide text-gray-400`}>
+                              <span>{t("addon_col_option")}</span>
+                              <span className="text-right">{t("addon_col_price")}</span>
+                              <span className="text-right">{t("addon_col_vat")}</span>
+                              <span className="sr-only">{t("addon_option_status")}</span>
+                              <span className="sr-only">{t("remove")}</span>
+                            </div>
+                          )}
+                          {group.options.map((option, idx) => {
+                            const on = groupActive(group) && optionActive(option);
+                            return (
+                              <div
+                                key={option.sku ?? idx}
+                                className={`${OPTION_GRID} rounded-xl border bg-white px-3 py-2.5 transition-colors hover:bg-gray-50`}
                               >
-                                SDR
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="ml-auto flex shrink-0 items-center gap-4 sm:gap-6">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-gray-900">
-                                {option.price.toFixed(2)}&nbsp;€
-                              </span>
-                              {option.tax && (
-                                <span className="text-xs text-slate-800">
-                                  {t("tax")}: {(option.tax as TTax)?.taxRate}%
+                                <div className="flex min-w-0 items-center gap-2">
+                                  <span
+                                    className={
+                                      on
+                                        ? "font-medium text-gray-900 wrap-anywhere"
+                                        : "font-medium text-gray-400 line-through wrap-anywhere"
+                                    }
+                                  >
+                                    {option?.name?.[lang]}
+                                  </span>
+                                  {option.sdr?.applicable && (
+                                    <span
+                                      title={t("sdr_container_deposit")}
+                                      className="shrink-0 rounded border border-[#DC3173]/20 bg-[#DC3173]/5 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-[#DC3173]"
+                                    >
+                                      SDR
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-right font-semibold tabular-nums text-gray-900">
+                                  {option.price.toFixed(2)}&nbsp;€
                                 </span>
-                              )}
-                            </div>
-                            {/* ACTIVE / INACTIVE for this option */}
-                            {option.sku && (
-                              <Switch
-                                checked={optionActive(option)}
-                                disabled={!!saving[option.sku]}
-                                onCheckedChange={(checked) =>
-                                  saveStatus(option.sku as string, checked, () =>
-                                    toggleOptionStatus(group._id, option.sku as string, checked),
-                                  )
-                                }
-                                aria-label={t("addon_option_status")}
-                                data-testid="addon-option-switch"
-                                className="data-[state=checked]:bg-[#DC3173]"
-                              />
-                            )}
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="ghost"
-                                className="p-0! h-fit text-destructive"
-                                onClick={() =>
-                                  setDeleteOptionInfo({
-                                    groupId: group._id,
-                                    optionSku: option.sku as string,
-                                  })
-                                }
-                              >
-                                <Trash2 size={20} />
-                              </Button>
-                            </div>
-                          </div>
+                                <span className="text-right text-sm tabular-nums text-gray-500">
+                                  {option.tax ? `${(option.tax as TTax)?.taxRate}%` : "—"}
+                                </span>
+                                <div className="flex justify-center">
+                                  {option.sku && (
+                                    <Switch
+                                      // Off and locked while the group is off; its own
+                                      // state shows again when the group is back on.
+                                      checked={on}
+                                      disabled={!groupActive(group) || !!saving[option.sku]}
+                                      title={groupActive(group) ? undefined : t("addon_group_off_hint")}
+                                      onCheckedChange={(checked) =>
+                                        saveStatus(option.sku as string, checked, () =>
+                                          toggleOptionStatus(group._id, option.sku as string, checked),
+                                        )
+                                      }
+                                      aria-label={t("addon_option_status")}
+                                      data-testid="addon-option-switch"
+                                      className="data-[state=checked]:bg-[#DC3173]"
+                                    />
+                                  )}
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                                  aria-label={t("remove")}
+                                  onClick={() =>
+                                    setDeleteOptionInfo({
+                                      groupId: group._id,
+                                      optionSku: option.sku as string,
+                                    })
+                                  }
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </div>
+                            );
+                          })}
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

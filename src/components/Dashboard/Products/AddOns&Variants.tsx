@@ -2,6 +2,7 @@
 
 import { useTranslation } from '@/src/hooks/use-translation';
 import AddonGroupOrder from "./AddonGroupOrder";
+import { groupLabel } from "@/src/utils/addonGroup";
 import { motion } from 'framer-motion';
 import { XIcon } from 'lucide-react';
 import {
@@ -270,7 +271,8 @@ const AddOnsAndVariants = ({ form, addonGroupsData, businessTypeSlug, watchVaria
                                                 key={group._id}
                                                 value={group._id}
                                             >
-                                                {group.title?.[lang]}
+                                                {/* The vendor's own name for the group; customers see its title. */}
+                                                {groupLabel(group, lang)}
                                             </SelectItem>
                                         ))}
                                         {addonGroupsData?.length === 0 && (
