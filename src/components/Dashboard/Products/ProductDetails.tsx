@@ -24,11 +24,12 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import CopyToBranchDialog from "./CopyToBranchDialog";
 import { getProductImage } from "@/src/consts/product.const";
 import { displayCurrency } from "@/src/utils/currency";
+import { approvedBranches } from "@/src/utils/productCopy";
 
 interface IProps {
   product: TProduct;
@@ -45,6 +46,8 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCopyToBranchOpen, setIsCopyToBranchOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  // Same rule as the products list: only approved branches can receive a copy.
+  const canCopy = useMemo(() => approvedBranches(branches).length > 0, [branches]);
 
   const getStockStatusColor = (status: string) => {
     switch (status) {
@@ -492,13 +495,15 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
             </motion.div>
             {/* Action Button */}
             <div className="pt-4 flex items-center gap-2 justify-end">
-              <button
-                onClick={() => setIsCopyToBranchOpen(true)}
-                className="bg-[#DC3173] hover:bg-[#DC3173]/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
-              >
-                <SquaresSubtract className="w-5 h-5" />
-                <span>{t("copy_to_branch")}</span>
-              </button>
+              {canCopy && (
+                <button
+                  onClick={() => setIsCopyToBranchOpen(true)}
+                  className="bg-[#DC3173] hover:bg-[#DC3173]/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+                >
+                  <SquaresSubtract className="w-5 h-5" />
+                  <span>{t("copy_to_branch")}</span>
+                </button>
+              )}
               <button
                 onClick={() => setIsDeleteDialogOpen(true)}
                 className="bg-destructive hover:bg-destructive/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
@@ -510,13 +515,15 @@ export default function ProductDetails({ product, businessTypeSlug, branches }: 
           </div>
         </div>
 
-        <CopyToBranchDialog
-          open={isCopyToBranchOpen}
-          onOpenChange={setIsCopyToBranchOpen}
-          productIds={[product.productId]}
-          branches={branches}
-          t={t}
-        />
+        {canCopy && (
+          <CopyToBranchDialog
+            open={isCopyToBranchOpen}
+            onOpenChange={setIsCopyToBranchOpen}
+            productIds={[product.productId]}
+            branches={branches}
+            t={t}
+          />
+        )}
 
         <DeleteProductDialog
           open={isDeleteDialogOpen}

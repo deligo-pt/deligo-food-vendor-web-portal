@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
-import { ArrowDown, ArrowUp, CupSoda, PencilIcon, UtensilsCrossed, XIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, PencilIcon, XIcon } from "lucide-react";
 
 import {
   Form,
@@ -44,14 +43,11 @@ import {
   commonPrice,
   commonSdr,
   commonTax,
-  kindOfOptions,
   sortByName,
   presentText,
   titleTaken,
-  withKind,
   withPrice,
 } from "@/src/utils/addonGroup";
-import { KIND_SETTINGS, kindOfRate, taxIdForRate, type TProductKind } from "@/src/utils/productKind";
 import PriceInput from "@/src/components/PriceInput/PriceInput";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -152,26 +148,8 @@ export default function CreateOrEditAddOnsGroup({
     name: "options",
   })
 
-  const watchedOptions = useWatch({ control: form.control, name: "options" }) ?? [];
   const watchedTitle = useWatch({ control: form.control, name: `title.${lang}` }) ?? "";
   const titleIsTaken = titleTaken(allGroups, watchedTitle, isEdit ? prevValues?._id : undefined);
-
-  // Food | Drinks: lit when every option has that kind's VAT; with no
-  // options yet, from the "new option" box.
-  const optionTaxRate = taxes.find((tax) => tax._id === optionTax)?.taxRate;
-  const currentKind = watchedOptions.length
-    ? kindOfOptions(watchedOptions, taxes)
-    : kindOfRate(optionTaxRate === undefined ? null : Number(optionTaxRate));
-  const missingRate = (kind: TProductKind) => !taxIdForRate(taxes, KIND_SETTINGS[kind].rate);
-
-  const pickKind = (kind: TProductKind) => {
-    const taxId = taxIdForRate(taxes, KIND_SETTINGS[kind].rate);
-    if (!taxId) return;
-    setEditingIndex(null);
-    replace(withKind(form.getValues("options"), kind, taxes));
-    setOptionTax(taxId);
-    setOptionSdr(toAddonSdr(KIND_SETTINGS[kind].sdr));
-  };
 
   const changeGroupPrice = (price: number | undefined) => {
     setGroupPrice(price);
@@ -537,39 +515,7 @@ export default function CreateOrEditAddOnsGroup({
               <p className="text-xs text-gray-500">{t("addon_group_price_help")}</p>
             </div>
 
-            {/* Food | Drinks: VAT and SDR for every option. */}
-            <fieldset className="space-y-2">
-              <legend className="mb-2 text-sm font-medium">{t("product_kind_label")}</legend>
-              <div className="inline-flex rounded-xl border border-gray-200 bg-white p-1" role="radiogroup" aria-label={t("product_kind_label")}>
-                {(["FOOD", "DRINK"] as const).map((kind) => {
-                  const Icon = kind === "FOOD" ? UtensilsCrossed : CupSoda;
-                  const selected = currentKind === kind;
-                  return (
-                    <button
-                      key={kind}
-                      type="button"
-                      role="radio"
-                      aria-checked={selected}
-                      disabled={missingRate(kind)}
-                      onClick={() => pickKind(kind)}
-                      className={cn(
-                        "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40",
-                        selected ? "bg-[#DC3173] text-white" : "text-gray-600 hover:bg-gray-50",
-                      )}
-                    >
-                      <Icon className="h-4 w-4" aria-hidden />
-                      {t(kind === "FOOD" ? "product_kind_food" : "product_kind_drink")}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-xs text-gray-500">{t("addon_kind_help")}</p>
-              {(["FOOD", "DRINK"] as const).filter(missingRate).map((kind) => (
-                <p key={kind} className="text-xs text-amber-700">
-                  {t("product_kind_missing_rate").replace("{rate}", String(KIND_SETTINGS[kind].rate))}
-                </p>
-              ))}
-            </fieldset>
+            {/* Food | Drinks is gone for now: the backend will decide it (28 Nov 2026). */}
 
             <div className="space-y-2 ">
               {/* The title stays in view while scrolling a long list of

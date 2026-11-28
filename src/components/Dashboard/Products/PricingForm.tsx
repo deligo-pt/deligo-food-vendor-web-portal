@@ -19,9 +19,6 @@ import { TTax } from "@/src/types/tax.type";
 import { motion } from "framer-motion";
 import { VatRateInfoIcon } from "./VatRatesInfo";
 import PriceInput from "@/src/components/PriceInput/PriceInput";
-import { cn } from "@/lib/utils";
-import { KIND_SETTINGS, kindOfRate, taxIdForRate, type TProductKind } from "@/src/utils/productKind";
-import { CupSoda, UtensilsCrossed } from "lucide-react";
 
 interface IProps {
     form: any;
@@ -33,8 +30,6 @@ interface IProps {
     taxesData: TTax[];
     /** An ⓘ on each VAT rate in the dropdown, explaining it. Add Item only, for now. */
     showVatInfo?: boolean;
-    /** Food | Drinks was filled in from the category's other products (Add Item). */
-    kindFromCategory?: boolean;
 }
 
 const PricingForm = ({
@@ -46,25 +41,12 @@ const PricingForm = ({
     watchTaxId,
     taxesData,
     showVatInfo = false,
-    kindFromCategory = false,
 }: IProps) => {
     const { t } = useTranslation();
     const inputPrice = watchPrice || 0;
 
     const selectedTax = taxesData?.find((tax) => tax._id === watchTaxId);
     const taxRate = selectedTax?.taxRate || 0;
-
-    // Food | Drinks (§10.3): shown from the VAT rate, so Edit shows the
-    // product's own kind and a hand-picked rate moves it too.
-    const currentKind = kindOfRate(selectedTax ? Number(selectedTax.taxRate) : null);
-    const missingRate = (kind: TProductKind) =>
-        taxesData?.length > 0 && !taxIdForRate(taxesData, KIND_SETTINGS[kind].rate);
-    const pickKind = (kind: TProductKind) => {
-        const id = taxIdForRate(taxesData, KIND_SETTINGS[kind].rate);
-        if (!id) return;
-        form.setValue("taxId", id, { shouldDirty: true, shouldValidate: true });
-        form.setValue("sdrApplicable", KIND_SETTINGS[kind].sdr, { shouldDirty: true });
-    };
 
     const discountAmount = watchDiscountType === "PERCENTAGE"
         ? inputPrice * ((watchDiscount || 0) / 100)
@@ -93,41 +75,8 @@ const PricingForm = ({
                 {t("pricing_information")}
             </h2>
 
-            <fieldset className="space-y-2">
-                <legend className="mb-2 text-sm font-medium text-gray-700">{t("product_kind_label")}</legend>
-                <div className="inline-flex rounded-xl border border-gray-200 bg-white p-1" role="radiogroup" aria-label={t("product_kind_label")}>
-                    {(["FOOD", "DRINK"] as const).map((kind) => {
-                        const Icon = kind === "FOOD" ? UtensilsCrossed : CupSoda;
-                        const selected = currentKind === kind;
-                        return (
-                            <button
-                                key={kind}
-                                type="button"
-                                role="radio"
-                                aria-checked={selected}
-                                disabled={missingRate(kind)}
-                                onClick={() => pickKind(kind)}
-                                className={cn(
-                                    "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40",
-                                    selected ? "bg-[#DC3173] text-white" : "text-gray-600 hover:bg-gray-50",
-                                )}
-                            >
-                                <Icon className="h-4 w-4" aria-hidden />
-                                {t(kind === "FOOD" ? "product_kind_food" : "product_kind_drink")}
-                            </button>
-                        );
-                    })}
-                </div>
-                <p className="text-xs text-gray-500">
-                    {t("product_kind_help")}
-                    {kindFromCategory && currentKind && <> {t("product_kind_from_category")}</>}
-                </p>
-                {(["FOOD", "DRINK"] as const).filter(missingRate).map((kind) => (
-                    <p key={kind} className="text-xs text-amber-700">
-                        {t("product_kind_missing_rate").replace("{rate}", String(KIND_SETTINGS[kind].rate))}
-                    </p>
-                ))}
-            </fieldset>
+            {/* Food | Drinks is gone for now: the backend will decide it
+                (28 Nov 2026). VAT and SDR are set by hand below. */}
 
             {/* Form Fields — 2×2 until the row is wide enough for four. At four
                 columns on a laptop the Portuguese tax name ("IVA - Taxa
